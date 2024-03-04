@@ -26,7 +26,7 @@ namespace redpen_core.tokenizer
             // MEMO: 本来なら何らかのTextReaderが必要？
             this.tokenizer = new JapaneseTokenizer(
                 new StringReader(string.Empty), // 空のTextReaderとして暫定的に与える。
-                null,
+                null, // TODO: Neologd辞書を使うための辞書の与え方を調べる。
                 false,
                 JapaneseTokenizerMode.NORMAL);
         }

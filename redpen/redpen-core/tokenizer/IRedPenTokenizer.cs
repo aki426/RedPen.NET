@@ -16,6 +16,6 @@ namespace redpen_core.tokenizer
         /// </summary>
         /// <param name="sentence">input sentence</param>
         /// <returns>a set of tokens in the input sentence</returns>
-        List<TokenElement> Tokenize(string sentence);
+        public List<TokenElement> Tokenize(string sentence);
     }
 }
