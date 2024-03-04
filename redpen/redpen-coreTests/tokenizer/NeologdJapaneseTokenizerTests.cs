@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using System;
 using Xunit;
 
 namespace redpen_core.tokenizer.Tests
@@ -30,6 +31,14 @@ namespace redpen_core.tokenizer.Tests
 
             tokens[4].Surface.Should().Be("。");
             tokens[4].Tags[0].Should().Be("記号");
+        }
+
+        [Fact]
+        public void TokenizeVoidTest()
+        {
+            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            List<TokenElement> tokens = tokenizer.Tokenize("");
+            tokens.Count.Should().Be(0);
         }
     }
 }
