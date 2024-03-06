@@ -1,11 +1,11 @@
-﻿using Xunit;
-using redpen_core.tokenizer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using redpen_core.tokenizer;
+using Xunit;
 
 namespace redpen_core.tokenizer.Tests
 {

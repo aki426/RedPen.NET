@@ -1,9 +1,9 @@
-﻿using redpen_core.tokenizer;
+﻿using System.Text;
 using FluentAssertions;
-using System.Text;
+using Lucene.Net.Index;
+using redpen_core.tokenizer;
 using Xunit;
 using Xunit.Abstractions;
-using Lucene.Net.Index;
 
 namespace redpen_core.tokenizer.Tests
 {

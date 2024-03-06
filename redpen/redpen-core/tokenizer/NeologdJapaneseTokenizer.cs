@@ -1,11 +1,11 @@
-﻿using Lucene.Net.Analysis.Ja;
-using Lucene.Net.Analysis.Ja.TokenAttributes;
-using Lucene.Net.Analysis.TokenAttributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lucene.Net.Analysis.Ja;
+using Lucene.Net.Analysis.Ja.TokenAttributes;
+using Lucene.Net.Analysis.TokenAttributes;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
