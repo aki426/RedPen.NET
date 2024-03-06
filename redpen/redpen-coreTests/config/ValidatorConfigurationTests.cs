@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -27,54 +28,34 @@ namespace redpen_core.config.Tests
         [Fact]
         public void EqualsTest()
         {
-            // a
+            ValidatorConfiguration conf = new ValidatorConfiguration("test").AddProperty("foo", "bar").SetLevel(Level.ERROR);
+            ValidatorConfiguration conf2 = new ValidatorConfiguration("test").AddProperty("foo", "bar").SetLevel(Level.ERROR);
 
-            throw new NotImplementedException();
+            Assert.Equal(conf, conf2);
         }
 
-        //        @Test
-        //  void canBeCloned() throws Exception
-        //        {
-        //            ValidatorConfiguration conf = new ValidatorConfiguration("test").addProperty("foo", "bar");
-        //        ValidatorConfiguration clone = conf.clone();
+        [Fact]
+        public void EqualsPropertiesTest()
+        {
+            ValidatorConfiguration conf = new ValidatorConfiguration("test").AddProperty("foo", "bar");
+            ValidatorConfiguration conf2 = new ValidatorConfiguration("test").AddProperty("foo", "bar2");
+            conf.Equals(conf2).Should().BeFalse();
+        }
 
-        //        assertNotSame(conf, clone);
-        //        assertEquals(conf, clone);
+        [Fact]
+        public void EqualsNamesTest()
+        {
+            ValidatorConfiguration conf = new ValidatorConfiguration("test");
+            ValidatorConfiguration conf2 = new ValidatorConfiguration("test2");
+            conf.Equals(conf2).Should().BeFalse();
+        }
 
-        //        assertNotSame(conf.getProperties(), clone.getProperties());
-        //        assertEquals(conf.getProperties(), clone.getProperties());
-
-        //        assertNotSame(conf.getProperties(), clone.getProperties());
-        //        assertEquals(conf.getLevel(), clone.getLevel());
-        //    }
-
-        //    @Test
-        //  void equals() throws Exception
-        //    {
-        //        ValidatorConfiguration conf = new ValidatorConfiguration("test").addProperty("foo", "bar").setLevel(ValidatorConfiguration.LEVEL.ERROR);
-        //    ValidatorConfiguration conf2 = new ValidatorConfiguration("test").addProperty("foo", "bar").setLevel(ValidatorConfiguration.LEVEL.ERROR);
-        //    assertEquals(conf, conf2);
-        //}
-
-        //@Test
-        //  void equals_properties() throws Exception {
-        //    ValidatorConfiguration conf = new ValidatorConfiguration("test").addProperty("foo", "bar");
-        //ValidatorConfiguration conf2 = new ValidatorConfiguration("test").addProperty("foo", "bar2");
-        //assertFalse(conf.equals(conf2));
-        //  }
-
-        //  @Test
-        //  void equals_names() throws Exception {
-        //    ValidatorConfiguration conf = new ValidatorConfiguration("test");
-        //ValidatorConfiguration conf2 = new ValidatorConfiguration("test2");
-        //assertFalse(conf.equals(conf2));
-        //  }
-
-        //  @Test
-        //  void equals_levels() throws Exception {
-        //    ValidatorConfiguration conf = new ValidatorConfiguration("test").setLevel(ValidatorConfiguration.LEVEL.INFO);
-        //ValidatorConfiguration conf2 = new ValidatorConfiguration("test2").setLevel(ValidatorConfiguration.LEVEL.INFO); ;
-        //assertFalse(conf.equals(conf2));
-        //  }
+        [Fact]
+        public void EqualsLevelsTest()
+        {
+            ValidatorConfiguration conf = new ValidatorConfiguration("test").SetLevel(Level.INFO);
+            ValidatorConfiguration conf2 = new ValidatorConfiguration("test").SetLevel(Level.WARN);
+            conf.Equals(conf2).Should().BeFalse();
+        }
     }
 }
