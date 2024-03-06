@@ -35,18 +35,18 @@ namespace redpen_core.config.Tests
         }
 
         [Fact]
-        public void EqualsPropertiesTest()
-        {
-            ValidatorConfiguration conf = new ValidatorConfiguration("test").AddProperty("foo", "bar");
-            ValidatorConfiguration conf2 = new ValidatorConfiguration("test").AddProperty("foo", "bar2");
-            conf.Equals(conf2).Should().BeFalse();
-        }
-
-        [Fact]
         public void EqualsNamesTest()
         {
             ValidatorConfiguration conf = new ValidatorConfiguration("test");
             ValidatorConfiguration conf2 = new ValidatorConfiguration("test2");
+            conf.Equals(conf2).Should().BeFalse();
+        }
+
+        [Fact]
+        public void EqualsPropertiesTest()
+        {
+            ValidatorConfiguration conf = new ValidatorConfiguration("test").AddProperty("foo", "bar");
+            ValidatorConfiguration conf2 = new ValidatorConfiguration("test").AddProperty("foo", "bar2");
             conf.Equals(conf2).Should().BeFalse();
         }
 
