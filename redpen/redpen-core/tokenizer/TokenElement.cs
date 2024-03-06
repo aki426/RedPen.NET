@@ -10,6 +10,7 @@ namespace redpen_core.tokenizer
     /// <summary>
     /// ImmutableなTokenElementを表現するクラス。
     /// </summary>
+    [ToString]
     public class TokenElement : IEquatable<TokenElement>
     {
         // オリジナルでの使用実績がなかったのでコメントアウト。
@@ -106,12 +107,5 @@ namespace redpen_core.tokenizer
 
             return HashCode.Combine(Surface, tags, Tags, Offset, Reading);
         }
-
-        /// <summary>
-        /// Tos the string.
-        /// </summary>
-        /// <returns>A string.</returns>
-        public override string ToString()
-        { return $"TokenElement{{surface='{Surface}', tags={tags}, offset={Offset}, reading='{Reading}'}}"; }
     }
 }

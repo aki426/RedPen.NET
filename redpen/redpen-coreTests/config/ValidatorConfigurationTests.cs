@@ -27,7 +27,7 @@ namespace redpen_core.config.Tests
         [Fact]
         public void EqualsTest()
         {
-            a
+            // a
 
             throw new NotImplementedException();
         }

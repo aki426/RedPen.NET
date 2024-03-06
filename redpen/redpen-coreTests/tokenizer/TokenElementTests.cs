@@ -1,11 +1,21 @@
-﻿using FluentAssertions;
+﻿using redpen_core.tokenizer;
+using FluentAssertions;
 using System.Text;
 using Xunit;
+using Xunit.Abstractions;
+using Lucene.Net.Index;
 
 namespace redpen_core.tokenizer.Tests
 {
     public class TokenElementTests
     {
+        private readonly ITestOutputHelper output;
+
+        public TokenElementTests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+
         [Fact(DisplayName = "TokenElementのコンストラクタ基本テスト")]
         public void TokenElementTest()
         {
@@ -48,6 +58,13 @@ namespace redpen_core.tokenizer.Tests
             //actual.Invoking(i => i.Tags.Append("new Tag"))
             //    .Should().Throw<Exception>()
             //    .WithMessage("TokenElement is immutable at Tags");
+        }
+
+        [Fact()]
+        public void ToStringTest()
+        {
+            TokenElement actual = new TokenElement("surface of word", new List<string> { "tag", "list" }, 42, "reading");
+            output.WriteLine(actual.ToString());
         }
     }
 }

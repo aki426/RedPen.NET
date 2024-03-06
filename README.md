@@ -13,6 +13,8 @@ readpenをC#アプリケーションからスマートに利用したかった�
 - xunit
 - xunit.runner.visualstudio
 - FluentAssertions
+- ToString.Fody
+- IsExternalInit
 - 上記パッケージの依存パッケージ
 
 ## ロードマップ
