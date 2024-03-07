@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using NLog;
+using redpen_core.util;
 
 namespace redpen_core.parser
 {
@@ -23,7 +24,7 @@ namespace redpen_core.parser
             "Sep.", "Oct.", "Nov.", "Dec.", "Feb.",
             "B.C", "A.D." };
 
-        //private EndOfSentenceDetector endOfSentenceDetector;
+        private EndOfSentenceDetector endOfSentenceDetector;
 
         //    // reference to the symbol table used to create us
         //    private SymbolTable symbolTable = null;
