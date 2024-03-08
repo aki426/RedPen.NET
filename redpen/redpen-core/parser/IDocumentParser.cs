@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-using redpen_core.parser;
+﻿// using System.Reflection.Metadata;
+using redpen_core.model;
 using redpen_core.tokenizer;
 
 namespace redpen_core.parser
 {
     public interface IDocumentParser
     {
+        Document Parse(Stream inputStream, SentenceExtractor sentenceExtractor, IRedPenTokenizer tokenizer);
+
+        Document Parse(string content, SentenceExtractor sentenceExtractor, IRedPenTokenizer tokenizer);
+
+        Document Parse(FileInfo file, SentenceExtractor sentenceExtractor, IRedPenTokenizer tokenizer);
+
         //Document Parse(string content, SentenceExtractor sentenceExtractor, RedPenTokenizer tokenizer);
 
         //        /**

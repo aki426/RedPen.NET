@@ -2,11 +2,6 @@
 
 namespace redpen_core.parser
 {
-    public enum RuleType
-    {
-        SUPRESS
-    }
-
     public class PreprocessorRule
     {
         public int LineNumber { get; init; } = 0;
@@ -14,9 +9,14 @@ namespace redpen_core.parser
 
         public List<string> Parameters { get; init; } = new List<string>();
 
+        public enum RuleType
+        {
+            SUPPRESS
+        }
+
         public RuleType Type { get; init; }
 
-        public PreprocessorRule(int lineNumber, RuleType type)
+        public PreprocessorRule(RuleType type, int lineNumber)
         {
             LineNumber = lineNumber;
             Type = type;

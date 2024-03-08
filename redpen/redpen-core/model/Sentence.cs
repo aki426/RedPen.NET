@@ -10,7 +10,7 @@ namespace redpen_core.model
 
         private static readonly long serialVersionUID = 3761982769692999924L;
 
-        public string Content { get; init; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
+        public string Content { get; set; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
         public int LineNumber { get; init; } // need getter. setterはJAVA版でも使用実績がないので不要。
         public bool IsFirstSentence { get; set; } // need getter.
         public List<string> Links { get; init; } // need getter. List.add()はJAVA版でも使用実績がある。
