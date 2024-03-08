@@ -36,7 +36,7 @@ namespace redpen_core.parser
         //     */
         //    SentenceExtractor(char...fullStopList)
         //    {
-        //        this(fullStopList, extractRightQuotations(Configuration.builder().build().getSymbolTable()));
+        //        this(fullStopList, extractRightQuotations(Configuration.Builder().build().getSymbolTable()));
         //    }
 
         //    /**

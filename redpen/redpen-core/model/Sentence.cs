@@ -12,9 +12,9 @@ namespace redpen_core.model
 
         public string Content { get; init; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
         public int LineNumber { get; init; } // need getter. setterはJAVA版でも使用実績がないので不要。
-        public bool IsFirstSentence { get; init; } // need getter.
+        public bool IsFirstSentence { get; set; } // need getter.
         public List<string> Links { get; init; } // need getter. List.add()はJAVA版でも使用実績がある。
-        public List<TokenElement> Tokens { get; init; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
+        public List<TokenElement> Tokens { get; set; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
         public int StartPositionOffset { get; init; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
         public List<LineOffset> OffsetMap { get; init; }// need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
 
