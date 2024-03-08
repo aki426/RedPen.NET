@@ -32,6 +32,21 @@ namespace redpen_core.parser.Tests
             // 同じ場合は0。
             LineOffset oneOne = new LineOffset(1, 1);
             lineOneOffsetOne.CompareTo(oneOne).Should().Be(0);
+
+            new List<LineOffset> {
+                new LineOffset(2, 1),
+                new LineOffset(3, 2),
+                new LineOffset(1, 2),
+                new LineOffset(2, 2),
+                new LineOffset(1, 1),
+            }
+                .OrderBy(x => x).Should().Equal(new List<LineOffset> {
+                    new LineOffset(1, 1),
+                    new LineOffset(1, 2),
+                    new LineOffset(2, 1),
+                    new LineOffset(2, 2),
+                    new LineOffset(3, 2),
+                });
         }
 
         [Fact()]
