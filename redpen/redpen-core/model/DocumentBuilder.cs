@@ -68,6 +68,7 @@ namespace redpen_core.model
             EnsureNotBuilt();
             if (Sections.Count == 0)
             {
+                // TODO: 一連の処理をCreateHeaderとかNewSectionなどといった関数にまとめる。
                 List<Sentence> headers = new List<Sentence>();
                 headers.Add(new Sentence("", 0));
                 this.AppendSection(new Section(0, headers));

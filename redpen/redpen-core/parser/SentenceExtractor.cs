@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using NLog;
 using redpen_core.util;
+using redpen_core.config;
 
 namespace redpen_core.parser
 {
@@ -27,7 +28,7 @@ namespace redpen_core.parser
         private EndOfSentenceDetector endOfSentenceDetector;
 
         //    // reference to the symbol table used to create us
-        //    private SymbolTable symbolTable = null;
+        private SymbolTable symbolTable = null;
 
         //    /**
         //     * Constructor.
@@ -65,9 +66,9 @@ namespace redpen_core.parser
         //    private static char[] extractPeriods(SymbolTable symbolTable)
         //    {
         //        char[] periods = new char[]{
-        //            symbolTable.getValueOrFallbackToDefault(FULL_STOP),
-        //            symbolTable.getValueOrFallbackToDefault(QUESTION_MARK),
-        //            symbolTable.getValueOrFallbackToDefault(EXCLAMATION_MARK)
+        //            symbolTable.GetValueOrFallbackToDefault(FULL_STOP),
+        //            symbolTable.GetValueOrFallbackToDefault(QUESTION_MARK),
+        //            symbolTable.GetValueOrFallbackToDefault(EXCLAMATION_MARK)
         //    };
         //        LOG.info("\"" + Arrays.toString(periods) + "\" are added as a end of sentence characters");
         //        return periods;
@@ -76,8 +77,8 @@ namespace redpen_core.parser
         //    private static char[] extractRightQuotations(SymbolTable symbolTable)
         //    {
         //        char[] rightQuotations = new char[]{
-        //            symbolTable.getValueOrFallbackToDefault(RIGHT_SINGLE_QUOTATION_MARK),
-        //            symbolTable.getValueOrFallbackToDefault(RIGHT_DOUBLE_QUOTATION_MARK)
+        //            symbolTable.GetValueOrFallbackToDefault(RIGHT_SINGLE_QUOTATION_MARK),
+        //            symbolTable.GetValueOrFallbackToDefault(RIGHT_DOUBLE_QUOTATION_MARK)
         //    };
         //        LOG.info("\"" + Arrays.toString(rightQuotations) + "\" are added as a right quotation characters");
         //        return rightQuotations;
@@ -144,10 +145,10 @@ namespace redpen_core.parser
         //     * @param str input string
         //     * @return position of full stop when there is a full stop, -1 otherwise
         //     */
-        //    public int getSentenceEndPosition(String str)
-        //    {
-        //        return endOfSentenceDetector.getSentenceEndPosition(str, 0);
-        //    }
+        public int GetSentenceEndPosition(string str)
+        {
+            return endOfSentenceDetector.GetSentenceEndPosition(str, 0);
+        }
 
         //    /**
         //     * Return the string that should be used to re-join lines broken with \n in
@@ -159,10 +160,10 @@ namespace redpen_core.parser
         //     *
         //     * @return a string used to join lines that have been 'broken'
         //     */
-        //    public String getBrokenLineSeparator()
-        //    {
-        //        return (symbolTable != null) && (symbolTable.getLang().equals("ja")) ? "" : " ";
-        //    }
+        //public string getBrokenLineSeparator()
+        //{
+        //    return (symbolTable != null) && (symbolTable.getLang().equals("ja")) ? "" : " ";
+        //}
 
         //    /**
         //     * Given a set of sentence end characters, construct the

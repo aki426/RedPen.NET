@@ -43,7 +43,7 @@ namespace redpen_core.parser
         /// <param name="sentenceExtractor"></param>
         /// <param name="tokenizer"></param>
         /// <returns></returns>
-        protected abstract Document Parse(
+        public abstract Document Parse(
             Stream inputStream,
             string? fileName,
             SentenceExtractor sentenceExtractor,
@@ -58,7 +58,7 @@ namespace redpen_core.parser
         {
             for (int i = start; i < line.Length; i++)
             {
-                if (string.IsNullOrWhiteSpace(line[i]))
+                if (char.IsWhiteSpace(line[i]))
                 {
                     return i;
                 }
@@ -69,18 +69,20 @@ namespace redpen_core.parser
         }
 
         // protected static class ValueWithOffsets : Sentence
-        protected class ValueWithOffsets : Sentence
+        protected record class ValueWithOffsets : Sentence
         {
-            public ValueWithOffsets() : base("", 0)
+            public ValueWithOffsets()
+                : base("", 0)
             {
             }
 
             public ValueWithOffsets(string content, List<LineOffset> offsetMap)
-                : base(content, offsetMap, new List<string>)
+                : base(content, offsetMap, new List<string>())
             {
             }
 
-            public ValueWithOffsets(string sentenceContent, int lineNum) : base(sentenceContent, lineNum)
+            public ValueWithOffsets(string sentenceContent, int lineNum)
+                : base(sentenceContent, lineNum)
             {
             }
 
@@ -94,7 +96,8 @@ namespace redpen_core.parser
             {
             }
 
-            protected ValueWithOffsets(Sentence original) : base(original)
+            protected ValueWithOffsets(Sentence original)
+                : base(original)
             {
             }
 
