@@ -1,7 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using NLog;
-using redpen_core.util;
 using redpen_core.config;
+using redpen_core.util;
 
 namespace redpen_core.parser
 {
@@ -35,89 +36,115 @@ namespace redpen_core.parser
         //     *
         //     * @param fullStopList set of end of sentence characters
         //     */
-        //    SentenceExtractor(char...fullStopList)
-        //    {
-        //        this(fullStopList, extractRightQuotations(Configuration.Builder().build().getSymbolTable()));
-        //    }
+        private SentenceExtractor(char[] fullStopList)
+            : this(fullStopList, extractRightQuotations(Configuration.Builder().build().getSymbolTable()))
+        {
+        }
 
         //    /**
         //     * Constructor.
         //     *
         //     * @param symbolTable symbolTable
         //     */
-        //    public SentenceExtractor(SymbolTable symbolTable)
-        //    {
-        //        this(extractPeriods(symbolTable), extractRightQuotations(symbolTable));
-        //        this.symbolTable = symbolTable;
-        //    }
+        public SentenceExtractor(SymbolTable symbolTable)
+            : this(extractPeriods(symbolTable), extractRightQuotations(symbolTable))
+        {
+            this.symbolTable = symbolTable;
+        }
 
         //    /**
         //     * Constructor.
         //     */
-        //    SentenceExtractor(char[] fullStopList, char[] rightQuotationList)
-        //    {
-        //        this.fullStopList = fullStopList;
-        //        this.rightQuotationList = rightQuotationList;
-        //        this.fullStopPattern = this.constructEndSentencePattern();
-        //        this.endOfSentenceDetector = new EndOfSentenceDetector(
-        //                this.fullStopPattern, WHITE_WORDS);
-        //    }
+        private SentenceExtractor(char[] fullStopList, char[] rightQuotationList)
+        {
+            this.fullStopList = fullStopList;
+            this.rightQuotationList = rightQuotationList;
 
-        //    private static char[] extractPeriods(SymbolTable symbolTable)
-        //    {
-        //        char[] periods = new char[]{
-        //            symbolTable.GetValueOrFallbackToDefault(FULL_STOP),
-        //            symbolTable.GetValueOrFallbackToDefault(QUESTION_MARK),
-        //            symbolTable.GetValueOrFallbackToDefault(EXCLAMATION_MARK)
-        //    };
-        //        LOG.info("\"" + Arrays.toString(periods) + "\" are added as a end of sentence characters");
-        //        return periods;
-        //    }
+            this.fullStopPattern = this.constructEndSentencePattern();
+            this.endOfSentenceDetector = new EndOfSentenceDetector(this.fullStopPattern, WHITE_WORDS);
+        }
 
-        //    private static char[] extractRightQuotations(SymbolTable symbolTable)
-        //    {
-        //        char[] rightQuotations = new char[]{
-        //            symbolTable.GetValueOrFallbackToDefault(RIGHT_SINGLE_QUOTATION_MARK),
-        //            symbolTable.GetValueOrFallbackToDefault(RIGHT_DOUBLE_QUOTATION_MARK)
-        //    };
-        //        LOG.info("\"" + Arrays.toString(rightQuotations) + "\" are added as a right quotation characters");
-        //        return rightQuotations;
-        //    }
+        private static char[] extractPeriods(SymbolTable symbolTable)
+        {
+            char[] periods = new char[]{
+                symbolTable.GetValueOrFallbackToDefault(SymbolType.FULL_STOP),
+                symbolTable.GetValueOrFallbackToDefault(SymbolType.QUESTION_MARK),
+                symbolTable.GetValueOrFallbackToDefault(SymbolType.EXCLAMATION_MARK)
+            };
+            LOG.Info("\"" + periods.ToString() + "\" are added as a end of sentence characters");
+            return periods;
+        }
 
-        //    private void generateSimplePattern(char[] endCharacters, StringBuilder patternString)
-        //    {
-        //        patternString.append("[");
-        //        for (char endChar : endCharacters)
-        //        {
-        //            patternString.append(handleSpecialCharacter(endChar));
-        //        }
-        //        patternString.append("]");
-        //    }
+        /// <summary>
+        /// extracts the right quotations.
+        /// </summary>
+        /// <param name="symbolTable">The symbol table.</param>
+        /// <returns>An array of char.</returns>
+        private static char[] extractRightQuotations(SymbolTable symbolTable)
+        {
+            char[] rightQuotations = new char[]{
+                    symbolTable.GetValueOrFallbackToDefault(SymbolType.RIGHT_SINGLE_QUOTATION_MARK),
+                    symbolTable.GetValueOrFallbackToDefault(SymbolType.RIGHT_DOUBLE_QUOTATION_MARK)
+            };
+            LOG.Info("\"" + rightQuotations.ToString() + "\" are added as a right quotation characters");
+            return rightQuotations;
+        }
 
-        //    private static String handleSpecialCharacter(char endChar)
-        //    {
-        //        if (endChar == '.')
-        //        {
-        //            return "\\.";
-        //        }
-        //        else if (endChar == '?')
-        //        {
-        //            return "\\?";
-        //        }
-        //        else if (endChar == '!')
-        //        {
-        //            return "\\!";
-        //        }
-        //        else
-        //        {
-        //            return String.valueOf(endChar);
-        //        }
-        //    }
+        private static string handleSpecialCharacter(char endChar)
+        {
+            if (endChar == '.')
+            {
+                return "\\.";
+            }
+            else if (endChar == '?')
+            {
+                return "\\?";
+            }
+            else if (endChar == '!')
+            {
+                return "\\!";
+            }
+            else
+            {
+                return endChar.ToString();
+            }
+        }
 
-        //    private static <E> List<E> generateUmList(E...args)
-        //    {
-        //        return new ArrayList<>(Arrays.asList(args));
-        //    }
+        private void generateSimplePattern(char[] endCharacters, StringBuilder patternString)
+        {
+            patternString.Append("[");
+            foreach (char endChar in endCharacters)
+            {
+                patternString.Append(handleSpecialCharacter(endChar));
+            }
+            patternString.Append("]");
+        }
+
+        //    /**
+        //     * Given a set of sentence end characters, construct the
+        //     * regex to detect end sentences.
+        //     * This method is protected permission just for testing.
+        //     *
+        //     * @return regex periodPattern to detect end sentences
+        //     */
+        private Regex constructEndSentencePattern()
+        {
+            if (this.fullStopList == null || this.fullStopList.Length == 0)
+            {
+                throw new ArgumentNullException("No end character is specified");
+            }
+
+            StringBuilder patternString = new StringBuilder();
+            generateSimplePattern(this.fullStopList, patternString);
+            patternString.Append("[");
+            foreach (char rightQuotation in rightQuotationList)
+            {
+                patternString.Append(rightQuotation);
+            }
+            patternString.Append("]?");
+
+            return new Regex(patternString.ToString()); ;
+        }
 
         //    /**
         //     * Get Sentence lists.
@@ -126,18 +153,19 @@ namespace redpen_core.parser
         //     * @param sentencePositions List of extracted sentences
         //     * @return remaining line
         //     */
-        //    public int extract(String line, List<Pair<Integer, Integer>> sentencePositions)
-        //    {
-        //        int startPosition = 0;
-        //        int periodPosition = endOfSentenceDetector.getSentenceEndPosition(line, 0);
-        //        while (periodPosition >= 0)
-        //        {
-        //            sentencePositions.add(new Pair<>(startPosition, periodPosition + 1));
-        //            startPosition = periodPosition + 1;
-        //            periodPosition = endOfSentenceDetector.getSentenceEndPosition(line, startPosition);
-        //        }
-        //        return startPosition;
-        //    }
+        public int extract(string line, List<(int first, int second)> sentencePositions)
+        {
+            int startPosition = 0;
+            int periodPosition = endOfSentenceDetector.GetSentenceEndPosition(line, 0);
+
+            while (periodPosition >= 0)
+            {
+                sentencePositions.Add(new(startPosition, periodPosition + 1));
+                startPosition = periodPosition + 1;
+                periodPosition = endOfSentenceDetector.GetSentenceEndPosition(line, startPosition);
+            }
+            return startPosition;
+        }
 
         //    /**
         //     * Given string, return sentence end position.
@@ -147,7 +175,7 @@ namespace redpen_core.parser
         //     */
         public int GetSentenceEndPosition(string str)
         {
-            return endOfSentenceDetector.GetSentenceEndPosition(str, 0);
+            return this.endOfSentenceDetector.GetSentenceEndPosition(str, 0);
         }
 
         //    /**
@@ -160,33 +188,12 @@ namespace redpen_core.parser
         //     *
         //     * @return a string used to join lines that have been 'broken'
         //     */
-        //public string getBrokenLineSeparator()
-        //{
-        //    return (symbolTable != null) && (symbolTable.getLang().equals("ja")) ? "" : " ";
-        //}
-
-        //    /**
-        //     * Given a set of sentence end characters, construct the
-        //     * regex to detect end sentences.
-        //     * This method is protected permission just for testing.
-        //     *
-        //     * @return regex periodPattern to detect end sentences
-        //     */
-        //    Pattern constructEndSentencePattern()
-        //    {
-        //        if (this.fullStopList == null || this.fullStopList.length == 0)
-        //        {
-        //            throw new IllegalArgumentException("No end character is specified");
-        //        }
-        //        StringBuilder patternString = new StringBuilder();
-        //        generateSimplePattern(this.fullStopList, patternString);
-        //        patternString.append("[");
-        //        for (char rightQuotation : rightQuotationList)
-        //        {
-        //            patternString.append(rightQuotation);
-        //        }
-        //        patternString.append("]?");
-        //        return Pattern.compile(patternString.toString());
-        //    }
+        public string getBrokenLineSeparator()
+        {
+            // 日本語設定のみのハードコーディングだが、日本語は空文字列で
+            // それ以外の言語は半角空白をBlokenLineSeparatorとする、という2択で良いのか疑問が残る。
+            // TODO: 多言語対応の際には、このメソッドの実装を見直す。
+            return (symbolTable != null) && (symbolTable.Lang == "ja") ? "" : " ";
+        }
     }
 }
