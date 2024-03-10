@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NLog.LayoutRenderers;
-using redpen_core.model;
+﻿using redpen_core.model;
 using redpen_core.tokenizer;
 
 namespace redpen_core.parser
