@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace redpen_core.tokenizer
 {
     /// <summary>
-    /// The red pen tokenizer.
+    /// The red pen Tokenizer.
     /// </summary>
     public interface IRedPenTokenizer
     {

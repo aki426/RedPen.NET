@@ -44,7 +44,7 @@ namespace redpen_core.parser
         //    /**
         //     * Constructor.
         //     *
-        //     * @param symbolTable symbolTable
+        //     * @param SymbolTable SymbolTable
         //     */
         public SentenceExtractor(SymbolTable symbolTable)
             : this(extractPeriods(symbolTable), extractRightQuotations(symbolTable))

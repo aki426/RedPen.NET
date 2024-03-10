@@ -3,7 +3,7 @@
 namespace redpen_core.tokenizer
 {
     /// <summary>
-    /// The white space tokenizer.
+    /// The white space Tokenizer.
     /// MEMO: 半角空白をデリミタとする英語系の言語のためのトークナイザと思われる。
     /// </summary>
     public class WhiteSpaceTokenizer : IRedPenTokenizer

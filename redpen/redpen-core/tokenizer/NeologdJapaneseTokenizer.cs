@@ -12,7 +12,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace redpen_core.tokenizer
 {
     /// <summary>
-    /// The neologd japanese tokenizer.
+    /// The neologd japanese Tokenizer.
     /// </summary>
     public class NeologdJapaneseTokenizer : IRedPenTokenizer
     {

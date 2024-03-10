@@ -12,18 +12,18 @@ namespace redpen_core.parser
 
         Document Parse(FileInfo file, SentenceExtractor sentenceExtractor, IRedPenTokenizer tokenizer);
 
-        //Document Parse(string content, SentenceExtractor sentenceExtractor, RedPenTokenizer tokenizer);
+        //Document Parse(string content, SentenceExtractor sentenceExtractor, RedPenTokenizer Tokenizer);
 
         //        /**
         //    * Given input stream, return Document instance from a stream.
         //    *
         //    * @param is                input stream containing input content
         //    * @param sentenceExtractor SentenceExtractor object
-        //    * @param tokenizer         tokenizer
+        //    * @param Tokenizer         Tokenizer
         //    * @return a generated file content
         //    * @throws cc.redpen.RedPenException if Parser failed to parse input.
         //    */
-        //        Document parse(InputStream is, SentenceExtractor sentenceExtractor, RedPenTokenizer tokenizer)
+        //        Document parse(InputStream is, SentenceExtractor sentenceExtractor, RedPenTokenizer Tokenizer)
         //        throws RedPenException;
 
         //        /**
@@ -31,11 +31,11 @@ namespace redpen_core.parser
         //         *
         //         * @param content           input content
         //         * @param sentenceExtractor SentenceExtractor object
-        //         * @param tokenizer         tokenizer
+        //         * @param Tokenizer         Tokenizer
         //         * @return a generated file content
         //         * @throws cc.redpen.RedPenException if Parser failed to parse input.
         //         */
-        //        Document parse(String content, SentenceExtractor sentenceExtractor, RedPenTokenizer tokenizer)
+        //        Document parse(String content, SentenceExtractor sentenceExtractor, RedPenTokenizer Tokenizer)
         //        throws RedPenException;
 
         //        /**
@@ -43,11 +43,11 @@ namespace redpen_core.parser
         //         *
         //         * @param file              input file
         //         * @param sentenceExtractor SentenceExtractor object
-        //         * @param tokenizer         tokenizer
+        //         * @param Tokenizer         Tokenizer
         //         * @return a generated file content
         //         * @throws cc.redpen.RedPenException if Parser failed to parse input.
         //         */
-        //        Document parse(File file, SentenceExtractor sentenceExtractor, RedPenTokenizer tokenizer)
+        //        Document parse(File file, SentenceExtractor sentenceExtractor, RedPenTokenizer Tokenizer)
         //        throws RedPenException;
 
         //        DocumentParser PLAIN = new PlainTextParser();
