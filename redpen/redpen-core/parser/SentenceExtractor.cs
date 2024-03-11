@@ -37,7 +37,7 @@ namespace redpen_core.parser
         //     * @param fullStopList set of end of sentence characters
         //     */
         private SentenceExtractor(char[] fullStopList)
-            : this(fullStopList, extractRightQuotations(Configuration.Builder().build().getSymbolTable()))
+            : this(fullStopList, extractRightQuotations(Configuration.Builder().Build().getSymbolTable()))
         {
         }
 

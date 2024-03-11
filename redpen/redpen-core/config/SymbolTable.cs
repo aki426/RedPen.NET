@@ -2,7 +2,7 @@
 
 namespace redpen_core.config
 {
-    public partial class SymbolTable : ICloneable
+    public partial class SymbolTable : ICloneable, IEquatable<SymbolTable>
     {
         private static readonly long serialVersionUID = 1612920745151501631L;
         private static Logger LOG = LogManager.GetCurrentClassLogger();
@@ -181,9 +181,24 @@ namespace redpen_core.config
         public object Clone()
         {
             SymbolTable clone = (SymbolTable)this.MemberwiseClone();
+            // MEMO: string型は値型のため、MemberwiseCloneでDeepCopyされるはず。
+            // TODO: MemberwiseCloneと値型、参照型の挙動について調査する。
+            //clone.Lang = string.Copy(Lang);
+            //clone.Variant = string.Copy(Variant);
             clone.symbolDictionary = new Dictionary<SymbolType, Symbol>(symbolDictionary);
             clone.valueDictionary = new Dictionary<char, Symbol>(valueDictionary);
             return clone;
+        }
+
+        public bool Equals(SymbolTable? other)
+        {
+            if (this == other) return true;
+            if (other == null) return false;
+            //if (other is not SymbolTable) return false;
+
+            return Lang == other.Lang &&
+                   Variant == other.Variant &&
+                   symbolDictionary.SequenceEqual(other.symbolDictionary);
         }
     }
 }

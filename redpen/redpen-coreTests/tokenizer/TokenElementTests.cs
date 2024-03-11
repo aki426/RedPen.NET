@@ -31,7 +31,7 @@ namespace redpen_core.tokenizer.Tests
         {
             TokenElement actual = new TokenElement("word", new List<string> { "tag" }, 0, "reading");
 
-            // build error.
+            // Build error.
             //actual.Invoking(i => i.Surface = "new Surface")
             //    .Should().Throw<Exception>()
             //    .WithMessage("TokenElement is immutable at Surface");

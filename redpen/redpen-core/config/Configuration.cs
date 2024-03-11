@@ -1,9 +1,13 @@
-﻿using redpen_core.tokenizer;
+﻿using NLog;
+using redpen_core.tokenizer;
 
 namespace redpen_core.config
 {
-    public class Configuration : ICloneable
+    [ToString]
+    public class Configuration : ICloneable, IEquatable<Configuration>
     {
+        private static Logger log = LogManager.GetCurrentClassLogger();
+
         public SymbolTable SymbolTable { get; init; }
 
         public List<ValidatorConfiguration> ValidatorConfigs { get; init; } = new List<ValidatorConfiguration>();
@@ -74,13 +78,12 @@ namespace redpen_core.config
             return Lang + (string.IsNullOrEmpty(Variant) ? string.Empty : "." + Variant);
         }
 
-        //        /**
-        //         * Finds file relative to either working directory, base directory or $REDPEN_HOME
-        //         * @param relativePath of file to find
-        //         * @return resolved file if it exists
-        //         * @throws RedPenException if file doesn't exist in either place
-        //         */
-
+        // /**
+        //  * Finds file relative to either working directory, base directory or $REDPEN_HOME
+        //  * @param relativePath of file to find
+        //  * @return resolved file if it exists
+        //  * @throws RedPenException if file doesn't exist in either place
+        //  */
         public FileInfo FindFile(string relativePath)
         {
             FileInfo file;
@@ -93,181 +96,98 @@ namespace redpen_core.config
 
             if (ConfBaseDir != null)
             {
-                file = new FileInfo(Path.Combine(ConfBaseDir.FullName, relativePath));
-                if (secureExists(file, ConfBaseDir)) { return file; }
+                file = new FileInfo(Path.Combine(this.ConfBaseDir.FullName, relativePath));
+                if (secureExists(file, this.ConfBaseDir)) { return file; }
             }
 
-            file = new File(home, relativePath);
-            if (secureExists(file, home)) return file;
+            file = new FileInfo(Path.Combine(this.Home.FullName, relativePath));
+            if (secureExists(file, this.Home)) { return file; }
 
-            throw new RedPenException(relativePath + " is not under " +
-              (!isSecure ? "working directory (" + new File("").getAbsoluteFile() + "), " : "") +
-              (base != null ? "base (" + base + "), " : "") +
-              "$REDPEN_HOME (" + home.getAbsolutePath() + ").");
+            // MEMO: https://docs.oracle.com/javase/jp/6/api/java/io/File.html
+            // FileInfo("").getAbsoluteFile()の戻り値は、カレントディレクトリを表すパスになるが、OSにより挙動が異なる。
+            // C#では近いものとして、現在の作業ディレクトリを反すSystem.Environment.CurrentDirectoryを採用した。
+            // TODO: 実際の挙動としてどのようなものが適当か要検討。
+            string currentDirectoryStr = IsSecure ? "" : $"working directory ({System.Environment.CurrentDirectory}), ";
+            string baseDirStr = this.ConfBaseDir == null ? "" : $"base ({this.ConfBaseDir}), ";
+            // いずれのケースでもファイルが見つからなかったので末尾で例外をスロー。
+            throw new RedPenException(
+                $"{relativePath} is not under {currentDirectoryStr}{baseDirStr}$REDPEN_HOME ({this.Home.FullName}).");
         }
 
         private bool secureExists(FileInfo file, FileInfo confBaseDir)
         {
             try
             {
-                return file.Exists && (!IsSecure || file.getCanonicalPath().startsWith(base.getCanonicalPath()));
+                return file.Exists && (!IsSecure || file.FullName.StartsWith(confBaseDir.FullName));
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                return false;
+                log.Error(ex); // MEMO: JAVA版からlogの追加。
+                return false; // TODO: 例外握りつぶしてfalseで良いのか要確認。
             }
         }
 
-        //    public boolean isSecure()
-        //    {
-        //        return isSecure;
-        //    }
+        public object Clone()
+        {
+            return DeepCopy();
+        }
 
         //    /**
         //     * @return a deep copy of this configuration
         //     */
 
-        //    @Override public Configuration clone()
-        //    {
-        //        Configuration clone;
-        //        try
-        //        {
-        //            clone = (Configuration)super.clone();
-        //            clone.validatorConfigs = validatorConfigs.stream().map(ValidatorConfiguration::clone).collect(toList());
-        //            clone.symbolTable = symbolTable.clone();
-        //            return clone;
-        //        }
-        //        catch (CloneNotSupportedException e)
-        //        {
-        //            throw new RuntimeException(e);
-        //        }
-        //    }
+        public Configuration DeepCopy()
+        {
+            try
+            {
+                return new Configuration(
+                    new FileInfo(this.ConfBaseDir.FullName),
+                    this.SymbolTable.Clone() as SymbolTable,
+                    this.ValidatorConfigs.Select(v => v.Clone()).ToList(),
+                    this.Lang,
+                    this.IsSecure);
+            }
+            catch (Exception e)
+            {
+                log.Error(e); // MEMO: JAVA版からlogの追加。
+                throw;
+            }
+        }
 
-        //    private void readObject(ObjectInputStream in) private throws IOException, ClassNotFoundException {
+        // MEMO: JAVA版では以下のメソッドが実装されていたが、使用実績が無いためC#版では実装しない。
+        //private void readObject(ObjectInputStream in) private throws IOException, ClassNotFoundException {
         //    in.private defaultReadObject();
-
         //    private InitTokenizer();
         //}
 
-        //@Override public boolean equals(Object o)
-        //{
-        //    if (this == o) return true;
-        //    if (!(o instanceof Configuration)) return false;
-        //    Configuration that = (Configuration)o;
-        //    return Objects.equals(lang, that.lang) &&
-        //      Objects.equals(symbolTable, that.symbolTable) &&
-        //      Objects.equals(validatorConfigs, that.validatorConfigs);
-        //}
+        public bool Equals(Configuration? other)
+        {
+            if (this == other) return true;
+            if (other == null) return false;
+            if (other is not Configuration) return false;
 
-        //@Override public int hashCode()
-        //{
-        //    return getKey().hashCode();
-        //}
+            return this.Lang == other.Lang &&
+                   this.SymbolTable.Equals(other.SymbolTable) &&
+                   this.ValidatorConfigs.SequenceEqual(other.ValidatorConfigs);
+        }
 
-        //@Override public String toString()
-        //{
-        //    return "Configuration{" +
-        //      "lang='" + lang + '\'' +
-        //      ", Tokenizer=" + Tokenizer +
-        //      ", validatorConfigs=" + validatorConfigs +
-        //      ", symbolTable=" + symbolTable +
-        //    '}';
-        //}
+        public int GetHashCode()
+        {
+            return HashCode.Combine(Lang, Variant, SymbolTable, ValidatorConfigs);
+        }
 
-        //public static ConfigurationBuilder builder()
-        //{
-        //    return new ConfigurationBuilder();
-        //}
+        public static ConfigurationBuilder Builder()
+        {
+            return new ConfigurationBuilder();
+        }
 
-        //public static ConfigurationBuilder builder(String key)
-        //{
-        //    int dotPos = key.indexOf('.');
-        //    ConfigurationBuilder builder = new ConfigurationBuilder().setLanguage(dotPos > 0 ? key.substring(0, dotPos) : key);
-        //    if (dotPos > 0) builder.setVariant(key.substring(dotPos + 1));
-        //    return builder;
-        //}
-
-        ///**
-        // * Builder class of Configuration.
-        // */
-
-        //public static class ConfigurationBuilder
-        //{
-        //    private final List<ValidatorConfiguration> validatorConfigs = new ArrayList<>();
-
-        //    private final List<Symbol> customSymbols = new ArrayList<>();
-
-        //    private boolean built = false;
-
-        //    private String lang = "en";
-        //    private Optional<String> variant = Optional.empty();
-        //    private File base;
-        //        private boolean isSecure;
-
-        //    private void checkBuilt()
-        //    {
-        //        if (built) throw new IllegalStateException("Configuration already built.");
-        //    }
-
-        //    public ConfigurationBuilder setLanguage(String lang)
-        //    {
-        //        checkBuilt();
-        //        this.lang = lang;
-        //        return this;
-        //    }
-
-        //    public ConfigurationBuilder setBaseDir(File base)
-        //    {
-        //        checkBuilt();
-        //        this.base = base;
-        //        return this;
-        //    }
-
-        //    public ConfigurationBuilder addSymbol(Symbol symbol)
-        //    {
-        //        checkBuilt();
-        //        customSymbols.add(symbol);
-        //        return this;
-        //    }
-
-        //    public ConfigurationBuilder addValidatorConfig(ValidatorConfiguration config)
-        //    {
-        //        checkBuilt();
-        //        validatorConfigs.add(config);
-        //        return this;
-        //    }
-
-        //    public ConfigurationBuilder addAvailableValidatorConfigs()
-        //    {
-        //        checkBuilt();
-        //        validatorConfigs.addAll(ValidatorFactory.getConfigurations(lang));
-        //        return this;
-        //    }
-
-        //    public ConfigurationBuilder setVariant(String variant)
-        //    {
-        //        checkBuilt();
-        //        this.variant = Optional.of(variant);
-        //        return this;
-        //    }
-
-        //    /**
-        //     * Enables isSecure mode suitable for servers, where validator properties can come from end-users.
-        //     */
-
-        //    public ConfigurationBuilder isSecure()
-        //    {
-        //        checkBuilt();
-        //        isSecure = true;
-        //        return this;
-        //    }
-
-        //    public Configuration build()
-        //    {
-        //        checkBuilt();
-        //        built = true;
-        //        return new Configuration(base, new symbolTable(lang, variant, customSymbols), this.validatorConfigs, this.lang, this.isSecure);
-        //    }
-        //}
+        public static ConfigurationBuilder Builder(string key)
+        {
+            // 文字列の中から最初のピリオドの位置を取得する。
+            int dotPos = key.IndexOf('.');
+            ConfigurationBuilder builder = new ConfigurationBuilder().SetLang(dotPos > 0 ? key.Substring(0, dotPos) : key);
+            if (dotPos > 0) { builder.SetVariant(key.Substring(dotPos + 1)); }
+            return builder;
+        }
     }
 }
