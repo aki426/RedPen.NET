@@ -91,7 +91,7 @@ namespace RedPen.Net.Core.Validator
         //        boolean deprecated = e.getValue().getClass().getAnnotation(Deprecated.internal class) == null ? false : true;
 
         //return (supportedLanguages.isEmpty() || supportedLanguages.contains(lang)) && !deprecated;
-        //        }).map(e-> new ValidatorConfiguration(e.getKey(), toStrings(e.getValue().getProperties()))).collect(toList());
+        //        }).map(e-> new ValidatorConfiguration(e.GetKey(), toStrings(e.getValue().getProperties()))).collect(toList());
         //Map<String, String> emptyMap = new LinkedHashMap<>();
         //for (String jsValidator : jsValidators.keySet())
         //{
@@ -117,9 +117,9 @@ namespace RedPen.Net.Core.Validator
         //    Map<String, String> result = new LinkedHashMap<>();
         //    for (Map.Entry<String, Object> e : properties.entrySet()) {
         //    if (e.getValue() instanceof Iterable)
-        //                result.put(e.getKey(), join((Iterable)e.getValue(), ','));
+        //                result.put(e.GetKey(), join((Iterable)e.getValue(), ','));
         //            else
-        //        result.put(e.getKey(), e.getValue().toString());
+        //        result.put(e.GetKey(), e.getValue().toString());
         //}
         //return result;
         //    }

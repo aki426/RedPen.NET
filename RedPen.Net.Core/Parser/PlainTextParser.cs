@@ -5,8 +5,19 @@ using System.IO;
 
 namespace RedPen.Net.Core.Parser
 {
+    /// <summary>
+    /// The plain text parser.
+    /// </summary>
     public sealed class PlainTextParser : BaseDocumentParser
     {
+        /// <summary>
+        /// Parses the.
+        /// </summary>
+        /// <param name="inputStream">The input stream.</param>
+        /// <param name="fileName">The file name.</param>
+        /// <param name="sentenceExtractor">The sentence extractor.</param>
+        /// <param name="tokenizer">The tokenizer.</param>
+        /// <returns>A Document.</returns>
         public override Document Parse(
             Stream inputStream,
             string? fileName,
@@ -123,6 +134,13 @@ namespace RedPen.Net.Core.Parser
         //    return new LineOffset(lineNum, offset);
         //}
 
+        /// <summary>
+        /// Extracts the sentences.
+        /// </summary>
+        /// <param name="lineNum">The line num.</param>
+        /// <param name="paragraphText">The paragraph text.</param>
+        /// <param name="sentenceExtractor">The sentence extractor.</param>
+        /// <param name="builder">The builder.</param>
         private void ExtractSentences(
             int lineNum,
             string paragraphText,

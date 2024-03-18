@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace RedPen.Net.Core.Validator
 {
+    /// <summary>
+    /// The validator.
+    /// </summary>
     public abstract class Validator
     {
         /// <summary>Nlog</summary>

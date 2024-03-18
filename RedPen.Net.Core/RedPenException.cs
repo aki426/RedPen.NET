@@ -34,7 +34,7 @@ namespace RedPen.Net.Core
         /// Initializes a new instance of the <see cref="RedPenException"/> class.
         /// </summary>
         /// <param name="innerException">The inner exception.</param>
-        public RedPenException(Exception? innerException) : base(innerException.Message, innerException)
+        public RedPenException(Exception? innerException) : base(innerException?.Message, innerException)
         {
             // MEMO: Exceptionをラップするだけの実装に意味があるのか不明だが、JAVA版に合わせて実装。
             // TODO: より適切な実装に変更する。

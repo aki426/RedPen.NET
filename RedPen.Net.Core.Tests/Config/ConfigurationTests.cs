@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RedPen.Net.Core.Config;
-using RedPen.Net.Core;
-using Xunit;
+using System.IO;
 using FluentAssertions;
+using RedPen.Net.Core.Config;
+using Xunit;
 
 namespace RedPen.Net.Core.Tests.Config
 {
+    /// <summary>
+    /// The configuration tests.
+    /// </summary>
     public class ConfigurationTests
     {
+        /// <summary>
+        /// 単純なValidatorConfigurationのビルドテスト。
+        /// </summary>
         [Fact]
         public void SentenceValidatorConfigurationBuildTest()
         {
@@ -31,72 +34,120 @@ namespace RedPen.Net.Core.Tests.Config
             configuration.ValidatorConfigs.Count.Should().Be(10);
         }
 
-        //        @Test
-        //    void testSentenceValidatorConfiguration() throws Exception
-        //        {
-        //    }
+        /// <summary>
+        /// 無効なValidatorConfigurationのビルドテスト。
+        /// </summary>
+        [Fact]
+        public void InvalidValidatorConfigurationTest()
+        {
+            // JAVA版では以下のコメントがあった。
+            // NOTE: not throw a exception even when adding a non exist validator.
+            // The errors occurs when creating the added non existing validator instance.
+            // しかしテスト内容は例外がスローされないことを確認しており、C＃版でも例外は発生しない。
 
-        //    @Test
-        //    void testInvalidValidatorConfiguration()
-        //    {
-        //        // NOTE: not throw a exception even when adding a non exist validator.
-        //        // The errors occurs when creating the added non existing validator instance.
-        //        try
-        //        {
-        //            Configuration.builder()
-        //                    .addValidatorConfig(new ValidatorConfiguration("ThereIsNoSuchValidator")).build();
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            fail("Exception not expected.");
-        //        }
-        //    }
+            Action act1 = () =>
+                Configuration.Builder().AddValidatorConfig(new ValidatorConfiguration("ThereIsNoSuchValidator"));
+            act1.Should().NotThrow();
 
-        //    @Test
-        //    void testSectionValidatorConfiguration() throws Exception
-        //    {
-        //        Configuration configuration = Configuration.builder().addValidatorConfig(new ValidatorConfiguration("SectionLength"))
-        //                .addValidatorConfig(new ValidatorConfiguration("MaxParagraphNumber"))
-        //                .addValidatorConfig(new ValidatorConfiguration("ParagraphStartWith")).build();
-        //    assertEquals(3, configuration.getValidatorConfigs().size());
-        //}
+            Action act2 = () =>
+                Configuration.Builder().AddValidatorConfig(new ValidatorConfiguration("ThereIsNoSuchValidator")).Build();
+            act2.Should().NotThrow();
+        }
 
-        //@Test
-        //    void testSymbolTableWithoutLanguageSetting() throws Exception {
-        //        Configuration configuration = Configuration.builder().build(); // NOTE: load "en" setting when lang is not specified
-        //assertEquals("en", configuration.getLang());
-        //assertNotNull(configuration.getLang());
-        //    }
+        /// <summary>
+        /// Sections the validator configuration test.
+        /// MEMO: Secton用のValidatorのテストだが、ValidatorConfigurationをnewして追加するだけなら
+        /// 何を追加してもエラーにならないのでテストの意味がない。
+        /// </summary>
+        [Fact]
+        public void SectionValidatorConfigurationTest()
+        {
+            Configuration configuration = Configuration.Builder()
+                .AddValidatorConfig(new ValidatorConfiguration("SectionLength"))
+                .AddValidatorConfig(new ValidatorConfiguration("MaxParagraphNumber"))
+                .AddValidatorConfig(new ValidatorConfiguration("ParagraphStartWith"))
+                .Build();
+            configuration.ValidatorConfigs.Count.Should().Be(3);
+        }
 
-        //    @Test
-        //    void keyIsLangAndType() throws Exception {
-        //        SymbolTable symbolTable = new SymbolTable("ja", Optional.of("hankaku"), emptyList());
-        //assertEquals("ja.hankaku", new Configuration(new File(""), symbolTable, emptyList(), "ja", false).getKey());
-        //    }
+        /// <summary>
+        /// Lang設定を何も与えなかった場合にenがデフォルトとして設定されることを確認するテスト。
+        /// </summary>
+        [Fact]
+        public void DefaultLangTest()
+        {
+            Configuration configuration = Configuration.Builder()
+                .Build(); // NOTE: load "en" setting when lang is not specified
+            configuration.Lang.Should().Be("en");
+            configuration.Lang.Should().NotBeNull();
+        }
 
-        //    @Test
-        //    void keyIsLangOnlyIfTypeIsMissing() throws Exception {
-        //        SymbolTable symbolTable = new SymbolTable("en", Optional.empty(), emptyList());
-        //assertEquals("en", new Configuration(new File(""), symbolTable, emptyList(), "en", false).getKey());
-        //    }
+        /// <summary>
+        /// UniqueKeyのテスト。
+        /// </summary>
+        [Fact]
+        public void UniqueKeyTest()
+        {
+            // MEMO: new FileInfo("")は例外スローするので暫定的に"C:\\redpen"を利用。
+            var confBase = new FileInfo("C:\\redpen");
+            Configuration configuration;
 
-        //    @Test
-        //    void keyIsLangOnlyForZenkaku() throws Exception {
-        //        SymbolTable symbolTable = new SymbolTable("ja", Optional.of("zenkaku"), emptyList());
-        //assertEquals("ja", new Configuration(new File(""), symbolTable, emptyList(), "ja", false).getKey());
-        //    }
+            // ja.hankaku
+            configuration = new Configuration(
+                confBase,
+                new SymbolTable("ja", "hankaku", new List<Symbol>()),
+                new List<ValidatorConfiguration>(),
+                "ja",
+                false);
+            configuration.GetKey().Should().Be("ja.hankaku");
 
-        //    @Test
-        //    void homeIsWorkingDirectoryByDefault() throws Exception {
-        //        System.clearProperty("REDPEN_HOME");
-        //assertEquals(new File(""), Configuration.builder().build().getHome());
-        //    }
+            // en
+            configuration = new Configuration(
+                confBase,
+                new SymbolTable("en", null, new List<Symbol>()),
+                new List<ValidatorConfiguration>(),
+                "en",
+                false);
+            configuration.GetKey().Should().Be("en");
 
-        //    @Test
-        //    void homeIsResolvedFromSystemPropertyOrEnvironment() throws Exception {
-        //        System.setProperty("REDPEN_HOME", "/foo");
-        //assertEquals(new File("/foo"), Configuration.builder().build().getHome());
-        //    }
+            // ja.zenkaku
+            configuration = new Configuration(
+                confBase,
+                new SymbolTable("ja", "zenkaku", new List<Symbol>()),
+                new List<ValidatorConfiguration>(),
+                "ja",
+                false);
+            configuration.GetKey().Should().Be("ja");
+        }
+
+        public void HomeIsWorkingDirectoryByDefaultTest()
+        {
+            // JAVAではJAVACのシステムプロパティをクリアするロジックが存在し、REDPEN_HOMEを削除することで
+            // 一時的にREDPEN_HOMEが存在しない場合のデフォルトフォルダパスを取得するテストを実現している。
+            //System.clearProperty("REDPEN_HOME");
+            //assertEquals(new File(""), Configuration.builder().build().getHome());
+
+            // TODO: C#でデフォルトフォルダパスを検証する方法を検討する。
+        }
+
+        [Fact]
+        public void HomeIsResolvedFromSystemPropertyOrEnvironment()
+        {
+            // JAVAではJAVACのシステムプロパティを上書きするロジックが存在し、REDPEN_HOMEを設定することで
+            // REDPEN_HOMEが存在する場合のデフォルトフォルダパスを取得するテストを実現している。
+            //System.setProperty("REDPEN_HOME", "/foo");
+            //assertEquals(new File("/foo"), Configuration.builder().build().getHome());
+
+            // 一方、C#にはシステムプロパティが無いので、システム環境変数をテストする。
+            Environment.GetEnvironmentVariable("REDPEN_HOME").Should().Be("C:\\redpen");
+            Environment.SetEnvironmentVariable("REDPEN_HOME", "C:\\foo");
+            Environment.GetEnvironmentVariable("REDPEN_HOME").Should().Be("C:\\foo");
+            // この環境変数の変更は一時的なもので、Windows OSの環境変数設定には影響しない。
+
+            Configuration.Builder().Build().Home.FullName.Should().Be("C:\\foo");
+
+            Environment.SetEnvironmentVariable("REDPEN_HOME", "C:\\redpen");
+        }
 
         //    @Test
         //    void findFileLooksInWorkingDirectoryFirst() throws Exception {

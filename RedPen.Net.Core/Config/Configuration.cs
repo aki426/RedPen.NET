@@ -115,7 +115,7 @@ namespace RedPen.Net.Core.Config
         /// TODO: UniqueKeyプロパティなどで公開することを検討する。
         /// </summary>
         /// <returns>unique key for this lang and variant combination</returns>
-        public string getKey()
+        public string GetKey()
         {
             if (Lang == "ja" && Variant == "zenkaku") { return "ja"; }
 
