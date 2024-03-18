@@ -5,6 +5,9 @@ using System.IO;
 
 namespace RedPen.Net.Core.Config
 {
+    /// <summary>
+    /// The configuration builder.
+    /// </summary>
     public class ConfigurationBuilder
     {
         private List<ValidatorConfiguration> validatorConfigs = new List<ValidatorConfiguration>();
@@ -12,9 +15,12 @@ namespace RedPen.Net.Core.Config
         private bool built = false;
         private string lang = "en";
         private string? variant = null;
-        private FileInfo baseDir;
+        private FileInfo? baseDir;
         private bool isSecure;
 
+        /// <summary>
+        /// Checks the built.
+        /// </summary>
         private void CheckBuilt()
         {
             if (built)
@@ -23,6 +29,11 @@ namespace RedPen.Net.Core.Config
             }
         }
 
+        /// <summary>
+        /// Sets the lang.
+        /// </summary>
+        /// <param name="lang">The lang.</param>
+        /// <returns>A ConfigurationBuilder.</returns>
         public ConfigurationBuilder SetLang(string lang)
         {
             CheckBuilt();
@@ -30,6 +41,11 @@ namespace RedPen.Net.Core.Config
             return this;
         }
 
+        /// <summary>
+        /// Sets the base dir.
+        /// </summary>
+        /// <param name="baseDir">The base dir.</param>
+        /// <returns>A ConfigurationBuilder.</returns>
         public ConfigurationBuilder SetBaseDir(FileInfo baseDir)
         {
             CheckBuilt();
@@ -37,6 +53,11 @@ namespace RedPen.Net.Core.Config
             return this;
         }
 
+        /// <summary>
+        /// Adds the symbol.
+        /// </summary>
+        /// <param name="symbol">The symbol.</param>
+        /// <returns>A ConfigurationBuilder.</returns>
         public ConfigurationBuilder AddSymbol(Symbol symbol)
         {
             CheckBuilt();
@@ -44,6 +65,11 @@ namespace RedPen.Net.Core.Config
             return this;
         }
 
+        /// <summary>
+        /// Adds the validator config.
+        /// </summary>
+        /// <param name="config">The config.</param>
+        /// <returns>A ConfigurationBuilder.</returns>
         public ConfigurationBuilder AddValidatorConfig(ValidatorConfiguration config)
         {
             CheckBuilt();
@@ -51,6 +77,10 @@ namespace RedPen.Net.Core.Config
             return this;
         }
 
+        /// <summary>
+        /// Adds the available validator configs.
+        /// </summary>
+        /// <returns>A ConfigurationBuilder.</returns>
         public ConfigurationBuilder AddAvailableValidatorConfigs()
         {
             CheckBuilt();
@@ -58,6 +88,11 @@ namespace RedPen.Net.Core.Config
             return this;
         }
 
+        /// <summary>
+        /// Sets the variant.
+        /// </summary>
+        /// <param name="variant">The variant.</param>
+        /// <returns>A ConfigurationBuilder.</returns>
         public ConfigurationBuilder SetVariant(string variant)
         {
             CheckBuilt();
@@ -76,6 +111,10 @@ namespace RedPen.Net.Core.Config
             return this;
         }
 
+        /// <summary>
+        /// Builds the.
+        /// </summary>
+        /// <returns>A Configuration.</returns>
         public Configuration Build()
         {
             CheckBuilt();

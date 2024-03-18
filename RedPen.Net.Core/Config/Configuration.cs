@@ -13,7 +13,7 @@ namespace RedPen.Net.Core.Config
     [ToString]
     public class Configuration : ICloneable, IEquatable<Configuration>
     {
-        private static Logger log = LogManager.GetCurrentClassLogger();
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>Gets the symbol table.</summary>
         public SymbolTable SymbolTable { get; init; }
@@ -82,14 +82,6 @@ namespace RedPen.Net.Core.Config
             this.Lang = lang;
             this.IsSecure = isSecure;
 
-            InitTokenizer();
-        }
-
-        /// <summary>
-        /// Inits the tokenizer.
-        /// </summary>
-        private void InitTokenizer()
-        {
             if (Lang == "ja")
             {
                 this.Tokenizer = new NeologdJapaneseTokenizer();
@@ -98,7 +90,24 @@ namespace RedPen.Net.Core.Config
             {
                 this.Tokenizer = new WhiteSpaceTokenizer();
             }
+
+            // InitTokenizer();
         }
+
+        ///// <summary>
+        ///// Inits the tokenizer.
+        ///// </summary>
+        //private void InitTokenizer()
+        //{
+        //    if (Lang == "ja")
+        //    {
+        //        this.Tokenizer = new NeologdJapaneseTokenizer();
+        //    }
+        //    else
+        //    {
+        //        this.Tokenizer = new WhiteSpaceTokenizer();
+        //    }
+        //}
 
         /// <summary>
         /// langとvariantの組み合わせに対する一意のキーを返す。
@@ -148,6 +157,12 @@ namespace RedPen.Net.Core.Config
                 $"{relativePath} is not under {currentDirectoryStr}{baseDirStr}$REDPEN_HOME ({this.Home.FullName}).");
         }
 
+        /// <summary>
+        /// ファイルの存在チェックをセキュアに行う関数。
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <param name="confBaseDir">The conf base dir.</param>
+        /// <returns>A bool.</returns>
         private bool secureExists(FileInfo file, FileInfo confBaseDir)
         {
             try
@@ -161,22 +176,26 @@ namespace RedPen.Net.Core.Config
             }
         }
 
+        /// <summary>
+        /// Clones the.
+        /// </summary>
+        /// <returns>An object.</returns>
         public object Clone()
         {
             return DeepCopy();
         }
 
-        //    /**
-        //     * @return a deep copy of this configuration
-        //     */
-
+        /// <summary>
+        /// a deep copy of this configuration
+        /// </summary>
+        /// <returns>A Configuration.</returns>
         public Configuration DeepCopy()
         {
             try
             {
                 return new Configuration(
                     new FileInfo(this.ConfBaseDir.FullName),
-                    this.SymbolTable.Clone() as SymbolTable,
+                    this.SymbolTable.DeepCopy(),
                     this.ValidatorConfigs.Select(v => v.Clone()).ToList(),
                     this.Lang,
                     this.IsSecure);
@@ -194,6 +213,11 @@ namespace RedPen.Net.Core.Config
         //    private InitTokenizer();
         //}
 
+        /// <summary>
+        /// Equals the.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>A bool.</returns>
         public bool Equals(Configuration? other)
         {
             if (this == other) return true;
@@ -205,16 +229,29 @@ namespace RedPen.Net.Core.Config
                    this.ValidatorConfigs.SequenceEqual(other.ValidatorConfigs);
         }
 
-        public int GetHashCode()
+        /// <summary>
+        /// Gets the hash code.
+        /// </summary>
+        /// <returns>An int.</returns>
+        public override int GetHashCode()
         {
             return HashCode.Combine(Lang, Variant, SymbolTable, ValidatorConfigs);
         }
 
+        /// <summary>
+        /// Builders the.
+        /// </summary>
+        /// <returns>A ConfigurationBuilder.</returns>
         public static ConfigurationBuilder Builder()
         {
             return new ConfigurationBuilder();
         }
 
+        /// <summary>
+        /// Builders the.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>A ConfigurationBuilder.</returns>
         public static ConfigurationBuilder Builder(string key)
         {
             // 文字列の中から最初のピリオドの位置を取得する。

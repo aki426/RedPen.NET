@@ -4,6 +4,9 @@ using System.IO;
 
 namespace RedPen.Net.Core.Parser
 {
+    /// <summary>
+    /// The preprocessing reader.
+    /// </summary>
     public class PreprocessingReader : IDisposable
     {
         // PreprocessingReaderがStreamを持つべきかStreamReaderを持つべきか、またBufferedStreamへの変換が必要か検討する。
@@ -13,9 +16,14 @@ namespace RedPen.Net.Core.Parser
         public HashSet<PreprocessorRule> PreprocessorRules { get; init; } = new HashSet<PreprocessorRule>();
 
         private int lineNumber = 0;
-        private PreprocessorRule lastRule = null;
-        private IDocumentParser parser = null;
+        private PreprocessorRule? lastRule = null;
+        private IDocumentParser? parser = null;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PreprocessingReader"/> class.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="parser">The parser.</param>
         public PreprocessingReader(Stream stream, IDocumentParser parser)
         {
             this.bufferedStream = new BufferedStream(stream);
@@ -23,12 +31,19 @@ namespace RedPen.Net.Core.Parser
         }
 
         // MEMO: JAVAのCloseはC#のDisposeに相当する
+        /// <summary>
+        /// Disposes the.
+        /// </summary>
         public void Dispose()
         {
             // MEMO: BufferedStream.DisposeはCloseを再呼び出ししている
             bufferedStream.Dispose();
         }
 
+        /// <summary>
+        /// Reads the line.
+        /// </summary>
+        /// <returns>A string? .</returns>
         public string? ReadLine()
         {
             // TODO: using句を使う実装を検討する。
@@ -88,6 +103,10 @@ namespace RedPen.Net.Core.Parser
             return line;
         }
 
+        /// <summary>
+        /// Adds the ascii doc attribute suppress rule.
+        /// </summary>
+        /// <param name="ruleString">The rule string.</param>
         private void AddAsciiDocAttributeSuppressRule(string ruleString)
         {
             PreprocessorRule rule = new PreprocessorRule(PreprocessorRule.RuleType.SUPPRESS, lineNumber);
@@ -109,11 +128,20 @@ namespace RedPen.Net.Core.Parser
             PreprocessorRules.Add(rule);
         }
 
+        /// <summary>
+        /// Adds the comment suppress rule.
+        /// </summary>
+        /// <param name="ruleString">The rule string.</param>
         private void AddCommentSuppressRule(string ruleString)
         {
             AddCommentSuppressRule(ruleString, 0);
         }
 
+        /// <summary>
+        /// Adds the comment suppress rule.
+        /// </summary>
+        /// <param name="ruleString">The rule string.</param>
+        /// <param name="gap">The gap.</param>
         private void AddCommentSuppressRule(string ruleString, int gap)
         {
             PreprocessorRule rule = new PreprocessorRule(PreprocessorRule.RuleType.SUPPRESS, lineNumber + gap);

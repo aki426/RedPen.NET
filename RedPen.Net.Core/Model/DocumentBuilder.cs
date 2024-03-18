@@ -11,19 +11,47 @@ namespace RedPen.Net.Core.Model
     // 実際問題としていろいろなフォーマットに対応するためにIRedPenTokenizerを実装したTokenizerを差し替えて
     // DocumentBuilder内で使用しているので、BuilderパターンというよりはStrategyパターンに近いように見える。
 
+    /// <summary>
+    /// The document builder.
+    /// </summary>
     public class DocumentBuilder
     {
+        /// <summary>
+        /// Gets or sets the tokenizer.
+        /// </summary>
         public IRedPenTokenizer Tokenizer { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether built.
+        /// </summary>
         public bool Built { get; set; } = false;
+
+        /// <summary>
+        /// Gets the sections.
+        /// </summary>
         public List<Section> Sections { get; init; }
 
+        /// <summary>
+        /// Gets or sets the file name.
+        /// </summary>
         public string? FileName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the preprocessor rules.
+        /// </summary>
         public HashSet<PreprocessorRule> PreprocessorRules { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentBuilder"/> class.
+        /// </summary>
         public DocumentBuilder() : this(new WhiteSpaceTokenizer())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentBuilder"/> class.
+        /// </summary>
+        /// <param name="tokenizer">The tokenizer.</param>
         public DocumentBuilder(IRedPenTokenizer tokenizer)
         {
             Sections = new List<Section>();
@@ -31,6 +59,9 @@ namespace RedPen.Net.Core.Model
             Tokenizer = tokenizer;
         }
 
+        /// <summary>
+        /// Ensures the not built.
+        /// </summary>
         private void EnsureNotBuilt()
         {
             if (this.Built)
@@ -39,18 +70,21 @@ namespace RedPen.Net.Core.Model
             }
         }
 
+        /// <summary>
+        /// Builds the.
+        /// </summary>
+        /// <returns>A Document.</returns>
         public Document Build()
         {
             this.Built = true;
             return new Document(Sections, FileName, PreprocessorRules);
         }
 
-        //    /**
-        //     * Add a section.
-        //     *
-        //     * @param section a section in file content
-        //     * @return DocumentBuilder itself
-        //     */
+        /// <summary>
+        /// Add a section.
+        /// </summary>
+        /// <param name="section">a section in file content</param>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AppendSection(Section section)
         {
             // Buildフラグの検証。不正の場合は例外をスローする。
@@ -66,6 +100,10 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
+        /// <summary>
+        /// Adds the paragraph.
+        /// </summary>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AddParagraph()
         {
             EnsureNotBuilt();
@@ -83,12 +121,11 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
-        //    /**
-        //     * Add a sentence.
-        //     *
-        //     * @param sentence sentence
-        //     * @return DocumentBuilder itself
-        //     */
+        /// <summary>
+        /// Adds the sentence.
+        /// </summary>
+        /// <param name="sentence">The sentence.</param>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AddSentence(Sentence sentence)
         {
             EnsureNotBuilt();
@@ -118,11 +155,10 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
-        //    /**
-        //     * Add a new list block.
-        //     *
-        //     * @return Builder itself
-        //     */
+        /// <summary>
+        /// Adds the list block.
+        /// </summary>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AddListBlock()
         {
             EnsureNotBuilt();
@@ -139,13 +175,12 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
-        //    /**
-        //     * Add list element to the last list block.
-        //     *
-        //     * @param level    indentation level
-        //     * @param contents content of list element
-        //     * @return Builder
-        //     */
+        /// <summary>
+        /// Adds the list element.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="contents">The contents.</param>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AddListElement(int level, List<Sentence> contents)
         {
             EnsureNotBuilt();
@@ -163,14 +198,12 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
-        //    /**
-        //     * Add list element to the last list block.
-        //     *
-        //     * @param level indentation level
-        //     * @param str   content of list element
-        //     * @return Builder
-        //     * NOTE: parameter str is not split into more than one Sentence object.
-        //     */
+        /// <summary>
+        /// Adds the list element.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="str">The str.</param>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AddListElement(int level, string str)
         {
             EnsureNotBuilt();
@@ -181,13 +214,12 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
-        //    /**
-        //     * Add a section to the document.
-        //     *
-        //     * @param level  section level
-        //     * @param header header contents
-        //     * @return Builder
-        //     */
+        /// <summary>
+        /// Adds the section.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="header">The header.</param>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AddSection(int level, List<Sentence> header)
         {
             EnsureNotBuilt();
@@ -195,13 +227,11 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
-        //    /**
-        //     * Add section header content to the last section.
-        //     *
-        //     * @param header header content
-        //     * @return Builder
-        //     * NOTE: parameter header is not split into more than one Sentence object.
-        //     */
+        /// <summary>
+        /// Adds the section header.
+        /// </summary>
+        /// <param name="header">The header.</param>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AddSectionHeader(string header)
         {
             EnsureNotBuilt();
@@ -217,12 +247,11 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
-        //    /**
-        //     * Add a section without header content.
-        //     *
-        //     * @param level section level
-        //     * @return Builder
-        //     */
+        /// <summary>
+        /// Adds the section.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AddSection(int level)
         {
             EnsureNotBuilt();
@@ -230,13 +259,12 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
-        //    /**
-        //     * Add sentence to document.
-        //     *
-        //     * @param content    sentence content
-        //     * @param lineNumber line number
-        //     * @return Builder
-        //     */
+        /// <summary>
+        /// Adds the sentence.
+        /// </summary>
+        /// <param name="content">The content.</param>
+        /// <param name="lineNumber">The line number.</param>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AddSentence(string content, int lineNumber)
         {
             EnsureNotBuilt();
@@ -244,12 +272,11 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
-        //    /**
-        //     * Set file name.
-        //     *
-        //     * @param name file name
-        //     * @return Builder
-        //     */
+        /// <summary>
+        /// Sets the file name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder SetFileName(string? name)
         {
             EnsureNotBuilt();
@@ -257,12 +284,11 @@ namespace RedPen.Net.Core.Model
             return this;
         }
 
-        //    /**
-        //     * Set preprocessor rules
-        //     *
-        //     * @param rules preprocessor rules
-        //     * @return Builder
-        //     */
+        /// <summary>
+        /// Sets the preprocessor rules.
+        /// </summary>
+        /// <param name="rules">The rules.</param>
+        /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder SetPreprocessorRules(HashSet<PreprocessorRule> rules)
         {
             this.PreprocessorRules = rules;

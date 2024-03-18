@@ -31,7 +31,7 @@ namespace RedPen.Net.Core.Parser
         private EndOfSentenceDetector endOfSentenceDetector;
 
         //    // reference to the symbol table used to create us
-        private SymbolTable symbolTable = null;
+        private SymbolTable? symbolTable = null;
 
         //    /**
         //     * Constructor.

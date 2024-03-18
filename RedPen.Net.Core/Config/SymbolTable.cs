@@ -5,10 +5,13 @@ using System.Linq;
 
 namespace RedPen.Net.Core.Config
 {
+    /// <summary>
+    /// The symbol table.
+    /// </summary>
     public partial class SymbolTable : ICloneable, IEquatable<SymbolTable>
     {
         private static readonly long serialVersionUID = 1612920745151501631L;
-        private static Logger LOG = LogManager.GetCurrentClassLogger();
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         // MEMO: symbolDictionaryとvalueDictionaryはJAVA版ではLinkedHashMapを使用しているため、
         // 登録順序を維持したい意図があったのかもしれないが、実際の利用側のコードでは順序が必要とされていなかった。
@@ -18,9 +21,22 @@ namespace RedPen.Net.Core.Config
 
         private Dictionary<char, Symbol> valueDictionary = new Dictionary<char, Symbol>();
 
+        /// <summary>
+        /// Gets the variant.
+        /// </summary>
         public string Variant { get; private set; }
+
+        /// <summary>
+        /// Gets the lang.
+        /// </summary>
         public string Lang { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SymbolTable"/> class.
+        /// </summary>
+        /// <param name="lang">The lang.</param>
+        /// <param name="variant">The variant.</param>
+        /// <param name="customSymbols">The custom symbols.</param>
         public SymbolTable(string lang, string? variant, List<Symbol> customSymbols)
         {
             this.Lang = lang;
@@ -70,11 +86,10 @@ namespace RedPen.Net.Core.Config
             }
         }
 
-        //    /**
-        //     * Override a symbol with a new definition
-        //     *
-        //     * @param symbol symbol to define
-        //     */
+        /// <summary>
+        /// a symbol with a new definition
+        /// </summary>
+        /// <param name="symbol">symbol to define</param>
         public void UpdateSymbol(Symbol symbol)
         {
             symbolDictionary[symbol.Type] = symbol;
@@ -82,46 +97,41 @@ namespace RedPen.Net.Core.Config
         }
 
         // TODO: 命名がおかしいので、getterのみのTypesプロパティなどに修正する。
+        /// <summary>
+        /// Gets the names.
+        /// </summary>
+        /// <returns>A HashSet.</returns>
         public HashSet<SymbolType> GetNames()
         {
             return new HashSet<SymbolType>(symbolDictionary.Keys);
         }
 
-        //    /**
-        //     * Get the character specified with the symbolType.
-        //     *
-        //     * @param symbolType character symbolType
-        //     * @return character containing the settings
-        //     */
+        /// <summary>
+        /// Get the character specified with the symbolType.
+        /// </summary>
+        /// <param name="symbolType">character symbolType</param>
+        /// <returns>character containing the settings</returns>
         public Symbol GetSymbol(SymbolType symbolType)
         {
             return this.symbolDictionary[symbolType];
         }
 
-        //    /**
-        //     * Get the character specified with the value.
-        //     *
-        //     * @param value character symbolType
-        //     * @return character containing the settings
-        //     */
+        /// <summary>
+        /// Get the character specified with the value.
+        /// </summary>
+        /// <param name="value">character symbolType</param>
+        /// <returns>character containing the settings</returns>
         public Symbol GetSymbol(char value)
         {
             return this.valueDictionary[value];
         }
 
-        //    /**
-        //     * Detect the specified character is exit in the dictionary.
-        //     *
-        //     * @param type character symbolType
-        //     * @return character when exist, null when the specified
-        //     *         character does not exist
-        //     */
         /// <summary>
         /// Detect the specified character is exit in the dictionary.
         /// </summary>
-        /// <param name="type"></param>
-        /// <returns>現在のテーブ
-        /// ル内のシンボルに対応するchar型の値か、
+        /// <param name="type">character symbolType</param>
+        /// <returns>character when exist, null when the specified character does not exist
+        /// 現在のテーブル内のシンボルに対応するchar型の値か、
         /// テーブルに登録が無い場合はデフォルトシンボルテーブルの対応するchar型の値</returns>
         public char GetValueOrFallbackToDefault(SymbolType type)
         {
@@ -129,13 +139,11 @@ namespace RedPen.Net.Core.Config
                 ? this.symbolDictionary[type].Value : DEFAULT_SYMBOLS[type].Value;
         }
 
-        //    /**
-        //     * Detect the specified character is exit in the dictionary.
-        //     *
-        //     * @param value character value
-        //     * @return character when exist, null when the specified
-        //     *         character does not exist
-        //     */
+        /// <summary>
+        /// Detect the specified character is exit in the dictionary.
+        /// </summary>
+        /// <param name="value">character value</param>
+        /// <returns>character when exist, null when the specified character does not exist</returns>
         public bool ContainsValue(char value)
         {
             return this.valueDictionary.ContainsKey(value);
@@ -175,13 +183,29 @@ namespace RedPen.Net.Core.Config
         //        }
         //    }
 
-        //    @Override
+        /// <summary>
+        /// Tos the string.
+        /// </summary>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return $"SymbolTable{{symbolDictionary={symbolDictionary}, Lang='{Lang}', Variant='{Variant}'}}";
         }
 
+        /// <summary>
+        /// Clones the.
+        /// </summary>
+        /// <returns>An object.</returns>
         public object Clone()
+        {
+            return this.DeepCopy();
+        }
+
+        /// <summary>
+        /// Deeps the copy.
+        /// </summary>
+        /// <returns>A SymbolTable.</returns>
+        public SymbolTable DeepCopy()
         {
             SymbolTable clone = (SymbolTable)this.MemberwiseClone();
             // MEMO: string型は値型のため、MemberwiseCloneでDeepCopyされるはず。
@@ -190,9 +214,15 @@ namespace RedPen.Net.Core.Config
             //clone.Variant = string.Copy(Variant);
             clone.symbolDictionary = new Dictionary<SymbolType, Symbol>(symbolDictionary);
             clone.valueDictionary = new Dictionary<char, Symbol>(valueDictionary);
+
             return clone;
         }
 
+        /// <summary>
+        /// Equals the.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>A bool.</returns>
         public bool Equals(SymbolTable? other)
         {
             if (this == other) return true;

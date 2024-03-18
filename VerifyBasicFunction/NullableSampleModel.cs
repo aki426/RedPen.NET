@@ -91,7 +91,8 @@ namespace VerifyBasicFunction
 
             // 次の警告は.NET Standard 2.0 & C#7.3では出ない。
             // 警告  CS8600 Null リテラルまたは Null の可能性がある値を Null 非許容型に変換しています。
-            string str = null;
+            // string str = null;
+            string? str = null;
             if (str == null) { Console.WriteLine("str is null."); }
             // .NET Standard 2.0 & C#7.3ではヌル許容型を使用できない。
             string? nullableStr = null;
@@ -99,7 +100,8 @@ namespace VerifyBasicFunction
 
             // 次の警告は.NET Standard 2.0 & C#7.3では出ない。
             // 警告  CS8600 Null リテラルまたは Null の可能性がある値を Null 非許容型に変換しています。
-            List<int> list = null;
+            // List<int> list = null;
+            List<int>? list = null;
             if (list == null) { Console.WriteLine("list is null."); }
             // .NET Standard 2.0 & C#7.3ではヌル許容型を使用できない。
             List<int>? nullableList = null;
@@ -107,11 +109,14 @@ namespace VerifyBasicFunction
 
             // 次の警告は.NET Standard 2.0 & C#7.3では出ない。
             // 警告  CS8600 Null リテラルまたは Null の可能性がある値を Null 非許容型に変換しています。
-            string message = null;
+            //string message = null;
+            string? message = null;
 
             // 次の警告は.NET Standard 2.0 & C#7.3では出ない。
             // 警告  CS8602  null 参照の可能性があるものの逆参照です。
-            Console.WriteLine($"The length of the message is {message.Length}");
+            // Console.WriteLine($"The length of the message is {message.Length}");
+            // null条件演算子を使用することで警告を回避できる。
+            Console.WriteLine($"The length of the message is {message?.Length}");
 
             var originalMessage = message;
             message = "Hello, World!";
@@ -120,7 +125,9 @@ namespace VerifyBasicFunction
             Console.WriteLine($"The length of the message is {message.Length}");
 
             // warning!
-            Console.WriteLine(originalMessage.Length);
+            // Console.WriteLine(originalMessage.Length);
+            // null条件演算子を使用することで警告を回避できる。
+            Console.WriteLine(originalMessage?.Length);
         }
     }
 }

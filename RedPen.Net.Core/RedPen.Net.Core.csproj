@@ -16,7 +16,7 @@
     </PackageReference>
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
     <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
-    <PackageReference Include="ToString.Fody" Version="1.11.1" />
+    <PackageReference Include="ToString.Fody" Version="1.11.1" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

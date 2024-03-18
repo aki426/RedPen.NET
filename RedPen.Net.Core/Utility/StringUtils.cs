@@ -8,7 +8,7 @@ namespace RedPen.Net.Core.Utility
         /// <summary>JAVAのUnicodeBlockを模擬したユーティリティクラス。</summary>
         private class UnicodeBlock
         {
-            public string Name { get; init; }
+            public string Name { get; init; } = string.Empty;
             public UnicodeRange UniCodeRange { get; init; }
             public int FirstCodePoint => this.UniCodeRange.FirstCodePoint;
             public int LastCodePoint => this.UniCodeRange.FirstCodePoint + this.UniCodeRange.Length - 1;

@@ -23,7 +23,7 @@ namespace RedPen.Net.Core.Parser
             documentBuilder.AddParagraph();
 
             PreprocessingReader br = CreateReader(inputStream);
-            string line;
+            string? line;
             int linesRead = 0;
             int startLine = 1;
             string paragraph = "";
