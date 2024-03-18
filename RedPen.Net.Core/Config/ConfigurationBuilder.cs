@@ -15,7 +15,7 @@ namespace RedPen.Net.Core.Config
         private bool built = false;
         private string lang = "en";
         private string? variant = null;
-        private FileInfo? baseDir;
+        private DirectoryInfo? baseDir;
         private bool isSecure;
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace RedPen.Net.Core.Config
         /// </summary>
         /// <param name="baseDir">The base dir.</param>
         /// <returns>A ConfigurationBuilder.</returns>
-        public ConfigurationBuilder SetBaseDir(FileInfo baseDir)
+        public ConfigurationBuilder SetBaseDir(DirectoryInfo baseDir)
         {
             CheckBuilt();
             this.baseDir = baseDir;
@@ -120,7 +120,7 @@ namespace RedPen.Net.Core.Config
             CheckBuilt();
             built = true;
             return new Configuration(
-                baseDir,
+                baseDir ?? new DirectoryInfo(@".\"),
                 new SymbolTable(lang, variant, customSymbols),
                 this.validatorConfigs,
                 this.lang,

@@ -25,8 +25,40 @@ namespace VerifyBasicFunction.Tests
             act = () => Environment.GetEnvironmentVariable(null);
             act.Should().Throw<ArgumentNullException>();
 
+            act = () => new DirectoryInfo(string.Empty);
+            act.Should().Throw<ArgumentException>();
+
             act = () => new FileInfo(string.Empty);
             act.Should().Throw<ArgumentException>();
+        }
+
+        /// <summary>
+        /// FileInfoおよびDirectoryInfoの動作検証。
+        /// </summary>
+        [Fact]
+        public void Infoクラスの検証()
+        {
+            Action act;
+
+            // まずstring.Emptyを引数に渡した場合Exceptionが発生することを確認する。
+            act = () => new FileInfo(string.Empty).Should().NotBeNull();
+            act.Should().Throw<ArgumentException>();
+
+            act = () => new DirectoryInfo(string.Empty).Should().NotBeNull();
+            act.Should().Throw<ArgumentException>();
+
+            // 現在のディレクトリを取得。
+            // テストケース実行中なので次の行のようなDebugフォルダのフルパスになる。
+            // "C:\~\RedPen.NET\VerifyBasicFunction.Tests\bin\Debug"
+            string currentDirectory = Directory.GetCurrentDirectory();
+
+            // DirectoryInfoのコンストラクタに"."を渡した場合、現在のディレクトリを表すインスタンスが生成される。
+            new DirectoryInfo(@".\").FullName.Should().Be(currentDirectory + "\\");
+            new DirectoryInfo(@".").FullName.Should().Be(currentDirectory);
+
+            // FileInfoのコンストラクタに"."を渡した場合、現在のディレクトリを表すインスタンスが生成される。
+            new FileInfo(@".\").FullName.Should().Be(currentDirectory + "\\");
+            new FileInfo(@".").FullName.Should().Be(currentDirectory);
         }
     }
 }

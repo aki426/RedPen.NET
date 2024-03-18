@@ -41,13 +41,16 @@ namespace RedPen.Net.Core.Config
         /// <summary>
         /// Gets the home directory.
         /// </summary>
-        public FileInfo Home { get; init; } =
-            new FileInfo(Environment.GetEnvironmentVariable("REDPEN_HOME") ?? string.Empty);
+        public DirectoryInfo Home { get; init; } =
+            // MEMO: JAVA版では"REDPEN_HOME"環境変数を利用できなかった場合、空文字列でFileクラスをnewしている。
+            // 一方、C#のFile/DirectoryInfoは空文字列を与えるとExceptionになってしまう。
+            // そこで代わりに@".\"をセットするようにした。)を使用しているが、C#版では環境変数を使用する。
+            new DirectoryInfo(Environment.GetEnvironmentVariable("REDPEN_HOME") ?? @".\");
 
         /// <summary>
         /// Gets the conf base dir.
         /// </summary>
-        public FileInfo ConfBaseDir { get; init; }
+        public DirectoryInfo ConfBaseDir { get; init; }
 
         /// <summary>
         /// ディレクトリやフォルダのパス指定を厳密にチェックするかどうかのフラグ。
@@ -69,7 +72,7 @@ namespace RedPen.Net.Core.Config
         /// <param name="lang">The lang.</param>
         /// <param name="isSecure">If true, is secure.</param>
         public Configuration(
-            FileInfo confBaseDir,
+            DirectoryInfo confBaseDir,
             SymbolTable symbolTable,
             List<ValidatorConfiguration> validatorConfigs,
             string lang,
@@ -140,11 +143,11 @@ namespace RedPen.Net.Core.Config
             if (ConfBaseDir != null)
             {
                 file = new FileInfo(Path.Combine(this.ConfBaseDir.FullName, relativePath));
-                if (secureExists(file, this.ConfBaseDir)) { return file; }
+                if (SecureExists(file, this.ConfBaseDir)) { return file; }
             }
 
             file = new FileInfo(Path.Combine(this.Home.FullName, relativePath));
-            if (secureExists(file, this.Home)) { return file; }
+            if (SecureExists(file, this.Home)) { return file; }
 
             // MEMO: https://docs.oracle.com/javase/jp/6/api/java/io/File.html
             // FileInfo("").getAbsoluteFile()の戻り値は、カレントディレクトリを表すパスになるが、OSにより挙動が異なる。
@@ -163,7 +166,7 @@ namespace RedPen.Net.Core.Config
         /// <param name="file">The file.</param>
         /// <param name="confBaseDir">The conf base dir.</param>
         /// <returns>A bool.</returns>
-        private bool secureExists(FileInfo file, FileInfo confBaseDir)
+        private bool SecureExists(FileInfo file, DirectoryInfo confBaseDir)
         {
             try
             {
@@ -194,7 +197,7 @@ namespace RedPen.Net.Core.Config
             try
             {
                 return new Configuration(
-                    new FileInfo(this.ConfBaseDir.FullName),
+                    new DirectoryInfo(this.ConfBaseDir.FullName),
                     this.SymbolTable.DeepCopy(),
                     this.ValidatorConfigs.Select(v => v.Clone()).ToList(),
                     this.Lang,

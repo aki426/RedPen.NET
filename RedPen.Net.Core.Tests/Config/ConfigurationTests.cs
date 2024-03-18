@@ -89,7 +89,7 @@ namespace RedPen.Net.Core.Tests.Config
         public void UniqueKeyTest()
         {
             // MEMO: new FileInfo("")は例外スローするので暫定的に"C:\\redpen"を利用。
-            var confBase = new FileInfo("C:\\redpen");
+            var confBase = new DirectoryInfo(@"C:\redpen");
             Configuration configuration;
 
             // ja.hankaku
@@ -139,14 +139,12 @@ namespace RedPen.Net.Core.Tests.Config
             //assertEquals(new File("/foo"), Configuration.builder().build().getHome());
 
             // 一方、C#にはシステムプロパティが無いので、システム環境変数をテストする。
-            Environment.GetEnvironmentVariable("REDPEN_HOME").Should().Be("C:\\redpen");
-            Environment.SetEnvironmentVariable("REDPEN_HOME", "C:\\foo");
-            Environment.GetEnvironmentVariable("REDPEN_HOME").Should().Be("C:\\foo");
+            Environment.GetEnvironmentVariable("REDPEN_HOME").Should().Be(@"C:\redpen");
+            Environment.SetEnvironmentVariable("REDPEN_HOME", @"C:\foo");
+            Environment.GetEnvironmentVariable("REDPEN_HOME").Should().Be(@"C:\foo");
             // この環境変数の変更は一時的なもので、Windows OSの環境変数設定には影響しない。
 
-            Configuration.Builder().Build().Home.FullName.Should().Be("C:\\foo");
-
-            Environment.SetEnvironmentVariable("REDPEN_HOME", "C:\\redpen");
+            Configuration.Builder().Build().Home.FullName.Should().Be(@"C:\foo");
         }
 
         //    @Test
