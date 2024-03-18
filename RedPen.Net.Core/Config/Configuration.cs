@@ -7,39 +7,67 @@ using System.Linq;
 
 namespace RedPen.Net.Core.Config
 {
+    /// <summary>
+    /// The configuration.
+    /// </summary>
     [ToString]
     public class Configuration : ICloneable, IEquatable<Configuration>
     {
         private static Logger log = LogManager.GetCurrentClassLogger();
 
+        /// <summary>Gets the symbol table.</summary>
         public SymbolTable SymbolTable { get; init; }
 
+        /// <summary>Gets the validator configs.</summary>
         public List<ValidatorConfiguration> ValidatorConfigs { get; init; } = new List<ValidatorConfiguration>();
 
+        /// <summary>Gets the lang.</summary>
         public string Lang { get; init; }
 
+        /// <summary>Gets the variant.</summary>
         public string Variant => SymbolTable.Variant;
 
         // MEMO: JAVA版ではtransientを使っているが、C#版では[NonSerialized]属性や[JsonIgnore]を使用すること。
         // TODO: そもそもどのようなシリアライズが必要なのか、JAVA版の実装を確認してから対応する。
         // 参考: https://qiita.com/NBT/items/9f76c9fd1c7a90506658
+        /// <summary>
+        /// Gets the tokenizer.
+        /// </summary>
         public IRedPenTokenizer Tokenizer { get; private set; }
 
         // MEMO: JAVA版では環境変数とJVMに渡された引数を使用しているが、C#版では環境変数のみを考慮。
+        // TODO: Configurationはデータクラスとしての役割を持つため、環境変数の取得はより浅いレベルの別クラスで行うべき。
+        // 実行時に環境変数を取得しHomeフォルダを確定したあと、Configurationに渡すようにする。
+        /// <summary>
+        /// Gets the home directory.
+        /// </summary>
         public FileInfo Home { get; init; } =
             new FileInfo(Environment.GetEnvironmentVariable("REDPEN_HOME") ?? string.Empty);
 
+        /// <summary>
+        /// Gets the conf base dir.
+        /// </summary>
         public FileInfo ConfBaseDir { get; init; }
 
+        /// <summary>
+        /// ディレクトリやフォルダのパス指定を厳密にチェックするかどうかのフラグ。
+        /// </summary>
         public bool IsSecure { get; init; }
 
-        /**
-         * @return default supported languages and variants that can be used with {@link #builder(String)}
-         */
-
+        /// <summary>
+        /// default supported languages and variants that can be used with builder(string)
+        /// </summary>
         public static List<string> DefaultConfigKeys { get; } =
             new List<string>() { "en", "ja", "ja.hankaku", "ja.zenkaku2", "ru", "ko" };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Configuration"/> class.
+        /// </summary>
+        /// <param name="confBaseDir">The conf base dir.</param>
+        /// <param name="symbolTable">The symbol table.</param>
+        /// <param name="validatorConfigs">The validator configs.</param>
+        /// <param name="lang">The lang.</param>
+        /// <param name="isSecure">If true, is secure.</param>
         public Configuration(
             FileInfo confBaseDir,
             SymbolTable symbolTable,
@@ -57,6 +85,9 @@ namespace RedPen.Net.Core.Config
             InitTokenizer();
         }
 
+        /// <summary>
+        /// Inits the tokenizer.
+        /// </summary>
         private void InitTokenizer()
         {
             if (Lang == "ja")
@@ -82,12 +113,11 @@ namespace RedPen.Net.Core.Config
             return Lang + (string.IsNullOrEmpty(Variant) ? string.Empty : "." + Variant);
         }
 
-        // /**
-        //  * Finds file relative to either working directory, base directory or $REDPEN_HOME
-        //  * @param relativePath of file to find
-        //  * @return resolved file if it exists
-        //  * @throws RedPenException if file doesn't exist in either place
-        //  */
+        /// <summary>
+        /// Finds file relative to either working directory, base directory or $REDPEN_HOME
+        /// </summary>
+        /// <param name="relativePath">The relative path.</param>
+        /// <returns>resolved file if it exists</returns>
         public FileInfo FindFile(string relativePath)
         {
             FileInfo file;
