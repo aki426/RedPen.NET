@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using Xunit;
@@ -120,6 +122,9 @@ namespace RedPen.Net.Core.Tests.Config
             configuration.GetKey().Should().Be("ja");
         }
 
+        /// <summary>
+        /// REDPEN_HOMEが存在しない場合にHomeディレクトリをworking directoryにセットするかどうかを検証する。
+        /// </summary>
         public void HomeIsWorkingDirectoryByDefaultTest()
         {
             // JAVAではJAVACのシステムプロパティをクリアするロジックが存在し、REDPEN_HOMEを削除することで
@@ -130,6 +135,9 @@ namespace RedPen.Net.Core.Tests.Config
             // TODO: C#でデフォルトフォルダパスを検証する方法を検討する。
         }
 
+        /// <summary>
+        /// REDPEN_HOMEをHomeディレクトリとして設定することを検証する。
+        /// </summary>
         [Fact]
         public void HomeIsResolvedFromSystemPropertyOrEnvironment()
         {
@@ -147,10 +155,148 @@ namespace RedPen.Net.Core.Tests.Config
             Configuration.Builder().Build().Home.FullName.Should().Be(@"C:\foo");
         }
 
+        /// <summary>
+        /// Confファイルを特定するFindFile関数のためのテスト。
+        /// TODO: Configurationとファイル管理は切り離した方が良い可能性があり、分離を検討する。
+        /// </summary>
+        [Fact]
+        public void FindFileTest()
+        {
+            // MEMO: JAVAではFile("")でカレントディレクトリを取得しているが、C#ではDirectory.GetCurrentDirectory()を使用する。
+            string currrentDirPath = new DirectoryInfo(Directory.GetCurrentDirectory()).FullName;
+            string srcDirPath = new DirectoryInfo("src").FullName;
+            string firstLocalFilePath = Directory.GetFiles(Directory.GetCurrentDirectory()).FirstOrDefault();
+
+            // LooksInWorkingDirectoryFirst
+            Configuration.Builder().Build().FindFile(firstLocalFilePath).Should().Be(new FileInfo(firstLocalFilePath));
+
+            // LooksInConfigBaseDirectorySecond
+            Configuration.Builder().SetBaseDir(new DirectoryInfo("src")).Build().FindFile("main")
+                .Should().Be(new FileInfo(Path.Combine("src", "main")));
+
+            // LooksInRedPenHomeDirectoryThird
+            Environment.SetEnvironmentVariable("REDPEN_HOME", "src");
+            Configuration.Builder().Build().FindFile("main")
+                .Should().Be(new FileInfo(Path.Combine("src", "main")));
+
+            // FailsIfFileNotFound
+            //Environment.SetEnvironmentVariable("REDPEN_HOME", "src");
+            Action action = () => Configuration.Builder().Build().FindFile("hello.xml");
+            action.Should().Throw<RedPenException>()
+                .WithMessage($"hello.xml is not under working directory ({currrentDirPath}), $REDPEN_HOME ({srcDirPath}).");
+
+            // FailsIfFileNotFound_BasePathPresent
+            //Environment.SetEnvironmentVariable("REDPEN_HOME", "src");
+            action = () => Configuration.Builder().SetBaseDir(new DirectoryInfo("base_dir")).Build().FindFile("hello.xml");
+            action.Should().Throw<RedPenException>()
+                .WithMessage($"hello.xml is not under working directory ({currrentDirPath}), base (base_dir), $REDPEN_HOME ({srcDirPath}).");
+
+            // WorkingDirectorySecureMode()
+            Environment.SetEnvironmentVariable("REDPEN_HOME", "");
+            action = () => Configuration.Builder().SetSecure().Build().FindFile(firstLocalFilePath);
+            action.Should().Throw<RedPenException>()
+                .WithMessage($"{firstLocalFilePath} is not under $REDPEN_HOME ({currrentDirPath}).");
+
+            // SecureMode
+            //Environment.SetEnvironmentVariable("REDPEN_HOME", "");
+            action = () => Configuration.Builder().SetSecure().Build().FindFile("/etc/passwd");
+            action.Should().Throw<RedPenException>()
+                .WithMessage($"/etc/passwd is not under $REDPEN_HOME ({currrentDirPath}).");
+        }
+
+        /// <summary>
+        /// Cans the be cloned.
+        /// TODO: C#のCloneはpublic object Clone()であり、Configurationを反すDeepCopy()で代用した。
+        /// 最終的にCloneをDeepCopyへすべて置き換えるか要検討。
+        /// </summary>
+        [Fact]
+        public void CloneTest()
+        {
+            var conf = Configuration.Builder("ja.hankaku")
+                .AddValidatorConfig(new ValidatorConfiguration("SentenceLength")).Build();
+
+            var clone = conf.DeepCopy();
+            clone.Should().NotBeSameAs(conf);
+            clone.Lang.Should().Be(conf.Lang);
+            clone.Variant.Should().Be(conf.Variant);
+
+            clone.ValidatorConfigs.Should().NotBeSameAs(conf.ValidatorConfigs);
+            clone.ValidatorConfigs[0].Should().NotBeSameAs(conf.ValidatorConfigs[0]);
+            clone.ValidatorConfigs.Should().BeEquivalentTo(conf.ValidatorConfigs);
+
+            clone.SymbolTable.Should().NotBeSameAs(conf.SymbolTable);
+            clone.SymbolTable.Should().BeEquivalentTo(conf.SymbolTable);
+        }
+
+        /// <summary>
+        /// Equals the.
+        /// </summary>
+        [Fact]
+        public void EqualsTest()
+        {
+            var conf = Configuration.Builder("ja.hankaku")
+                .AddValidatorConfig(new ValidatorConfiguration("SentenceLength")).Build();
+
+            var clone = conf.DeepCopy();
+            clone.Should().Be(conf);
+            clone.GetHashCode().Should().Be(conf.GetHashCode());
+
+            clone.ValidatorConfigs.RemoveAt(0);
+            clone.Should().NotBe(conf);
+
+            clone = conf.DeepCopy();
+            clone.SymbolTable.UpdateSymbol(new Symbol(SymbolType.AMPERSAND, '^'));
+            clone.Should().NotBe(conf);
+        }
+
+        /// <summary>
+        /// Serializables the.
+        /// </summary>
+        [Fact]
+        public void Serializable()
+        {
+            var conf = Configuration.Builder("ja.hankaku")
+                .AddValidatorConfig(new ValidatorConfiguration("SentenceLength")).Build();
+
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, conf);
+                ms.Seek(0, SeekOrigin.Begin);
+                var conf2 = (Configuration)formatter.Deserialize(ms);
+                conf2.Should().Be(conf);
+                conf2.Tokenizer.GetType().Should().Be(conf.Tokenizer.GetType());
+            }
+        }
+
+        /// <summary>
+        /// Adds the available validators for language.
+        /// </summary>
+        [Fact]
+        public void AddAvailableValidatorsForLanguage()
+        {
+            var ja = Configuration.Builder("ja").AddAvailableValidatorConfigs().Build();
+            ja.ValidatorConfigs.Should().ContainSingle(v => v.ConfigurationName == "SentenceLength");
+            ja.ValidatorConfigs.Should().ContainSingle(v => v.ConfigurationName == "HankakuKana");
+
+            var en = Configuration.Builder("en").AddAvailableValidatorConfigs().Build();
+            en.ValidatorConfigs.Should().ContainSingle(v => v.ConfigurationName == "SentenceLength");
+            en.ValidatorConfigs.Should().NotContain(v => v.ConfigurationName == "HankakuKana");
+
+            var sentenceLength = en.ValidatorConfigs.SingleOrDefault(v => v.ConfigurationName == "SentenceLength");
+            sentenceLength.Should().NotBeNull();
+            sentenceLength.Properties.Should().ContainValue("120");
+
+            var spelling = en.ValidatorConfigs.SingleOrDefault(v => v.ConfigurationName == "Spelling");
+            spelling.Should().NotBeNull();
+            spelling.Properties.Should().ContainValue("");
+            spelling.Properties.Should().ContainValue("");
+        }
+
         //    @Test
         //    void findFileLooksInWorkingDirectoryFirst() throws Exception {
-        //        String localFile = new File(".").list()[0];
-        //assertEquals(new File(localFile), Configuration.builder().build().findFile(localFile));
+        //        String firstLocalFilePath = new File(".").list()[0];
+        //assertEquals(new File(firstLocalFilePath), Configuration.builder().build().findFile(firstLocalFilePath));
         //    }
 
         //    @Test
@@ -190,16 +336,16 @@ namespace RedPen.Net.Core.Tests.Config
 
         //    @Test
         //    void findFile_workingDirectorySecureMode() throws Exception {
-        //        String localFile = new File(".").list()[0];
+        //        String firstLocalFilePath = new File(".").list()[0];
         //try
         //{
         //    System.setProperty("REDPEN_HOME", "");
-        //    Configuration.builder().secure().build().findFile(localFile);
+        //    Configuration.builder().secure().build().findFile(firstLocalFilePath);
         //    fail("Secure mode should not allow files from working directory");
         //}
         //catch (RedPenException e)
         //{
-        //    assertEquals(localFile + " is not under $REDPEN_HOME (" + new File("").getAbsoluteFile() + ").", e.getMessage());
+        //    assertEquals(firstLocalFilePath + " is not under $REDPEN_HOME (" + new File("").getAbsoluteFile() + ").", e.getMessage());
         //}
         //    }
 

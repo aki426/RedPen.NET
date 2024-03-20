@@ -116,16 +116,17 @@ namespace RedPen.Net.Core.Config
             this.Level = level;
         }
 
-        /// <summary>
-        /// Gets the property.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>A string.</returns>
-        public string GetProperty(string name)
-        {
-            // TODO: Dictionaryのキーに対するアクセスはTryGetValueを使うべき。
-            return this.Properties[name];
-        }
+        // MEMO: JAVAの実装ではこのメソッドが存在したが、C#ではPropertiesを公開しているので呼び出し側で対応する。
+        ///// <summary>
+        ///// Gets the property.
+        ///// </summary>
+        ///// <param name="name">The name.</param>
+        ///// <returns>A string.</returns>
+        //public string GetProperty(string name)
+        //{
+        //    // TODO: Dictionaryのキーに対するアクセスはTryGetValueを使うべき。
+        //    return this.Properties[name];
+        //}
 
         public ValidatorConfiguration SetLevel(string level)
         {

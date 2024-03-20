@@ -11,6 +11,7 @@ namespace RedPen.Net.Core.Config
     /// The configuration.
     /// </summary>
     [ToString]
+    [Serializable]
     public class Configuration : ICloneable, IEquatable<Configuration>
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
@@ -30,10 +31,12 @@ namespace RedPen.Net.Core.Config
         // MEMO: JAVA版ではtransientを使っているが、C#版では[NonSerialized]属性や[JsonIgnore]を使用すること。
         // TODO: そもそもどのようなシリアライズが必要なのか、JAVA版の実装を確認してから対応する。
         // 参考: https://qiita.com/NBT/items/9f76c9fd1c7a90506658
+        [NonSerialized] private IRedPenTokenizer _tokenizer;
+
         /// <summary>
         /// Gets the tokenizer.
         /// </summary>
-        public IRedPenTokenizer Tokenizer { get; private set; }
+        public IRedPenTokenizer Tokenizer => this._tokenizer;
 
         // MEMO: JAVA版では環境変数とJVMに渡された引数を使用しているが、C#版では環境変数のみを考慮。
         // TODO: Configurationはデータクラスとしての役割を持つため、環境変数の取得はより浅いレベルの別クラスで行うべき。
@@ -87,11 +90,11 @@ namespace RedPen.Net.Core.Config
 
             if (Lang == "ja")
             {
-                this.Tokenizer = new NeologdJapaneseTokenizer();
+                this._tokenizer = new NeologdJapaneseTokenizer();
             }
             else
             {
-                this.Tokenizer = new WhiteSpaceTokenizer();
+                this._tokenizer = new WhiteSpaceTokenizer();
             }
 
             // InitTokenizer();

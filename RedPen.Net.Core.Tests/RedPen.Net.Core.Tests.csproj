@@ -64,11 +64,13 @@
     <Compile Include="Parser\Common\LineTests.cs" />
     <Compile Include="Parser\LineOffsetTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RedPenUtilityTests.cs" />
     <Compile Include="Tokenizer\NeologdJapaneseTokenizerTests.cs" />
     <Compile Include="Tokenizer\TokenElementTests.cs" />
     <Compile Include="Tokenizer\WhiteSpaceTokenizerTests.cs" />
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
     <Compile Include="Utility\StringUtilsTests.cs" />
+    <Compile Include="Validator\ValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RedPen.Net.Core\RedPen.Net.Core.csproj">

@@ -1,6 +1,11 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Configuration;
+using NLog;
+using RedPen.Net.Core;
 using RedPen.Net.Core.Config;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RedPen.Net.Core.Validator
 {
@@ -81,64 +86,72 @@ namespace RedPen.Net.Core.Validator
 
         public static List<ValidatorConfiguration> getConfigurations(string lang)
         {
-            throw new System.NotImplementedException();
+            List<ValidatorConfiguration> configurations = validators.Where(e =>
+            {
+                List<string> supportedLanguages = e.Value.getSupportedLanguages();
+
+                // MEMO: Validatorについて、JAVAではDeprecated属性、C#ではObsoleteAttributeを持っているかどうかを判定する。
+                bool deprecated = e.Value.GetType().GetCustomAttributes(typeof(ObsoleteAttribute), false).Length == 0 ? false : true;
+
+                return (!supportedLanguages.Any() || supportedLanguages.Contains(lang)) && !deprecated;
+            }).Select(e => new ValidatorConfiguration(e.Key, ToStrings(e.Value.getProperties()))).ToList();
+
+            Dictionary<string, string> emptyMap = new Dictionary<string, string>();
+            //foreach (var jsValidator in jsValidators.Keys)
+            //{
+            //    try
+            //    {
+            //        Validator jsValidatorInstance = getInstance(jsValidator);
+            //        List<String> supportedLanguages = jsValidatorInstance.getSupportedLanguages();
+            //        if (supportedLanguages.isEmpty() || supportedLanguages.contains(lang))
+            //        {
+            //            configurations.add(new ValidatorConfiguration(jsValidator, emptyMap));
+            //        }
+            //    }
+            //    catch (RedPenException ignored)
+            //    {
+            //    }
+            //}
+
+            return configurations;
         }
 
-        //{
-        //    List<ValidatorConfiguration> configurations = validators.entrySet().stream().filter(e-> {
-        //        List<String> supportedLanguages = e.getValue().getSupportedLanguages();
-
-        //        boolean deprecated = e.getValue().getClass().getAnnotation(Deprecated.internal class) == null ? false : true;
-
-        //return (supportedLanguages.isEmpty() || supportedLanguages.contains(lang)) && !deprecated;
-        //        }).map(e-> new ValidatorConfiguration(e.GetKey(), toStrings(e.getValue().getProperties()))).collect(toList());
-        //Map<String, String> emptyMap = new LinkedHashMap<>();
-        //for (String jsValidator : jsValidators.keySet())
-        //{
-        //    try
-        //    {
-        //        Validator jsValidatorInstance = getInstance(jsValidator);
-        //        List<String> supportedLanguages = jsValidatorInstance.getSupportedLanguages();
-        //        if (supportedLanguages.isEmpty() || supportedLanguages.contains(lang))
-        //        {
-        //            configurations.add(new ValidatorConfiguration(jsValidator, emptyMap));
-        //        }
-        //    }
-        //    catch (RedPenException ignored)
-        //    {
-        //    }
-        //}
-        //return configurations;
-        //    }
-
         //    @SuppressWarnings("unchecked")
-        //    static Map<String, String> toStrings(Map<String, Object> properties)
+        private static Dictionary<string, string> ToStrings(Dictionary<string, object> properties)
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, object> e in properties)
+            {
+                if (e.Value is IEnumerable)
+                {
+                    result.Add(e.Key, string.Join(",", e.Value as IEnumerable));
+                }
+                else
+                {
+                    result.Add(e.Key, e.Value.ToString());
+                }
+            }
+
+            return result;
+        }
+
+        //public static Validator getInstance(string validatorName)
+
         //{
-        //    Map<String, String> result = new LinkedHashMap<>();
-        //    for (Map.Entry<String, Object> e : properties.entrySet()) {
-        //    if (e.getValue() instanceof Iterable)
-        //                result.put(e.GetKey(), join((Iterable)e.getValue(), ','));
-        //            else
-        //        result.put(e.GetKey(), e.getValue().toString());
+        //    Configuration conf = Configuration.Builder().AddValidatorConfig(new ValidatorConfiguration(validatorName)).Build();
+
+        //    return getInstance(conf.ValidatorConfigs[0], conf);
         //}
-        //return result;
-        //    }
 
-        //    public static Validator getInstance(String validatorName) throws RedPenException
+        //public static Validator getInstance(ValidatorConfiguration config, Configuration globalConfig)
         //{
-        //    Configuration conf = Configuration.builder().addValidatorConfig(new ValidatorConfiguration(validatorName)).build();
-        //return getInstance(conf.getValidatorConfigs().get(0), conf);
-        //    }
-
-        //    public static Validator getInstance(ValidatorConfiguration config, Configuration globalConfig) throws RedPenException
-        //{
-        //    String validatorName = config.getConfigurationName();
+        //    string validatorName = config.ConfigurationName;
         //    // lookup JavaScript validators
-        //    String script = jsValidators.get(validatorName);
+        //    string script = jsValidators[validatorName];
         //    if (script != null)
         //    {
         //        JavaScriptLoader javaScriptValidator = new JavaScriptLoader(validatorName, script);
-        //        javaScriptValidator.preInit(config, globalConfig);
+        //        javaScriptValidator.PreInit(config, globalConfig);
         //        return javaScriptValidator;
         //    }
 
@@ -146,9 +159,9 @@ namespace RedPen.Net.Core.Validator
         //    Validator prototype = validators.get(config.getConfigurationName());
         //    Class <? extends Validator > validatorClass = prototype != null ? prototype.getClass() : loadPlugin(validatorName);
         //    Validator validator = createValidator(validatorClass);
-        //    validator.preInit(config, globalConfig);
+        //    validator.PreInit(config, globalConfig);
         //    return validator;
-        //    }
+        //}
 
         //    @SuppressWarnings("unchecked")
         //    private static Class<? extends Validator> loadPlugin(String name) throws RedPenException
