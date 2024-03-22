@@ -58,6 +58,7 @@
     <Compile Include="Config\ConfigurationTests.cs" />
     <Compile Include="Config\OrderedDictionaryTests.cs" />
     <Compile Include="Config\ValidatorConfigurationTests.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\DocumentCollectionTest.cs" />
     <Compile Include="Model\DocumentTests.cs" />
     <Compile Include="Model\SectionTests.cs" />
@@ -69,7 +70,10 @@
     <Compile Include="Tokenizer\TokenElementTests.cs" />
     <Compile Include="Tokenizer\WhiteSpaceTokenizerTests.cs" />
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
+    <Compile Include="Utility\ResourceLoaderTests.cs" />
+    <Compile Include="Utility\RuleExtractorTests.cs" />
     <Compile Include="Utility\StringUtilsTests.cs" />
+    <Compile Include="Validator\Sentence\SentenceLengthValidatorTests.cs" />
     <Compile Include="Validator\ValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -77,9 +81,6 @@
       <Project>{dc647010-9174-4ce8-ba3d-05aa4510b241}</Project>
       <Name>RedPen.Net.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Validator\Sentence\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

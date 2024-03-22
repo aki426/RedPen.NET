@@ -1,0 +1,1 @@
+SentenceLengthValidator=The length of the sentence ({0}) exceeds the maximum of {1}.

@@ -64,7 +64,7 @@ namespace VerifyBasicFunction
         /// <summary>
         /// Null代入にまつわるエラー・警告の検証のための関数。
         /// </summary>
-        public static void SugstituteNull()
+        public static void SubstituteNull()
         {
             var nullableSampleModel = new NullableSampleModel();
             if (nullableSampleModel.NullableNumber == null &&

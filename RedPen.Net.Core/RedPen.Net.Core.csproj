@@ -19,4 +19,10 @@
     <PackageReference Include="ToString.Fody" Version="1.11.1" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+    <Folder Include="Resources\SectionValidator\" />
+    <Folder Include="Resources\DocumentValidator\" />
+  </ItemGroup>
+
 </Project>

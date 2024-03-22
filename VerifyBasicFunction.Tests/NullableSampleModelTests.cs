@@ -110,7 +110,7 @@ namespace VerifyBasicFunction.Tests
             // 関数の内部でNull参照例外が発生する。
             // MEMO: Nullableの本質は静的コード診断なので、警告を無視すればコンパイル可能であるし、
             // 実行時にNull参照例外を発生させることもできる（※発生させるべきではない）。
-            act = () => NullableSampleModel.SugstituteNull();
+            act = () => NullableSampleModel.SubstituteNull();
             act.Should().Throw<NullReferenceException>();
         }
     }
