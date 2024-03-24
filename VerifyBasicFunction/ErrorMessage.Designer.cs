@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VerifyBasicFunction.Properties {
+namespace VerifyBasicFunction {
     using System;
     
     
@@ -22,24 +22,24 @@ namespace VerifyBasicFunction.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Resources {
+    internal class ErrorMessage {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal ErrorMessage() {
         }
         
         /// <summary>
         ///   このクラスで使用されているキャッシュされた ResourceManager インスタンスを返します。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("VerifyBasicFunction.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("VerifyBasicFunction.ErrorMessage", typeof(ErrorMessage).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace VerifyBasicFunction.Properties {
         ///   現在のスレッドの CurrentUICulture プロパティをオーバーライドします。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,11 +61,29 @@ namespace VerifyBasicFunction.Properties {
         }
         
         /// <summary>
-        ///   Hello world! に類似しているローカライズされた文字列を検索します。
+        ///   こんにちは、世界。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string HelloWorld {
+        internal static string HelloWorld {
             get {
                 return ResourceManager.GetString("HelloWorld", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   不正な記号が使用されています。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string InvalidSymbolValidator {
+            get {
+                return ResourceManager.GetString("InvalidSymbolValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   文が長すぎます。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SentenceLengthValidator {
+            get {
+                return ResourceManager.GetString("SentenceLengthValidator", resourceCulture);
             }
         }
     }

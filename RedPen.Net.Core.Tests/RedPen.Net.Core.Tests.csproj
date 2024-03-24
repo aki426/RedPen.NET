@@ -70,7 +70,6 @@
     <Compile Include="Tokenizer\TokenElementTests.cs" />
     <Compile Include="Tokenizer\WhiteSpaceTokenizerTests.cs" />
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
-    <Compile Include="Utility\ResourceLoaderTests.cs" />
     <Compile Include="Utility\RuleExtractorTests.cs" />
     <Compile Include="Utility\StringUtilsTests.cs" />
     <Compile Include="Validator\Sentence\SentenceLengthValidatorTests.cs" />
