@@ -61,11 +61,578 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
+        ///   The number of commas ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string CommaNumberValidator {
+            get {
+                return ResourceManager.GetString("CommaNumberValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found contraction &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ContractionValidator {
+            get {
+                return ResourceManager.GetString("ContractionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found multiple conjunctive particle: &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string DoubledConjunctiveParticleGaValidator {
+            get {
+                return ResourceManager.GetString("DoubledConjunctiveParticleGaValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found repeated Joshi word &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string DoubledJoshiValidator {
+            get {
+                return ResourceManager.GetString("DoubledJoshiValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found repeated word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string DoubledWordValidator {
+            get {
+                return ResourceManager.GetString("DoubledWordValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found double negative expression &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string DoubleNegativeValidator {
+            get {
+                return ResourceManager.GetString("DoubleNegativeValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found duplicated section (starts from line {0}). に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string DuplicatedSectionValidator {
+            get {
+                return ResourceManager.GetString("DuplicatedSectionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The section &quot;{0}&quot; is empty. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string EmptySectionValidator {
+            get {
+                return ResourceManager.GetString("EmptySectionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found invalid end of sentence &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string EndOfSentenceValidator {
+            get {
+                return ResourceManager.GetString("EndOfSentenceValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}% of sentences start with &quot;{1}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string FrequentSentenceStartValidator_SentenceStartTooFrequent {
+            get {
+                return ResourceManager.GetString("FrequentSentenceStartValidator.SentenceStartTooFrequent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The section &quot;{0}&quot; (level {1}) is misplaced. It should have level of {2}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string GappedSectionValidator {
+            get {
+                return ResourceManager.GetString("GappedSectionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found Hankaku Kana character &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string HankakuKanaValidator {
+            get {
+                return ResourceManager.GetString("HankakuKanaValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The length of header ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string HeaderLengthValidator {
+            get {
+                return ResourceManager.GetString("HeaderLengthValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   This phrase should be hyphenated (ie: &quot;{0}&quot;). に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string HyphenationValidator_HyphenatedInDictionary {
+            get {
+                return ResourceManager.GetString("HyphenationValidator.HyphenatedInDictionary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found invalid expression &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string InvalidExpressionValidator {
+            get {
+                return ResourceManager.GetString("InvalidExpressionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found invalid symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string InvalidSymbolValidator {
+            get {
+                return ResourceManager.GetString("InvalidSymbolValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found invalid word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string InvalidWordValidator {
+            get {
+                return ResourceManager.GetString("InvalidWordValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found ambiguous noun conjunction: &quot;...{0}...&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string JapaneseAmbiguousNounConjunctionValidator {
+            get {
+                return ResourceManager.GetString("JapaneseAmbiguousNounConjunctionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found invalid anchor expression &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string JapaneseAnchorExpressionValidator {
+            get {
+                return ResourceManager.GetString("JapaneseAnchorExpressionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found broken japanese expression (missing &quot;Ra&quot;): &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string JapaneseBrokenExpressionValidator {
+            get {
+                return ResourceManager.GetString("JapaneseBrokenExpressionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found possible Japanese word variations for &quot;{0}&quot;, &quot;{1}&quot; at {2} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string JapaneseExpressionVariationValidator {
+            get {
+                return ResourceManager.GetString("JapaneseExpressionVariationValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found non-joyo kanji: &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string JapaneseJoyoKanjiValidator {
+            get {
+                return ResourceManager.GetString("JapaneseJoyoKanjiValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found invalid number expression &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string JapaneseNumberExpressionValidator {
+            get {
+                return ResourceManager.GetString("JapaneseNumberExpressionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found invalid Japanese Style &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string JapaneseStyleValidator {
+            get {
+                return ResourceManager.GetString("JapaneseStyleValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found invalid Katakana end-hyphen &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string KatakanaEndHyphenValidator {
+            get {
+                return ResourceManager.GetString("KatakanaEndHyphenValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found a Katakana word &quot;{0}&quot;, which is similar to &quot;{1}&quot; at position {2}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string KatakanaSpellCheckValidator {
+            get {
+                return ResourceManager.GetString("KatakanaSpellCheckValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The list item is nested too deeply. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ListLevelValidator {
+            get {
+                return ResourceManager.GetString("ListLevelValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found too long kanji chain: &quot;{0}&quot; ({1}.) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LongKanjiChainValidator {
+            get {
+                return ResourceManager.GetString("LongKanjiChainValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Number {0} has too many decimal delimiters. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NumberFormatValidator_TooManyDecimals {
+            get {
+                return ResourceManager.GetString("NumberFormatValidator.TooManyDecimals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Number {0} requires a delimiter every three digits (eg: 1,000.00 or 1.000,00). に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NumberFormatValidator_UndelimitedSequenceTooLong {
+            get {
+                return ResourceManager.GetString("NumberFormatValidator.UndelimitedSequenceTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Number {0} has a delimiter in the wrong position. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string NumberFormatValidator_UndelimitedSequenceTooShort {
+            get {
+                return ResourceManager.GetString("NumberFormatValidator.UndelimitedSequenceTooShort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found an invalid Okurigana expression &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string OkuriganaValidator {
+            get {
+                return ResourceManager.GetString("OkuriganaValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The number of paragraphs exceeds the maximum of {0}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ParagraphNumberValidator {
+            get {
+                return ResourceManager.GetString("ParagraphNumberValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found invalid beginning of paragraph &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ParagraphStartWithValidator {
+            get {
+                return ResourceManager.GetString("ParagraphStartWithValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Parenthesized sentences are nested too deeply. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ParenthesizedSentenceValidator_NestingLevelTooDeep {
+            get {
+                return ResourceManager.GetString("ParenthesizedSentenceValidator.NestingLevelTooDeep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Too many parenthesized sentences. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ParenthesizedSentenceValidator_SubsentenceTooFrequent {
+            get {
+                return ResourceManager.GetString("ParenthesizedSentenceValidator.SubsentenceTooFrequent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Parenthesized sentence is too long. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ParenthesizedSentenceValidator_SubsentenceTooLong {
+            get {
+                return ResourceManager.GetString("ParenthesizedSentenceValidator.SubsentenceTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Two left quotation marks in succession. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string QuotationValidator_DoubleLeft {
+            get {
+                return ResourceManager.GetString("QuotationValidator.DoubleLeft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Two right quotation marks in succession. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string QuotationValidator_DoubleRight {
+            get {
+                return ResourceManager.GetString("QuotationValidator.DoubleRight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Left quotation mark is missing. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string QuotationValidator_LeftExist {
+            get {
+                return ResourceManager.GetString("QuotationValidator.LeftExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Life quotation mark does not have a space. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string QuotationValidator_LeftSpace {
+            get {
+                return ResourceManager.GetString("QuotationValidator.LeftSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Right quotation mark is missing. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string QuotationValidator_RightExist {
+            get {
+                return ResourceManager.GetString("QuotationValidator.RightExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Right quotation mark does not have a space. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string QuotationValidator_RightSpace {
+            get {
+                return ResourceManager.GetString("QuotationValidator.RightSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0} is considered redundant expression. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string RedundantExpressionValidator {
+            get {
+                return ResourceManager.GetString("RedundantExpressionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The number of characters in the section ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SectionLengthValidator {
+            get {
+                return ResourceManager.GetString("SectionLengthValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The section &quot;{0}&quot; is too deep. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SectionLevelValidator {
+            get {
+                return ResourceManager.GetString("SectionLevelValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The length of the sentence ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SentenceLengthValidator {
+            get {
+                return ResourceManager.GetString("SentenceLengthValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Whitespace does not exist at the beginning of the sentence. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SpaceBeginningOfSentenceValidator {
+            get {
+                return ResourceManager.GetString("SpaceBeginningOfSentenceValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Space not present after an alphabetical word. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SpaceBetweenAlphabeticalWordValidator_After {
+            get {
+                return ResourceManager.GetString("SpaceBetweenAlphabeticalWordValidator.After", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Space not present before an alphabetical word. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SpaceBetweenAlphabeticalWordValidator_Before {
+            get {
+                return ResourceManager.GetString("SpaceBetweenAlphabeticalWordValidator.Before", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Space exists around the alphabetical word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SpaceBetweenAlphabeticalWordValidator_Forbidden {
+            get {
+                return ResourceManager.GetString("SpaceBetweenAlphabeticalWordValidator.Forbidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found possibly misspelled word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SpellingValidator {
+            get {
+                return ResourceManager.GetString("SpellingValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sentence starts with a lowercase character &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string StartWithCapitalLetterValidator {
+            get {
+                return ResourceManager.GetString("StartWithCapitalLetterValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found similar two sentences in succession: &quot;{0}&quot; and &quot;{1}&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SuccessiveSentenceValidator {
+            get {
+                return ResourceManager.GetString("SuccessiveSentenceValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found word &quot;{0}&quot; repeated twice in succession. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SuccessiveWordValidator {
+            get {
+                return ResourceManager.GetString("SuccessiveWordValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found invalid word &quot;{0}&quot;. Use the synonym &quot;{1}&quot; instead. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SuggestExpressionValidator {
+            get {
+                return ResourceManager.GetString("SuggestExpressionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Need whitespace after symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SymbolWithSpaceValidator_After {
+            get {
+                return ResourceManager.GetString("SymbolWithSpaceValidator.After", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Need whitespace before symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SymbolWithSpaceValidator_Before {
+            get {
+                return ResourceManager.GetString("SymbolWithSpaceValidator.Before", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Need whitespace before and after symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string SymbolWithSpaceValidator_BeforeAfter {
+            get {
+                return ResourceManager.GetString("SymbolWithSpaceValidator.BeforeAfter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   The expanded form of the acronym {0} is not present in the document. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string UnexpandedAcronymValidator_UnexpandedAcronym {
             get {
                 return ResourceManager.GetString("UnexpandedAcronymValidator.UnexpandedAcronym", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The section is void. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string VoidSectionValidator {
+            get {
+                return ResourceManager.GetString("VoidSectionValidator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0} is considered a weak expression. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string WeakExpressionValidator_WeakExpression {
+            get {
+                return ResourceManager.GetString("WeakExpressionValidator.WeakExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The word &quot;{0}&quot; comprises {1}% of all words. Expected around {2}%. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string WordFrequencyValidator_WordUsedTooFrequently {
+            get {
+                return ResourceManager.GetString("WordFrequencyValidator.WordUsedTooFrequently", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The number of words ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string WordNumberValidator {
+            get {
+                return ResourceManager.GetString("WordNumberValidator", resourceCulture);
             }
         }
     }

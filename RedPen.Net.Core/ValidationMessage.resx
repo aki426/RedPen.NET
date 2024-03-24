@@ -100,4 +100,193 @@
   <data name="UnexpandedAcronymValidator.UnexpandedAcronym" xml:space="preserve">
     <value>The expanded form of the acronym {0} is not present in the document.</value>
   </data>
+  <data name="FrequentSentenceStartValidator.SentenceStartTooFrequent" xml:space="preserve">
+    <value>{0}% of sentences start with "{1}".</value>
+  </data>
+  <data name="WordFrequencyValidator.WordUsedTooFrequently" xml:space="preserve">
+    <value>The word "{0}" comprises {1}% of all words. Expected around {2}%.</value>
+  </data>
+  <data name="GappedSectionValidator" xml:space="preserve">
+    <value>The section "{0}" (level {1}) is misplaced. It should have level of {2}.</value>
+  </data>
+  <data name="JapaneseExpressionVariationValidator" xml:space="preserve">
+    <value>Found possible Japanese word variations for "{0}", "{1}" at {2}</value>
+  </data>
+  <data name="SectionLengthValidator" xml:space="preserve">
+    <value>The number of characters in the section ({0}) exceeds the maximum of {1}.</value>
+  </data>
+  <data name="ParagraphNumberValidator" xml:space="preserve">
+    <value>The number of paragraphs exceeds the maximum of {0}.</value>
+  </data>
+  <data name="ParagraphStartWithValidator" xml:space="preserve">
+    <value>Found invalid beginning of paragraph "{0}".</value>
+  </data>
+  <data name="DuplicatedSectionValidator" xml:space="preserve">
+    <value>Found duplicated section (starts from line {0}).</value>
+  </data>
+  <data name="SectionLevelValidator" xml:space="preserve">
+    <value>The section "{0}" is too deep.</value>
+  </data>
+  <data name="VoidSectionValidator" xml:space="preserve">
+    <value>The section is void.</value>
+  </data>
+  <data name="EmptySectionValidator" xml:space="preserve">
+    <value>The section "{0}" is empty.</value>
+  </data>
+  <data name="HeaderLengthValidator" xml:space="preserve">
+    <value>The length of header ({0}) exceeds the maximum of {1}.</value>
+  </data>
+  <data name="ListLevelValidator" xml:space="preserve">
+    <value>The list item is nested too deeply.</value>
+  </data>
+  <data name="CommaNumberValidator" xml:space="preserve">
+    <value>The number of commas ({0}) exceeds the maximum of {1}.</value>
+  </data>
+  <data name="ContractionValidator" xml:space="preserve">
+    <value>Found contraction "{0}".</value>
+  </data>
+  <data name="EndOfSentenceValidator" xml:space="preserve">
+    <value>Found invalid end of sentence "{0}".</value>
+  </data>
+  <data name="InvalidExpressionValidator" xml:space="preserve">
+    <value>Found invalid expression "{0}".</value>
+  </data>
+  <data name="InvalidSymbolValidator" xml:space="preserve">
+    <value>Found invalid symbol "{0}".</value>
+  </data>
+  <data name="InvalidWordValidator" xml:space="preserve">
+    <value>Found invalid word "{0}".</value>
+  </data>
+  <data name="KatakanaEndHyphenValidator" xml:space="preserve">
+    <value>Found invalid Katakana end-hyphen "{0}".</value>
+  </data>
+  <data name="KatakanaSpellCheckValidator" xml:space="preserve">
+    <value>Found a Katakana word "{0}", which is similar to "{1}" at position {2}.</value>
+  </data>
+  <data name="SentenceLengthValidator" xml:space="preserve">
+    <value>The length of the sentence ({0}) exceeds the maximum of {1}.</value>
+  </data>
+  <data name="SpaceBeginningOfSentenceValidator" xml:space="preserve">
+    <value>Whitespace does not exist at the beginning of the sentence.</value>
+  </data>
+  <data name="SpellingValidator" xml:space="preserve">
+    <value>Found possibly misspelled word "{0}".</value>
+  </data>
+  <data name="StartWithCapitalLetterValidator" xml:space="preserve">
+    <value>Sentence starts with a lowercase character "{0}".</value>
+  </data>
+  <data name="SuggestExpressionValidator" xml:space="preserve">
+    <value>Found invalid word "{0}". Use the synonym "{1}" instead.</value>
+  </data>
+  <data name="WordNumberValidator" xml:space="preserve">
+    <value>The number of words ({0}) exceeds the maximum of {1}.</value>
+  </data>
+  <data name="QuotationValidator.DoubleRight" xml:space="preserve">
+    <value>Two right quotation marks in succession.</value>
+  </data>
+  <data name="QuotationValidator.DoubleLeft" xml:space="preserve">
+    <value>Two left quotation marks in succession.</value>
+  </data>
+  <data name="QuotationValidator.RightSpace" xml:space="preserve">
+    <value>Right quotation mark does not have a space.</value>
+  </data>
+  <data name="QuotationValidator.LeftSpace" xml:space="preserve">
+    <value>Life quotation mark does not have a space.</value>
+  </data>
+  <data name="QuotationValidator.RightExist" xml:space="preserve">
+    <value>Right quotation mark is missing.</value>
+  </data>
+  <data name="QuotationValidator.LeftExist" xml:space="preserve">
+    <value>Left quotation mark is missing.</value>
+  </data>
+  <data name="SpaceBetweenAlphabeticalWordValidator.Before" xml:space="preserve">
+    <value>Space not present before an alphabetical word.</value>
+  </data>
+  <data name="SpaceBetweenAlphabeticalWordValidator.After" xml:space="preserve">
+    <value>Space not present after an alphabetical word.</value>
+  </data>
+  <data name="SpaceBetweenAlphabeticalWordValidator.Forbidden" xml:space="preserve">
+    <value>Space exists around the alphabetical word "{0}".</value>
+  </data>
+  <data name="SymbolWithSpaceValidator.Before" xml:space="preserve">
+    <value>Need whitespace before symbol "{0}".</value>
+  </data>
+  <data name="SymbolWithSpaceValidator.After" xml:space="preserve">
+    <value>Need whitespace after symbol "{0}".</value>
+  </data>
+  <data name="SymbolWithSpaceValidator.BeforeAfter" xml:space="preserve">
+    <value>Need whitespace before and after symbol "{0}".</value>
+  </data>
+  <data name="DoubledWordValidator" xml:space="preserve">
+    <value>Found repeated word "{0}".</value>
+  </data>
+  <data name="SuccessiveWordValidator" xml:space="preserve">
+    <value>Found word "{0}" repeated twice in succession.</value>
+  </data>
+  <data name="HankakuKanaValidator" xml:space="preserve">
+    <value>Found Hankaku Kana character "{0}".</value>
+  </data>
+  <data name="JapaneseStyleValidator" xml:space="preserve">
+    <value>Found invalid Japanese Style "{0}"</value>
+  </data>
+  <data name="DoubleNegativeValidator" xml:space="preserve">
+    <value>Found double negative expression "{0}"</value>
+  </data>
+  <data name="NumberFormatValidator.TooManyDecimals" xml:space="preserve">
+    <value>Number {0} has too many decimal delimiters.</value>
+  </data>
+  <data name="NumberFormatValidator.UndelimitedSequenceTooLong" xml:space="preserve">
+    <value>Number {0} requires a delimiter every three digits (eg: 1,000.00 or 1.000,00).</value>
+  </data>
+  <data name="NumberFormatValidator.UndelimitedSequenceTooShort" xml:space="preserve">
+    <value>Number {0} has a delimiter in the wrong position.</value>
+  </data>
+  <data name="ParenthesizedSentenceValidator.NestingLevelTooDeep" xml:space="preserve">
+    <value>Parenthesized sentences are nested too deeply.</value>
+  </data>
+  <data name="ParenthesizedSentenceValidator.SubsentenceTooLong" xml:space="preserve">
+    <value>Parenthesized sentence is too long.</value>
+  </data>
+  <data name="ParenthesizedSentenceValidator.SubsentenceTooFrequent" xml:space="preserve">
+    <value>Too many parenthesized sentences.</value>
+  </data>
+  <data name="HyphenationValidator.HyphenatedInDictionary" xml:space="preserve">
+    <value>This phrase should be hyphenated (ie: "{0}").</value>
+  </data>
+  <data name="OkuriganaValidator" xml:space="preserve">
+    <value>Found an invalid Okurigana expression "{0}"</value>
+  </data>
+  <data name="DoubledJoshiValidator" xml:space="preserve">
+    <value>Found repeated Joshi word "{0}"</value>
+  </data>
+  <data name="WeakExpressionValidator.WeakExpression" xml:space="preserve">
+    <value>{0} is considered a weak expression.</value>
+  </data>
+  <data name="JapaneseAnchorExpressionValidator" xml:space="preserve">
+    <value>Found invalid anchor expression "{0}".</value>
+  </data>
+  <data name="RedundantExpressionValidator" xml:space="preserve">
+    <value>{0} is considered redundant expression.</value>
+  </data>
+  <data name="LongKanjiChainValidator" xml:space="preserve">
+    <value>Found too long kanji chain: "{0}" ({1}.)</value>
+  </data>
+  <data name="JapaneseNumberExpressionValidator" xml:space="preserve">
+    <value>Found invalid number expression "{0}".</value>
+  </data>
+  <data name="JapaneseAmbiguousNounConjunctionValidator" xml:space="preserve">
+    <value>Found ambiguous noun conjunction: "...{0}..."</value>
+  </data>
+  <data name="JapaneseBrokenExpressionValidator" xml:space="preserve">
+    <value>Found broken japanese expression (missing "Ra"): "{0}"</value>
+  </data>
+  <data name="JapaneseJoyoKanjiValidator" xml:space="preserve">
+    <value>Found non-joyo kanji: "{0}"</value>
+  </data>
+  <data name="DoubledConjunctiveParticleGaValidator" xml:space="preserve">
+    <value>Found multiple conjunctive particle: "{0}"</value>
+  </data>
+  <data name="SuccessiveSentenceValidator" xml:space="preserve">
+    <value>Found similar two sentences in succession: "{0}" and "{1}"</value>
+  </data>
 </root>
