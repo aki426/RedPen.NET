@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using System.Globalization;
+﻿using System.Globalization;
 using FluentAssertions;
+using Xunit;
 
 namespace VerifyBasicFunction.Tests
 {
@@ -15,13 +10,16 @@ namespace VerifyBasicFunction.Tests
         public void GetHelloMessageTest()
         {
             var v = ResourceSampleModel.GetHelloMessage(CultureInfo.InvariantCulture);
-            v.Should().Be("こんにちは、世界。");
+            v.Should().Be("Hello, world!");
 
             v = ResourceSampleModel.GetHelloMessage(new CultureInfo("en-US"));
             v.Should().Be("Hello, world!");
 
             v = ResourceSampleModel.GetHelloMessage(new CultureInfo("en"));
             v.Should().Be("Hello, world!");
+
+            v = ResourceSampleModel.GetHelloMessage(new CultureInfo("ja-JP"));
+            v.Should().Be("こんにちは、世界。");
         }
     }
 }

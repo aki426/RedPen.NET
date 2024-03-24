@@ -118,12 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="HelloWorld" xml:space="preserve">
-    <value>Hello, world!</value>
+    <value>こんにちは、世界。</value>
   </data>
   <data name="SentenceLengthValidator" xml:space="preserve">
-    <value>Too long sentence.</value>
+    <value>文が長すぎます。</value>
   </data>
   <data name="InvalidSymbolValidator" xml:space="preserve">
-    <value>Exist invalid symbol.</value>
+    <value>不正な記号が使用されています。</value>
   </data>
 </root>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VerifyBasicFunction {
+namespace RedPen.Net.Core {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace VerifyBasicFunction {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ErrorMessage {
+    internal class ValidationMessage {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ErrorMessage() {
+        internal ValidationMessage() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace VerifyBasicFunction {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("VerifyBasicFunction.ErrorMessage", typeof(ErrorMessage).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RedPen.Net.Core.ValidationMessage", typeof(ValidationMessage).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,29 +61,11 @@ namespace VerifyBasicFunction {
         }
         
         /// <summary>
-        ///   Hello, world! に類似しているローカライズされた文字列を検索します。
+        ///   The expanded form of the acronym {0} is not present in the document. に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string HelloWorld {
+        internal static string UnexpandedAcronymValidator_UnexpandedAcronym {
             get {
-                return ResourceManager.GetString("HelloWorld", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Invalid Symbol exist in the sentence. に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string InvalidSymbolValidator {
-            get {
-                return ResourceManager.GetString("InvalidSymbolValidator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Too long sentence. に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string SentenceLengthValidator {
-            get {
-                return ResourceManager.GetString("SentenceLengthValidator", resourceCulture);
+                return ResourceManager.GetString("UnexpandedAcronymValidator.UnexpandedAcronym", resourceCulture);
             }
         }
     }

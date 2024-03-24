@@ -17,6 +17,7 @@ readpenをC#アプリケーションからスマートに利用したかった�
 - RedPen.NET.Core
    - RedPen本体のCoreクラスライブラリ。.NET Standard 2.0対応。
    - Nullable, init, recordを使用するためC# LangVersionを10.0へ変更済み。
+   - リソース管理をJAVA版のプロパティテキストファイル方式からResXManagerによるリソース管理へ変更。
 - VerifyBasicFunction
    - .NET Standard 2.0フレームワークや利用パッケージの動作確認用のクラスライブラリです。
    - RedPen.NET.Coreと同じ設定、同じ利用パッケージを維持し、フレームワークやパッケージ依存のバグを検出することが目的です。
