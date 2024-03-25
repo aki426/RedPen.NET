@@ -1,18 +1,14 @@
-﻿using Lucene.Net.Store;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Resources;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 using RedPen.Net.Core.Utility;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Resources;
-using static Lucene.Net.Documents.Field;
 
 namespace RedPen.Net.Core.Validator
 {
@@ -60,6 +56,7 @@ namespace RedPen.Net.Core.Validator
         protected internal Configuration globalConfig;
 
         // MEMO: JAVAのLocaleはC#のCultureInfoに相当する。
+        // MEMO: デフォルトのCultureはコンストラクタ内で与えられる。
         private CultureInfo locale;
 
         // TODO: validatorNameはイコールクラス名。
@@ -81,6 +78,9 @@ namespace RedPen.Net.Core.Validator
         public Validator(object[] keyValues)
         {
             validatorName = this.GetType().Name;
+
+            // MEMO: デフォルトのCultureInfoはDefaultThreadCurrentCultureに設定される。
+            // TODO: デフォルトCultureの設定方法がこれで良いかはライブラリ全体の仕様を見て再検討する。
             setLocale(CultureInfo.DefaultThreadCurrentCulture);
             setDefaultProperties(keyValues);
         }
@@ -183,44 +183,32 @@ namespace RedPen.Net.Core.Validator
         {
             this.config = config;
             this.globalConfig = globalConfig;
-            init();
+            Init();
         }
 
         /// <summary>
         /// Localeをセットするとともに、Locale情報に対応するリソースを引き当てる。
+        /// TODO: プロパティへの変更を検討する。
         /// </summary>
         /// <param name="locale">The locale.</param>
-        private void setLocale(CultureInfo locale)
+        public void setLocale(CultureInfo locale)
         {
             this.locale = locale;
 
-            // 初めにカルチャに対応したResourceManagerを生成する。
-            // 次に、Validatorの種類に応じたファイルをリソースから取り出す。
-            // ファイル中にクラス名をキーとしたプロパティが存在するのでエラーメッセージとして取得する。
+            // MEMO: Validatorが反す文章エラーの説明メッセージはValidationMessage.resxにまとめた。
+            // JAVA版ではリソースをNameSpaceごとに分割していたが、C#版では分ける意義が薄いと判断し
+            // すべてのValidatorのエラーメッセージを1つのリソースマネージャで管理するようにした。
+            // これによってパッケージ名でリソースを指定する必要が無くなり、Validatorのクラス名のみをキーとして
+            // エラーメッセージにアクセスできる。
 
-            // MEMO: 引き当てるべきリソース名は、次のフォーマット。
-            // パッケージ名.クラス名
+            // MEMO: カルチャの違いでメッセージを返す機能はリソースマネージャから提供されるロジックを利用する。
+            // リソースマネージャのデフォルトはen-US、日本語の場合はja-JPを指定する。
+            // MEMO: JAVA版ではResourceBundleの割り当て時エラー処理をしているが、C#ではValidationMessage.ResourceManagerで
+            // 解決するので不要。
+            errorMessages = ValidationMessage.ResourceManager;
 
-            string packageName = this.GetType().Namespace?.Split('.').LastOrDefault() ?? string.Empty;
-            //try
-            //{
-            //    // TODO: 次のコードにlocaleとfallbackControlを適切に指定しリソースをロードする。
-            //    ResourceManager resourceManager = new ResourceManager($"{packageName}.{this.GetType().Name}", typeof(MyClass).Assembly);
-            //    string value = resourceManager.GetString("MyKey"); // リソースから値を取得する
-            //}
-            //catch (MissingManifestResourceException ignore)
-            //{
-            //    try
-            //    {
-            //        errorMessages = ResourceBundle.getBundle(packageName + ".error-messages", locale, fallbackControl);
-            //    }
-            //    catch (MissingManifestResourceException ignoreAgain)
-            //    {
-            //    }
-            //}
-
-            // TODO: 仮実装のためリソースを定義して修正する。
-            errorMessages = new ResourceManager($"{packageName}.{this.GetType().Name}", this.GetType().Assembly);
+            // MEMO: 実際にこのクラスに対応するエラーメッセージがリソースに登録されているかの確認は、
+            // JAVA版でもこの関数内ではしていないようなので、別途実施する。
         }
 
         // MEMO: JAVA版では@Deprecatedアノテーションを使用しているが、C#ではObsolete属性を使用する。
@@ -238,7 +226,7 @@ namespace RedPen.Net.Core.Validator
         /// Validation initialization, called after the configuration and symbol tables have been assigned
         /// MEMO: JAVA版ではエラーの場合はRedPenExceptionをthrowすることになっている。
         /// </summary>
-        protected virtual void init()
+        protected virtual void Init()
         { }
 
         public virtual Dictionary<string, object> getProperties()
@@ -594,9 +582,9 @@ namespace RedPen.Net.Core.Validator
             if (errorMessages != null)
             {
                 string suffix = key != null ? "." + key : "";
-                // TODO: localeを考慮してリソースからエラーメッセージパターンを取得する必要がある場合は、
-                // 仕様がわかってきたら修正する。
-                string pattern = errorMessages.GetString(this.GetType().Name + suffix);
+
+                // Validatorのクラス名 + "." + キー名サフィックスで検索した現在のロケール用のメッセージ。
+                string pattern = errorMessages.GetString(this.GetType().Name + suffix, locale);
 
                 // MessageFormatの代わりにstring.Formatを使用
                 return string.Format(locale, pattern, args);

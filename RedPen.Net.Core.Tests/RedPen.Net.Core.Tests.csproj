@@ -72,7 +72,9 @@
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
     <Compile Include="Utility\RuleExtractorTests.cs" />
     <Compile Include="Utility\StringUtilsTests.cs" />
-    <Compile Include="Validator\Sentence\SentenceLengthValidatorTests.cs" />
+    <Compile Include="Validator\SentenceValidator\CommaNumberValidatorTests.cs" />
+    <Compile Include="Validator\SentenceValidator\SentenceLengthValidatorTests.cs" />
+    <Compile Include="Validator\ValidatorFactoryTests.cs" />
     <Compile Include="Validator\ValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>

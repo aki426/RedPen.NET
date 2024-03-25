@@ -84,7 +84,7 @@ namespace RedPen.Net.Core.Config
         public ConfigurationBuilder AddAvailableValidatorConfigs()
         {
             CheckBuilt();
-            validatorConfigs.AddRange(ValidatorFactory.getConfigurations(lang));
+            validatorConfigs.AddRange(ValidatorFactory.GetConfigurations(lang));
             return this;
         }
 

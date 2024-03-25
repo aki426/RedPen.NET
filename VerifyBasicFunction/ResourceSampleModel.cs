@@ -26,11 +26,10 @@ namespace VerifyBasicFunction
         /// <param name="cultureInfo">The culture info.</param>
         /// <param name="propertyName">The property name.</param>
         /// <returns>A string.</returns>
-        public static string GetMessage(CultureInfo cultureInfo, string propertyName)
+        public static string GetMessage(string propertyName, CultureInfo cultureInfo)
         {
-            Thread.CurrentThread.CurrentUICulture = cultureInfo;
             // propertyNameで渡された文字列をキーとして、ErrorMessageクラスのプロパティを取得する
-            return ErrorMessage.ResourceManager.GetString(propertyName);
+            return ErrorMessage.ResourceManager.GetString(propertyName, cultureInfo);
         }
     }
 }

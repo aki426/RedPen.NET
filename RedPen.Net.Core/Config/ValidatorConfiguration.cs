@@ -90,25 +90,45 @@ namespace RedPen.Net.Core.Config
         }
     }
 
+    /// <summary>
+    /// The validator configuration.
+    /// </summary>
     public class ValidatorConfiguration : ICloneable, IEquatable<ValidatorConfiguration>
     {
+        /// <summary>Configuration name string</summary>
         public string ConfigurationName { get; private set; }
 
+        /// <summary>Property dictionary</summary>
         public Dictionary<string, string> Properties { get; private set; }
 
         /// <summary>エラーLevel。デフォルトはERROR</summary>
         public Level Level { get; private set; } = Level.ERROR;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValidatorConfiguration"/> class.
+        /// </summary>
+        /// <param name="configurationName">The configuration name.</param>
         public ValidatorConfiguration(string configurationName) :
             this(configurationName, new Dictionary<string, string>())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValidatorConfiguration"/> class.
+        /// </summary>
+        /// <param name="configurationName">The configuration name.</param>
+        /// <param name="properties">The properties.</param>
         public ValidatorConfiguration(string configurationName, Dictionary<string, string> properties) :
             this(configurationName, properties, Level.ERROR)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValidatorConfiguration"/> class.
+        /// </summary>
+        /// <param name="configurationName">The configuration name.</param>
+        /// <param name="properties">The properties.</param>
+        /// <param name="level">The level.</param>
         public ValidatorConfiguration(string configurationName, Dictionary<string, string> properties, Level level)
         {
             this.ConfigurationName = configurationName;
@@ -128,6 +148,11 @@ namespace RedPen.Net.Core.Config
         //    return this.Properties[name];
         //}
 
+        /// <summary>
+        /// Sets the level.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <returns>A ValidatorConfiguration.</returns>
         public ValidatorConfiguration SetLevel(string level)
         {
             try
@@ -142,17 +167,32 @@ namespace RedPen.Net.Core.Config
             return this;
         }
 
+        /// <summary>
+        /// Sets the level.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <returns>A ValidatorConfiguration.</returns>
         public ValidatorConfiguration SetLevel(Level level)
         {
             this.Level = level;
             return this;
         }
 
+        /// <summary>
+        /// Gets the validator class name.
+        /// </summary>
+        /// <returns>A string.</returns>
         public string GetValidatorClassName()
         {
             return ConfigurationName + "Validator";
         }
 
+        /// <summary>
+        /// Adds the property.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>A ValidatorConfiguration.</returns>
         public ValidatorConfiguration AddProperty(string name, object value)
         {
             // JAVAの実装ではObject型に対してString.valueOfを使っている。一旦ToStringを使う。
@@ -163,6 +203,11 @@ namespace RedPen.Net.Core.Config
         // MEMO: JAVAの実装ではaddAttributeがあったが使用されていなかったので実装しない。
         // 中身はaddPropertyと同じだった。
 
+        /// <summary>
+        /// Equals the.
+        /// </summary>
+        /// <param name="obj">The obj.</param>
+        /// <returns>A bool.</returns>
         public override bool Equals(object? obj)
         {
             if (this == obj) return true;
@@ -171,6 +216,11 @@ namespace RedPen.Net.Core.Config
             return this.Equals(obj as ValidatorConfiguration);
         }
 
+        /// <summary>
+        /// Equals the.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>A bool.</returns>
         public bool Equals(ValidatorConfiguration? other)
         {
             if (this == other) return true;
@@ -182,17 +232,29 @@ namespace RedPen.Net.Core.Config
                    Level == other.Level;
         }
 
+        /// <summary>
+        /// Gets the hash code.
+        /// </summary>
+        /// <returns>An int.</returns>
         public override int GetHashCode()
         {
             // ConfigurationNameのみのHash値を返す。
             return HashCode.Combine(ConfigurationName);
         }
 
+        /// <summary>
+        /// Tos the string.
+        /// </summary>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return ConfigurationName;
         }
 
+        /// <summary>
+        /// Clones the.
+        /// </summary>
+        /// <returns>A ValidatorConfiguration.</returns>
         public ValidatorConfiguration Clone()
         {
             try
@@ -210,6 +272,10 @@ namespace RedPen.Net.Core.Config
             }
         }
 
+        /// <summary>
+        /// Clones the.
+        /// </summary>
+        /// <returns>An object.</returns>
         object ICloneable.Clone()
         {
             return this.Clone();
