@@ -206,7 +206,7 @@ namespace RedPen.Net.Core.Tests.Config
 
         /// <summary>
         /// Cans the be cloned.
-        /// TODO: C#のCloneはpublic object Clone()であり、Configurationを反すDeepCopy()で代用した。
+        /// TODO: C#のCloneはpublic object Clone()であり、Configurationを返すDeepCopy()で代用した。
         /// 最終的にCloneをDeepCopyへすべて置き換えるか要検討。
         /// </summary>
         [Fact]

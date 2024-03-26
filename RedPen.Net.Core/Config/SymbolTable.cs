@@ -49,7 +49,7 @@ namespace RedPen.Net.Core.Config
             customSymbols.ForEach(i => this.UpdateSymbol(i));
         }
 
-        // TODO: GetDefaultSymbolsの反す型をIDictionaryかReadOnlyDictionaryか使用法によって検討する。
+        // TODO: GetDefaultSymbolsの返す型をIDictionaryかReadOnlyDictionaryか使用法によって検討する。
 
         /// <summary>langとvariantの設定に応じてデフォルトシンボルのDictionaryを取得する。</summary>
         public IDictionary<SymbolType, Symbol> DefaultSymbols

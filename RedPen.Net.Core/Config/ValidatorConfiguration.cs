@@ -95,6 +95,7 @@ namespace RedPen.Net.Core.Config
     /// </summary>
     public class ValidatorConfiguration : ICloneable, IEquatable<ValidatorConfiguration>
     {
+        // TODO: むしろValidationNameなどに改めた方が良い。移植の都合上Ver 1.0まではこのままとする。
         /// <summary>Configuration name string</summary>
         public string ConfigurationName { get; private set; }
 

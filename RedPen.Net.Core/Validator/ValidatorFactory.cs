@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using NLog;
@@ -15,8 +16,10 @@ namespace RedPen.Net.Core.Validator
     {
         private static Logger LOG = LogManager.GetCurrentClassLogger();
 
+        /// <summary>"RedPen.Net.Core.Validator"</summary>
         private static readonly string validatorPackage = typeof(Validator).Assembly.GetName().Name;
 
+        /// <summary>クラス検索対象NameSpaceとして登録されたValidatorフォルダと配下のフォルダ</summary>
         private static readonly List<string> VALIDATOR_PACKAGES = new List<string> {
             validatorPackage,
             $"{validatorPackage}.DocumentValidator",
@@ -25,16 +28,74 @@ namespace RedPen.Net.Core.Validator
         };
 
         // MEMO: MapはDictionaryに置き換え。LinkedHashMapは一旦Dictionaryに変更。
+        /// <summary>Validatorを実装したクラスのインスタンスを名前をキーとしたDictionaryに詰め込んだもの。
+        /// キーであるValidator名はクラス名から文字列"Validator"を除いたもの。</summary>
         private static readonly Dictionary<string, Validator> validators = new Dictionary<string, Validator>();
 
-        private static readonly Dictionary<string, string> jsValidators = new Dictionary<string, string>();
+        // TODO: JSのValidatorについては未実装。
+        /// <summary>Javascriptで実装されたValidatorを名前をキーとしてDictionaryに詰め込んだもの。</summary>
+        //private static readonly Dictionary<string, string> jsValidators = new Dictionary<string, string>();
+
+        /// <summary>Reflectionで取得したValidatorクラスを実装した具象クラスのTypeリスト</summary>
+        public static List<Type> ValidatorTypes => Assembly.GetExecutingAssembly().GetTypes()
+            .Where(i => typeof(Validator).IsAssignableFrom(i) && !i.IsAbstract).ToList();
 
         /// <summary>
-        /// Gets the validator types.
+        /// TypeからValidatorのインスタンスを生成して返す関数。Exception発生時はログを出力して例外をスローする。
         /// </summary>
-        /// <returns>A list of Types.</returns>
-        public static List<Type> GetValidatorTypes() => Assembly.GetExecutingAssembly().GetTypes()
-            .Where(i => typeof(Validator).IsAssignableFrom(i) && !i.IsAbstract).ToList();
+        /// <param name="t">The t.</param>
+        /// <returns>A Validator.</returns>
+        private static Validator CreateValidator(Type t)
+        {
+            try
+            {
+                return (Validator)t.Assembly.CreateInstance(t.FullName);
+            }
+            catch (ArgumentNullException e)
+            {
+                LOG.Error(e);
+                throw;
+            }
+            catch (MissingMethodException e)
+            {
+                LOG.Error(e);
+                throw;
+            }
+            catch (FileNotFoundException e)
+            {
+                LOG.Error(e);
+                throw;
+            }
+            catch (FileLoadException e)
+            {
+                LOG.Error(e);
+                throw;
+            }
+            catch (BadImageFormatException e)
+            {
+                LOG.Error(e);
+                throw;
+            }
+            catch (InvalidCastException e)
+            {
+                // キャスト失敗時は例外で検知する。
+                LOG.Error(e);
+                throw;
+            }
+            catch (Exception e)
+            {
+                if (e is MemberAccessException || e is FieldAccessException || e is MethodAccessException)
+                {
+                    LOG.Error(e);
+                    throw new InvalidOperationException($"Cannot create instance of {t.Name} using default constructor");
+                }
+                else
+                {
+                    LOG.Error(e);
+                    throw;
+                }
+            }
+        }
 
         /// <summary>
         /// Registers the validator.
@@ -42,15 +103,17 @@ namespace RedPen.Net.Core.Validator
         /// <param name="t">The t.</param>
         private static void RegisterValidator(Type t)
         {
-            // clazzインスタンスがObsolete属性を持っているかどうかを判定する。
-            // TODO: Obsolete属性があっても登録は行う。これが期待する仕様かどうかは要検討。
-            //Attribute.GetCustomAttribute(element: typeInfo, typeof(ObsoleteAttribute)) != null;
+            // Type tのクラスがObsolete属性を持っているかどうかを判定し、ログを出力する。
+            // Obsolete属性があってもvalidators Dictionaryへ登録する。
+            // TODO: Obsolete属性のValidatorを今後も使用することが、期待する仕様かどうかは要検討。
             if (t.IsDefined(typeof(ObsoleteAttribute), inherit: false))
             {
                 LOG.Warn(t.Name + " is deprecated");
             }
-            validators.Add(t.Name.Replace("Validator", ""), (Validator)t.Assembly.CreateInstance(t.FullName));
-            //validators.Add(typeInfo.Name.Replace("Validator", ""), CreateValidator<T>(clazz));
+
+            // MEMO: CreateValidatorで例外が発生する可能性があるが、JAVA版が握りつぶさない仕様だったのでC#でも踏襲。
+            // TODO: ロードできないValidatorがある場合、そのValidatorを無視して続けた方が良いかどうかは要検討。
+            validators.Add(t.Name.Replace("Validator", ""), CreateValidator(t));
         }
 
         /// <summary>
@@ -60,19 +123,26 @@ namespace RedPen.Net.Core.Validator
         static ValidatorFactory()
         {
             // Validatorの実装を登録する。
-            foreach (Type validatorType in GetValidatorTypes())
+            foreach (Type validatorType in ValidatorTypes)
             {
                 try
                 {
                     RegisterValidator(validatorType);
                 }
-                catch (SystemException ignored)
+                catch (Exception ignored)
                 {
-                    // デフォルトコンストラクタがない場合は無視
+                    // MEMO: JAVA版は次のコメントがあるのみで、Static Initializer内でのValidatorロード時
+                    // 例外発生したValidatorは無視して処理を続ける仕様。
+                    // the validator doesn't implement default constructor
+
+                    // MEMO: JAVA版は非推奨のnewInstance関数を使用していたこともあり、例外のフィルタリングをして
+                    // throwする例外と握りつぶす例外を区別していたのかどうか意図が不明。
+                    // C#版ではValidatorの生成および登録全体で失敗した場合はログのみ出して処理を続ける仕様とする。
+                    LOG.Warn(validatorType.Name + " is not registered");
                 }
             }
 
-            // *.jsファイルを読み込む
+            // TODO: JSのValidatorについては未実装。
             //var assembly = Assembly.GetExecutingAssembly();
             //var resourceNames = assembly.GetManifestResourceNames().Where(x => x.EndsWith(".js"));
 
@@ -103,6 +173,9 @@ namespace RedPen.Net.Core.Validator
                 //bool deprecated = e.Value.GetType().GetCustomAttributes(typeof(ObsoleteAttribute), false).Length == 0 ? false : true;
                 bool deprecated = e.Value.GetType().IsDefined(typeof(ObsoleteAttribute), inherit: false);
 
+                // MEMO: サポート言語が未指定の場合は全言語対応とみなす。
+                // また、サポート言語がある場合は指定のlangに対応しているかどうかとdeprecatedではないことが条件となる。
+                // TODO: Deprecated属性のValidatorに関してPropertyが取得できないことになるが、これが期待する仕様かどうかは要検討。
                 return (!supportedLanguages.Any() || supportedLanguages.Contains(lang)) && !deprecated;
             }).Select(e => new ValidatorConfiguration(e.Key, ToStrings(e.Value.getProperties()))).ToList();
 
@@ -130,6 +203,8 @@ namespace RedPen.Net.Core.Validator
         //    @SuppressWarnings("unchecked")
         /// <summary>
         /// Convert object Dictionary to string Dictionary.
+        /// TODO: JAVA版ではObject型を多用するスタイルだったが、C#版でもそれでよいのか、
+        /// 実体がstringなのでstringでの運用に切り替えたほうが良いのかは要検討。
         /// </summary>
         /// <param name="properties">The properties.</param>
         /// <returns>A Dictionary.</returns>
@@ -152,20 +227,20 @@ namespace RedPen.Net.Core.Validator
         }
 
         /// <summary>
-        /// Gets the instance.
+        /// Validator名からValidatorクラスのインスタンスを返す関数。
         /// </summary>
         /// <param name="validatorName">The validator name.</param>
         /// <returns>A Validator.</returns>
         public static Validator GetInstance(string validatorName)
-
         {
+            // TODO: 普通にvalidatorsから取得するだけのコードに切り替えて良いかどうか要検討。
             Configuration conf = Configuration.Builder().AddValidatorConfig(new ValidatorConfiguration(validatorName)).Build();
 
             return GetInstance(conf.ValidatorConfigs[0], conf);
         }
 
         /// <summary>
-        /// Gets the instance.
+        /// ConfigurationからValidatorクラスのインスタンスを返す関数。
         /// </summary>
         /// <param name="config">The config.</param>
         /// <param name="globalConfig">The global config.</param>
@@ -186,6 +261,10 @@ namespace RedPen.Net.Core.Validator
             Validator prototype = validators[config.ConfigurationName];
 
             Type validatorClass = prototype != null ? prototype.GetType() : LoadPlugin(validatorName);
+
+            // MEMO: GetInstanceでは都度CreateValidatorを実行して新規インスタンスを返している。
+            // validators内に存在するValidatorのインスタンスが使用されることはなく、
+            // Factoryメソッドの仕組みとしてこれで良いか再考の余地あり。DIフレームワークでも使うか？
             Validator validator = CreateValidator(validatorClass);
             validator.PreInit(config, globalConfig);
             return validator;
@@ -193,7 +272,7 @@ namespace RedPen.Net.Core.Validator
 
         //    @SuppressWarnings("unchecked")
         /// <summary>
-        /// loads the plugin.
+        /// GetInstance関数から呼ばれる、アプリ実行中の動的なValidatorロードのための関数？
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>A Type.</returns>
@@ -213,30 +292,6 @@ namespace RedPen.Net.Core.Validator
                 }
             }
             throw new RedPenException("There is no such validator: " + name);
-        }
-
-        /// <summary>
-        /// Creates the validator.
-        /// </summary>
-        /// <param name="t">The t.</param>
-        /// <returns>A Validator.</returns>
-        private static Validator CreateValidator(Type t)
-        {
-            try
-            {
-                return (Validator)t.Assembly.CreateInstance(t.FullName);
-            }
-            catch (Exception e)
-            {
-                if (e is MemberAccessException || e is FieldAccessException || e is MethodAccessException)
-                {
-                    throw new InvalidOperationException($"Cannot create instance of {t.Name} using default constructor");
-                }
-                else
-                {
-                    throw;
-                }
-            }
         }
     }
 }

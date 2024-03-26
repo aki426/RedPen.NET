@@ -195,7 +195,7 @@ namespace RedPen.Net.Core.Validator
         {
             this.locale = locale;
 
-            // MEMO: Validatorが反す文章エラーの説明メッセージはValidationMessage.resxにまとめた。
+            // MEMO: Validatorが返す文章エラーの説明メッセージはValidationMessage.resxにまとめた。
             // JAVA版ではリソースをNameSpaceごとに分割していたが、C#版では分ける意義が薄いと判断し
             // すべてのValidatorのエラーメッセージを1つのリソースマネージャで管理するようにした。
             // これによってパッケージ名でリソースを指定する必要が無くなり、Validatorのクラス名のみをキーとして

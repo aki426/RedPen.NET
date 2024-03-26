@@ -154,7 +154,7 @@ namespace RedPen.Net.Core.Config
 
             // MEMO: https://docs.oracle.com/javase/jp/6/api/java/io/File.html
             // FileInfo("").getAbsoluteFile()の戻り値は、カレントディレクトリを表すパスになるが、OSにより挙動が異なる。
-            // C#では近いものとして、現在の作業ディレクトリを反すSystem.Environment.CurrentDirectoryを採用した。
+            // C#では近いものとして、現在の作業ディレクトリを返すSystem.Environment.CurrentDirectoryを採用した。
             // TODO: 実際の挙動としてどのようなものが適当か要検討。
             string currentDirectoryStr = IsSecure ? "" : $"working directory ({System.Environment.CurrentDirectory}), ";
             string baseDirStr = this.ConfBaseDir == null ? "" : $"base ({this.ConfBaseDir}), ";

@@ -16,7 +16,7 @@ namespace RedPen.Net.Core.Tests.Validator
         [Fact]
         public void GetValidatorTypesTest()
         {
-            ValidatorFactory.GetValidatorTypes().ForEach(i => output.WriteLine(i.Name));
+            ValidatorFactory.ValidatorTypes.ForEach(i => output.WriteLine(i.Name));
         }
     }
 }
