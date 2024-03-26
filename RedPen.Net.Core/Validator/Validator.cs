@@ -57,7 +57,7 @@ namespace RedPen.Net.Core.Validator
 
         // MEMO: JAVAのLocaleはC#のCultureInfoに相当する。
         // MEMO: デフォルトのCultureはコンストラクタ内で与えられる。
-        private CultureInfo locale;
+        public CultureInfo Locale { get; private set; }
 
         // TODO: validatorNameはイコールクラス名。
         protected string validatorName;
@@ -190,10 +190,10 @@ namespace RedPen.Net.Core.Validator
         /// Localeをセットするとともに、Locale情報に対応するリソースを引き当てる。
         /// TODO: プロパティへの変更を検討する。
         /// </summary>
-        /// <param name="locale">The locale.</param>
+        /// <param name="locale">The Locale.</param>
         public void setLocale(CultureInfo locale)
         {
-            this.locale = locale;
+            this.Locale = locale;
 
             // MEMO: Validatorが返す文章エラーの説明メッセージはValidationMessage.resxにまとめた。
             // JAVA版ではリソースをNameSpaceごとに分割していたが、C#版では分ける意義が薄いと判断し
@@ -584,10 +584,10 @@ namespace RedPen.Net.Core.Validator
                 string suffix = key != null ? "." + key : "";
 
                 // Validatorのクラス名 + "." + キー名サフィックスで検索した現在のロケール用のメッセージ。
-                string pattern = errorMessages.GetString(this.GetType().Name + suffix, locale);
+                string pattern = errorMessages.GetString(this.GetType().Name + suffix, Locale);
 
                 // MessageFormatの代わりにstring.Formatを使用
-                return string.Format(locale, pattern, args);
+                return string.Format(Locale, pattern, args);
             }
             else
             {
@@ -705,7 +705,7 @@ namespace RedPen.Net.Core.Validator
             hash.Add(this.GetType());
             hash.Add(config);
             //hash.Add(globalConfig);
-            //hash.Add(locale);
+            //hash.Add(Locale);
             //hash.Add(validatorName);
             //hash.Add(errors);
             //hash.Add(SymbolTable);
