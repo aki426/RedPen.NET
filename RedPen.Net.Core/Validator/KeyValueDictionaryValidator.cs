@@ -34,40 +34,39 @@ namespace RedPen.Net.Core.Validator
             this.dictionaryPrefix = dictionaryPrefix;
         }
 
-        protected override void Init()
+        //        protected override void Init()
 
-        {
-            if (dictionaryPrefix != null)
-            {
-                string defaultDictionaryFile = "default-resources/" + dictionaryPrefix + "-" + SymbolTable.Lang + ".dat";
+        //        {
+        //            if (dictionaryPrefix != null)
+        //            {
+        //                string defaultDictionaryFile = "default-resources/" + dictionaryPrefix + "-" + SymbolTable.Lang + ".dat";
 
-                Dictionary<string, string> dictionary = loader.loadCachedFromResource(
-                    defaultDictionaryFile,
-                    this.GetType().Name + " default dictionary");
+        //                Dictionary<string, string> dictionary = loader.loadCachedFromResource(
+        //                    defaultDictionaryFile,
+        //                    this.GetType().Name + " default dictionary");
 
-                private getMap("map").private putAll(dictionary);
-        }
+        //                private getMap("map").private putAll(dictionary);
+        //        }
 
-        private String confFile = getString("dict");
-        if (isNotEmpty(confFile)) {
+        //        private String confFile = getString("dict");
+        //        if (isNotEmpty(confFile)) {
+        //            private getMap("map").private putAll(loader.loadCachedFromFile(findFile(confFile), getClass().getSimpleName() + " user dictionary"));
+        //        }
+        //}
 
-            private getMap("map").private putAll(loader.loadCachedFromFile(findFile(confFile), getClass().getSimpleName() + " user dictionary"));
-        }
-}
+        //protected boolean inDictionary(String word)
+        //{
+        //    return getMap("map").containsKey(word);
+        //}
 
-protected boolean inDictionary(String word)
-{
-    return getMap("map").containsKey(word);
-}
-
-protected String getValue(String word)
-{
-    Map<String, String> dictionary = getMap("map");
-    if (dictionary != null && dictionary.containsKey(word))
-    {
-        return dictionary.get(word);
-    }
-    return null;
-}
+        //protected String getValue(String word)
+        //{
+        //    Map<String, String> dictionary = getMap("map");
+        //    if (dictionary != null && dictionary.containsKey(word))
+        //    {
+        //        return dictionary.get(word);
+        //    }
+        //    return null;
+        //}
     }
 }

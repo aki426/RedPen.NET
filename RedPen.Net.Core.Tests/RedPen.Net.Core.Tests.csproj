@@ -69,6 +69,8 @@
     <Compile Include="Tokenizer\NeologdJapaneseTokenizerTests.cs" />
     <Compile Include="Tokenizer\TokenElementTests.cs" />
     <Compile Include="Tokenizer\WhiteSpaceTokenizerTests.cs" />
+    <Compile Include="Utility\CollectionExtensionsTests.cs" />
+    <Compile Include="Utility\DictionaryLoaderTests.cs" />
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
     <Compile Include="Utility\RuleExtractorTests.cs" />
     <Compile Include="Utility\StringUtilsTests.cs" />
