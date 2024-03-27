@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -57,26 +59,32 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             errors[0].Message.Should().Be("The length of the sentence (84) exceeds the maximum of 30.");
         }
 
-        //    @Test
+        /// <summary>
+        /// エラーにならない場合のテスト
+        /// </summary>
+        [Fact]
+        public void WithShortSentenceTest()
+        {
+            Sentence str = new Sentence("this is a sentence.", 0);
+            List<ValidationError> errors = new List<ValidationError>();
+            validator.setErrorList(errors);
+            validator.Validate(str);
 
-        //private void testWithShortSentence()
-        //    {
-        //        Sentence str = new Sentence("this is a sentence.", 0);
-        //        List<ValidationError> errors = new ArrayList<>();
-        //        validator.setErrorList(errors);
-        //        validator.validate(str);
-        //        assertEquals(0, errors.size());
-        //    }
+            errors.Count.Should().Be(0);
+        }
 
-        //    @Test
+        /// <summary>
+        /// 空文字列に対してエラーを検出しないことのテスト
+        /// </summary>
+        [Fact]
+        public void WithZeroLengthSentenceTest()
+        {
+            Sentence str = new Sentence("", 0);
+            List<ValidationError> errors = new List<ValidationError>();
+            validator.setErrorList(errors);
+            validator.Validate(str);
 
-        //private void testWithZeroLengthSentence()
-        //    {
-        //        Sentence str = new Sentence("", 0);
-        //        List<ValidationError> errors = new ArrayList<>();
-        //        validator.setErrorList(errors);
-        //        validator.validate(str);
-        //        assertEquals(0, errors.size());
-        //    }
+            errors.Count.Should().Be(0);
+        }
     }
 }
