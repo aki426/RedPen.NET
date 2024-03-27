@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace RedPen.Net.Core.Validator
+namespace RedPen.Net.Core.Utility
 {
     //使用例
     //var loader = new HashSetLoader<string>(

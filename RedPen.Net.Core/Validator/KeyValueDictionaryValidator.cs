@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Validator
 {
