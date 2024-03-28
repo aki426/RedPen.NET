@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RedPen.Net.Core.Utility
 {
@@ -100,5 +101,32 @@ namespace RedPen.Net.Core.Utility
             dictionary[key] = newValue;
             return newValue;
         }
+
+        /// <summary>
+        /// 2つのDictionaryを結合する関数。firstの内容が優先される。
+        /// </summary>
+        /// <param name="first">The first.</param>
+        /// <param name="second">The second.</param>
+        /// <returns>An IDictionary.</returns>
+        public static IDictionary<TKey, TValue> Merge<TKey, TValue>(
+            this IDictionary<TKey, TValue> first,
+            IDictionary<TKey, TValue> second
+            ) => first.Concat(second)
+                .GroupBy(pair => pair.Key, (_, pairs) => pairs.First())
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+        /// <summary>
+        /// 2つのDictionaryを結合する関数。secondの内容が優先される。
+        /// JAVAのMap.putAllメソッドに相当する。
+        /// </summary>
+        /// <param name="first">The first.</param>
+        /// <param name="second">The second.</param>
+        /// <returns>An IDictionary.</returns>
+        public static IDictionary<TKey, TValue> Update<TKey, TValue>(
+            this IDictionary<TKey, TValue> first,
+            IDictionary<TKey, TValue> second
+            ) => first.Concat(second)
+                .GroupBy(pair => pair.Key, (_, pairs) => pairs.Last())
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
     }
 }

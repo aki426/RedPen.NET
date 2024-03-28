@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Validator
@@ -29,44 +27,67 @@ namespace RedPen.Net.Core.Validator
             addDefaultProperties(keyValues);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KeyValueDictionaryValidator"/> class.
+        /// </summary>
+        /// <param name="dictionaryPrefix">The dictionary prefix.</param>
         public KeyValueDictionaryValidator(string dictionaryPrefix) : this()
         {
             this.dictionaryPrefix = dictionaryPrefix;
         }
 
-        //        protected override void Init()
+        /// <summary>
+        /// Inits the.
+        /// </summary>
+        protected override void Init()
+        {
+            if (dictionaryPrefix != null)
+            {
+                // TODO: C#版のリソース読み込みロジックと、命名規則に合わせる。
+                string defaultDictionaryFile = "DefaultResources." + dictionaryPrefix + "-" + SymbolTable.Lang + ".dat";
 
-        //        {
-        //            if (dictionaryPrefix != null)
-        //            {
-        //                string defaultDictionaryFile = "default-resources/" + dictionaryPrefix + "-" + SymbolTable.Lang + ".dat";
+                Dictionary<string, string> dictionary = loader.LoadCachedFromResource(
+                    defaultDictionaryFile,
+                    this.GetType().Name + " default dictionary");
 
-        //                Dictionary<string, string> dictionary = loader.loadCachedFromResource(
-        //                    defaultDictionaryFile,
-        //                    this.GetType().Name + " default dictionary");
+                // TODO: 次の行が何らかの副作用を期待したものだとすると、期待した挙動にならない可能性があるのでテストケースで検証する。こと。
+                GetDictionary("map").Update(dictionary);
+            }
 
-        //                private getMap("map").private putAll(dictionary);
-        //        }
+            string confFile = GetString("dict");
+            if (!string.IsNullOrEmpty(confFile))
+            {
+                // TODO: 次の行が何らかの副作用を期待したものだとすると、期待した挙動にならない可能性があるのでテストケースで検証する。こと。
+                GetDictionary("map").Update(loader.LoadCachedFromFile(
+                    FindFile(confFile),
+                    this.GetType().Name + " user dictionary"));
+            }
+        }
 
-        //        private String confFile = getString("dict");
-        //        if (isNotEmpty(confFile)) {
-        //            private getMap("map").private putAll(loader.loadCachedFromFile(findFile(confFile), getClass().getSimpleName() + " user dictionary"));
-        //        }
-        //}
+        /// <summary>
+        /// ins the dictionary.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns>A bool.</returns>
+        protected bool inDictionary(string word)
+        {
+            return GetDictionary("map").ContainsKey(word);
+        }
 
-        //protected boolean inDictionary(String word)
-        //{
-        //    return getMap("map").containsKey(word);
-        //}
+        /// <summary>
+        /// gets the value.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns>A string? .</returns>
+        protected string? getValue(string word)
+        {
+            Dictionary<string, string> dictionary = GetDictionary("map");
+            if (dictionary != null && dictionary.ContainsKey(word))
+            {
+                return dictionary[word];
+            }
 
-        //protected String getValue(String word)
-        //{
-        //    Map<String, String> dictionary = getMap("map");
-        //    if (dictionary != null && dictionary.containsKey(word))
-        //    {
-        //        return dictionary.get(word);
-        //    }
-        //    return null;
-        //}
+            return null;
+        }
     }
 }

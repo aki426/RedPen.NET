@@ -298,6 +298,16 @@ namespace RedPen.Net.Core.Validator
         }
 
         /// <summary>
+        /// Gets the string.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>A string.</returns>
+        protected string GetString(string name)
+        {
+            return config.Properties.GetValueOrDefault(name, (string)defaultProps[name]);
+        }
+
+        /// <summary>
         /// Gets the value.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -455,7 +465,7 @@ namespace RedPen.Net.Core.Validator
         /// </summary>
         /// <param name="relativePath">The relative path.</param>
         /// <returns>A FileInfo.</returns>
-        protected internal FileInfo findFile(string relativePath)
+        protected internal FileInfo FindFile(string relativePath)
         {
             return globalConfig.FindFile(relativePath);
         }

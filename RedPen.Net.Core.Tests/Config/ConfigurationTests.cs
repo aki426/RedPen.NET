@@ -296,25 +296,25 @@ namespace RedPen.Net.Core.Tests.Config
         //    @Test
         //    void findFileLooksInWorkingDirectoryFirst() throws Exception {
         //        String firstLocalFilePath = new File(".").list()[0];
-        //assertEquals(new File(firstLocalFilePath), Configuration.builder().build().findFile(firstLocalFilePath));
+        //assertEquals(new File(firstLocalFilePath), Configuration.builder().build().FindFile(firstLocalFilePath));
         //    }
 
         //    @Test
         //    void findFileLooksInConfigBaseDirectorySecond() throws Exception {
-        //        assertEquals(new File("src/main"), Configuration.builder().setBaseDir(new File("src")).build().findFile("main"));
+        //        assertEquals(new File("src/main"), Configuration.builder().setBaseDir(new File("src")).build().FindFile("main"));
         //    }
 
         //    @Test
         //    void findFileLooksInRedPenHomeDirectoryThird() throws Exception {
         //        System.setProperty("REDPEN_HOME", "src");
-        //assertEquals(new File("src/main"), Configuration.builder().build().findFile("main"));
+        //assertEquals(new File("src/main"), Configuration.builder().build().FindFile("main"));
         //    }
 
         //    @Test
         //    void findFileFailsIfFileNotFound() throws Exception {
         //        try {
         //            System.setProperty("REDPEN_HOME", "src");
-        //Configuration.builder().build().findFile("hello.xml");
+        //Configuration.builder().build().FindFile("hello.xml");
         //fail("Expecting RedPenException");
         //        }
         //        catch (RedPenException e) {
@@ -326,7 +326,7 @@ namespace RedPen.Net.Core.Tests.Config
         //    void findFileFailsIfFileNotFound_basePathPresent() throws Exception {
         //        try {
         //            System.setProperty("REDPEN_HOME", "src");
-        //Configuration.builder().setBaseDir(new File("base_dir")).build().findFile("hello.xml");
+        //Configuration.builder().setBaseDir(new File("base_dir")).build().FindFile("hello.xml");
         //fail("Expecting RedPenException");
         //        }
         //        catch (RedPenException e) {
@@ -340,7 +340,7 @@ namespace RedPen.Net.Core.Tests.Config
         //try
         //{
         //    System.setProperty("REDPEN_HOME", "");
-        //    Configuration.builder().secure().build().findFile(firstLocalFilePath);
+        //    Configuration.builder().secure().build().FindFile(firstLocalFilePath);
         //    fail("Secure mode should not allow files from working directory");
         //}
         //catch (RedPenException e)
@@ -353,7 +353,7 @@ namespace RedPen.Net.Core.Tests.Config
         //    void findFile_secureMode() throws Exception {
         //        try {
         //            System.setProperty("REDPEN_HOME", "");
-        //Configuration.builder().secure().build().findFile("/etc/passwd");
+        //Configuration.builder().secure().build().FindFile("/etc/passwd");
         //fail("Secure mode should not allow file locations outside config paths");
         //        }
         //        catch (RedPenException e) {
