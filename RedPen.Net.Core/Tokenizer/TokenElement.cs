@@ -26,7 +26,7 @@ namespace RedPen.Net.Core.Tokenizer
         /// <summary>
         /// token metadata (POS, etc)
         /// </summary>
-        public ReadOnlyCollection<string> Tags => tags.AsReadOnly();
+        public List<string> Tags => tags;
 
         /// <summary>
         /// the character position of the token in the sentence
@@ -59,7 +59,7 @@ namespace RedPen.Net.Core.Tokenizer
         /// <param name="word">The word.</param>
         /// <param name="tagList">The tag list.</param>
         /// <param name="offset">The offset.</param>
-        public TokenElement(string word, List<string> tagList, int offset) : this(word, tagList, offset, word)
+        public TokenElement(string word, ReadOnlyCollection<string> tags, List<string> tagList, int offset) : this(word, tagList, offset, word)
         { }
 
         /// <summary>

@@ -55,6 +55,7 @@
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CultureInfoTests.cs" />
     <Compile Include="EnvironmentTests.cs" />
     <Compile Include="KuromojiTests.cs" />
     <Compile Include="NullableSampleModelTests.cs" />
