@@ -10,7 +10,7 @@ namespace RedPen.Net.Core.Validator
     /// </summary>
     public class KeyValueDictionaryValidator : Validator
     {
-        protected DictionaryLoader<string, string> loader = KEY_VALUE;
+        protected DictionaryLoader<Dictionary<string, string>> loader = KEY_VALUE;
         private string dictionaryPrefix;
 
         /// <summary>

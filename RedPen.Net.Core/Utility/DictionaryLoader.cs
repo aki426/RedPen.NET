@@ -17,43 +17,43 @@ namespace RedPen.Net.Core.Utility
     //
     //var config = loader.Load("config.txt");
 
-    /// <summary>
-    /// JAVAのDictonaryLoaderの手前実装。
-    /// MEMO: 記述を簡素化できるかもしれないが、JAVA版のコードを踏襲するためにこのような実装としている。
-    /// </summary>
-    public class DictionaryLoader<TKey, TValue>
-    {
-        private readonly Func<Dictionary<TKey, TValue>> _dictionaryFactory;
-        private readonly Action<Dictionary<TKey, TValue>, string> _lineProcessor;
+    ///// <summary>
+    ///// JAVAのDictonaryLoaderの手前実装。
+    ///// MEMO: 記述を簡素化できるかもしれないが、JAVA版のコードを踏襲するためにこのような実装としている。
+    ///// </summary>
+    //public class DictionaryLoader<TKey, TValue>
+    //{
+    //    private readonly Func<Dictionary<TKey, TValue>> _dictionaryFactory;
+    //    private readonly Action<Dictionary<TKey, TValue>, string> _lineProcessor;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DictionaryLoader"/> class.
-        /// </summary>
-        /// <param name="dictionaryFactory">The dictionary factory.</param>
-        /// <param name="lineProcessor">The line processor.</param>
-        public DictionaryLoader(
-            Func<Dictionary<TKey, TValue>> dictionaryFactory,
-            Action<Dictionary<TKey, TValue>, string> lineProcessor)
-        {
-            _dictionaryFactory = dictionaryFactory;
-            _lineProcessor = lineProcessor;
-        }
+    //    /// <summary>
+    //    /// Initializes a new instance of the <see cref="DictionaryLoader"/> class.
+    //    /// </summary>
+    //    /// <param name="dictionaryFactory">The dictionary factory.</param>
+    //    /// <param name="lineProcessor">The line processor.</param>
+    //    public DictionaryLoader(
+    //        Func<Dictionary<TKey, TValue>> dictionaryFactory,
+    //        Action<Dictionary<TKey, TValue>, string> lineProcessor)
+    //    {
+    //        _dictionaryFactory = dictionaryFactory;
+    //        _lineProcessor = lineProcessor;
+    //    }
 
-        /// <summary>
-        /// Loads the.
-        /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <returns>A Dictionary.</returns>
-        public Dictionary<TKey, TValue> Load(string filename)
-        {
-            var dictionary = _dictionaryFactory();
-            foreach (var line in File.ReadAllLines(filename))
-            {
-                _lineProcessor(dictionary, line);
-            }
-            return dictionary;
-        }
-    }
+    //    /// <summary>
+    //    /// Loads the.
+    //    /// </summary>
+    //    /// <param name="filename">The filename.</param>
+    //    /// <returns>A Dictionary.</returns>
+    //    public Dictionary<TKey, TValue> Load(string filename)
+    //    {
+    //        var dictionary = _dictionaryFactory();
+    //        foreach (var line in File.ReadAllLines(filename))
+    //        {
+    //            _lineProcessor(dictionary, line);
+    //        }
+    //        return dictionary;
+    //    }
+    //}
 
     /// <summary>
     /// load dictionary data from input source.
@@ -66,6 +66,11 @@ namespace RedPen.Net.Core.Utility
         private readonly Func<E> supplier;
         private readonly Action<E, string> loader;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DictionaryLoader"/> class.
+        /// </summary>
+        /// <param name="supplier">The supplier.</param>
+        /// <param name="loader">The loader.</param>
         public DictionaryLoader(Func<E> supplier, Action<E, string> loader)
         {
             this.supplier = supplier;
@@ -154,6 +159,12 @@ namespace RedPen.Net.Core.Utility
         private readonly Dictionary<string, E> fileCache = new Dictionary<string, E>();
         private readonly Dictionary<string, long> fileNameTimestampMap = new Dictionary<string, long>();
 
+        /// <summary>
+        /// キャッシュを伴うファイルロード関数。更新チェックは更新日時を見ている。
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <param name="dictionaryName">The dictionary name.</param>
+        /// <returns>An E.</returns>
         public E LoadCachedFromFile(FileInfo file, string dictionaryName)
         {
             string path = file.FullName;
@@ -170,23 +181,19 @@ namespace RedPen.Net.Core.Utility
                 if (lastModified != currentModified)
                 {
                     fileCache.Remove(path);
-                    // JAVA版ではここでreturn nullしてfileNameTimestampMapを更新しているが、
-                    // C#版nullで書き換えることができないので便宜上0でクリアする。
-                    fileNameTimestampMap[path] = 0;
+                    // JAVA版ではComputeIfPresentを使ってfileCacheとfileNameTimestampMapの両方からpathを削除している。
+                    fileNameTimestampMap.Remove(path);
                 }
                 else
                 {
                     // lastModified == currentModifiedの場合、キャッシュは更新しなくてよい。
-                    // nop
+                    // JAVA版では次の行が実行されるのと同じ挙動だが、C#版では不要なのでコメントアウトした。
+                    //fileNameTimestampMap[path] = lastModified;
                 }
             }
 
-            E loaded;
-            if (fileCache.ContainsKey(path))
-            {
-                loaded = fileCache[path];
-            }
-            else
+            // ファイルの読み込みを試み、キャッシュに蓄える。
+            E loaded = fileCache.ComputeIfAbsent(path, key =>
             {
                 try
                 {
@@ -194,18 +201,19 @@ namespace RedPen.Net.Core.Utility
                     E newlyLoaded = LoadFromFile(file);
                     // キャッシュを両方とも更新する。
                     fileNameTimestampMap[path] = file.LastWriteTime.ToFileTimeUtc();
-                    fileCache[path] = newlyLoaded;
-
-                    loaded = newlyLoaded;
+                    // MEMO: JAVA版はnewlyLoaded == nullの場合例外スローするが、C#の場合Eはnull非許容であるためこれで良いと考える。
+                    return newlyLoaded;
                 }
                 catch (IOException ex)
                 {
                     LOG.Error(ex);
                     LOG.Error($"Failed to load {dictionaryName}:{path}");
-                    //loaded = default(E);
+                    // JAVA版ではreturn nullしているが、C#版ではnullを返すことができないのでthrowする。
+                    // MEMO: 結果的にはloaded == nullの場合例外スローしているので同じ挙動になる。
+
                     throw;
                 }
-            }
+            });
 
             LOG.Info($"Succeeded to load {dictionaryName}.");
             return loaded;

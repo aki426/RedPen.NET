@@ -714,8 +714,8 @@ namespace RedPen.Net.Core.Validator
         }
 
         /// <summary>Resource Extractor loads key-value dictionary</summary>
-        protected internal static readonly DictionaryLoader<string, string> KEY_VALUE =
-            new DictionaryLoader<string, string>(
+        protected internal static readonly DictionaryLoader<Dictionary<string, string>> KEY_VALUE =
+            new DictionaryLoader<Dictionary<string, string>>(
                 () => new Dictionary<string, string>(),
                 (map, line) =>
                 {
@@ -732,19 +732,19 @@ namespace RedPen.Net.Core.Validator
                 });
 
         /// <summary>Resource Extractor loads rule dictionary</summary>
-        protected internal static readonly HashSetLoader<ExpressionRule> RULE =
-            new HashSetLoader<ExpressionRule>(
+        protected internal static readonly DictionaryLoader<HashSet<ExpressionRule>> RULE =
+            new DictionaryLoader<HashSet<ExpressionRule>>(
                 () => new HashSet<ExpressionRule>(),
                 (set, line) => set.Add(RuleExtractor.Run(line))
             );
 
         /// <summary>Resource Extractor loads word list</summary>
-        protected internal static readonly HashSetLoader<string> WORD_LIST =
-            new HashSetLoader<string>(() => new HashSet<string>(), (set, line) => set.Add(line));
+        protected internal static readonly DictionaryLoader<HashSet<string>> WORD_LIST =
+            new DictionaryLoader<HashSet<string>>(() => new HashSet<string>(), (set, line) => set.Add(line));
 
         /// <summary>Resource Extractor loads word list</summary>
-        protected internal static readonly HashSetLoader<string> WORD_LIST_LOWERCASED =
-            new HashSetLoader<string>(
+        protected internal static readonly DictionaryLoader<HashSet<string>> WORD_LIST_LOWERCASED =
+            new DictionaryLoader<HashSet<string>>(
                 () => new HashSet<string>(),
                 (set, line) => set.Add(line.ToLower())
             );

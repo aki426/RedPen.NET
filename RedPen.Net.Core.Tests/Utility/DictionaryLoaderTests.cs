@@ -19,7 +19,11 @@ namespace RedPen.Net.Core.Tests.Utility
             (dict, line) =>
             {
                 string[] parts = line.Split('\t');
-                dict[parts[0]] = parts[1];
+                if (parts.Length == 2)
+                {
+                    dict[parts[0]] = parts[1];
+                }
+                // MEMO: Validatorにあるプロダクトコードではparts.Lengthが2以外の場合はログ出力している。
             });
 
         [Fact]
