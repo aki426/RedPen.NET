@@ -8,6 +8,9 @@ using Xunit;
 
 namespace RedPen.Net.Core.Tests.Utility
 {
+    /// <summary>
+    /// DictionaryLoader tests.
+    /// </summary>
     public class DictionaryLoaderTests
     {
         private readonly DictionaryLoader<HashSet<string>> WORD_LIST = new DictionaryLoader<HashSet<string>>(
@@ -26,8 +29,12 @@ namespace RedPen.Net.Core.Tests.Utility
                 // MEMO: Validatorにあるプロダクトコードではparts.Lengthが2以外の場合はログ出力している。
             });
 
+        // TODO: Validatorのテストケースでは？
+        /// <summary>
+        /// Creates the word list test.
+        /// </summary>
         [Fact]
-        public void TestCreateWordList()
+        public void CreateWordListTest()
         {
             string sampleWordSet = "Saitama\nGumma\nGifu\n";
 
@@ -38,8 +45,12 @@ namespace RedPen.Net.Core.Tests.Utility
             }
         }
 
+        // TODO: Validatorのテストケースでは？
+        /// <summary>
+        /// Creates the vacant word list test.
+        /// </summary>
         [Fact]
-        public void TestCreateVacantWordList()
+        public void CreateVacantWordListTest()
         {
             string sampleWordSet = "";
 
@@ -50,8 +61,12 @@ namespace RedPen.Net.Core.Tests.Utility
             }
         }
 
+        // TODO: Validatorのテストケースでは？
+        /// <summary>
+        /// Tests the create key value list.
+        /// </summary>
         [Fact]
-        public void TestCreateKeyValueList()
+        public void CreateKeyValueListTest()
         {
             string sampleWordSet = "Saitama\t100\nGumma\t530000\nGifu\t1200\n";
 
@@ -59,14 +74,18 @@ namespace RedPen.Net.Core.Tests.Utility
             {
                 Dictionary<string, string> result = KEY_VALUE.Load(stream);
                 result.Should().HaveCount(3);
-                result["saitama"].Should().Be("100");
-                result["gumma"].Should().Be("530000");
-                result["gifu"].Should().Be("1200");
+                result["Saitama"].Should().Be("100");
+                result["Gumma"].Should().Be("530000");
+                result["Gifu"].Should().Be("1200");
             }
         }
 
+        // TODO: Validatorのテストケースでは？
+        /// <summary>
+        /// Creates the vacant key value list test.
+        /// </summary>
         [Fact]
-        public void TestCreateVacantKeyValueList()
+        public void CreateVacantKeyValueListTest()
         {
             string sampleWordSet = "";
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(sampleWordSet)))
@@ -76,8 +95,11 @@ namespace RedPen.Net.Core.Tests.Utility
             }
         }
 
+        /// <summary>
+        /// Loads the cached file test.
+        /// </summary>
         [Fact]
-        public void TestLoadCachedFile()
+        public void LoadCachedFileTest()
         {
             string tempFilePath = Path.GetTempFileName();
             File.WriteAllText(tempFilePath, "foo");
@@ -87,15 +109,19 @@ namespace RedPen.Net.Core.Tests.Utility
                 HashSet<string> strings = WORD_LIST.LoadCachedFromFile(new FileInfo(tempFilePath), "temp file");
                 strings.Should().HaveCount(1).And.ContainSingle("foo");
 
+                // TODO: キャッシュにHITOしているかどうか判断できないテストケースになっているので要改善。
                 // hopefully loaded from cache
                 strings = WORD_LIST.LoadCachedFromFile(new FileInfo(tempFilePath), "temp file");
                 strings.Should().HaveCount(1).And.ContainSingle("foo");
 
                 long lastModified = new FileInfo(tempFilePath).LastWriteTimeUtc.ToFileTimeUtc();
 
+                // ファイルの更新テスト。ただしファイルの更新日は変更しないものとする。
                 File.WriteAllText(tempFilePath, "foo\nbar");
                 File.SetLastWriteTimeUtc(tempFilePath, DateTime.FromFileTimeUtc(lastModified));
+
                 // won't be reloaded because the last modified date is not changed
+                // キャッシュヒットするので古いデータのまま。
                 strings = WORD_LIST.LoadCachedFromFile(new FileInfo(tempFilePath), "temp file");
                 strings.Should().HaveCount(1).And.ContainSingle("foo");
 
@@ -110,8 +136,11 @@ namespace RedPen.Net.Core.Tests.Utility
             }
         }
 
+        /// <summary>
+        /// Loadings the inexisting resource returns an empty collection test.
+        /// </summary>
         [Fact]
-        public void TestLoadingInexistingResourceReturnsAnEmptyCollection()
+        public void LoadingInexistingResourceReturnsAnEmptyCollectionTest()
         {
             HashSet<string> result = new DictionaryLoader<HashSet<string>>(
                 () => new HashSet<string>(),
