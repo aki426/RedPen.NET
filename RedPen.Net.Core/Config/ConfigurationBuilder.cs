@@ -43,10 +43,11 @@ namespace RedPen.Net.Core.Config
 
         /// <summary>
         /// Sets the base dir.
+        /// MEMO: BaseDirはNullの場合実行時のカレントディレクトリを使用する。
         /// </summary>
         /// <param name="baseDir">The base dir.</param>
         /// <returns>A ConfigurationBuilder.</returns>
-        public ConfigurationBuilder SetBaseDir(DirectoryInfo baseDir)
+        public ConfigurationBuilder SetBaseDir(DirectoryInfo? baseDir)
         {
             CheckBuilt();
             this.baseDir = baseDir;
@@ -110,6 +111,11 @@ namespace RedPen.Net.Core.Config
             isSecure = true;
             return this;
         }
+
+        /// <summary>
+        /// Gets a value indicating whether secure.
+        /// </summary>
+        public bool Secure => isSecure;
 
         /// <summary>
         /// Builds the.

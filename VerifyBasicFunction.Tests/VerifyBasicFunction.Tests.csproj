@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CultureInfoTests.cs" />
+    <Compile Include="DirectoryInfoTests.cs" />
     <Compile Include="EnvironmentTests.cs" />
     <Compile Include="KuromojiTests.cs" />
     <Compile Include="NullableSampleModelTests.cs" />

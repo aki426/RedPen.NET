@@ -55,6 +55,7 @@
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ConfigurationLoaderTest.cs" />
     <Compile Include="Config\ConfigurationTests.cs" />
     <Compile Include="Config\OrderedDictionaryTests.cs" />
     <Compile Include="Config\ValidatorConfigurationTests.cs" />
@@ -74,6 +75,8 @@
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
     <Compile Include="Utility\RuleExtractorTests.cs" />
     <Compile Include="Utility\StringUtilsTests.cs" />
+    <Compile Include="Validator\BaseValidatorTest.cs" />
+    <Compile Include="Validator\DocumentValidator\JapaneseExpressionVariationValidatorTest.cs" />
     <Compile Include="Validator\SentenceValidator\CommaNumberValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\SentenceLengthValidatorTests.cs" />
     <Compile Include="Validator\ValidatorFactoryTests.cs" />
