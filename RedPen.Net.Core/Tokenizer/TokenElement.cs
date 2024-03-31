@@ -53,13 +53,18 @@ namespace RedPen.Net.Core.Tokenizer
             this.Reading = reading;
         }
 
+        public TokenElement(string word, List<string> tags, int offset) :
+            this(word, tags, offset, word)
+        { }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenElement"/> class.
         /// </summary>
         /// <param name="word">The word.</param>
         /// <param name="tagList">The tag list.</param>
         /// <param name="offset">The offset.</param>
-        public TokenElement(string word, ReadOnlyCollection<string> tags, List<string> tagList, int offset) : this(word, tagList, offset, word)
+        public TokenElement(string word, ReadOnlyCollection<string> tags, List<string> tagList, int offset) :
+            this(word, tagList, offset, word)
         { }
 
         /// <summary>

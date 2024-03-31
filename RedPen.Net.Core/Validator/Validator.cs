@@ -380,29 +380,44 @@ namespace RedPen.Net.Core.Validator
 
         /// <summary>
         /// RedPenのConfファイルのプロパティ値からDictionaryを取得する関数。
+        /// MEMO: 副作用（defaultPropsの更新）を伴う。
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>A Dictionary.</returns>
-        protected internal Dictionary<string, string> GetDictionary(string name)
+        protected internal Dictionary<string, string>? GetDictionary(string name)
         {
             object value = null;
             if (config != null && config.Properties.ContainsKey(name))
             {
                 value = config.Properties[name];
             }
-            if ((value == null || ((string)value).Length == 0) && defaultProps.ContainsKey(name))
+            if ((value == null || ((string)value).Length == 0))
             {
-                value = defaultProps[name];
+                if (defaultProps.ContainsKey(name))
+                {
+                    value = defaultProps[name];
+                }
+                else
+                {
+                    return null;
+                }
             }
-            if (value == null)
+            if (value is Dictionary<string, object>)
             {
-                return null;
+                var ret = new Dictionary<string, string>();
+                foreach (var item in (Dictionary<string, object>)value)
+                {
+                    ret.Add(item.Key, item.Value.ToString());
+                }
+
+                return ret;
             }
-            if (value is Dictionary<string, string>)
-            {
-                return (Dictionary<string, string>)value;
-            }
+
+            // TODO: JAVA8流のObjectで取り回してCastする処理をC#でどう書くか検討する。
+
             Dictionary<string, string> newValue = RedPenUtility.ParseMap((string)value);
+
+            // MEMO: nameで取得したDictionaryによってdefaultPropsの更新が発生する。
             defaultProps[name] = newValue;
 
             return newValue;
@@ -723,7 +738,7 @@ namespace RedPen.Net.Core.Validator
             return hash.ToHashCode();
         }
 
-        /// <summary>Resource Extractor loads key-value dictionary</summary>
+        /// <summary>Resource Extractor loads key-value ret</summary>
         protected internal static readonly DictionaryLoader<Dictionary<string, string>> KEY_VALUE =
             new DictionaryLoader<Dictionary<string, string>>(
                 () => new Dictionary<string, string>(),
@@ -741,7 +756,7 @@ namespace RedPen.Net.Core.Validator
                     }
                 });
 
-        /// <summary>Resource Extractor loads rule dictionary</summary>
+        /// <summary>Resource Extractor loads rule ret</summary>
         protected internal static readonly DictionaryLoader<HashSet<ExpressionRule>> RULE =
             new DictionaryLoader<HashSet<ExpressionRule>>(
                 () => new HashSet<ExpressionRule>(),
