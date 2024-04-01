@@ -43,25 +43,27 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
             errors[document].Count().Should().Be(1);
 
+            errors[document][0].Message.Should().Be("単語 ”之” の揺らぎと考えられる表現 ”これ(名詞)” が (L1,6)　で見つかりました。");
+
             output.WriteLine(errors[document][0].Message);
             output.WriteLine(errors[document][0].ValidatorName);
             output.WriteLine(errors[document][0].Sentence.Content);
             output.WriteLine(errors[document][0].LineNumber.ToString());
         }
 
-        //    @Test
-        //    void detectSameReadingsInJapaneseCharactersInDefaultDictionary() throws RedPenException
-        //    {
-        //        config = Configuration.builder("ja")
-        //                         .addValidatorConfig(new ValidatorConfiguration(validatorName))
-        //                         .build();
+        [Fact]
+        public void detectSameReadingsInJapaneseCharactersInDefaultDictionary()
+        {
+            config = Configuration.Builder("ja")
+                .AddValidatorConfig(new ValidatorConfiguration(validatorName))
+                .Build();
 
-        //    Document document = prepareSimpleDocument("nodeは英語です。ノードはカタカナです。");
+            Document document = prepareSimpleDocument("nodeは英語です。ノードはカタカナです。");
 
-        //    RedPen redPen = new RedPen(config);
-        //    Map<Document, List<ValidationError>> errors = redPen.validate(singletonList(document));
-        //    assertEquals(1, errors.get(document).size());
-        //}
+            RedPen redPen = new RedPen(config);
+            Dictionary<Document, List<ValidationError>> errors = redPen.Validate(new List<Document>() { document });
+            errors[document].Count.Should().Be(1);
+        }
 
         //@Test
         //    void detectSameReadingsInJapaneseCharactersInDefaultDictionaryWithUpperCase() throws RedPenException {

@@ -1,11 +1,19 @@
 ﻿using System.Globalization;
 using FluentAssertions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace VerifyBasicFunction.Tests
 {
     public class ResourceSampleModelTests
     {
+        private ITestOutputHelper output;
+
+        public ResourceSampleModelTests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+
         [Fact]
         public void GetHelloMessageTest()
         {
@@ -51,6 +59,38 @@ namespace VerifyBasicFunction.Tests
             // 対応するプロパティがない場合、nullが返る
             ResourceSampleModel.GetMessage("HogehogeWorld", new CultureInfo("en-US"))
                 .Should().BeNull();
+        }
+
+        [Fact]
+        public void GetEmbeddedResourceTest()
+        {
+            // テストプロジェクトのリソースファイルの内容を取得する
+            var list = ResourceSampleModel.GetEmbeddedResource();
+
+            list.Count.Should().Be(3);
+            list[0].Should().Be("node\tノード");
+            list[1].Should().Be("log\tログ");
+        }
+
+        [Fact]
+        public void GetManifestResourcesTest()
+        {
+            // テストプロジェクトのリソースファイルの内容を取得する
+            var list = ResourceSampleModel.GetManifestResources();
+
+            foreach (var item in list)
+            {
+                output.WriteLine(item);
+            }
+            //list.Length.Should().Be(1);
+            //list[0].Should().Be("VerifyBasicFunction.Resources.ParentDirectory.SampleText.ja.txt");
+
+            /*
+                 <None Remove="Resources\ParentDirectory\SampleText.ja.txt" />
+                  </ItemGroup>
+                  <ItemGroup>
+
+             */
         }
     }
 }

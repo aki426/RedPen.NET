@@ -1,4 +1,9 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace VerifyBasicFunction
@@ -30,6 +35,43 @@ namespace VerifyBasicFunction
         {
             // propertyNameで渡された文字列をキーとして、ErrorMessageクラスのプロパティを取得する
             return ErrorMessage.ResourceManager.GetString(propertyName, cultureInfo);
+        }
+
+        /// <summary>
+        /// Gets the embedded resource.
+        /// </summary>
+        /// <returns>A list of string.</returns>
+        public static List<string> GetEmbeddedResource()
+        {
+            List<string> list;
+
+            // 現在実行しているアセンブリを取得する
+            var assm = Assembly.GetExecutingAssembly();
+
+            // アセンブリに埋め込まれているリソースのStreamを取得する
+            using (var stream = assm.GetManifestResourceStream($"{assm.GetName()}.Resources.ParentDirectory.SampleText.ja.txt"))
+            {
+                if (stream == null)
+                {
+                    return new List<string>();
+                }
+                else
+                {
+                    // Streamの内容をすべて読み込んで標準出力に表示する
+                    var reader = new StreamReader(stream);
+                    list = reader.ReadToEnd().Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                }
+            }
+
+            return list;
+        }
+
+        public static string[] GetManifestResources()
+        {
+            // 現在実行しているアセンブリを取得する
+            var assm = Assembly.GetExecutingAssembly();
+
+            return assm.GetManifestResourceNames();
         }
     }
 }
