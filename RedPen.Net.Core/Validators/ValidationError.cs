@@ -3,7 +3,7 @@ using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Parser;
 
-namespace RedPen.Net.Core.Validator
+namespace RedPen.Net.Core.Validators
 {
     // TODO: recordか何かで書き直すことを検討する。
     [Serializable]

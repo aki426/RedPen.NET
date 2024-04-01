@@ -10,7 +10,7 @@ using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 using RedPen.Net.Core.Utility;
 
-namespace RedPen.Net.Core.Validator
+namespace RedPen.Net.Core.Validators
 {
     // MEMO: 【抽象クラスの関数について】
     // JAVAの場合、仮想関数の扱いは、Interfaceおよび抽象クラス内では次のとおり。

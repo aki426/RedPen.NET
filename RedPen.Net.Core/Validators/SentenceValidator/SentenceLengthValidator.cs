@@ -1,6 +1,6 @@
 ﻿using RedPen.Net.Core.Model;
 
-namespace RedPen.Net.Core.Validator.SentenceValidator
+namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     // MEMO: JAVA版ではpublic final class指定なので、sealed classに変更している。
 

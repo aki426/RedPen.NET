@@ -1,7 +1,7 @@
 ﻿using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 
-namespace RedPen.Net.Core.Validator.SentecneValidator
+namespace RedPen.Net.Core.Validators.SentecneValidator
 {
     public sealed class CommaNumberValidator : Validator
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using RedPen.Net.Core.Utility;
 
-namespace RedPen.Net.Core.Validator
+namespace RedPen.Net.Core.Validators
 {
     /// <summary>
     /// KeyValueDictionaryを判定に使うValidatorの基底クラス。

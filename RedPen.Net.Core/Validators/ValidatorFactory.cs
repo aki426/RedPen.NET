@@ -7,7 +7,7 @@ using System.Reflection;
 using NLog;
 using RedPen.Net.Core.Config;
 
-namespace RedPen.Net.Core.Validator
+namespace RedPen.Net.Core.Validators
 {
     /// <summary>
     /// Validatorを一元管理するFactoryクラス

@@ -5,7 +5,7 @@ using System.Text;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 
-namespace RedPen.Net.Core.Validator.DocumentValidator
+namespace RedPen.Net.Core.Validators.DocumentValidator
 {
     /// <summary>
     /// The japanese expression variation validator.

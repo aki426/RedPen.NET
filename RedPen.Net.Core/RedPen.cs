@@ -6,7 +6,7 @@ using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Parser;
-using RedPen.Net.Core.Validator;
+using RedPen.Net.Core.Validators;
 
 namespace RedPen.Net.Core
 {
@@ -18,7 +18,7 @@ namespace RedPen.Net.Core
 
         private readonly Configuration configuration;
         private readonly SentenceExtractor sentenceExtractor;
-        private readonly List<Validator.Validator> validators;
+        private readonly List<Validator> validators;
 
         /// <summary>
         /// constructs RedPen with specified config file.
@@ -29,7 +29,7 @@ namespace RedPen.Net.Core
         {
             this.configuration = new ConfigurationLoader().Load(configFile);
             this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
-            this.validators = new List<Validator.Validator>();
+            this.validators = new List<Validator>();
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace RedPen.Net.Core
         {
             this.configuration = new ConfigurationLoader().LoadFromResource(configPath);
             this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
-            this.validators = new List<Validator.Validator>();
+            this.validators = new List<Validator>();
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace RedPen.Net.Core
         {
             this.configuration = configuration;
             this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
-            this.validators = new List<Validator.Validator>();
+            this.validators = new List<Validator>();
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace RedPen.Net.Core
         /// Get validators associated with this RedPen instance
         /// </summary>
         /// <returns>validators</returns>
-        public ImmutableList<Validator.Validator> GetValidators()
+        public ImmutableList<Validator> GetValidators()
         {
             // TODO: 暫定的にImmutableListを採用したが、実際の使用ケースを確認すること。
             return validators.ToImmutableList();
@@ -246,7 +246,7 @@ namespace RedPen.Net.Core
             // run Document PreProcessors to documents
             foreach (Document document in documents)
             {
-                foreach (Validator.Validator e in validators)
+                foreach (Validator e in validators)
                 {
                     e.PreValidate(document);
                 }
@@ -256,7 +256,7 @@ namespace RedPen.Net.Core
             foreach (Document document in documents)
             {
                 List<ValidationError> errors = new List<ValidationError>();
-                foreach (Validator.Validator e in validators)
+                foreach (Validator e in validators)
                 {
                     e.setErrorList(errors);
                     e.Validate(document);
@@ -277,7 +277,7 @@ namespace RedPen.Net.Core
             {
                 foreach (Section section in document.Sections)
                 {
-                    foreach (Validator.Validator e in validators)
+                    foreach (Validator e in validators)
                     {
                         e.PreValidate(section);
                     }
@@ -289,7 +289,7 @@ namespace RedPen.Net.Core
                 foreach (Section section in document.Sections)
                 {
                     List<ValidationError> errors = docErrorsMap[document];
-                    foreach (Validator.Validator e in validators)
+                    foreach (Validator e in validators)
                     {
                         e.setErrorList(errors);
                         e.Validate(section);
@@ -314,7 +314,7 @@ namespace RedPen.Net.Core
                     // apply paragraphs
                     foreach (Paragraph paragraph in section.Paragraphs)
                     {
-                        foreach (Validator.Validator e in validators)
+                        foreach (Validator e in validators)
                         {
                             foreach (Sentence sentence in paragraph.Sentences)
                             {
@@ -323,7 +323,7 @@ namespace RedPen.Net.Core
                         }
                     }
                     // apply to section header
-                    foreach (Validator.Validator e in validators)
+                    foreach (Validator e in validators)
                     {
                         foreach (Sentence sentence in section.HeaderSentences)
                         {
@@ -336,7 +336,7 @@ namespace RedPen.Net.Core
                     {
                         foreach (ListElement listElement in listBlock.ListElements)
                         {
-                            foreach (Validator.Validator e in validators)
+                            foreach (Validator e in validators)
                             {
                                 foreach (Sentence sentence in listElement.Sentences)
                                 {
@@ -358,7 +358,7 @@ namespace RedPen.Net.Core
                     // apply paragraphs
                     foreach (Paragraph paragraph in section.Paragraphs)
                     {
-                        foreach (Validator.Validator e in validators)
+                        foreach (Validator e in validators)
                         {
                             e.setErrorList(errors);
                             foreach (Sentence sentence in paragraph.Sentences)
@@ -368,7 +368,7 @@ namespace RedPen.Net.Core
                         }
                     }
                     // apply to section header
-                    foreach (Validator.Validator e in validators)
+                    foreach (Validator e in validators)
                     {
                         e.setErrorList(errors);
                         foreach (Sentence sentence in section.HeaderSentences)
@@ -381,7 +381,7 @@ namespace RedPen.Net.Core
                     {
                         foreach (ListElement listElement in listBlock.ListElements)
                         {
-                            foreach (Validator.Validator e in validators)
+                            foreach (Validator e in validators)
                             {
                                 e.setErrorList(errors);
                                 foreach (Sentence sentence in listElement.Sentences)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RedPen.Net.Core.Tokenizer;
 
-namespace RedPen.Net.Core.Validator
+namespace RedPen.Net.Core.Validators
 {
     /// <summary>
     /// トークン分割された文のSurfaceレベルでの表現パターン。
