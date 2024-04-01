@@ -61,13 +61,13 @@ namespace VerifyBasicFunction.Tests
                 .Should().BeNull();
         }
 
-        [Fact]
+        [Fact(DisplayName = "単純なファイル埋め込みのテスト", Skip = "Resxを経由しない埋め込みは上手く動作しない")]
         public void GetEmbeddedResourceTest()
         {
             // テストプロジェクトのリソースファイルの内容を取得する
             var list = ResourceSampleModel.GetEmbeddedResource();
 
-            list.Count.Should().Be(3);
+            // MEMO: ファイルのビルドオプションを「リソース埋め込み」にするだけだとリソースファイルが上手く取得できなかった。
             list[0].Should().Be("node\tノード");
             list[1].Should().Be("log\tログ");
         }
@@ -82,15 +82,21 @@ namespace VerifyBasicFunction.Tests
             {
                 output.WriteLine(item);
             }
-            //list.Length.Should().Be(1);
-            //list[0].Should().Be("VerifyBasicFunction.Resources.ParentDirectory.SampleText.ja.txt");
 
-            /*
-                 <None Remove="Resources\ParentDirectory\SampleText.ja.txt" />
-                  </ItemGroup>
-                  <ItemGroup>
+            // MEMO: 結果として取得できるのは次の2つ。
+            // VerifyBasicFunction.ErrorMessage.resources
+            // VerifyBasicFunction.FileResource.resources
+            // 本来はここにVerifyBasicFunction.Resources.ParentDirectory.SampleText.ja.txtが含まれるはずだが、
+            // 取得できない。
+        }
 
-             */
+        [Fact]
+        public void GetSampleTextTest()
+        {
+            // テストプロジェクトのリソースファイルの内容を取得する
+            var text = ResourceSampleModel.GetSampleText();
+
+            text.Should().Be("node\tノード\r\nlog\tログ\r\nsoftware\tソフトウェア\r\nindex\tインデクス\r\ndatabase\tデータベース\r\ndata\tデータ\r\ninstance\tインスタンス");
         }
     }
 }

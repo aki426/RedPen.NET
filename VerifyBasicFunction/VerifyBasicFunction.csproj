@@ -32,12 +32,21 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ErrorMessage.resx</DependentUpon>
     </Compile>
+    <Compile Update="FileResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileResource.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="ErrorMessage.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorMessage.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="FileResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileResource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

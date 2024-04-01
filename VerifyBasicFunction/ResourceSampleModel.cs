@@ -49,6 +49,7 @@ namespace VerifyBasicFunction
             var assm = Assembly.GetExecutingAssembly();
 
             // アセンブリに埋め込まれているリソースのStreamを取得する
+            // MEMO: ファイルの単純な埋め込みでは上手く動作しない。GetManifestResourceStreamのっ結果がnullになってしまう。
             using (var stream = assm.GetManifestResourceStream($"{assm.GetName()}.Resources.ParentDirectory.SampleText.ja.txt"))
             {
                 if (stream == null)
@@ -72,6 +73,11 @@ namespace VerifyBasicFunction
             var assm = Assembly.GetExecutingAssembly();
 
             return assm.GetManifestResourceNames();
+        }
+
+        public static string GetSampleText()
+        {
+            return FileResource.SampleText_ja;
         }
     }
 }
