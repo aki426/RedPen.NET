@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Validator;
+using RedPen.Net.Core.Validators;
 using Xunit;
 
 namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
@@ -17,7 +17,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [Fact]
         public void WithSentenceContainingManyCommasTest()
         {
-            Core.Validator.Validator commaNumberValidator = ValidatorFactory.GetInstance("CommaNumber");
+            Core.Validators.Validator commaNumberValidator = ValidatorFactory.GetInstance("CommaNumber");
             commaNumberValidator.setLocale(new System.Globalization.CultureInfo("en-US"));
             commaNumberValidator.Locale.Name.Should().Be("en-US");
 

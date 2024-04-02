@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using RedPen.Net.Core.Tokenizer;
 using RedPen.Net.Core.Utility;
-using RedPen.Net.Core.Validator;
+using RedPen.Net.Core.Validators;
 using Xunit;
 
 namespace RedPen.Net.Core.Tests.Utility

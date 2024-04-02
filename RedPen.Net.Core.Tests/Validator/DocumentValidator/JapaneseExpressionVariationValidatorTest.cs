@@ -3,7 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Validator;
+using RedPen.Net.Core.Validators;
 using Xunit;
 using Xunit.Abstractions;
 

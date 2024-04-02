@@ -144,7 +144,7 @@ namespace RedPen.Net.Core.Tests.Utility
         {
             HashSet<string> result = new DictionaryLoader<HashSet<string>>(
                 () => new HashSet<string>(),
-                null).LoadCachedFromResource("hello.xml", "hello");
+                null).LoadCachedFromResource("hello.xml", "hello"); // TODO: ResourceManagerを利用する方法に切り替えたので、hello.xmlではなく適切なプロパティ名で指定する。
             result.Should().BeEmpty();
         }
     }

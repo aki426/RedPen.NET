@@ -77,7 +77,15 @@ namespace VerifyBasicFunction
 
         public static string GetSampleText()
         {
+            // プロパティの直接指定。
             return FileResource.SampleText_ja;
+        }
+
+        public static string GetSampleTextByPropertyName()
+        {
+            // ResourceManagerのプロパティを文字列で直接指定することでstring型で中身を取り出すことができる。
+            string name = $"SampleText_ja";
+            return FileResource.ResourceManager.GetString(name);
         }
     }
 }

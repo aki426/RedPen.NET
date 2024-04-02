@@ -43,11 +43,13 @@ namespace RedPen.Net.Core.Validators
         {
             if (dictionaryPrefix != null)
             {
-                // TODO: C#版のリソース読み込みロジックと、命名規則に合わせる。
-                string defaultDictionaryFile = "DefaultResources." + dictionaryPrefix + "-" + SymbolTable.Lang + ".dat";
+                // MEMO: C#ではResourceManagerにテキストファイルを登録している関係上、次のような命名規則となる。
+                // ファイル名：<Prefix>.<Lang>.txt
+                // プロパティ名：<Prefix>_<Lang>
+                string propertyName = $"{dictionaryPrefix}_{SymbolTable.Lang}";
 
                 Dictionary<string, string> dictionary = loader.LoadCachedFromResource(
-                    defaultDictionaryFile,
+                    propertyName,
                     this.GetType().Name + " default dictionary");
 
                 // TODO: 次の行が何らかの副作用を期待したものだとすると、期待した挙動にならない可能性があるのでテストケースで検証する。こと。

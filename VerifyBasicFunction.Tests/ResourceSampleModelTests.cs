@@ -98,5 +98,16 @@ namespace VerifyBasicFunction.Tests
 
             text.Should().Be("node\tノード\r\nlog\tログ\r\nsoftware\tソフトウェア\r\nindex\tインデクス\r\ndatabase\tデータベース\r\ndata\tデータ\r\ninstance\tインスタンス");
         }
+
+        /// <summary>
+        /// ResourceManagerに定義されたファイルを直接指定して取り出すテスト。
+        /// </summary>
+        [Fact]
+        public void GetSampleTextByPropertyNameTest()
+        {
+            var text = ResourceSampleModel.GetSampleTextByPropertyName();
+
+            text.Should().Be("node\tノード\r\nlog\tログ\r\nsoftware\tソフトウェア\r\nindex\tインデクス\r\ndatabase\tデータベース\r\ndata\tデータ\r\ninstance\tインスタンス");
+        }
     }
 }

@@ -99,15 +99,18 @@ namespace RedPen.Net.Core.Utility
         /// <summary>
         /// Load a given input file
         /// </summary>
-        /// <param name="resourcePath">The resource path.</param>
+        /// <param name="propertyName">The resource propertyName.</param>
         /// <returns>An E.</returns>
-        private E LoadFromResource(string resourcePath)
+        private E LoadFromResource(string propertyName)
         {
-            using (Stream inputStream = typeof(DictionaryLoader<E>).Assembly.GetManifestResourceStream(resourcePath))
+            string v = DefaultResources.ResourceManager.GetString(propertyName);
+            // MEMO: リソースファイルから直接テキストが取り出せるが、一旦JAVA版のコードを流用したいのでStreamへ変換する。
+            // TODO: Streamを使わないで直接テキストをParseする方法に切り替える。
+            using (Stream inputStream = new MemoryStream(Encoding.UTF8.GetBytes(v)))
             {
                 if (inputStream == null)
                 {
-                    throw new IOException($"Failed to load input {resourcePath}");
+                    throw new IOException($"Failed to load input {propertyName}");
                 }
                 return Load(inputStream);
             }
@@ -131,26 +134,26 @@ namespace RedPen.Net.Core.Utility
         /// <summary>
         /// returns word list loaded from resource
         /// </summary>
-        /// <param name="path">resource path</param>
-        /// <param name="dictionaryName">name of the resource</param>
+        /// <param name="propertyName">resource propertyName</param>
+        /// <param name="displayName">name of the resource</param>
         /// <returns>An E.</returns>
-        public E LoadCachedFromResource(string path, string dictionaryName)
+        public E LoadCachedFromResource(string propertyName, string displayName)
         {
-            if (resourceCache.ContainsKey(path))
+            if (resourceCache.ContainsKey(propertyName))
             {
-                return resourceCache[path];
+                return resourceCache[propertyName];
             }
             else
             {
                 try
                 {
-                    E result = LoadFromResource(path);
-                    LOG.Info($"Succeeded to load {dictionaryName}.");
+                    E result = LoadFromResource(propertyName);
+                    LOG.Info($"Succeeded to load {displayName}.");
                     return result;
                 }
                 catch (IOException ex)
                 {
-                    LOG.Error($"Failed to load {dictionaryName}:{path}: {ex.Message}");
+                    LOG.Error($"Failed to load {displayName}:{propertyName}: {ex.Message}");
                     return supplier();
                 }
             }
@@ -188,7 +191,7 @@ namespace RedPen.Net.Core.Utility
                 {
                     // lastModified == currentModifiedの場合、キャッシュは更新しなくてよい。
                     // JAVA版では次の行が実行されるのと同じ挙動だが、C#版では不要なのでコメントアウトした。
-                    //fileNameTimestampMap[path] = lastModified;
+                    //fileNameTimestampMap[propertyName] = lastModified;
                 }
             }
 

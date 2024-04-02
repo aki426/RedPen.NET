@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
 using RedPen.Net.Core.Tokenizer;
-using RedPen.Net.Core.Validator;
+using RedPen.Net.Core.Validators;
 
 namespace RedPen.Net.Core.Utility
 {

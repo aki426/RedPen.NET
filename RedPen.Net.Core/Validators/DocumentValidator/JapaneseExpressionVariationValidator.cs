@@ -35,12 +35,12 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             public Sentence sentence;
         }
 
-        // TODO: リソースファイルのパス指定を検証する。
+        // MEMO: newするタイミングでデフォルトリソースから辞書データを読み込む。
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JapaneseExpressionVariationValidator"/> class.
         /// </summary>
-        public JapaneseExpressionVariationValidator() : base("JapaneseSpellingVariation/SpellingVariation")
+        public JapaneseExpressionVariationValidator() : base("SpellingVariation")
         {
         }
 
