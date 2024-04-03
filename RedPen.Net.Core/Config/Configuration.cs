@@ -90,6 +90,7 @@ namespace RedPen.Net.Core.Config
 
             if (Lang == "ja")
             {
+                // MEMO: Tokenizerの選択はConfigurationクラスのコンストラクタですでに決定する。
                 this._tokenizer = new NeologdJapaneseTokenizer();
             }
             else

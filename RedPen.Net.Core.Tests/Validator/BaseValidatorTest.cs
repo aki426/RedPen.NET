@@ -40,6 +40,8 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         /// <returns>A Document.</returns>
         protected Document prepareSimpleDocument(string sentrence)
         {
+            // MEMO: Document.Builder(config.Tokenizer)の時点ですでにTokenizeが完了する。
+            // configは言語設定だけでなくTokenizerの引き当てを機能に含む。
             return Document.Builder(config.Tokenizer)
               .AddSection(1)
               .AddParagraph()

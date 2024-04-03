@@ -243,18 +243,32 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             return normazlied;
         }
 
+        /// <summary>
+        /// PreProcessors to documents
+        /// MEMO: Validateメソッドの前に実行される前処理関数。
+        /// </summary>
+        /// <param name="document">The document.</param>
         public override void PreValidate(Document document)
         {
+            // Sentence抽出。
             sentenceMap[document] = extractSentences(document);
-            List<Sentence> sentences = sentenceMap[document];
-            foreach (Sentence sentence in sentences)
+            foreach (Sentence sentence in sentenceMap[document])
             {
+                // Token抽出。
                 extractTokensFromSentence(document, sentence);
             }
         }
 
+        // TODO: 以下のextract関数は汎用的なものなので他のクラスで実装すべきでは？
+
+        /// <summary>
+        /// DocumentからSentenceを抽出する関数。
+        /// </summary>
+        /// <param name="document"></param>
+        /// <returns></returns>
         private List<Sentence> extractSentences(Document document)
         {
+            // 全SectionからSentenceを抽出する。
             List<Sentence> sentences = new List<Sentence>();
             foreach (Section section in document.Sections)
             {
@@ -263,16 +277,25 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             return sentences;
         }
 
+        /// <summary>
+        /// SectionからSentenceを抽出する関数。
+        /// </summary>
+        /// <param name="section"></param>
+        /// <returns></returns>
         private List<Sentence> extractSentencesFromSection(Section section)
         {
             List<Sentence> sentencesInSection = new List<Sentence>();
+
+            // ParagraphsからSentenceを抽出する。
             foreach (Paragraph paragraph in section.Paragraphs)
             {
                 sentencesInSection.AddRange(paragraph.Sentences);
             }
 
+            // TODO: 先にParagraphからSentenceを抽出しているのはなぜ？　順番は関係ない？
             sentencesInSection.AddRange(section.HeaderSentences);
 
+            // ListBlocksからSentenceを抽出する。
             foreach (ListBlock listBlock in section.ListBlocks)
             {
                 foreach (ListElement listElement in listBlock.ListElements)
@@ -280,38 +303,52 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     sentencesInSection.AddRange(listElement.Sentences);
                 }
             }
+
             return sentencesInSection;
         }
 
+        /// <summary>
+        /// すべてのTokenを抽出する。
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="sentence">The sentence.</param>
         private void extractTokensFromSentence(Document document, Sentence sentence)
         {
             List<TokenElement> nouns = new List<TokenElement>();
             foreach (TokenElement token in sentence.Tokens)
             {
+                // 半角スペーススキップ。
                 if (token.Surface.Equals(" "))
                 {
                     continue;
                 }
-                string reading = getReading(token);
+
+                // 対応readingMapが不在の場合初期化。
                 if (!this.readingMap.ContainsKey(document))
                 {
                     this.readingMap[document] = new Dictionary<string, List<TokenInfo>>();
                 }
+                string reading = getReading(token);
                 if (!this.readingMap[document].ContainsKey(reading))
                 {
                     this.readingMap[document][reading] = new List<TokenInfo>();
                 }
+
+                // reading->Tokenの関係を登録。
                 this.readingMap[document][reading].Add(new TokenInfo(token, sentence));
 
-                // handling compound nouns
+                // 名詞を収集。
                 if (token.Tags[0].Equals("名詞"))
                 {
                     nouns.Add(token);
                 }
                 else
                 {
+                    // Tagの筆頭が名詞ではない場合で、nounsが2以上の場合？
                     if (nouns.Count > 1)
                     {
+                        // 複合名詞として追加登録する。これはNeologdのTokenizeルールによって分割された単語を結合する働きをする。
+                        // TODO: Sentenceが体言止めで終わっていた場合の複合名詞登録処理がされないケースが想定される。要チェック。
                         TokenInfo compoundNoun = generateTokenFromNounsList(nouns, sentence);
                         if (!this.readingMap[document].ContainsKey(compoundNoun.element.Reading))
                         {
@@ -320,13 +357,21 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                         this.readingMap[document][compoundNoun.element.Reading].Add(compoundNoun);
                     }
 
+                    // 複合名詞を登録したら一旦リストはクリアする。つまり複合名詞は最長のもの1つが登録される。
                     nouns.Clear();
                 }
             }
         }
 
+        /// <summary>
+        /// 複数の名詞から1つの複合名詞用TokenInfoを生成する。
+        /// </summary>
+        /// <param name="nouns">The nouns.</param>
+        /// <param name="sentence">The sentence.</param>
+        /// <returns>A TokenInfo.</returns>
         private TokenInfo generateTokenFromNounsList(List<TokenElement> nouns, Sentence sentence)
         {
+            // 単純連結。
             StringBuilder surface = new StringBuilder();
             StringBuilder reading = new StringBuilder();
             foreach (TokenElement noun in nouns)
@@ -334,6 +379,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 surface.Append(noun.Surface);
                 reading.Append(noun.Reading);
             }
+
+            // Tag、Offsetは先頭のものを流用する。
             TokenElement element = new TokenElement(
                 surface.ToString(),
                 nouns[0].Tags,

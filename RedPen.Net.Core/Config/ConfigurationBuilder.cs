@@ -125,6 +125,7 @@ namespace RedPen.Net.Core.Config
         {
             CheckBuilt();
             built = true;
+            // MEMO: Build時点でTokenizerは決定済み。
             return new Configuration(
                 baseDir ?? new DirectoryInfo(@".\"),
                 new SymbolTable(lang, variant, customSymbols),

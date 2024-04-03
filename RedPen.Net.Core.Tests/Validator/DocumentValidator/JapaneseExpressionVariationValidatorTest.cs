@@ -31,6 +31,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         [Fact]
         public void detectSameReadingsInJapaneseCharacters()
         {
+            // MEMO: Configuration.Builder("ja")でTokenizerはNeologdが割り当たっている。
             config = Configuration.Builder("ja")
                          .AddValidatorConfig(new ValidatorConfiguration(validatorName))
                          .Build();
@@ -55,6 +56,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         [Fact]
         public void detectSameReadingsInJapaneseCharactersInDefaultDictionary()
         {
+            // MEMO: Configuration.Builder("ja")でTokenizerはNeologdが割り当たっている。
             config = Configuration.Builder("ja")
                 .AddValidatorConfig(new ValidatorConfiguration(validatorName))
                 .Build();
@@ -76,18 +78,30 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             output.WriteLine(errors[document][0].LineNumber.ToString());
         }
 
-        //@Test
-        //    void detectSameReadingsInJapaneseCharactersInDefaultDictionaryWithUpperCase() throws RedPenException {
-        //        config = Configuration.builder("ja")
-        //                         .addValidatorConfig(new ValidatorConfiguration(validatorName))
-        //                         .build();
+        [Fact]
+        public void detectSameReadingsInJapaneseCharactersInDefaultDictionaryWithUpperCase()
+        {
+            // MEMO: Configuration.Builder("ja")でTokenizerはNeologdが割り当たっている。
+            config = Configuration.Builder("ja")
+                .AddValidatorConfig(new ValidatorConfiguration(validatorName))
+                .Build();
 
-        //Document document = prepareSimpleDocument("Nodeは英語です。ノードはカタカナです。");
+            Document document = prepareSimpleDocument("Nodeは英語です。ノードはカタカナです。");
 
-        //RedPen redPen = new RedPen(config);
-        //Map<Document, List<ValidationError>> errors = redPen.validate(singletonList(document));
-        //assertEquals(1, errors.get(document).size());
-        //    }
+            RedPen redPen = new RedPen(config);
+            Dictionary<Document, List<ValidationError>> errors = redPen.Validate(new List<Document>() { document });
+
+            // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
+            errors[document].Count.Should().Be(1);
+
+            // TODO: 次のテストケースはあくまで暫定。
+            errors[document][0].Message.Should().Be("単語 ”Node” の揺らぎと考えられる表現 ”ノード(名詞)” が (L1,10)　で見つかりました。");
+
+            output.WriteLine(errors[document][0].Message);
+            output.WriteLine(errors[document][0].ValidatorName);
+            output.WriteLine(errors[document][0].Sentence.Content);
+            output.WriteLine(errors[document][0].LineNumber.ToString());
+        }
 
         //    @Test
         //    void detectSameAlphabecicalReadings() throws RedPenException {
