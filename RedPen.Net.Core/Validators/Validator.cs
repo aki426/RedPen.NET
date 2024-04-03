@@ -44,6 +44,9 @@ namespace RedPen.Net.Core.Validators
         // TODO: おそらく多言語対応のためのコードでありC#で対応する実装をする。C#ではResources.resxやCultureInfoを使う。
         // private final static ResourceBundle.Control fallbackControl = ResourceBundle.Control.getNoFallbackControl(FORMAT_DEFAULT);
 
+        // MEMO: ValidatorはValidatorConfiguration.Propertiesとは別にdefaultPropsを持つ。
+        // このdefaultPropsはコンストラクタで与えられるkeyValuesによって初期化される。
+        // 汎用性を持たせるために<string, object>型で保持しているが、実際問題としてここまで汎用性を持たせる必要は無い。
         private Dictionary<string, object> defaultProps;
 
         // TODO: おそらく多言語対応のためのコードでありC#で対応する実装をする。C#ではResources.resxやCultureInfoを使う。
@@ -411,6 +414,8 @@ namespace RedPen.Net.Core.Validators
                 }
 
                 return ret;
+
+                // return (Dictionary<string, string>)value;
             }
 
             // TODO: JAVA8流のObjectで取り回してCastする処理をC#でどう書くか検討する。

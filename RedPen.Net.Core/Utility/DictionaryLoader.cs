@@ -55,10 +55,13 @@ namespace RedPen.Net.Core.Utility
     //    }
     //}
 
+    // MEMO: DictionaryLoaderはいずれにしろDictionary<string, string>しか読み込まないのであるから、
+    // ここまで汎用性の高い実装をする必要はない。
+    // TODO: よりシンプルな型決め打ちの実装に変更する。
+
     /// <summary>
     /// load dictionary data from input source.
     /// </summary>
-
     public class DictionaryLoader<E>
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();

@@ -41,6 +41,9 @@ namespace RedPen.Net.Core.Validators
         /// </summary>
         protected override void Init()
         {
+            // MEMO: confファイルの定義では、mapはDictionary<string, string>型に対応する文字列データであり、
+            // dictは>
+
             if (dictionaryPrefix != null)
             {
                 // MEMO: C#ではResourceManagerにテキストファイルを登録している関係上、次のような命名規則となる。

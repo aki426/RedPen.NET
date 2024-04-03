@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using NLog;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 
@@ -12,8 +13,14 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
     /// </summary>
     public class JapaneseExpressionVariationValidator : KeyValueDictionaryValidator
     {
+        /// <summary>Nlog</summary>
+        private static Logger log = LogManager.GetCurrentClassLogger();
+
         private Dictionary<Document, Dictionary<string, List<TokenInfo>>> readingMap;
         private Dictionary<Document, List<Sentence>> sentenceMap;
+
+        /// <summary>JAVA版のmapリソースロードロジックをバイパスするためのDictionary。</summary>
+        private Dictionary<string, string> spellingVariationMap;
 
         /// <summary>
         /// The token info.
@@ -42,6 +49,49 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// </summary>
         public JapaneseExpressionVariationValidator() : base("SpellingVariation")
         {
+            // MEMO: KeyValueDictionaryValidatorの仕組みをバイパスするための処理。
+            spellingVariationMap = new Dictionary<string, string>();
+
+            // DefaultResourceの読み込み。
+            string v = DefaultResources.ResourceManager.GetString($"SpellingVariation_ja"); // $"SpellingVariation_{SymbolTable.Lang}");
+            foreach (string line in v.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string[] result = line.Split('\t');
+
+                if (result.Length == 2)
+                {
+                    spellingVariationMap[result[0]] = result[1];
+                }
+                else
+                {
+                    log.Error("Skip to load line... Invalid line: " + line);
+                }
+            }
+        }
+
+        /// <summary>
+        /// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns>A bool.</returns>
+        protected new bool inDictionary(string word)
+        {
+            return spellingVariationMap.ContainsKey(word);
+        }
+
+        /// <summary>
+        /// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns>A string? .</returns>
+        protected new string? getValue(string word)
+        {
+            if (spellingVariationMap != null && spellingVariationMap.ContainsKey(word))
+            {
+                return spellingVariationMap[word];
+            }
+
+            return null;
         }
 
         protected override void Init()
