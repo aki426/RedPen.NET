@@ -103,18 +103,24 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             output.WriteLine(errors[document][0].LineNumber.ToString());
         }
 
-        //    @Test
-        //    void detectSameAlphabecicalReadings() throws RedPenException {
-        //        config = Configuration.builder("ja")
-        //                         .addValidatorConfig(new ValidatorConfiguration(validatorName))
-        //                         .build();
+        [Fact]
+        public void detectSameAlphabecicalReadings()
+        {
+            config = Configuration
+                .Builder("ja")
+                .AddValidatorConfig(new ValidatorConfiguration(validatorName))
+                .Build();
 
-        //Document document = prepareSimpleDocument("このExcelはあのエクセルとは違います。");
+            Document document = prepareSimpleDocument("このExcelはあのエクセルとは違います。");
 
-        //RedPen redPen = new RedPen(config);
-        //Map<Document, List<ValidationError>> errors = redPen.validate(singletonList(document));
-        //assertEquals(1, errors.get(document).size());
-        //    }
+            RedPen redPen = new RedPen(config);
+            Dictionary<Document, List<ValidationError>> errors = redPen.Validate(new List<Document>() { document });
+            // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
+            errors[document].Count.Should().Be(1);
+
+            // TODO: 次のテストケースはあくまで暫定。
+            errors[document][0].Message.Should().Be("単語 ”Node” の揺らぎと考えられる表現 ”ノード(名詞)” が (L1,10)　で見つかりました。");
+        }
 
         //    @Test
         //    void detectSameAlphabecicalReadingsInUserDictionary() throws RedPenException {

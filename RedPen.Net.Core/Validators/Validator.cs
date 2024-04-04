@@ -553,13 +553,13 @@ namespace RedPen.Net.Core.Validators
             {
                 argList.Add(arg);
             }
-
+            // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録されている。
             argList.Insert(0, token.Surface);
 
             addLocalizedErrorWithPosition(
                 sentenceWithError,
-                token.Offset,
-                token.Offset + token.Surface.Length,
+                token.Offset, // start
+                token.Offset + token.Surface.Length, // end
                 argList.ToArray()
             );
         }
@@ -593,7 +593,7 @@ namespace RedPen.Net.Core.Validators
         {
             errors.Add(new ValidationError(
                 this.validatorName,
-                GetLocalizedErrorMessage(messageKey, args),
+                GetLocalizedErrorMessage(messageKey, args), // メッセージ生成。
                 sentenceWithError,
                 start,
                 end,
@@ -609,19 +609,19 @@ namespace RedPen.Net.Core.Validators
         /// <exception cref="InvalidOperationException"></exception>
         protected internal string GetLocalizedErrorMessage(string? key, params object[] args)
         {
-            if (errorMessages != null)
+            if (errorMessages == null)
             {
-                string suffix = key != null ? "." + key : "";
+                throw new InvalidOperationException("message resource not found.");
+            }
+            else
+            {
+                string suffix = key == null ? "" : "." + key;
 
                 // Validatorのクラス名 + "." + キー名サフィックスで検索した現在のロケール用のメッセージ。
                 string pattern = errorMessages.GetString(this.GetType().Name + suffix, Locale);
 
                 // MessageFormatの代わりにstring.Formatを使用
                 return string.Format(Locale, pattern, args);
-            }
-            else
-            {
-                throw new InvalidOperationException("message resource not found.");
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using NLog;
 using RedPen.Net.Core.Model;
@@ -53,7 +54,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             spellingVariationMap = new Dictionary<string, string>();
 
             // DefaultResourceの読み込み。
-            string v = DefaultResources.ResourceManager.GetString($"SpellingVariation_ja"); // $"SpellingVariation_{SymbolTable.Lang}");
+            string v = DefaultResources.ResourceManager.GetString($"SpellingVariation_ja");
             foreach (string line in v.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
             {
                 string[] result = line.Split('\t');
@@ -74,10 +75,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// </summary>
         /// <param name="word">The word.</param>
         /// <returns>A bool.</returns>
-        protected new bool inDictionary(string word)
-        {
-            return spellingVariationMap.ContainsKey(word);
-        }
+        protected new bool inDictionary(string word) =>
+            spellingVariationMap.ContainsKey(word);
 
         /// <summary>
         /// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
@@ -122,92 +121,94 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             {
                 foreach (TokenElement token in sentence.Tokens)
                 {
+                    // readingを取得。ゆらぎ表現が含まれる。
                     string reading = getReading(token);
                     if (!this.readingMap[document].ContainsKey(reading))
                     {
                         continue;
                     }
+
+                    // tokenに対して取得したreadingでエラーを生成する。
                     generateErrors(document, sentence, token, reading);
                     this.readingMap[document].Remove(reading);
                 }
             }
         }
 
+        // 仮に「単語 ”Node” の揺らぎと考えられる表現 ”ノード(名詞)”」という表現が正とすると、
+        // Nodeが正しい表現で、ノードがゆらぎ表現としてエラーだ、という意味になる。
+        // ところがRedPenの辞書表現は1列目に誤、2列目に正とする「誤正表」になっている。
+        // デフォルト辞書は「node	ノード」なので、この場合は「ノード」が正しい表現で、nodeがゆらぎ表現＝エラーだ、
+        // という意味になる。
+        // エラーメッセージと辞書の定義が逆転している。
+
+        /// <summary>
+        /// エラーメッセージを生成する。
+        /// </summary>
+        /// <param name="document"></param>
+        /// <param name="sentence"></param>
+        /// <param name="targetToken"></param>
+        /// <param name="reading"></param>
         private void generateErrors(
             Document document,
             Sentence sentence,
             TokenElement targetToken,
             string reading)
         {
+            // ゆらぎ表現をリストアップする。
             Dictionary<string, List<TokenInfo>> variationMap = generateVariationMap(document, targetToken, reading);
             foreach (string surface in variationMap.Keys)
             {
                 List<TokenInfo> variationList = variationMap[surface];
-                string variation = generateErrorMessage(variationList, surface);
+                // ゆらぎ表現を説明する文字列
+                string variation = $"{surface}({variationList[0].element.Tags[0]})"; // generateErrorMessage(variationList, surface);
+                // ゆらぎ表現の出現位置
                 string positionList = addVariationPositions(variationList);
+
                 addLocalizedErrorFromToken(sentence, targetToken, variation, positionList);
             }
         }
 
-        private string addVariationPositions(List<TokenInfo> tokenList)
-        {
-            StringBuilder builder = new StringBuilder();
-            foreach (TokenInfo variation in tokenList)
-            {
-                if (builder.Length > 0)
-                {
-                    builder.Append(", ");
-                }
-                builder.Append(getTokenString(variation));
-            }
-            return builder.ToString();
-        }
+        private string addVariationPositions(List<TokenInfo> tokenList) =>
+            string.Join(", ", tokenList.Select(i => getTokenPositionString(i)));
 
-        private string getTokenString(TokenInfo token)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("(L");
-            stringBuilder.Append(token.sentence.LineNumber);
-            stringBuilder.Append(",");
-            stringBuilder.Append(token.element.Offset);
-            stringBuilder.Append(")");
-            return stringBuilder.ToString();
-        }
+        private string getTokenPositionString(TokenInfo token) =>
+            $"(L{token.sentence.LineNumber},{token.element.Offset})";
 
         private Dictionary<string, List<TokenInfo>> generateVariationMap(
             Document document, TokenElement targetToken, string reading)
         {
-            List<TokenInfo> tokens = (this.readingMap[document])[reading];
             Dictionary<string, List<TokenInfo>> variationMap = new Dictionary<string, List<TokenInfo>>();
 
-            foreach (TokenInfo variation in tokens)
+            // readingに対するTokenリストを取得。
+            foreach (TokenInfo variation in this.readingMap[document][reading])
             {
                 if (variation.element != targetToken && !targetToken.Surface.Equals(variation.element.Surface))
                 {
+                    // 存在しなければListを登録。
                     if (!variationMap.ContainsKey(variation.element.Surface))
                     {
                         variationMap[variation.element.Surface] = new List<TokenInfo>();
                     }
+
+                    // readingをキーとして取得したTokenを今度はSurfaceをキーとして登録する。
+                    // これによって、ゆらぎのマップを作成する。
                     variationMap[variation.element.Surface].Add(variation);
                 }
             }
             return variationMap;
         }
 
-        private string generateErrorMessage(List<TokenInfo> variationList, string surface)
-        {
-            StringBuilder variation = new StringBuilder();
-            variation.Append(surface);
-            variation.Append("(");
-            variation.Append(variationList[0].element.Tags[0]);
-            variation.Append(")");
-            return variation.ToString();
-        }
+        private string generateErrorMessage(List<TokenInfo> variationList, string surface) =>
+            $"{surface}({variationList[0].element.Tags[0]})";
 
-        private string getReading(TokenElement token)
-        {
-            return normalize(getPlainReading(token));
-        }
+        /// <summary>
+        /// 辞書から引かれたゆらぎの表現を含む、正規化されたReadingを取得する。
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private string getReading(TokenElement token) =>
+            normalize(getPlainReading(token));
 
         /// <summary>
         /// gets the plain reading.
@@ -219,10 +220,13 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             string surface = token.Surface.ToLower();
             if (inDictionary(surface))
             {
+                // surfaceが辞書に存在する場合は、その値を返す。
+                // 例）surface:nodeに大して「ノード」を取得する。
                 return getValue(surface);
             }
-            string reading = token.Reading == null ? surface : token.Reading;
-            return reading;
+
+            // surfaceが辞書に存在しない場合は、readingを返す。
+            return token.Reading == null ? surface : token.Reading;
         }
 
         /// <summary>
@@ -230,18 +234,10 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>A string.</returns>
-        private string normalize(string input)
-        {
-            string normazlied;
-            normazlied = input.Replace("ー", "")
-                              .Replace("ッ", "")
-                              .Replace("ヴァ", "バ")
-                              .Replace("ヴィ", "ビ")
-                              .Replace("ヴェ", "ベ")
-                              .Replace("ヴォ", "ボ")
-                              .Replace("ヴ", "ブ");
-            return normazlied;
-        }
+        private string normalize(string input) =>
+            // MEMO: 長音、促音、ヴ行、を正規化＝使用しない表現に置換。
+            input.Replace("ー", "").Replace("ッ", "").Replace("ヴァ", "バ").Replace("ヴィ", "ビ")
+                .Replace("ヴェ", "ベ").Replace("ヴォ", "ボ").Replace("ヴ", "ブ");
 
         /// <summary>
         /// PreProcessors to documents
