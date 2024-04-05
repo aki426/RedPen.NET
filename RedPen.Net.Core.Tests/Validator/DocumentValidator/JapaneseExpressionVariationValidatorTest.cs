@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
@@ -23,6 +24,36 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         public JapaneseExpressionVariationValidatorTest(ITestOutputHelper output) : base("JapaneseExpressionVariation")
         {
             this.output = output;
+        }
+
+        [Fact]
+        public void MyTestMethod()
+        {
+            ValidatorConfiguration validatorConfiguration = new ValidatorConfiguration("JapaneseExpressionVariation");
+            // MEMO: Configuration.Builder("ja")でTokenizerはNeologdが割り当たっている。
+            Configuration localConfig = Configuration.Builder("ja")
+                .AddValidatorConfig(validatorConfiguration)
+                .Build();
+
+            // Build中にNeologdでTokenizeされる。
+            Document document = Document.Builder(localConfig.Tokenizer)
+              .AddSection(1)
+              .AddParagraph()
+              .AddSentence(new Sentence("之は山です。これは川です。", 1))
+              .Build();
+
+            document.Sections[0].Paragraphs[0].Sentences[0].Tokens.ForEach(token =>
+            {
+                output.WriteLine(token.ToString());
+            });
+
+            var jaExpVariationValidator
+                = ValidatorFactory.GetInstance(validatorConfiguration, localConfig);
+            jaExpVariationValidator.PreValidate(document);
+
+            List<ValidationError> errors = new List<ValidationError>();
+            jaExpVariationValidator.setErrorList(errors);
+            jaExpVariationValidator.Validate(document);
         }
 
         /// <summary>
@@ -112,6 +143,11 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                 .Build();
 
             Document document = prepareSimpleDocument("このExcelはあのエクセルとは違います。");
+
+            document.Sections[0].Paragraphs[0].Sentences[0].Tokens.ForEach(token =>
+            {
+                output.WriteLine(token.ToString());
+            });
 
             RedPen redPen = new RedPen(config);
             Dictionary<Document, List<ValidationError>> errors = redPen.Validate(new List<Document>() { document });
