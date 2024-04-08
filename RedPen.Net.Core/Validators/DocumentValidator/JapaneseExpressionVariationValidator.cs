@@ -17,8 +17,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <summary>Nlog</summary>
         private static Logger log = LogManager.GetCurrentClassLogger();
 
-        private Dictionary<Document, Dictionary<string, List<TokenInfo>>> readingMap;
-        private Dictionary<Document, List<Sentence>> sentenceMap;
+        public Dictionary<Document, Dictionary<string, List<TokenInfo>>> readingMap;
+        public Dictionary<Document, List<Sentence>> sentenceMap;
 
         /// <summary>JAVA版のmapリソースロードロジックをバイパスするためのDictionary。</summary>
         private Dictionary<string, string> spellingVariationMap;
@@ -26,7 +26,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <summary>
         /// The token info.
         /// </summary>
-        private class TokenInfo
+        public class TokenInfo
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="TokenInfo"/> class.

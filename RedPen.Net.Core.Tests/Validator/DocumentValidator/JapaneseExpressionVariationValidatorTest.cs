@@ -5,6 +5,7 @@ using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Validators;
+using RedPen.Net.Core.Validators.DocumentValidator;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -47,13 +48,40 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                 output.WriteLine(token.ToString());
             });
 
-            var jaExpVariationValidator
-                = ValidatorFactory.GetInstance(validatorConfiguration, localConfig);
+            JapaneseExpressionVariationValidator jaExpVariationValidator
+                = ValidatorFactory.GetInstance(validatorConfiguration, localConfig) as JapaneseExpressionVariationValidator;
             jaExpVariationValidator.PreValidate(document);
 
             List<ValidationError> errors = new List<ValidationError>();
             jaExpVariationValidator.setErrorList(errors);
             jaExpVariationValidator.Validate(document);
+
+            // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
+            errors.Count().Should().Be(1);
+
+            // TODO: 次のテストケースはあくまで暫定。
+            errors[0].Message.Should().Be("単語 ”之” の揺らぎと考えられる表現 ”これ(名詞)” が (L1,6)　で見つかりました。");
+
+            output.WriteLine(errors[0].Message);
+            output.WriteLine(errors[0].ValidatorName);
+            output.WriteLine(errors[0].Sentence.Content);
+            output.WriteLine(errors[0].LineNumber.ToString());
+
+            document.Sections[0].Paragraphs[0].Sentences[0].Tokens.ForEach(token =>
+            {
+                output.WriteLine(token.ToString());
+            });
+
+            _ = jaExpVariationValidator.readingMap[document];
+
+            foreach (KeyValuePair<string, List<JapaneseExpressionVariationValidator.TokenInfo>> readingInfo in
+                jaExpVariationValidator.readingMap[document])
+            {
+                readingInfo.Value.ForEach(tokenInfo =>
+                {
+                    output.WriteLine($"{readingInfo.Key} => {tokenInfo}");
+                });
+            }
         }
 
         /// <summary>
