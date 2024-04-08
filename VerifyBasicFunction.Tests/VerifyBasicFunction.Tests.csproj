@@ -58,6 +58,7 @@
     <Compile Include="CultureInfoTests.cs" />
     <Compile Include="DirectoryInfoTests.cs" />
     <Compile Include="EnvironmentTests.cs" />
+    <Compile Include="ImmutableTests.cs" />
     <Compile Include="KuromojiTests.cs" />
     <Compile Include="NullableSampleModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
