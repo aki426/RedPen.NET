@@ -1,44 +1,27 @@
 ﻿namespace RedPen.Net.Core.Config
 {
+    /// <summary>Symbol character model</summary>
     public record class Symbol
     {
-        private static readonly long serialVersionUID = 3826499136262740992L;
-
+        /// <summary>SymbolType</summary>
         public SymbolType Type { get; init; }
+        /// <summary>Symbol's char value</summary>
         public char Value { get; init; }
+        /// <summary>array of invalid characters</summary>
         public char[] InvalidChars { get; init; }
+        /// <summary>flag to have a space before the character</summary>
         public bool NeedBeforeSpace { get; init; }
+        /// <summary>flag to have a space after the character</summary>
         public bool NeedAfterSpace { get; init; }
-
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="Symbol"/> class.
-        ///// </summary>
-        ///// <param name="symbolType">The symbol type.</param>
-        ///// <param name="charValue">The char value.</param>
-        //public Symbol(SymbolType symbolType, char charValue)
-        //    : this(symbolType, charValue, "", false, false)
-        //{
-        //}
-
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="Symbol"/> class.
-        ///// </summary>
-        ///// <param name="symbolType">The symbol type.</param>
-        ///// <param name="charValue">the character as symbol</param>
-        ///// <param name="invalidCharsStr">list of invalid characters</param>
-        //public Symbol(SymbolType symbolType, char charValue, string invalidCharsStr)
-        //    : this(symbolType, charValue, invalidCharsStr, false, false)
-        //{
-        //}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Symbol"/> class.
         /// </summary>
         /// <param name="symbolType">The symbol type.</param>
         /// <param name="charValue">The char value.</param>
-        /// <param name="InvalidCharsStr">list of invalid characters</param>
+        /// <param name="InvalidCharsStr">string containing invalid characters</param>
         /// <param name="HaveBeforeSpace">flag to have a space before the character</param>
-        /// <param name="HaveAfterSpace">flag to have a pace after the character</param>
+        /// <param name="HaveAfterSpace">flag to have a space after the character</param>
         public Symbol(SymbolType symbolType,
             char charValue,
             string InvalidCharsStr = "",
