@@ -149,40 +149,6 @@ namespace RedPen.Net.Core.Config
             return this.valueDictionary.ContainsKey(value);
         }
 
-        //    @Override
-        //public boolean equals(Object o)
-        //    {
-        //        if (this == o) return true;
-        //        if (o == null || getClass() != o.getClass()) return false;
-
-        //        SymbolTable that = (SymbolTable)o;
-        //        return Objects.equals(Lang, that.Lang) &&
-        //               Objects.equals(Variant, that.Variant) &&
-        //               Objects.equals(symbolDictionary, that.symbolDictionary);
-        //    }
-
-        //    @Override
-        //public int hashCode()
-        //    {
-        //        return Objects.hash(Lang, Variant, symbolDictionary);
-        //    }
-
-        //    @Override
-        //public SymbolTable clone()
-        //    {
-        //        try
-        //        {
-        //            SymbolTable clone = (SymbolTable)super.clone();
-        //            clone.symbolDictionary = new LinkedHashMap<>(symbolDictionary);
-        //            clone.valueDictionary = new LinkedHashMap<>(valueDictionary);
-        //            return clone;
-        //        }
-        //        catch (CloneNotSupportedException e)
-        //        {
-        //            throw new RuntimeException(e);
-        //        }
-        //    }
-
         /// <summary>
         /// Tos the string.
         /// </summary>

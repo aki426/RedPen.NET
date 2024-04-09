@@ -80,6 +80,7 @@
     <Compile Include="Validator\BaseValidatorTest.cs" />
     <Compile Include="Validator\DocumentValidator\JapaneseExpressionVariationValidatorTest.cs" />
     <Compile Include="Validator\SentenceValidator\CommaNumberValidatorTests.cs" />
+    <Compile Include="Validator\SentenceValidator\InvalidExpressionValidatorTest.cs" />
     <Compile Include="Validator\SentenceValidator\SentenceLengthValidatorTests.cs" />
     <Compile Include="Validator\ValidatorFactoryTests.cs" />
     <Compile Include="Validator\ValidatorTests.cs" />
