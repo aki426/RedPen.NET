@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -25,7 +27,7 @@ namespace VerifyBasicFunction.Tests
         /// ImmutableListの基本的な使い方
         /// </summary>
         [Fact]
-        public void BasicTest()
+        public void ListTest()
         {
             // Create instance
             var list1 = ImmutableList.Create<int>(1, 2, 3); // (C# 11 以前)
@@ -75,6 +77,76 @@ namespace VerifyBasicFunction.Tests
             list3.Should().Equal(1, 3, 4);
             list4.Should().Equal(1, 2, 3);
             list5.Should().Equal(2, 3, 4);
+        }
+
+        /// <summary>
+        /// ImmutableDictionaryの基本的な使い方
+        /// </summary>
+        [Fact]
+        public void DictionaryTest()
+        {
+            // ImmutableListのようにImmutableDictionary.Createで作成することはできない？
+            var voidDictionary = ImmutableDictionary.Create<string, string>();
+
+            // Create instance
+            var builder = ImmutableDictionary.CreateBuilder<string, string>();
+            builder.Add("key1", "value1");
+            builder.Add("key2", "value2");
+            var dict1 = builder.ToImmutable();
+
+            dict1.Should().Equal(new Dictionary<string, string> {
+                { "key1", "value1" },
+                { "key2", "value2" } });
+            dict1.Should().NotEqual(new Dictionary<string, string> {
+                { "key2", "value1" } }); // 内容が違うのでNotEqual
+            dict1.Should().NotEqual(new Dictionary<string, string> {
+                { "key1", "value2" },
+                { "key2", "value1" } }); // 内容が違うのでNotEqual
+            dict1.Should().Equal(new Dictionary<string, string> {
+                { "key2", "value2" },
+                { "key1", "value1" } }); // Should().EqualはちゃんとDictionaryの内容をチェックできる。
+
+            // Add
+            var dict2 = dict1.Add("key3", "value3");
+
+            dict2.Should().Equal(new Dictionary<string, string> {
+                { "key1", "value1" },
+                { "key2", "value2" },
+                { "key3", "value3" } });
+
+            // Edit with Builder
+            var builder2 = dict2.ToBuilder();
+            builder2.Add("key4", "value4");
+            builder2.Remove("key1");
+            var dict3 = builder2.ToImmutable();
+
+            dict3.Should().Equal(new Dictionary<string, string> {
+                { "key2", "value2" },
+                { "key3", "value3" },
+                { "key4", "value4" } });
+
+            // AddRange
+            var dict4 = dict3.AddRange(new Dictionary<string, string> {
+                { "key5", "value5" },
+                { "key6", "value6" } });
+
+            dict4.Should().Equal(new Dictionary<string, string> {
+                { "key2", "value2" },
+                { "key3", "value3" },
+                { "key4", "value4" },
+                { "key5", "value5" },
+                { "key6", "value6" } });
+
+            // 既存のImmutableDictionaryに影響ないことの確認。
+            dict2.Should().Equal(new Dictionary<string, string> {
+                { "key1", "value1" },
+                { "key2", "value2" },
+                { "key3", "value3" } });
+
+            dict3.Should().Equal(new Dictionary<string, string> {
+                { "key2", "value2" },
+                { "key3", "value3" },
+                { "key4", "value4" } });
         }
     }
 }
