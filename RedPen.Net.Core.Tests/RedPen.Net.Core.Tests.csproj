@@ -58,6 +58,7 @@
     <Compile Include="Config\ConfigurationLoaderTest.cs" />
     <Compile Include="Config\ConfigurationTests.cs" />
     <Compile Include="Config\OrderedDictionaryTests.cs" />
+    <Compile Include="Config\SymbolTypeTests.cs" />
     <Compile Include="Config\ValidatorConfigurationTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\DocumentCollectionTest.cs" />
