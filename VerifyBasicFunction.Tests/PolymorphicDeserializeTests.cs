@@ -78,6 +78,15 @@ namespace VerifyBasicFunction.Tests
             (validatorConfigurations[0] is SentenceLengthConfiguration).Should().BeTrue();
             var sentenceLen = validatorConfigurations[0] as SentenceLengthConfiguration;
             sentenceLen.Level.Should().Be(ValidationLevel.INFO);
+            sentenceLen.MaxLength.Should().Be(120);
+
+            (validatorConfigurations[1] is JapaneseExpressionVariationConfiguration).Should().BeTrue();
+            var japanese = validatorConfigurations[1] as JapaneseExpressionVariationConfiguration;
+            japanese.Level.Should().Be(ValidationLevel.WARN);
+            japanese.WordMap.Should().ContainKey("A");
+            japanese.WordMap.Should().ContainKey("B");
+            japanese.WordMap["A"].Should().Be("a");
+            japanese.WordMap["B"].Should().Be("b");
         }
     }
 }
