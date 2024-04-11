@@ -28,8 +28,8 @@ namespace RedPen.Net.Core.Tests.Config
         [Fact]
         public void EqualsTest()
         {
-            ValidatorConfiguration conf = new ValidatorConfiguration("test").AddProperty("foo", "bar").SetLevel(Level.ERROR);
-            ValidatorConfiguration conf2 = new ValidatorConfiguration("test").AddProperty("foo", "bar").SetLevel(Level.ERROR);
+            ValidatorConfiguration conf = new ValidatorConfiguration("test").AddProperty("foo", "bar").SetLevel(ValidationLevel.ERROR);
+            ValidatorConfiguration conf2 = new ValidatorConfiguration("test").AddProperty("foo", "bar").SetLevel(ValidationLevel.ERROR);
 
             Assert.Equal(conf, conf2);
         }
@@ -53,8 +53,8 @@ namespace RedPen.Net.Core.Tests.Config
         [Fact]
         public void EqualsLevelsTest()
         {
-            ValidatorConfiguration conf = new ValidatorConfiguration("test").SetLevel(Level.INFO);
-            ValidatorConfiguration conf2 = new ValidatorConfiguration("test").SetLevel(Level.WARN);
+            ValidatorConfiguration conf = new ValidatorConfiguration("test").SetLevel(ValidationLevel.INFO);
+            ValidatorConfiguration conf2 = new ValidatorConfiguration("test").SetLevel(ValidationLevel.WARN);
             conf.Equals(conf2).Should().BeFalse();
         }
     }

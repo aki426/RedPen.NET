@@ -491,7 +491,7 @@ namespace RedPen.Net.Core.Validators
         }
 
         /// <summary>Validatorに割り当てられたエラーレベルを返す。</summary>
-        protected internal Level Level => config == null ? Level.ERROR : config.Level;
+        protected internal ValidationLevel Level => config == null ? ValidationLevel.ERROR : config.Level;
 
         /// <summary>
         /// create a ValidationError for the specified position with specified message

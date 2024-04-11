@@ -4,92 +4,6 @@ using System.Linq;
 
 namespace RedPen.Net.Core.Config
 {
-    /// <summary>Validation結果のレベル</summary>
-    public enum Level
-    {
-        INFO,
-        WARN,
-        ERROR
-    }
-
-    /// <summary>Level Enumの拡張クラス。Enumに重要度とテキスト表現を付加する。</summary>
-    public static class LevelExtend
-    {
-        private static Dictionary<Level, int> severity = new Dictionary<Level, int>()
-        {
-            { Level.INFO, 0 },
-            { Level.WARN, 1 },
-            { Level.ERROR, 2 }
-        };
-
-        private static Dictionary<Level, string> mapping = new Dictionary<Level, string>()
-        {
-            { Level.INFO, "Info" },
-            { Level.WARN, "Warn" },
-            { Level.ERROR, "Error" }
-        };
-
-        /// <summary>
-        /// Are the worse than.
-        /// </summary>
-        /// <param name="param">The param.</param>
-        /// <param name="other">The other.</param>
-        /// <returns>A bool.</returns>
-        public static bool IsWorseThan(this Level param, Level other)
-        {
-            return severity[param] >= severity[other];
-        }
-
-        /// <summary>
-        /// Converts the from.
-        /// </summary>
-        /// <param name="severity">The severity.</param>
-        /// <returns>A Level.</returns>
-        public static Level ConvertFrom(int severity)
-        {
-            if (severity <= 0)
-            {
-                return Level.INFO;
-            }
-            else if (severity == 1)
-            {
-                return Level.WARN;
-            }
-            else
-            {
-                return Level.ERROR;
-            }
-        }
-
-        public static Level ConvertFrom(string level)
-        {
-            switch (level.ToUpper())
-            {
-                case "INFO":
-                    return Level.INFO;
-
-                case "WARN":
-                    return Level.WARN;
-
-                case "ERROR":
-                    return Level.ERROR;
-
-                default:
-                    throw new ArgumentException("No such a error level as " + level);
-            }
-        }
-
-        /// <summary>
-        /// Tos the string.
-        /// </summary>
-        /// <param name="param">The param.</param>
-        /// <returns>A string.</returns>
-        public static string ToString(this Level param)
-        {
-            return mapping[param];
-        }
-    }
-
     /// <summary>
     /// The validator configuration.
     /// </summary>
@@ -103,7 +17,7 @@ namespace RedPen.Net.Core.Config
         public Dictionary<string, string> Properties { get; private set; }
 
         /// <summary>エラーLevel。デフォルトはERROR</summary>
-        public Level Level { get; private set; } = Level.ERROR;
+        public ValidationLevel Level { get; private set; } = ValidationLevel.ERROR;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidatorConfiguration"/> class.
@@ -120,7 +34,7 @@ namespace RedPen.Net.Core.Config
         /// <param name="configurationName">The configuration name.</param>
         /// <param name="properties">The properties.</param>
         public ValidatorConfiguration(string configurationName, Dictionary<string, string> properties) :
-            this(configurationName, properties, Level.ERROR)
+            this(configurationName, properties, ValidationLevel.ERROR)
         {
         }
 
@@ -130,7 +44,7 @@ namespace RedPen.Net.Core.Config
         /// <param name="configurationName">The configuration name.</param>
         /// <param name="properties">The properties.</param>
         /// <param name="level">The level.</param>
-        public ValidatorConfiguration(string configurationName, Dictionary<string, string> properties, Level level)
+        public ValidatorConfiguration(string configurationName, Dictionary<string, string> properties, ValidationLevel level)
         {
             this.ConfigurationName = configurationName;
             this.Properties = properties;
@@ -158,7 +72,7 @@ namespace RedPen.Net.Core.Config
         {
             try
             {
-                this.Level = LevelExtend.ConvertFrom(level);
+                this.Level = ValidationLevelExtend.ConvertFrom(level);
             }
             catch (ArgumentException e)
             {
@@ -173,7 +87,7 @@ namespace RedPen.Net.Core.Config
         /// </summary>
         /// <param name="level">The level.</param>
         /// <returns>A ValidatorConfiguration.</returns>
-        public ValidatorConfiguration SetLevel(Level level)
+        public ValidatorConfiguration SetLevel(ValidationLevel level)
         {
             this.Level = level;
             return this;

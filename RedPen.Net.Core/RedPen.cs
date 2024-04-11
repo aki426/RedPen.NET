@@ -62,7 +62,7 @@ namespace RedPen.Net.Core
         /// <param name="thresholdStr">The threshold str.</param>
         private void InitializeValidators(string thresholdStr)
         {
-            Level threshold = (Level)Enum.Parse(typeof(Level), thresholdStr.ToUpper());
+            ValidationLevel threshold = (ValidationLevel)Enum.Parse(typeof(ValidationLevel), thresholdStr.ToUpper());
             validators.Clear();
             foreach (ValidatorConfiguration config in configuration.ValidatorConfigs)
             {

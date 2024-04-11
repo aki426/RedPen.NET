@@ -17,7 +17,7 @@ namespace RedPen.Net.Core.Validators
         private readonly Sentence sentence;
         private readonly LineOffset startPosition;
         private readonly LineOffset endPosition;
-        private readonly Level level;
+        private readonly ValidationLevel level;
 
         /**
          * Constructor.
@@ -28,7 +28,7 @@ namespace RedPen.Net.Core.Validators
          */
 
         public ValidationError(string validatorName, string errorMessage, Sentence sentenceWithError)
-            : this(validatorName, errorMessage, sentenceWithError, Level.ERROR)
+            : this(validatorName, errorMessage, sentenceWithError, ValidationLevel.ERROR)
         {
         }
 
@@ -44,7 +44,7 @@ namespace RedPen.Net.Core.Validators
             string validatorName,
             string errorMessage,
             Sentence sentenceWithError,
-            Level level)
+            ValidationLevel level)
         {
             this.message = errorMessage;
             this.validatorName = validatorName; ;
@@ -76,7 +76,7 @@ namespace RedPen.Net.Core.Validators
                   sentenceWithError,
                   startPosition,
                   endPosition,
-                  Level.ERROR)
+                  ValidationLevel.ERROR)
         {
         }
 
@@ -96,7 +96,7 @@ namespace RedPen.Net.Core.Validators
             Sentence sentenceWithError,
             int startPosition,
             int endPosition,
-            Level level)
+            ValidationLevel level)
         {
             this.message = errorMessage;
             this.validatorName = validatorName;
@@ -129,7 +129,7 @@ namespace RedPen.Net.Core.Validators
             this.sentence = sentenceWithError;
             this.startPosition = startPosition;
             this.endPosition = endPosition;
-            this.level = Level.ERROR;
+            this.level = ValidationLevel.ERROR;
         }
 
         /// <summary>Get line number in which the error occurs.</summary>
@@ -167,6 +167,6 @@ namespace RedPen.Net.Core.Validators
         public LineOffset? EndPosition => endPosition;
 
         /// <summary>Get error level.</summary>
-        public Level Level => Level;
+        public ValidationLevel Level => Level;
     }
 }
