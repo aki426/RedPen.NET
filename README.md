@@ -49,6 +49,32 @@ readpenをC#アプリケーションからスマートに利用したかった�
    3. javascriptアドインValidator
 4. RedPen.NET.Servereの実装（redpen-serverのC#再実装）
 
+## Validator Configuration
+
+|            Name             |      Description       | Lang  |     Property      |
+| --------------------------- | ---------------------- | ----- | ----------------- |
+| SentenceLength              | センテンスの最大文字長 | ANY   | MaxLength         |
+| JapaneseExpressionVariation | 日本語の表記ゆれ       | ja-JP | DictFile, WordMap |
+
+## Configuration Property
+
+- Name
+  - ※すべてのValidator Configurationで必須のプロパティです。
+  - 表のName列に記載されている文字列を記載することで、対象ValidatorのConfigurationであると認識されます。
+  - このプロパティは先頭に記載する必要があります。それ以外の場合構文エラーになります。
+- Level
+  - ※すべてのValidator Configurationで必須のプロパティです。
+  - ERROR, WARN, INFO, OFFの4種類があります。
+  - OFFはValidatorを実行しない選択肢になります。その他はError結果のレベルです。
+- MaxLength
+  - Validatorに対して与える最大長をintで表現したものです。
+- DictFile
+  - Validatorごとに与える辞書定義ファイルです。実行環境におけるファイルへのパスを指定します。
+  - フォーマット：未定。
+- WordMap
+  - Validatorごとに与える辞書定義です。
+  - JsonのオブジェクトとしてKeyに「検出したい表現」を、Valueに「提案したい表現」を記述します。表記上は誤→正の順番になります。
+
 ## License
 
 Apache-2.0 license
