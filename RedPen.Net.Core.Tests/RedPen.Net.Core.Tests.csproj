@@ -67,6 +67,7 @@
     <Compile Include="Model\SectionTests.cs" />
     <Compile Include="Parser\Common\LineTests.cs" />
     <Compile Include="Parser\LineOffsetTests.cs" />
+    <Compile Include="Parser\SentenceExtractorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedPenUtilityTests.cs" />
     <Compile Include="Tokenizer\NeologdJapaneseTokenizerTests.cs" />
