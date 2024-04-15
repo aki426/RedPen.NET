@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -20,12 +21,12 @@ namespace RedPen.Net.Core.Validators
         private static readonly string validatorPackage = typeof(Validator).Assembly.GetName().Name;
 
         /// <summary>クラス検索対象NameSpaceとして登録されたValidatorフォルダと配下のフォルダ</summary>
-        private static readonly List<string> VALIDATOR_PACKAGES = new List<string> {
+        private static readonly ImmutableList<string> VALIDATOR_PACKAGES = ImmutableList.Create(
             validatorPackage,
             $"{validatorPackage}.DocumentValidator",
             $"{validatorPackage}.SectionValidator",
-            $"{validatorPackage}.SentenceValidator",
-        };
+            $"{validatorPackage}.SentenceValidator"
+        );
 
         // MEMO: MapはDictionaryに置き換え。LinkedHashMapは一旦Dictionaryに変更。
         /// <summary>Validatorを実装したクラスのインスタンスを名前をキーとしたDictionaryに詰め込んだもの。
@@ -33,88 +34,12 @@ namespace RedPen.Net.Core.Validators
         private static readonly Dictionary<string, Validator> validators = new Dictionary<string, Validator>();
 
         // TODO: JSのValidatorについては未実装。
-        /// <summary>Javascriptで実装されたValidatorを名前をキーとしてDictionaryに詰め込んだもの。</summary>
+        ///// <summary>Javascriptで実装されたValidatorを名前をキーとしてDictionaryに詰め込んだもの。</summary>
         //private static readonly Dictionary<string, string> jsValidators = new Dictionary<string, string>();
 
         /// <summary>Reflectionで取得したValidatorクラスを実装した具象クラスのTypeリスト</summary>
         public static List<Type> ValidatorTypes => Assembly.GetExecutingAssembly().GetTypes()
             .Where(i => typeof(Validator).IsAssignableFrom(i) && !i.IsAbstract).ToList();
-
-        /// <summary>
-        /// TypeからValidatorのインスタンスを生成して返す関数。Exception発生時はログを出力して例外をスローする。
-        /// </summary>
-        /// <param name="t">The t.</param>
-        /// <returns>A Validator.</returns>
-        private static Validator CreateValidator(Type t)
-        {
-            try
-            {
-                return (Validator)t.Assembly.CreateInstance(t.FullName);
-            }
-            catch (ArgumentNullException e)
-            {
-                LOG.Error(e);
-                throw;
-            }
-            catch (MissingMethodException e)
-            {
-                LOG.Error(e);
-                throw;
-            }
-            catch (FileNotFoundException e)
-            {
-                LOG.Error(e);
-                throw;
-            }
-            catch (FileLoadException e)
-            {
-                LOG.Error(e);
-                throw;
-            }
-            catch (BadImageFormatException e)
-            {
-                LOG.Error(e);
-                throw;
-            }
-            catch (InvalidCastException e)
-            {
-                // キャスト失敗時は例外で検知する。
-                LOG.Error(e);
-                throw;
-            }
-            catch (Exception e)
-            {
-                if (e is MemberAccessException || e is FieldAccessException || e is MethodAccessException)
-                {
-                    LOG.Error(e);
-                    throw new InvalidOperationException($"Cannot create instance of {t.Name} using default constructor");
-                }
-                else
-                {
-                    LOG.Error(e);
-                    throw;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Registers the validator.
-        /// </summary>
-        /// <param name="t">The t.</param>
-        private static void RegisterValidator(Type t)
-        {
-            // Type tのクラスがObsolete属性を持っているかどうかを判定し、ログを出力する。
-            // Obsolete属性があってもvalidators Dictionaryへ登録する。
-            // TODO: Obsolete属性のValidatorを今後も使用することが、期待する仕様かどうかは要検討。
-            if (t.IsDefined(typeof(ObsoleteAttribute), inherit: false))
-            {
-                LOG.Warn(t.Name + " is deprecated");
-            }
-
-            // MEMO: CreateValidatorで例外が発生する可能性があるが、JAVA版が握りつぶさない仕様だったのでC#でも踏襲。
-            // TODO: ロードできないValidatorがある場合、そのValidatorを無視して続けた方が良いかどうかは要検討。
-            validators.Add(t.Name.Replace("Validator", ""), CreateValidator(t));
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidatorFactory"/> class.
@@ -143,89 +68,6 @@ namespace RedPen.Net.Core.Validators
             }
 
             // TODO: JSのValidatorについては未実装。
-            //var assembly = Assembly.GetExecutingAssembly();
-            //var resourceNames = assembly.GetManifestResourceNames().Where(x => x.EndsWith(".js"));
-
-            //foreach (var resourceName in resourceNames)
-            //{
-            //    using (var stream = assembly.GetManifestResourceStream(resourceName))
-            //    using (var reader = new StreamReader(stream, Encoding.UTF8))
-            //    {
-            //        var content = reader.ReadToEnd();
-            //        var validatorName = resourceName.Substring(resourceName.LastIndexOf('/') + 1).Replace(".js", "");
-            //        jsValidators[validatorName] = content;
-            //    }
-            //}
-        }
-
-        /// <summary>
-        /// gets the configurations.
-        /// </summary>
-        /// <param name="lang">The lang.</param>
-        /// <returns>A list of ValidatorConfigurations.</returns>
-        public static List<ValidatorConfiguration> GetConfigurations(string lang)
-        {
-            List<ValidatorConfiguration> configurations = validators.Where(e =>
-            {
-                List<string> supportedLanguages = e.Value.getSupportedLanguages();
-
-                // MEMO: Validatorについて、JAVAではDeprecated属性、C#ではObsoleteAttributeを持っているかどうかを判定する。
-                //bool deprecated = e.Value.GetType().GetCustomAttributes(typeof(ObsoleteAttribute), false).Length == 0 ? false : true;
-                bool deprecated = e.Value.GetType().IsDefined(typeof(ObsoleteAttribute), inherit: false);
-
-                // MEMO: サポート言語が未指定の場合は全言語対応とみなす。
-                // また、サポート言語がある場合は指定のlangに対応しているかどうかとdeprecatedではないことが条件となる。
-                // TODO: Deprecated属性のValidatorに関してPropertyが取得できないことになるが、これが期待する仕様かどうかは要検討。
-                return (!supportedLanguages.Any() || supportedLanguages.Contains(lang)) && !deprecated;
-                // }).Select(e => new ValidatorConfiguration(e.Key, ToStrings(e.Value.getProperties()))).ToList();
-                // TODO: 一旦ビルドを通すために暫定的にValidatorConfigurationを生成。
-            }).Select(e => new ValidatorConfiguration(ValidationLevel.ERROR)).ToList();
-
-            // TODO: JSのValidatorについては未実装。
-            //Dictionary<string, string> emptyMap = new Dictionary<string, string>();
-            //foreach (var jsValidator in jsValidators.Keys)
-            //{
-            //    try
-            //    {
-            //        Validator jsValidatorInstance = GetInstance(jsValidator);
-            //        List<String> supportedLanguages = jsValidatorInstance.getSupportedLanguages();
-            //        if (supportedLanguages.isEmpty() || supportedLanguages.contains(lang))
-            //        {
-            //            configurations.add(new ValidatorConfiguration(jsValidator, emptyMap));
-            //        }
-            //    }
-            //    catch (RedPenException ignored)
-            //    {
-            //    }
-            //}
-
-            return configurations;
-        }
-
-        //    @SuppressWarnings("unchecked")
-        /// <summary>
-        /// Convert object Dictionary to string Dictionary.
-        /// TODO: JAVA版ではObject型を多用するスタイルだったが、C#版でもそれでよいのか、
-        /// 実体がstringなのでstringでの運用に切り替えたほうが良いのかは要検討。
-        /// </summary>
-        /// <param name="properties">The properties.</param>
-        /// <returns>A Dictionary.</returns>
-        private static Dictionary<string, string> ToStrings(Dictionary<string, object> properties)
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, object> e in properties)
-            {
-                if (e.Value is IEnumerable)
-                {
-                    result.Add(e.Key, string.Join(",", e.Value as IEnumerable));
-                }
-                else
-                {
-                    result.Add(e.Key, e.Value.ToString());
-                }
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -298,5 +140,104 @@ namespace RedPen.Net.Core.Validators
             }
             throw new RedPenException("There is no such validator: " + name);
         }
+
+        /// <summary>
+        /// TypeからValidatorのインスタンスを生成して返す関数。Exception発生時はログを出力して例外をスローする。
+        /// </summary>
+        /// <param name="t">The t.</param>
+        /// <returns>A Validator.</returns>
+        private static Validator CreateValidator(Type t)
+        {
+            try
+            {
+                return (Validator)t.Assembly.CreateInstance(t.FullName);
+            }
+            catch (Exception e)
+            {
+                if (e is MemberAccessException || e is FieldAccessException || e is MethodAccessException)
+                {
+                    LOG.Error(e);
+                    throw new InvalidOperationException($"Cannot create instance of {t.Name} using default constructor");
+                }
+                else
+                {
+                    LOG.Error(e);
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers the validator.
+        /// </summary>
+        /// <param name="t">The t.</param>
+        private static void RegisterValidator(Type t)
+        {
+            // Type tのクラスがObsolete属性を持っているかどうかを判定し、ログを出力する。
+            // Obsolete属性があってもvalidators Dictionaryへ登録する。
+            // TODO: Obsolete属性のValidatorを今後も使用することが、期待する仕様かどうかは要検討。
+            if (t.IsDefined(typeof(ObsoleteAttribute), inherit: false))
+            {
+                LOG.Warn(t.Name + " is deprecated");
+            }
+
+            // MEMO: CreateValidatorで例外が発生する可能性があるが、JAVA版が握りつぶさない仕様だったのでC#でも踏襲。
+            // TODO: ロードできないValidatorがある場合、そのValidatorを無視して続けた方が良いかどうかは要検討。
+            validators.Add(t.Name.Replace("Validator", ""), CreateValidator(t));
+        }
+
+        /// <summary>
+        /// gets the configurations.
+        /// </summary>
+        /// <param name="lang">The lang.</param>
+        /// <returns>A list of ValidatorConfigurations.</returns>
+        public static List<ValidatorConfiguration> GetConfigurations(string lang)
+        {
+            List<ValidatorConfiguration> configurations = validators.Where(e =>
+            {
+                List<string> supportedLanguages = e.Value.getSupportedLanguages();
+
+                // MEMO: Validatorについて、JAVAではDeprecated属性、C#ではObsoleteAttributeを持っているかどうかを判定する。
+                //bool deprecated = e.Value.GetType().GetCustomAttributes(typeof(ObsoleteAttribute), false).Length == 0 ? false : true;
+                bool deprecated = e.Value.GetType().IsDefined(typeof(ObsoleteAttribute), inherit: false);
+
+                // MEMO: サポート言語が未指定の場合は全言語対応とみなす。
+                // また、サポート言語がある場合は指定のlangに対応しているかどうかとdeprecatedではないことが条件となる。
+                // TODO: Deprecated属性のValidatorに関してPropertyが取得できないことになるが、これが期待する仕様かどうかは要検討。
+                return (!supportedLanguages.Any() || supportedLanguages.Contains(lang)) && !deprecated;
+                // }).Select(e => new ValidatorConfiguration(e.Key, ToStrings(e.Value.getProperties()))).ToList();
+                // TODO: 一旦ビルドを通すために暫定的にValidatorConfigurationを生成。
+            }).Select(e => new ValidatorConfiguration(ValidationLevel.ERROR)).ToList();
+
+            // TODO: JSのValidatorについては未実装。
+
+            return configurations;
+        }
+
+        ////    @SuppressWarnings("unchecked")
+        ///// <summary>
+        ///// Convert object Dictionary to string Dictionary.
+        ///// TODO: JAVA版ではObject型を多用するスタイルだったが、C#版でもそれでよいのか、
+        ///// 実体がstringなのでstringでの運用に切り替えたほうが良いのかは要検討。
+        ///// </summary>
+        ///// <param name="properties">The properties.</param>
+        ///// <returns>A Dictionary.</returns>
+        //private static Dictionary<string, string> ToStrings(Dictionary<string, object> properties)
+        //{
+        //    Dictionary<string, string> result = new Dictionary<string, string>();
+        //    foreach (KeyValuePair<string, object> e in properties)
+        //    {
+        //        if (e.Value is IEnumerable)
+        //        {
+        //            result.Add(e.Key, string.Join(",", e.Value as IEnumerable));
+        //        }
+        //        else
+        //        {
+        //            result.Add(e.Key, e.Value.ToString());
+        //        }
+        //    }
+
+        //    return result;
+        //}
     }
 }

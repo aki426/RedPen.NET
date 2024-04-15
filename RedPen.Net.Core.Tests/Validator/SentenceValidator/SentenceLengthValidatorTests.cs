@@ -17,7 +17,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
     /// </summary>
     public class SentenceLengthValidatorTests
     {
-        private SentenceLengthValidator validator = new SentenceLengthValidator();
+        private SentenceLengthValidator validator;// = new SentenceLengthValidator();
         private readonly ITestOutputHelper output;
 
         /// <summary>
@@ -27,9 +27,11 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         {
             this.output = output;
 
+            var sentenceLengthConfiguration = new SentenceLengthConfiguration(ValidationLevel.ERROR, 30);
+            validator = new SentenceLengthValidator(sentenceLengthConfiguration);
+
             validator.PreInit(
-                new SentenceLengthConfiguration(ValidationLevel.ERROR, 30),
-                // new ValidatorConfiguration("SentenceLength") { } ,
+                sentenceLengthConfiguration,
                 Configuration.Builder().Build());
         }
 
@@ -39,15 +41,13 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [Fact]
         public void testWithLongSentence()
         {
-            object o = (object)120;
-            (o is int).Should().BeTrue();
-
             Sentence str = new Sentence(
                 "this is a very long long long long long long long long long long long long sentence.",
                 0);
 
-            validator.getProperties().Count.Should().Be(1);
-            validator.getProperties().ContainsKey("max_len").Should().BeTrue();
+            validator.Config.MaxLength.Should().Be(30);
+            validator.ValidatorName.Should().Be("SentenceLength");
+
             // Cultureの設定
             validator.setLocale(new CultureInfo("en-US"));
 

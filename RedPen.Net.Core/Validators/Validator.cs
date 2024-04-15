@@ -33,6 +33,785 @@ namespace RedPen.Net.Core.Validators
 
     // MEMO: JAVAのInterfaceはC#と異なり、具象メソッドとメンバー変数を持つことができる。
 
+    ///// <summary>
+    ///// The validator.
+    ///// </summary>
+    //public abstract class Validator
+    //{
+    //    /// <summary>Nlog</summary>
+    //    private static Logger LOG = LogManager.GetCurrentClassLogger();
+
+    //    // TODO: おそらく多言語対応のためのコードでありC#で対応する実装をする。C#ではResources.resxやCultureInfoを使う。
+    //    // private final static ResourceBundle.Control fallbackControl = ResourceBundle.Control.getNoFallbackControl(FORMAT_DEFAULT);
+
+    //    // MEMO: ValidatorはValidatorConfiguration.Propertiesとは別にdefaultPropsを持つ。
+    //    // このdefaultPropsはコンストラクタで与えられるkeyValuesによって初期化される。
+    //    // 汎用性を持たせるために<string, object>型で保持しているが、実際問題としてここまで汎用性を持たせる必要は無い。
+    //    private Dictionary<string, object> defaultProps;
+
+    //    // TODO: おそらく多言語対応のためのコードでありC#で対応する実装をする。C#ではResources.resxやCultureInfoを使う。
+    //    private ResourceManager errorMessages = null;
+
+    //    // MEMO: JAVAのprotectedはC#のprotected internalに相当する。protectedだとアセンブリ内からアクセスできない。
+    //    public ValidatorConfiguration Config { get; init; } // MEMO: Configが必要かどうかは、そもそもValidatorに依存するのでは？
+
+    //    // TODO: 具象クラスとしての個別のValidatorでConfigの型とメンバー変数定義はすべき。
+
+    //    // MEMO: JAVAのprotectedはC#のprotected internalに相当する。
+    //    protected internal Configuration globalConfig;
+
+    //    // MEMO: 実際にGlobalなConfigの中で必要なのはSymbolTableのみであるため、SymbolTableを取得する関数を用意する。
+    //    public SymbolTable SymbolTable { get; init; }
+
+    //    // MEMO: JAVAのLocaleはC#のCultureInfoに相当する。
+    //    // MEMO: デフォルトのCultureはコンストラクタ内で与えられる。
+    //    public CultureInfo Locale { get; private set; }
+
+    //    /// <summary>当該Validatorの名前（末尾の"Validator"を除去した機能だけの名前）をクラス名から取得する。</summary>
+    //    public string ValidatorName => this.GetType().Name.Substring(0, this.GetType().Name.Length - "Validator".Length);
+
+    //    // MEMO: JAVAのキーワード無しコンストラクターはC#でもキーワード無しで良いはず。
+
+    //    /// <summary>
+    //    /// Initializes a new instance of the <see cref="Validator"/> class.
+    //    /// </summary>
+    //    public Validator() : this(new object[0])
+    //    {
+    //    }
+
+    //    /// <summary>
+    //    /// Initializes a new instance of the <see cref="Validator"/> class.
+    //    /// </summary>
+    //    /// <param name="keyValues">String key and Object value pairs for supported config Properties.</param>
+    //    public Validator(object[] keyValues)
+    //    {
+    //        //ValidatorName = this.GetType().Name;
+
+    //        // MEMO: デフォルトのCultureInfoはDefaultThreadCurrentCultureに設定される。
+    //        // TODO: デフォルトCultureの設定方法がこれで良いかはライブラリ全体の仕様を見て再検討する。
+    //        setLocale(CultureInfo.DefaultThreadCurrentCulture);
+    //        setDefaultProperties(keyValues);
+    //    }
+
+    //    /// <summary>
+    //    /// sets the default properties.
+    //    /// </summary>
+    //    /// <param name="keyValues">The key values.</param>
+    //    protected internal void setDefaultProperties(object[] keyValues)
+    //    {
+    //        defaultProps = new Dictionary<string, object>();
+    //        addDefaultProperties(keyValues);
+    //    }
+
+    //    /// <summary>
+    //    /// adds the default properties.
+    //    /// </summary>
+    //    /// <param name="keyValues">The key values.</param>
+    //    protected internal void addDefaultProperties(object[] keyValues)
+    //    {
+    //        if (keyValues.Length % 2 != 0)
+    //        {
+    //            throw new ArgumentException("Not enough values specified");
+    //        }
+
+    //        for (int i = 0; i < keyValues.Length; i += 2)
+    //        {
+    //            defaultProps.Add(keyValues[i].ToString(), keyValues[i + 1]);
+    //        }
+    //    }
+
+    //    private List<ValidationError> errors;
+
+    //    /// <summary>
+    //    /// sets the error list.
+    //    /// TODO: プロパティへの変更を検討する。
+    //    /// </summary>
+    //    /// <param name="errors">The errors.</param>
+    //    public void setErrorList(List<ValidationError> errors)
+    //    {
+    //        this.errors = errors;
+    //    }
+
+    //    /// <summary>
+    //    /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
+    //    /// </summary>
+    //    /// <param name="sentence"></param>
+    //    public virtual void PreValidate(Sentence sentence)
+    //    { }
+
+    //    /// <summary>
+    //    /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
+    //    /// </summary>
+    //    /// <param name="section"></param>
+    //    public virtual void PreValidate(Section section)
+    //    { }
+
+    //    /// <summary>
+    //    /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
+    //    /// </summary>
+    //    /// <param name="document"></param>
+    //    public virtual void PreValidate(Document document)
+    //    { }
+
+    //    /// <summary>
+    //    /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
+    //    /// </summary>
+    //    /// <param name="document"></param>
+    //    public virtual void Validate(Document document)
+    //    { }
+
+    //    /// <summary>
+    //    /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
+    //    /// </summary>
+    //    /// <param name="sentence"></param>
+    //    public virtual void Validate(Sentence sentence)
+    //    { }
+
+    //    /// <summary>
+    //    /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
+    //    /// </summary>
+    //    /// <param name="section"></param>
+    //    public virtual void Validate(Section section)
+    //    { }
+
+    //    /// <summary>
+    //    /// Return an array of languages supported by this validator
+    //    /// {@link cc.redpen.validator.Validator} provides empty implementation.
+    //    /// Validator implementation validates sections can override this method.
+    //    /// </summary>
+    //    /// <returns>an array of the languages supported by this validator.
+    //    /// An empty list implies there are no restrictions on the languages supported by this validator.</returns>
+    //    public virtual List<string> getSupportedLanguages()
+    //    {
+    //        return new List<string>();
+    //    }
+
+    //    // TODO: globalConfigが必要なのはSymbolTableのため？　であればSymbolTableを引数で渡した方が良い。
+
+    //    public virtual void PreInit(ValidatorConfiguration config, Configuration globalConfig)
+
+    //    {
+    //        // this.Config = config;
+    //        //this.globalConfig = globalConfig;
+    //        Init();
+    //    }
+
+    //    public virtual void PreInit(ValidatorConfiguration config, SymbolTable symbolTable)
+
+    //    {
+    //        //this.SymbolTable = symbolTable;
+    //        // this.Config = config;
+    //        //this.globalConfig = globalConfig;
+    //        Init();
+    //    }
+
+    //    // TODO: RedPen内のLang文字列表現をCultureInfo.Nameに合わせる。
+
+    //    ///// <summary>Gets the symbol table.</summary>
+    //    //protected internal SymbolTable SymbolTable => new SymbolTable(
+    //    //    globalConfig.CultureInfo.TwoLetterISOLanguageName,
+    //    //    globalConfig.Variant,
+    //    //    globalConfig.Symbols);
+
+    //    /// <summary>
+    //    /// Localeをセットするとともに、Locale情報に対応するリソースを引き当てる。
+    //    /// TODO: プロパティへの変更を検討する。
+    //    /// </summary>
+    //    /// <param name="locale">The Locale.</param>
+    //    public void setLocale(CultureInfo locale)
+    //    {
+    //        this.Locale = locale;
+
+    //        // MEMO: Validatorが返す文章エラーの説明メッセージはValidationMessage.resxにまとめた。
+    //        // JAVA版ではリソースをNameSpaceごとに分割していたが、C#版では分ける意義が薄いと判断し
+    //        // すべてのValidatorのエラーメッセージを1つのリソースマネージャで管理するようにした。
+    //        // これによってパッケージ名でリソースを指定する必要が無くなり、Validatorのクラス名のみをキーとして
+    //        // エラーメッセージにアクセスできる。
+
+    //        // MEMO: カルチャの違いでメッセージを返す機能はリソースマネージャから提供されるロジックを利用する。
+    //        // リソースマネージャのデフォルトはen-US、日本語の場合はja-JPを指定する。
+    //        // MEMO: JAVA版ではResourceBundleの割り当て時エラー処理をしているが、C#ではValidationMessage.ResourceManagerで
+    //        // 解決するので不要。
+    //        errorMessages = ValidationMessage.ResourceManager;
+
+    //        // MEMO: 実際にこのクラスに対応するエラーメッセージがリソースに登録されているかの確認は、
+    //        // JAVA版でもこの関数内ではしていないようなので、別途実施する。
+    //    }
+
+    //    //// MEMO: JAVA版では@Deprecatedアノテーションを使用しているが、C#ではObsolete属性を使用する。
+    //    ///// <summary>
+    //    ///// Return the configuration Properties
+    //    ///// </summary>
+    //    ///// <returns></returns>
+    //    //[Obsolete("This method is deprecated.")]
+    //    //public virtual Dictionary<string, string> getConfigAttributes()
+    //    //{
+    //    //    return config.Properties;
+    //    //}
+
+    //    /// <summary>
+    //    /// Validation initialization, called after the configuration and symbol tables have been assigned
+    //    /// MEMO: JAVA版ではエラーの場合はRedPenExceptionをthrowすることになっている。
+    //    /// </summary>
+    //    protected virtual void Init()
+    //    { }
+
+    //    public virtual Dictionary<string, object> getProperties()
+    //    {
+    //        return defaultProps;
+    //    }
+
+    //    private object? GetOrDefault(string name)
+    //    {
+    //        object? value = null;
+
+    //        // プロパティ名で取得できる場合は取得する。
+    //        if (Config != null && Config.GetType().GetProperty(name) != null)
+    //        {
+    //            value = Config.GetType().GetProperty(name).GetValue(Config);
+    //        }
+    //        // MEMO: 空のDictionaryやHashSetの場合、nullではないのでdefaultPropsから取得されないことに注意。
+    //        if (value == null && defaultProps.ContainsKey(name))
+    //        {
+    //            value = defaultProps[name];
+    //        }
+    //        return value;
+    //    }
+
+    //    /// <summary>
+    //    /// gets the int.
+    //    /// </summary>
+    //    /// <param name="name">The name.</param>
+    //    /// <returns>An int.</returns>
+    //    protected internal int GetInt(string name)
+    //    {
+    //        var value = GetOrDefault(name);
+    //        if (value == null)
+    //        {
+    //            throw new ArgumentException("Property " + name + " is not set.");
+    //        }
+    //        else if (value is int)
+    //        {
+    //            return (int)value;
+    //        }
+    //        else
+    //        {
+    //            // JAVA版でもParseしているが例外処理していないので一旦このままとする。
+    //            // TODO: 例外処理を追加する。
+    //            return int.Parse((string)value);
+    //        }
+    //    }
+
+    //    /// <summary>
+    //    /// Gets the float.
+    //    /// </summary>
+    //    /// <param name="name">The name.</param>
+    //    /// <returns>A float.</returns>
+    //    protected internal float GetFloat(string name)
+    //    {
+    //        var value = GetOrDefault(name);
+    //        if (value == null)
+    //        {
+    //            throw new ArgumentException("Property " + name + " is not set.");
+    //        }
+    //        else if (value is float)
+    //        {
+    //            return (float)value;
+    //        }
+    //        else
+    //        {
+    //            // JAVA版でもParseしているが例外処理していないので一旦このままとする。
+    //            // TODO: 例外処理を追加する。
+    //            return float.Parse((string)value);
+    //        }
+    //    }
+
+    //    // TODO: ValidatorConfigurationの構造を変更するため、この関数は不要になったタイミングで削除する。
+    //    /// <summary>
+    //    /// Gets the string.
+    //    /// </summary>
+    //    /// <param name="name">The name.</param>
+    //    /// <returns>A string.</returns>
+    //    protected string GetString(string name)
+    //    {
+    //        // プロパティ名で取得できる場合は取得する。
+    //        if (Config != null && Config.GetType().GetProperty(name) != null)
+    //        {
+    //            return (string)Config.GetType().GetProperty(name).GetValue(Config);
+    //        }
+    //        else
+    //        {
+    //            return (string)defaultProps[name];
+    //        }
+    //    }
+
+    //    /// <summary>
+    //    /// Gets the value.
+    //    /// </summary>
+    //    /// <param name="name">The name.</param>
+    //    /// <returns>A T? .</returns>
+    //    protected internal virtual T? GetProperty<T>(string name)
+    //    {
+    //        object? value = GetOrDefault(name);
+    //        if (value == null)
+    //        {
+    //            // nullを返す場合はnull許容型に変換する。
+    //            return (T?)value;
+    //        }
+    //        else
+    //        {
+    //            // MEMO: JAVA版では型が異なる場合はInteger.valueOf((String)value);などとして強引に変換しているが、
+    //            // C#ではConfigで型の整合性がとれている前提を置いてもよかろうという判断で単純にキャストを行っている。
+    //            // MEMO: intなど値型の変換を行うためasは使用できない。
+    //            try
+    //            {
+    //                // デバッグのため念のためキャスト前にisで判定を行う。
+    //                if (value is T v)
+    //                {
+    //                    return (T?)v;
+    //                }
+    //                else
+    //                {
+    //                    return (T?)value;
+    //                }
+    //            }
+    //            catch (InvalidCastException e)
+    //            {
+    //                // キャストに失敗した場合Exception発生するのでログ取り。
+    //                LOG.Error(e);
+    //                throw;
+    //            }
+    //        }
+    //    }
+
+    //    /// <summary>
+    //    /// RedPenのConfファイルのプロパティ値からHashSetを取得する関数。
+    //    /// </summary>
+    //    /// <param name="name">The name.</param>
+    //    /// <returns>A HashSet.</returns>
+    //    protected internal HashSet<string> GetHashSet(string name)
+    //    {
+    //        object value = null;
+    //        if (Config != null && Config.GetType().GetProperty(name) != null)
+    //        {
+    //            value = Config.GetType().GetProperty(name).GetValue(Config);
+    //        }
+    //        if ((value == null || ((string)value).Length == 0) && defaultProps.ContainsKey(name))
+    //        {
+    //            value = defaultProps[name];
+    //        }
+    //        if (value == null)
+    //        {
+    //            return null;
+    //        }
+    //        if (value is HashSet<string>)
+    //        {
+    //            return value as HashSet<string>;
+    //        }
+
+    //        HashSet<string> newValue = new HashSet<string>(((string)value).Split(',').Select(i => i.ToLower()));
+    //        // defaultPropsに設定することで、次回からはHashSet<string>として直接取得できる。
+    //        defaultProps[name] = newValue;
+
+    //        return newValue;
+    //    }
+
+    //    /// <summary>
+    //    /// RedPenのConfファイルのプロパティ値からDictionaryを取得する関数。
+    //    /// MEMO: 副作用（defaultPropsの更新）を伴う。
+    //    /// </summary>
+    //    /// <param name="name">The name.</param>
+    //    /// <returns>A Dictionary.</returns>
+    //    protected internal Dictionary<string, string>? GetDictionary(string name)
+    //    {
+    //        object value = null;
+    //        if (Config != null && Config.GetType().GetProperty(name) != null)
+    //        {
+    //            value = Config.GetType().GetProperty(name).GetValue(Config);
+    //        }
+    //        if ((value == null || ((string)value).Length == 0))
+    //        {
+    //            if (defaultProps.ContainsKey(name))
+    //            {
+    //                value = defaultProps[name];
+    //            }
+    //            else
+    //            {
+    //                return null;
+    //            }
+    //        }
+    //        if (value is Dictionary<string, object>)
+    //        {
+    //            var ret = new Dictionary<string, string>();
+    //            foreach (var item in (Dictionary<string, object>)value)
+    //            {
+    //                ret.Add(item.Key, item.Value.ToString());
+    //            }
+
+    //            return ret;
+
+    //            // return (Dictionary<string, string>)value;
+    //        }
+
+    //        // TODO: JAVA8流のObjectで取り回してCastする処理をC#でどう書くか検討する。
+
+    //        Dictionary<string, string> newValue = RedPenUtility.ParseMap((string)value);
+
+    //        // MEMO: nameで取得したDictionaryによってdefaultPropsの更新が発生する。
+    //        defaultProps[name] = newValue;
+
+    //        return newValue;
+    //    }
+
+    //    // MEMO: parseMap関数はRedPenUtilityクラスに移行した。
+
+    //    /// <summary>
+    //    /// gets the config attribute.
+    //    /// </summary>
+    //    /// <param name="name">The name.</param>
+    //    /// <returns>A string? .</returns>
+    //    protected internal virtual string? getConfigAttribute(string name)
+    //    {
+    //        if (Config != null && Config.GetType().GetProperty(name) != null)
+    //        {
+    //            return Config.GetType().GetProperty(name).GetValue(Config).ToString();
+    //        }
+
+    //        return null;
+    //    }
+
+    //    //protected internal void setValidatorName(string validatorName)
+    //    //{
+    //    //    this.ValidatorName = validatorName;
+    //    //}
+
+    //    //    /** @deprecated Please use constructor with default Properties instead, and then getXXX() methods */
+    //    //    @Deprecated
+    //    //    protected String getConfigAttribute(String name, String defaultValue)
+    //    //    {
+    //    //        return getConfigAttribute(name).orElse(defaultValue);
+    //    //    }
+
+    //    //    @Deprecated
+    //    //    protected int getConfigAttributeAsInt(String name, int defaultValue)
+    //    //    {
+    //    //        return parseInt(getConfigAttribute(name, Integer.toString(defaultValue)));
+    //    //    }
+
+    //    //    @Deprecated
+    //    //    protected boolean getConfigAttributeAsBoolean(String name, boolean defaultValue)
+    //    //    {
+    //    //        return parseBoolean(getConfigAttribute(name, Boolean.toString(defaultValue)));
+    //    //    }
+
+    //    //    @Deprecated
+    //    //    protected double getConfigAttributeAsDouble(String name, double defaultValue)
+    //    //    {
+    //    //        return parseDouble(getConfigAttribute(name, Double.toString(defaultValue)));
+    //    //    }
+
+    //    // TODO: ファイルからのロード系の処理は適切なクラスから実行するように見直す。
+
+    //    ///// <summary>
+    //    ///// finds the file.
+    //    ///// </summary>
+    //    ///// <param name="relativePath">The relative path.</param>
+    //    ///// <returns>A FileInfo.</returns>
+    //    //protected internal FileInfo FindFile(string relativePath)
+    //    //{
+    //    //    return globalConfig.FindFile(relativePath);
+    //    //}
+
+    //    /// <summary>Validatorに割り当てられたエラーレベルを返す。</summary>
+    //    protected internal ValidationLevel Level => Config == null ? ValidationLevel.ERROR : Config.Level;
+
+    //    /// <summary>
+    //    /// create a ValidationError for the specified position with specified message
+    //    /// </summary>
+    //    /// <param name="message">The message.</param>
+    //    /// <param name="sentenceWithError">The sentence with error.</param>
+    //    protected internal void addError(string message, Sentence sentenceWithError)
+    //    {
+    //        errors.Add(new ValidationError(this.ValidatorName, message, sentenceWithError, this.Level));
+    //    }
+
+    //    /// <summary>
+    //    /// create a ValidationError for the specified position with specified message
+    //    /// </summary>
+    //    /// <param name="message">The message.</param>
+    //    /// <param name="sentenceWithError">The sentence with error.</param>
+    //    /// <param name="start">The start.</param>
+    //    /// <param name="end">The end.</param>
+    //    protected internal void addErrorWithPosition(string message, Sentence sentenceWithError, int start, int end)
+    //    {
+    //        errors.Add(new ValidationError(this.ValidatorName, message, sentenceWithError, start, end, this.Level));
+    //    }
+
+    //    /// <summary>
+    //    /// create a ValidationError for the specified position with localized default error message
+    //    /// </summary>
+    //    /// <param name="sentenceWithError"></param>
+    //    /// <param name="args"></param>
+    //    protected internal void addLocalizedError(Sentence sentenceWithError, params object[] args)
+    //    {
+    //        addLocalizedError(null, sentenceWithError, args);
+    //    }
+
+    //    /// <summary>
+    //    /// create a ValidationError for the specified position with localized message with specified message key
+    //    /// </summary>
+    //    /// <param name="messageKey"></param>
+    //    /// <param name="sentenceWithError"></param>
+    //    /// <param name="args"></param>
+    //    protected internal void addLocalizedError(string? messageKey, Sentence sentenceWithError, params object[] args)
+    //    {
+    //        errors.Add(new ValidationError(
+    //            this.ValidatorName,
+    //            GetLocalizedErrorMessage(messageKey, args),
+    //            sentenceWithError,
+    //            Level));
+    //    }
+
+    //    /// <summary>
+    //    /// create a ValidationError using the details within the given token &amp; localized message
+    //    /// </summary>
+    //    /// <param name="sentenceWithError"></param>
+    //    /// <param name="token">the TokenElement that has the error</param>
+    //    /// <param name="args"></param>
+    //    protected internal void addLocalizedErrorFromToken(Sentence sentenceWithError, TokenElement token, params object[] args)
+    //    {
+    //        List<object> argList = new List<object>();
+    //        foreach (object arg in args)
+    //        {
+    //            argList.Add(arg);
+    //        }
+    //        // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録されている。
+    //        argList.Insert(0, token.Surface);
+
+    //        addLocalizedErrorWithPosition(
+    //            sentenceWithError,
+    //            token.Offset, // start
+    //            token.Offset + token.Surface.Length, // end
+    //            argList.ToArray()
+    //        );
+    //    }
+
+    //    /// <summary>
+    //    /// create a ValidationError for the specified position with default localized error message
+    //    /// </summary>
+    //    /// <param name="sentenceWithError"></param>
+    //    /// <param name="start">start position in parsed sentence</param>
+    //    /// <param name="end">end position in parsed sentence</param>
+    //    /// <param name="args"></param>
+    //    protected internal void addLocalizedErrorWithPosition(Sentence sentenceWithError, int start, int end, params object[] args)
+    //    {
+    //        addLocalizedErrorWithPosition(null, sentenceWithError, start, end, args);
+    //    }
+
+    //    /// <summary>
+    //    /// create a ValidationError for the specified position with specified message key
+    //    /// </summary>
+    //    /// <param name="messageKey"></param>
+    //    /// <param name="sentenceWithError"></param>
+    //    /// <param name="start">start position in parsed sentence</param>
+    //    /// <param name="end">end position in parsed sentence</param>
+    //    /// <param name="args"></param>
+    //    protected internal void addLocalizedErrorWithPosition(
+    //        string? messageKey,
+    //        Sentence sentenceWithError,
+    //        int start,
+    //        int end,
+    //        params object[] args)
+    //    {
+    //        errors.Add(new ValidationError(
+    //            this.ValidatorName,
+    //            GetLocalizedErrorMessage(messageKey, args), // メッセージ生成。
+    //            sentenceWithError,
+    //            start,
+    //            end,
+    //            Level));
+    //    }
+
+    //    /// <summary>
+    //    /// returns localized error message for the given key formatted with argument
+    //    /// </summary>
+    //    /// <param name="key">message key</param>
+    //    /// <param name="args">objects to format</param>
+    //    /// <returns>localized error message</returns>
+    //    /// <exception cref="InvalidOperationException"></exception>
+    //    protected internal string GetLocalizedErrorMessage(string? key, params object[] args)
+    //    {
+    //        if (errorMessages == null)
+    //        {
+    //            throw new InvalidOperationException("message resource not found.");
+    //        }
+    //        else
+    //        {
+    //            string suffix = key == null ? "" : "." + key;
+
+    //            // Validatorのクラス名 + "." + キー名サフィックスで検索した現在のロケール用のメッセージ。
+    //            string pattern = errorMessages.GetString(this.GetType().Name + suffix, Locale);
+
+    //            // MessageFormatの代わりにstring.Formatを使用
+    //            return string.Format(Locale, pattern, args);
+    //        }
+    //    }
+
+    //    // 以下、Deprecated。代わりにaddLocalizedErrorを使用する。
+
+    //    //    /**
+    //    //     * create a ValidationError for the specified position with default error message
+    //    //     *
+    //    //     * @param sentenceWithError sentence
+    //    //     * @param args              objects to format
+    //    //     * @deprecated use {@link #addLocalizedError(Sentence, Object...)} instead
+    //    //     */
+    //    //    protected void addValidationError(Sentence sentenceWithError, Object...args)
+    //    //    {
+    //    //        addLocalizedError(sentenceWithError, args);
+    //    //    }
+
+    //    //    /**
+    //    //     * create a ValidationError for the specified position with specified message key
+    //    //     *
+    //    //     * @param messageKey        messageKey
+    //    //     * @param sentenceWithError sentence
+    //    //     * @param args              objects to format
+    //    //     * @deprecated use {@link #addLocalizedError(String, Sentence, Object...)} instead
+    //    //     */
+    //    //    protected void addValidationError(String messageKey, Sentence sentenceWithError, Object...args)
+    //    //    {
+    //    //        addLocalizedError(messageKey, sentenceWithError, args);
+    //    //    }
+
+    //    //    /**
+    //    //     * create a ValidationError using the details within the given token
+    //    //     *
+    //    //     * @param sentenceWithError sentence
+    //    //     * @param token             the TokenElement that has the error
+    //    //     * @deprecated use {@link #addLocalizedErrorFromToken(Sentence, TokenElement)} instead
+    //    //     */
+    //    //    protected void addValidationErrorFromToken(Sentence sentenceWithError, TokenElement token)
+    //    //    {
+    //    //        addLocalizedError(sentenceWithError, token);
+    //    //    }
+
+    //    //    /**
+    //    //     * create a ValidationError for the specified position with default error message
+    //    //     *
+    //    //     * @param sentenceWithError sentence
+    //    //     * @param start             start position
+    //    //     * @param end               end position
+    //    //     * @param args              objects to format
+    //    //     * @deprecated use {@link #addLocalizedErrorWithPosition(Sentence, int, int, Object...)} instead
+    //    //     */
+    //    //    protected void addValidationErrorWithPosition(Sentence sentenceWithError,
+    //    //                                                  Optional<LineOffset> start, Optional<LineOffset> end, Object...args)
+    //    //    {
+    //    //        errors.add(new ValidationError(this.getClass(), GetLocalizedErrorMessage(null, args), sentenceWithError, start.get(), end.get()));
+    //    //    }
+
+    //    //    /**
+    //    //     * create a ValidationError for the specified position with specified message key
+    //    //     *
+    //    //     * @param messageKey        messageKey
+    //    //     * @param sentenceWithError sentence
+    //    //     * @param start             start position
+    //    //     * @param end               end position
+    //    //     * @param args              objects to format
+    //    //     * @deprecated use {@link #addLocalizedErrorWithPosition(String, Sentence, int, int, Object...)} instead
+    //    //     */
+    //    //    protected void addValidationErrorWithPosition(String messageKey, Sentence sentenceWithError,
+    //    //                                                  Optional<LineOffset> start, Optional<LineOffset> end, Object...args)
+    //    //    {
+    //    //        errors.add(new ValidationError(this.getClass(), GetLocalizedErrorMessage(messageKey, args), sentenceWithError, start.get(), end.get()));
+    //    //    }
+
+    //    /// <summary>
+    //    /// Convert To String.
+    //    /// </summary>
+    //    /// <returns>A string.</returns>
+    //    public override string ToString()
+    //    {
+    //        return this.GetType().Name + defaultProps;
+    //    }
+
+    //    /// <summary>
+    //    /// Equals the.
+    //    /// </summary>
+    //    /// <param name="o">The o.</param>
+    //    /// <returns>A bool.</returns>
+    //    public override bool Equals(object o)
+    //    {
+    //        if (this == o) return true;
+    //        if (o is not Validator)
+    //        {
+    //            return false;
+    //        }
+    //        Validator validator = (Validator)o;
+    //        // TODO: ValidatorConfigurationのEqualsメソッドをユニットテストする。
+    //        return GetType() == validator.GetType() && Config.Equals(validator.Config);
+    //    }
+
+    //    /// <summary>
+    //    /// Gets the hash code.
+    //    /// </summary>
+    //    /// <returns>An int.</returns>
+    //    public override int GetHashCode()
+    //    {
+    //        var hash = new HashCode();
+    //        //hash.Add(defaultProps);
+    //        //hash.Add(errorMessages);
+
+    //        // MEMO: JAVA版ではObjects.hash(getClass(), config);のみ。
+    //        hash.Add(this.GetType());
+    //        hash.Add(Config);
+    //        //hash.Add(globalConfig);
+    //        //hash.Add(Locale);
+    //        //hash.Add(validatorName);
+    //        //hash.Add(errors);
+    //        //hash.Add(SymbolTable);
+    //        //hash.Add(Level);
+    //        return hash.ToHashCode();
+    //    }
+
+    //    /// <summary>Resource Extractor loads key-value ret</summary>
+    //    protected internal static readonly DictionaryLoader<Dictionary<string, string>> KEY_VALUE =
+    //        new DictionaryLoader<Dictionary<string, string>>(
+    //            () => new Dictionary<string, string>(),
+    //            (map, line) =>
+    //            {
+    //                string[] result = line.Split('\t');
+
+    //                if (result.Length == 2)
+    //                {
+    //                    map.Add(result[0], result[1]);
+    //                }
+    //                else
+    //                {
+    //                    LOG.Error("Skip to load line... Invalid line: " + line);
+    //                }
+    //            });
+
+    //    /// <summary>Resource Extractor loads rule ret</summary>
+    //    protected internal static readonly DictionaryLoader<HashSet<ExpressionRule>> RULE =
+    //        new DictionaryLoader<HashSet<ExpressionRule>>(
+    //            () => new HashSet<ExpressionRule>(),
+    //            (set, line) => set.Add(RuleExtractor.Run(line))
+    //        );
+
+    //    /// <summary>Resource Extractor loads word list</summary>
+    //    protected internal static readonly DictionaryLoader<HashSet<string>> WORD_LIST =
+    //        new DictionaryLoader<HashSet<string>>(() => new HashSet<string>(), (set, line) => set.Add(line));
+
+    //    /// <summary>Resource Extractor loads word list</summary>
+    //    protected internal static readonly DictionaryLoader<HashSet<string>> WORD_LIST_LOWERCASED =
+    //        new DictionaryLoader<HashSet<string>>(
+    //            () => new HashSet<string>(),
+    //            (set, line) => set.Add(line.ToLower())
+    //        );
+    //}
+
     /// <summary>
     /// The validator.
     /// </summary>
@@ -42,757 +821,28 @@ namespace RedPen.Net.Core.Validators
         private static Logger LOG = LogManager.GetCurrentClassLogger();
 
         // TODO: おそらく多言語対応のためのコードでありC#で対応する実装をする。C#ではResources.resxやCultureInfoを使う。
-        // private final static ResourceBundle.Control fallbackControl = ResourceBundle.Control.getNoFallbackControl(FORMAT_DEFAULT);
-
-        // MEMO: ValidatorはValidatorConfiguration.Propertiesとは別にdefaultPropsを持つ。
-        // このdefaultPropsはコンストラクタで与えられるkeyValuesによって初期化される。
-        // 汎用性を持たせるために<string, object>型で保持しているが、実際問題としてここまで汎用性を持たせる必要は無い。
-        private Dictionary<string, object> defaultProps;
-
-        // TODO: おそらく多言語対応のためのコードでありC#で対応する実装をする。C#ではResources.resxやCultureInfoを使う。
+        /// <summary>多言語対応のためのエラーメッセージリソースマネージャ</summary>
         private ResourceManager errorMessages = null;
+    }
 
-        // MEMO: JAVAのprotectedはC#のprotected internalに相当する。protectedだとアセンブリ内からアクセスできない。
-        protected internal ValidatorConfiguration config;
+    public interface IDocumentValidate
+    {
+        public void PreValidate(Document document);
 
-        // MEMO: JAVAのprotectedはC#のprotected internalに相当する。
-        protected internal Configuration globalConfig;
+        public void Validate(Document document);
+    }
 
-        // MEMO: JAVAのLocaleはC#のCultureInfoに相当する。
-        // MEMO: デフォルトのCultureはコンストラクタ内で与えられる。
-        public CultureInfo Locale { get; private set; }
+    public interface ISectionValidate
+    {
+        public void PreValidate(Section section);
 
-        // TODO: validatorNameはイコールクラス名。
-        protected string validatorName;
+        public void Validate(Section section);
+    }
 
-        // MEMO: JAVAのキーワード無しコンストラクターはC#でもキーワード無しで良いはず。
+    public interface ISentenceValidate
+    {
+        public void PreValidate(Sentence sentence);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Validator"/> class.
-        /// </summary>
-        public Validator() : this(new object[0])
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Validator"/> class.
-        /// </summary>
-        /// <param name="keyValues">String key and Object value pairs for supported config Properties.</param>
-        public Validator(object[] keyValues)
-        {
-            validatorName = this.GetType().Name;
-
-            // MEMO: デフォルトのCultureInfoはDefaultThreadCurrentCultureに設定される。
-            // TODO: デフォルトCultureの設定方法がこれで良いかはライブラリ全体の仕様を見て再検討する。
-            setLocale(CultureInfo.DefaultThreadCurrentCulture);
-            setDefaultProperties(keyValues);
-        }
-
-        /// <summary>
-        /// sets the default properties.
-        /// </summary>
-        /// <param name="keyValues">The key values.</param>
-        protected internal void setDefaultProperties(object[] keyValues)
-        {
-            defaultProps = new Dictionary<string, object>();
-            addDefaultProperties(keyValues);
-        }
-
-        /// <summary>
-        /// adds the default properties.
-        /// </summary>
-        /// <param name="keyValues">The key values.</param>
-        protected internal void addDefaultProperties(object[] keyValues)
-        {
-            if (keyValues.Length % 2 != 0)
-            {
-                throw new ArgumentException("Not enough values specified");
-            }
-
-            for (int i = 0; i < keyValues.Length; i += 2)
-            {
-                defaultProps.Add(keyValues[i].ToString(), keyValues[i + 1]);
-            }
-        }
-
-        private List<ValidationError> errors;
-
-        /// <summary>
-        /// sets the error list.
-        /// TODO: プロパティへの変更を検討する。
-        /// </summary>
-        /// <param name="errors">The errors.</param>
-        public void setErrorList(List<ValidationError> errors)
-        {
-            this.errors = errors;
-        }
-
-        /// <summary>
-        /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
-        /// </summary>
-        /// <param name="sentence"></param>
-        public virtual void PreValidate(Sentence sentence)
-        { }
-
-        /// <summary>
-        /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
-        /// </summary>
-        /// <param name="section"></param>
-        public virtual void PreValidate(Section section)
-        { }
-
-        /// <summary>
-        /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
-        /// </summary>
-        /// <param name="document"></param>
-        public virtual void PreValidate(Document document)
-        { }
-
-        /// <summary>
-        /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
-        /// </summary>
-        /// <param name="document"></param>
-        public virtual void Validate(Document document)
-        { }
-
-        /// <summary>
-        /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
-        /// </summary>
-        /// <param name="sentence"></param>
-        public virtual void Validate(Sentence sentence)
-        { }
-
-        /// <summary>
-        /// Process input blocks before Run validation. This method is used to store the information needed to Run Validator before the validation process.
-        /// </summary>
-        /// <param name="section"></param>
-        public virtual void Validate(Section section)
-        { }
-
-        /// <summary>
-        /// Return an array of languages supported by this validator
-        /// {@link cc.redpen.validator.Validator} provides empty implementation.
-        /// Validator implementation validates sections can override this method.
-        /// </summary>
-        /// <returns>an array of the languages supported by this validator.
-        /// An empty list implies there are no restrictions on the languages supported by this validator.</returns>
-        public virtual List<string> getSupportedLanguages()
-        {
-            return new List<string>();
-        }
-
-        public virtual void PreInit(ValidatorConfiguration config, Configuration globalConfig)
-
-        {
-            this.config = config;
-            this.globalConfig = globalConfig;
-            Init();
-        }
-
-        /// <summary>
-        /// Localeをセットするとともに、Locale情報に対応するリソースを引き当てる。
-        /// TODO: プロパティへの変更を検討する。
-        /// </summary>
-        /// <param name="locale">The Locale.</param>
-        public void setLocale(CultureInfo locale)
-        {
-            this.Locale = locale;
-
-            // MEMO: Validatorが返す文章エラーの説明メッセージはValidationMessage.resxにまとめた。
-            // JAVA版ではリソースをNameSpaceごとに分割していたが、C#版では分ける意義が薄いと判断し
-            // すべてのValidatorのエラーメッセージを1つのリソースマネージャで管理するようにした。
-            // これによってパッケージ名でリソースを指定する必要が無くなり、Validatorのクラス名のみをキーとして
-            // エラーメッセージにアクセスできる。
-
-            // MEMO: カルチャの違いでメッセージを返す機能はリソースマネージャから提供されるロジックを利用する。
-            // リソースマネージャのデフォルトはen-US、日本語の場合はja-JPを指定する。
-            // MEMO: JAVA版ではResourceBundleの割り当て時エラー処理をしているが、C#ではValidationMessage.ResourceManagerで
-            // 解決するので不要。
-            errorMessages = ValidationMessage.ResourceManager;
-
-            // MEMO: 実際にこのクラスに対応するエラーメッセージがリソースに登録されているかの確認は、
-            // JAVA版でもこの関数内ではしていないようなので、別途実施する。
-        }
-
-        //// MEMO: JAVA版では@Deprecatedアノテーションを使用しているが、C#ではObsolete属性を使用する。
-        ///// <summary>
-        ///// Return the configuration Properties
-        ///// </summary>
-        ///// <returns></returns>
-        //[Obsolete("This method is deprecated.")]
-        //public virtual Dictionary<string, string> getConfigAttributes()
-        //{
-        //    return config.Properties;
-        //}
-
-        /// <summary>
-        /// Validation initialization, called after the configuration and symbol tables have been assigned
-        /// MEMO: JAVA版ではエラーの場合はRedPenExceptionをthrowすることになっている。
-        /// </summary>
-        protected virtual void Init()
-        { }
-
-        public virtual Dictionary<string, object> getProperties()
-        {
-            return defaultProps;
-        }
-
-        private object? GetOrDefault(string name)
-        {
-            object? value = null;
-
-            // プロパティ名で取得できる場合は取得する。
-            if (config != null && config.GetType().GetProperty(name) != null)
-            {
-                value = config.GetType().GetProperty(name).GetValue(config);
-            }
-            // MEMO: 空のDictionaryやHashSetの場合、nullではないのでdefaultPropsから取得されないことに注意。
-            if (value == null && defaultProps.ContainsKey(name))
-            {
-                value = defaultProps[name];
-            }
-            return value;
-        }
-
-        /// <summary>
-        /// gets the int.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>An int.</returns>
-        protected internal int GetInt(string name)
-        {
-            var value = GetOrDefault(name);
-            if (value == null)
-            {
-                throw new ArgumentException("Property " + name + " is not set.");
-            }
-            else if (value is int)
-            {
-                return (int)value;
-            }
-            else
-            {
-                // JAVA版でもParseしているが例外処理していないので一旦このままとする。
-                // TODO: 例外処理を追加する。
-                return int.Parse((string)value);
-            }
-        }
-
-        /// <summary>
-        /// Gets the float.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>A float.</returns>
-        protected internal float GetFloat(string name)
-        {
-            var value = GetOrDefault(name);
-            if (value == null)
-            {
-                throw new ArgumentException("Property " + name + " is not set.");
-            }
-            else if (value is float)
-            {
-                return (float)value;
-            }
-            else
-            {
-                // JAVA版でもParseしているが例外処理していないので一旦このままとする。
-                // TODO: 例外処理を追加する。
-                return float.Parse((string)value);
-            }
-        }
-
-        // TODO: ValidatorConfigurationの構造を変更するため、この関数は不要になったタイミングで削除する。
-        /// <summary>
-        /// Gets the string.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>A string.</returns>
-        protected string GetString(string name)
-        {
-            // プロパティ名で取得できる場合は取得する。
-            if (config != null && config.GetType().GetProperty(name) != null)
-            {
-                return (string)config.GetType().GetProperty(name).GetValue(config);
-            }
-            else
-            {
-                return (string)defaultProps[name];
-            }
-        }
-
-        /// <summary>
-        /// Gets the value.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>A T? .</returns>
-        protected internal virtual T? GetProperty<T>(string name)
-        {
-            object? value = GetOrDefault(name);
-            if (value == null)
-            {
-                // nullを返す場合はnull許容型に変換する。
-                return (T?)value;
-            }
-            else
-            {
-                // MEMO: JAVA版では型が異なる場合はInteger.valueOf((String)value);などとして強引に変換しているが、
-                // C#ではConfigで型の整合性がとれている前提を置いてもよかろうという判断で単純にキャストを行っている。
-                // MEMO: intなど値型の変換を行うためasは使用できない。
-                try
-                {
-                    // デバッグのため念のためキャスト前にisで判定を行う。
-                    if (value is T v)
-                    {
-                        return (T?)v;
-                    }
-                    else
-                    {
-                        return (T?)value;
-                    }
-                }
-                catch (InvalidCastException e)
-                {
-                    // キャストに失敗した場合Exception発生するのでログ取り。
-                    LOG.Error(e);
-                    throw;
-                }
-            }
-        }
-
-        /// <summary>
-        /// RedPenのConfファイルのプロパティ値からHashSetを取得する関数。
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>A HashSet.</returns>
-        protected internal HashSet<string> GetHashSet(string name)
-        {
-            object value = null;
-            if (config != null && config.GetType().GetProperty(name) != null)
-            {
-                value = config.GetType().GetProperty(name).GetValue(config);
-            }
-            if ((value == null || ((string)value).Length == 0) && defaultProps.ContainsKey(name))
-            {
-                value = defaultProps[name];
-            }
-            if (value == null)
-            {
-                return null;
-            }
-            if (value is HashSet<string>)
-            {
-                return value as HashSet<string>;
-            }
-
-            HashSet<string> newValue = new HashSet<string>(((string)value).Split(',').Select(i => i.ToLower()));
-            // defaultPropsに設定することで、次回からはHashSet<string>として直接取得できる。
-            defaultProps[name] = newValue;
-
-            return newValue;
-        }
-
-        /// <summary>
-        /// RedPenのConfファイルのプロパティ値からDictionaryを取得する関数。
-        /// MEMO: 副作用（defaultPropsの更新）を伴う。
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>A Dictionary.</returns>
-        protected internal Dictionary<string, string>? GetDictionary(string name)
-        {
-            object value = null;
-            if (config != null && config.GetType().GetProperty(name) != null)
-            {
-                value = config.GetType().GetProperty(name).GetValue(config);
-            }
-            if ((value == null || ((string)value).Length == 0))
-            {
-                if (defaultProps.ContainsKey(name))
-                {
-                    value = defaultProps[name];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            if (value is Dictionary<string, object>)
-            {
-                var ret = new Dictionary<string, string>();
-                foreach (var item in (Dictionary<string, object>)value)
-                {
-                    ret.Add(item.Key, item.Value.ToString());
-                }
-
-                return ret;
-
-                // return (Dictionary<string, string>)value;
-            }
-
-            // TODO: JAVA8流のObjectで取り回してCastする処理をC#でどう書くか検討する。
-
-            Dictionary<string, string> newValue = RedPenUtility.ParseMap((string)value);
-
-            // MEMO: nameで取得したDictionaryによってdefaultPropsの更新が発生する。
-            defaultProps[name] = newValue;
-
-            return newValue;
-        }
-
-        // MEMO: parseMap関数はRedPenUtilityクラスに移行した。
-
-        /// <summary>
-        /// gets the config attribute.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>A string? .</returns>
-        protected internal virtual string? getConfigAttribute(string name)
-        {
-            if (config != null && config.GetType().GetProperty(name) != null)
-            {
-                return config.GetType().GetProperty(name).GetValue(config).ToString();
-            }
-
-            return null;
-        }
-
-        protected internal void setValidatorName(string validatorName)
-        {
-            this.validatorName = validatorName;
-        }
-
-        //    /** @deprecated Please use constructor with default Properties instead, and then getXXX() methods */
-        //    @Deprecated
-        //    protected String getConfigAttribute(String name, String defaultValue)
-        //    {
-        //        return getConfigAttribute(name).orElse(defaultValue);
-        //    }
-
-        //    @Deprecated
-        //    protected int getConfigAttributeAsInt(String name, int defaultValue)
-        //    {
-        //        return parseInt(getConfigAttribute(name, Integer.toString(defaultValue)));
-        //    }
-
-        //    @Deprecated
-        //    protected boolean getConfigAttributeAsBoolean(String name, boolean defaultValue)
-        //    {
-        //        return parseBoolean(getConfigAttribute(name, Boolean.toString(defaultValue)));
-        //    }
-
-        //    @Deprecated
-        //    protected double getConfigAttributeAsDouble(String name, double defaultValue)
-        //    {
-        //        return parseDouble(getConfigAttribute(name, Double.toString(defaultValue)));
-        //    }
-
-        // TODO: RedPen内のLang文字列表現をCultureInfo.Nameに合わせる。
-
-        /// <summary>Gets the symbol table.</summary>
-        protected internal SymbolTable SymbolTable => new SymbolTable(
-            globalConfig.CultureInfo.TwoLetterISOLanguageName,
-            globalConfig.Variant,
-            globalConfig.Symbols);
-
-        // TODO: ファイルからのロード系の処理は適切なクラスから実行するように見直す。
-
-        ///// <summary>
-        ///// finds the file.
-        ///// </summary>
-        ///// <param name="relativePath">The relative path.</param>
-        ///// <returns>A FileInfo.</returns>
-        //protected internal FileInfo FindFile(string relativePath)
-        //{
-        //    return globalConfig.FindFile(relativePath);
-        //}
-
-        /// <summary>Validatorに割り当てられたエラーレベルを返す。</summary>
-        protected internal ValidationLevel Level => config == null ? ValidationLevel.ERROR : config.Level;
-
-        /// <summary>
-        /// create a ValidationError for the specified position with specified message
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="sentenceWithError">The sentence with error.</param>
-        protected internal void addError(string message, Sentence sentenceWithError)
-        {
-            errors.Add(new ValidationError(this.validatorName, message, sentenceWithError, this.Level));
-        }
-
-        /// <summary>
-        /// create a ValidationError for the specified position with specified message
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="sentenceWithError">The sentence with error.</param>
-        /// <param name="start">The start.</param>
-        /// <param name="end">The end.</param>
-        protected internal void addErrorWithPosition(string message, Sentence sentenceWithError, int start, int end)
-        {
-            errors.Add(new ValidationError(this.validatorName, message, sentenceWithError, start, end, this.Level));
-        }
-
-        /// <summary>
-        /// create a ValidationError for the specified position with localized default error message
-        /// </summary>
-        /// <param name="sentenceWithError"></param>
-        /// <param name="args"></param>
-        protected internal void addLocalizedError(Sentence sentenceWithError, params object[] args)
-        {
-            addLocalizedError(null, sentenceWithError, args);
-        }
-
-        /// <summary>
-        /// create a ValidationError for the specified position with localized message with specified message key
-        /// </summary>
-        /// <param name="messageKey"></param>
-        /// <param name="sentenceWithError"></param>
-        /// <param name="args"></param>
-        protected internal void addLocalizedError(string? messageKey, Sentence sentenceWithError, params object[] args)
-        {
-            errors.Add(new ValidationError(
-                this.validatorName,
-                GetLocalizedErrorMessage(messageKey, args),
-                sentenceWithError,
-                Level));
-        }
-
-        /// <summary>
-        /// create a ValidationError using the details within the given token &amp; localized message
-        /// </summary>
-        /// <param name="sentenceWithError"></param>
-        /// <param name="token">the TokenElement that has the error</param>
-        /// <param name="args"></param>
-        protected internal void addLocalizedErrorFromToken(Sentence sentenceWithError, TokenElement token, params object[] args)
-        {
-            List<object> argList = new List<object>();
-            foreach (object arg in args)
-            {
-                argList.Add(arg);
-            }
-            // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録されている。
-            argList.Insert(0, token.Surface);
-
-            addLocalizedErrorWithPosition(
-                sentenceWithError,
-                token.Offset, // start
-                token.Offset + token.Surface.Length, // end
-                argList.ToArray()
-            );
-        }
-
-        /// <summary>
-        /// create a ValidationError for the specified position with default localized error message
-        /// </summary>
-        /// <param name="sentenceWithError"></param>
-        /// <param name="start">start position in parsed sentence</param>
-        /// <param name="end">end position in parsed sentence</param>
-        /// <param name="args"></param>
-        protected internal void addLocalizedErrorWithPosition(Sentence sentenceWithError, int start, int end, params object[] args)
-        {
-            addLocalizedErrorWithPosition(null, sentenceWithError, start, end, args);
-        }
-
-        /// <summary>
-        /// create a ValidationError for the specified position with specified message key
-        /// </summary>
-        /// <param name="messageKey"></param>
-        /// <param name="sentenceWithError"></param>
-        /// <param name="start">start position in parsed sentence</param>
-        /// <param name="end">end position in parsed sentence</param>
-        /// <param name="args"></param>
-        protected internal void addLocalizedErrorWithPosition(
-            string? messageKey,
-            Sentence sentenceWithError,
-            int start,
-            int end,
-            params object[] args)
-        {
-            errors.Add(new ValidationError(
-                this.validatorName,
-                GetLocalizedErrorMessage(messageKey, args), // メッセージ生成。
-                sentenceWithError,
-                start,
-                end,
-                Level));
-        }
-
-        /// <summary>
-        /// returns localized error message for the given key formatted with argument
-        /// </summary>
-        /// <param name="key">message key</param>
-        /// <param name="args">objects to format</param>
-        /// <returns>localized error message</returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        protected internal string GetLocalizedErrorMessage(string? key, params object[] args)
-        {
-            if (errorMessages == null)
-            {
-                throw new InvalidOperationException("message resource not found.");
-            }
-            else
-            {
-                string suffix = key == null ? "" : "." + key;
-
-                // Validatorのクラス名 + "." + キー名サフィックスで検索した現在のロケール用のメッセージ。
-                string pattern = errorMessages.GetString(this.GetType().Name + suffix, Locale);
-
-                // MessageFormatの代わりにstring.Formatを使用
-                return string.Format(Locale, pattern, args);
-            }
-        }
-
-        // 以下、Deprecated。代わりにaddLocalizedErrorを使用する。
-
-        //    /**
-        //     * create a ValidationError for the specified position with default error message
-        //     *
-        //     * @param sentenceWithError sentence
-        //     * @param args              objects to format
-        //     * @deprecated use {@link #addLocalizedError(Sentence, Object...)} instead
-        //     */
-        //    protected void addValidationError(Sentence sentenceWithError, Object...args)
-        //    {
-        //        addLocalizedError(sentenceWithError, args);
-        //    }
-
-        //    /**
-        //     * create a ValidationError for the specified position with specified message key
-        //     *
-        //     * @param messageKey        messageKey
-        //     * @param sentenceWithError sentence
-        //     * @param args              objects to format
-        //     * @deprecated use {@link #addLocalizedError(String, Sentence, Object...)} instead
-        //     */
-        //    protected void addValidationError(String messageKey, Sentence sentenceWithError, Object...args)
-        //    {
-        //        addLocalizedError(messageKey, sentenceWithError, args);
-        //    }
-
-        //    /**
-        //     * create a ValidationError using the details within the given token
-        //     *
-        //     * @param sentenceWithError sentence
-        //     * @param token             the TokenElement that has the error
-        //     * @deprecated use {@link #addLocalizedErrorFromToken(Sentence, TokenElement)} instead
-        //     */
-        //    protected void addValidationErrorFromToken(Sentence sentenceWithError, TokenElement token)
-        //    {
-        //        addLocalizedError(sentenceWithError, token);
-        //    }
-
-        //    /**
-        //     * create a ValidationError for the specified position with default error message
-        //     *
-        //     * @param sentenceWithError sentence
-        //     * @param start             start position
-        //     * @param end               end position
-        //     * @param args              objects to format
-        //     * @deprecated use {@link #addLocalizedErrorWithPosition(Sentence, int, int, Object...)} instead
-        //     */
-        //    protected void addValidationErrorWithPosition(Sentence sentenceWithError,
-        //                                                  Optional<LineOffset> start, Optional<LineOffset> end, Object...args)
-        //    {
-        //        errors.add(new ValidationError(this.getClass(), GetLocalizedErrorMessage(null, args), sentenceWithError, start.get(), end.get()));
-        //    }
-
-        //    /**
-        //     * create a ValidationError for the specified position with specified message key
-        //     *
-        //     * @param messageKey        messageKey
-        //     * @param sentenceWithError sentence
-        //     * @param start             start position
-        //     * @param end               end position
-        //     * @param args              objects to format
-        //     * @deprecated use {@link #addLocalizedErrorWithPosition(String, Sentence, int, int, Object...)} instead
-        //     */
-        //    protected void addValidationErrorWithPosition(String messageKey, Sentence sentenceWithError,
-        //                                                  Optional<LineOffset> start, Optional<LineOffset> end, Object...args)
-        //    {
-        //        errors.add(new ValidationError(this.getClass(), GetLocalizedErrorMessage(messageKey, args), sentenceWithError, start.get(), end.get()));
-        //    }
-
-        /// <summary>
-        /// Convert To String.
-        /// </summary>
-        /// <returns>A string.</returns>
-        public override string ToString()
-        {
-            return this.GetType().Name + defaultProps;
-        }
-
-        /// <summary>
-        /// Equals the.
-        /// </summary>
-        /// <param name="o">The o.</param>
-        /// <returns>A bool.</returns>
-        public override bool Equals(object o)
-        {
-            if (this == o) return true;
-            if (o is not Validator)
-            {
-                return false;
-            }
-            Validator validator = (Validator)o;
-            // TODO: ValidatorConfigurationのEqualsメソッドをユニットテストする。
-            return GetType() == validator.GetType() && config.Equals(validator.config);
-        }
-
-        /// <summary>
-        /// Gets the hash code.
-        /// </summary>
-        /// <returns>An int.</returns>
-        public override int GetHashCode()
-        {
-            var hash = new HashCode();
-            //hash.Add(defaultProps);
-            //hash.Add(errorMessages);
-
-            // MEMO: JAVA版ではObjects.hash(getClass(), config);のみ。
-            hash.Add(this.GetType());
-            hash.Add(config);
-            //hash.Add(globalConfig);
-            //hash.Add(Locale);
-            //hash.Add(validatorName);
-            //hash.Add(errors);
-            //hash.Add(SymbolTable);
-            //hash.Add(Level);
-            return hash.ToHashCode();
-        }
-
-        /// <summary>Resource Extractor loads key-value ret</summary>
-        protected internal static readonly DictionaryLoader<Dictionary<string, string>> KEY_VALUE =
-            new DictionaryLoader<Dictionary<string, string>>(
-                () => new Dictionary<string, string>(),
-                (map, line) =>
-                {
-                    string[] result = line.Split('\t');
-
-                    if (result.Length == 2)
-                    {
-                        map.Add(result[0], result[1]);
-                    }
-                    else
-                    {
-                        LOG.Error("Skip to load line... Invalid line: " + line);
-                    }
-                });
-
-        /// <summary>Resource Extractor loads rule ret</summary>
-        protected internal static readonly DictionaryLoader<HashSet<ExpressionRule>> RULE =
-            new DictionaryLoader<HashSet<ExpressionRule>>(
-                () => new HashSet<ExpressionRule>(),
-                (set, line) => set.Add(RuleExtractor.Run(line))
-            );
-
-        /// <summary>Resource Extractor loads word list</summary>
-        protected internal static readonly DictionaryLoader<HashSet<string>> WORD_LIST =
-            new DictionaryLoader<HashSet<string>>(() => new HashSet<string>(), (set, line) => set.Add(line));
-
-        /// <summary>Resource Extractor loads word list</summary>
-        protected internal static readonly DictionaryLoader<HashSet<string>> WORD_LIST_LOWERCASED =
-            new DictionaryLoader<HashSet<string>>(
-                () => new HashSet<string>(),
-                (set, line) => set.Add(line.ToLower())
-            );
+        public void Validate(Sentence sentence);
     }
 }
