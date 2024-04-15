@@ -46,7 +46,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
                 0);
 
             validator.Config.MaxLength.Should().Be(30);
-            validator.ValidatorName.Should().Be("SentenceLength");
+            validator.ValidationName.Should().Be("SentenceLength");
 
             // Cultureの設定
             validator.setLocale(new CultureInfo("en-US"));
@@ -56,7 +56,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             validator.Validate(str);
             errors.Count.Should().Be(1);
 
-            errors[0].ValidatorName.Should().Be("SentenceLength");
+            errors[0].ValidationName.Should().Be("SentenceLength");
             errors[0].Message.Should().Be("The length of the sentence (84) exceeds the maximum of 30.");
         }
 

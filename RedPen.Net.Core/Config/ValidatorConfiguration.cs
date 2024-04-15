@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace RedPen.Net.Core.Config
 {
@@ -6,8 +7,12 @@ namespace RedPen.Net.Core.Config
     /// RedPenConfigファイル内のValidatorの設定1つ分に相当するConfigurationを表現するための基底クラス。
     /// </summary>
     /// <param name="Level"></param>
-    public record ValidatorConfiguration(ValidationLevel Level = ValidationLevel.OFF)
+    public abstract record ValidatorConfiguration(ValidationLevel Level = ValidationLevel.OFF)
     {
+        [JsonIgnore]
+        /// <summary>クラス名からValidationNameを取得する（末尾の"Configuration"を除去したものがValidationの識別子）。</summary>
+        public string ValidationName => this.GetType().Name.Substring(0, this.GetType().Name.Length - "Configuration".Length);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidatorConfiguration"/> class.
         /// </summary>

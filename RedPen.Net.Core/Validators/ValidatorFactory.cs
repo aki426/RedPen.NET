@@ -195,7 +195,7 @@ namespace RedPen.Net.Core.Validators
         {
             List<ValidatorConfiguration> configurations = validators.Where(e =>
             {
-                List<string> supportedLanguages = e.Value.getSupportedLanguages();
+                List<string> supportedLanguages = e.Value.SupportedLanguages();
 
                 // MEMO: Validatorについて、JAVAではDeprecated属性、C#ではObsoleteAttributeを持っているかどうかを判定する。
                 //bool deprecated = e.Value.GetType().GetCustomAttributes(typeof(ObsoleteAttribute), false).Length == 0 ? false : true;

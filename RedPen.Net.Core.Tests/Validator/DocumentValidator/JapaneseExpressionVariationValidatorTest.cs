@@ -63,7 +63,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             errors[0].Message.Should().Be("単語 ”之” の揺らぎと考えられる表現 ”これ(名詞)” が (L1,6)　で見つかりました。");
 
             output.WriteLine(errors[0].Message);
-            output.WriteLine(errors[0].ValidatorName);
+            output.WriteLine(errors[0].ValidationName);
             output.WriteLine(errors[0].Sentence.Content);
             output.WriteLine(errors[0].LineNumber.ToString());
 
@@ -107,7 +107,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             errors[document][0].Message.Should().Be("単語 ”之” の揺らぎと考えられる表現 ”これ(名詞)” が (L1,6)　で見つかりました。");
 
             output.WriteLine(errors[document][0].Message);
-            output.WriteLine(errors[document][0].ValidatorName);
+            output.WriteLine(errors[document][0].ValidationName);
             output.WriteLine(errors[document][0].Sentence.Content);
             output.WriteLine(errors[document][0].LineNumber.ToString());
         }
@@ -132,7 +132,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             errors[document][0].Message.Should().Be("単語 ”node” の揺らぎと考えられる表現 ”ノード(名詞)” が (L1,10)　で見つかりました。");
 
             output.WriteLine(errors[document][0].Message);
-            output.WriteLine(errors[document][0].ValidatorName);
+            output.WriteLine(errors[document][0].ValidationName);
             output.WriteLine(errors[document][0].Sentence.Content);
             output.WriteLine(errors[document][0].LineNumber.ToString());
         }
@@ -157,7 +157,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             errors[document][0].Message.Should().Be("単語 ”Node” の揺らぎと考えられる表現 ”ノード(名詞)” が (L1,10)　で見つかりました。");
 
             output.WriteLine(errors[document][0].Message);
-            output.WriteLine(errors[document][0].ValidatorName);
+            output.WriteLine(errors[document][0].ValidationName);
             output.WriteLine(errors[document][0].Sentence.Content);
             output.WriteLine(errors[document][0].LineNumber.ToString());
         }

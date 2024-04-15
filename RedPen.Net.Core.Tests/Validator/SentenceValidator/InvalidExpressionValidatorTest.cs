@@ -97,7 +97,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             errors.Count.Should().Be(1);
 
             output.WriteLine(errors[0].Message);
-            output.WriteLine(errors[0].ValidatorName);
+            output.WriteLine(errors[0].ValidationName);
             output.WriteLine(errors[0].Sentence.Content);
             output.WriteLine(errors[0].LineNumber.ToString());
 

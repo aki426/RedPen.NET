@@ -104,7 +104,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// gets the supported languages.
         /// </summary>
         /// <returns>A list of string.</returns>
-        public override List<string> getSupportedLanguages()
+        public override List<string> SupportedLanguages()
         {
             // TODO: TwoLetterISOLanguageNameにより"ja"が取得できるが、C#のカルチャ文字列フォーマット"ja-JP"へ統一することを検討する。
             return new List<string> { CultureInfo.GetCultureInfo("ja-JP").TwoLetterISOLanguageName };
