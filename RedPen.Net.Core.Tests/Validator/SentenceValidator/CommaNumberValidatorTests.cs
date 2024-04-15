@@ -34,7 +34,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 
             // Validator
             var commaNumberValidator = new CommaNumberValidator(
-                ValidationLevel.ERROR,
                 config.CultureInfo,
                 ValidationMessage.ResourceManager,
                 config.SymbolTable,

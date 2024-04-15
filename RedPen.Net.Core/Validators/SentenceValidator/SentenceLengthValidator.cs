@@ -15,7 +15,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     {
         public SentenceLengthConfiguration Config { get; init; }
 
-        private SentenceLengthValidator(
+        public SentenceLengthValidator(
             ValidationLevel level,
             CultureInfo lang,
             ResourceManager errorMessages,

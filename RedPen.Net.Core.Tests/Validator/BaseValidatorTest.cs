@@ -30,7 +30,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         protected Configuration getConfiguration(string language)
         {
             return Configuration.Builder()
-              .AddValidatorConfig(new ValidatorConfiguration(validatorName))
+              // .AddValidatorConfig(new ValidatorConfiguration(validatorName))
               .SetLang(language).Build();
         }
 

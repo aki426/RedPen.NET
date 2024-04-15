@@ -39,7 +39,7 @@ namespace RedPen.Net.Core.Config
 
         /// <summary>TODO: SymbolTableの定義やConfigurationとの関係については見直す必要があるが、暫定的にはこのようにしておく。</summary>
         [JsonIgnore]
-        public SymbolTable SymbolTable => new(CultureInfo.TwoLetterISOLanguageName, Variant, Symbols);
+        public SymbolTable SymbolTable => new(CultureInfo.Name, Variant, Symbols);
 
         /// <summary>
         /// 新しいConfigurationBuilderを生成する。

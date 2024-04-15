@@ -70,7 +70,8 @@ namespace RedPen.Net.Core
                 {
                     if (config.Level.IsWorseThan(threshold))
                     {
-                        validators.Add(ValidatorFactory.GetInstance(config, configuration));
+                        // TODO: ValidatorFactoryをちゃんと実装すること。
+                        // validators.Add(ValidatorFactory.GetInstance(config, configuration));
                     }
                 }
                 catch (RedPenException e)

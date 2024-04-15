@@ -52,7 +52,8 @@ namespace RedPen.Net.Core.Config
             foreach (Symbol symbol in DefaultSymbols.Values)
             {
                 typeDictBuilder.Add(symbol.Type, symbol);
-                charDictBuilder.Add(symbol.Value, symbol);
+                // よく考えたらSymbolTypeは一意性があるが、char型の文字は複数のSymbolで同じものが使われているのでDictionaryで表現できない。
+                charDictBuilder[symbol.Value] = symbol;
             }
             foreach (Symbol symbol in customSymbols)
             {

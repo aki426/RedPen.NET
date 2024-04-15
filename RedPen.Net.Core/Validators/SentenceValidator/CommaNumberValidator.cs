@@ -13,12 +13,11 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
         private char comma { get; init; }
 
         public CommaNumberValidator(
-            ValidationLevel level,
             CultureInfo lang,
             ResourceManager errorMessages,
             SymbolTable symbolTable,
             CommaNumberConfiguration config) :
-            base(level,
+            base(config.Level,
                 lang,
                 errorMessages,
                 symbolTable)

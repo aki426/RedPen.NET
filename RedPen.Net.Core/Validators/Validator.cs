@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Resources;
 using NLog;
 using RedPen.Net.Core.Config;
@@ -63,12 +64,25 @@ namespace RedPen.Net.Core.Validators
         /// </summary>
         public virtual List<string> SupportedLanguages => new List<string>();
 
-        protected Validator(ValidationLevel level, CultureInfo lang, ResourceManager errorMessages, SymbolTable symbolTable)
+        protected Validator(
+            ValidationLevel level,
+            CultureInfo lang,
+            ResourceManager errorMessages,
+            SymbolTable symbolTable)
         {
             Level = level;
             Lang = lang;
             this.errorMessages = errorMessages;
             SymbolTable = symbolTable;
+
+            // サポート対象言語チェック。
+            if (SupportedLanguages.Any())
+            {
+                if (!SupportedLanguages.Contains(lang.Name))
+                {
+                    throw new InvalidOperationException($"{this.ValidationName} don't support the language: {lang.Name}");
+                }
+            }
         }
 
         /// <summary>

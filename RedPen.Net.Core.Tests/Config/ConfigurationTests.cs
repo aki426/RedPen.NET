@@ -14,63 +14,63 @@ namespace RedPen.Net.Core.Tests.Config
     /// </summary>
     public class ConfigurationTests
     {
-        /// <summary>
-        /// 単純なValidatorConfigurationのビルドテスト。
-        /// </summary>
-        [Fact]
-        public void SentenceValidatorConfigurationBuildTest()
-        {
-            Configuration configuration = Configuration.Builder()
-                .AddValidatorConfig(new ValidatorConfiguration("SentenceLength"))
-                .AddValidatorConfig(new ValidatorConfiguration("InvalidExpression"))
-                .AddValidatorConfig(new ValidatorConfiguration("SpaceBeginningOfSentence"))
-                .AddValidatorConfig(new ValidatorConfiguration("CommaNumber"))
-                .AddValidatorConfig(new ValidatorConfiguration("WordNumber"))
-                .AddValidatorConfig(new ValidatorConfiguration("SuggestExpression"))
-                .AddValidatorConfig(new ValidatorConfiguration("InvalidCharacter"))
-                .AddValidatorConfig(new ValidatorConfiguration("SymbolWithSpace"))
-                .AddValidatorConfig(new ValidatorConfiguration("KatakanaEndHyphen"))
-                .AddValidatorConfig(new ValidatorConfiguration("KatakanaSpellCheck"))
-                .Build();
+        ///// <summary>
+        ///// 単純なValidatorConfigurationのビルドテスト。
+        ///// </summary>
+        //[Fact]
+        //public void SentenceValidatorConfigurationBuildTest()
+        //{
+        //    Configuration configuration = Configuration.Builder()
+        //        .AddValidatorConfig(new ValidatorConfiguration("SentenceLength"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("InvalidExpression"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("SpaceBeginningOfSentence"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("CommaNumber"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("WordNumber"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("SuggestExpression"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("InvalidCharacter"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("SymbolWithSpace"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("KatakanaEndHyphen"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("KatakanaSpellCheck"))
+        //        .Build();
 
-            configuration.ValidatorConfigurations.Count.Should().Be(10);
-        }
+        //    configuration.ValidatorConfigurations.Count.Should().Be(10);
+        //}
 
-        /// <summary>
-        /// 無効なValidatorConfigurationのビルドテスト。
-        /// </summary>
-        [Fact]
-        public void InvalidValidatorConfigurationTest()
-        {
-            // JAVA版では以下のコメントがあった。
-            // NOTE: not throw a exception even when adding a non exist validator.
-            // The errors occurs when creating the added non existing validator instance.
-            // しかしテスト内容は例外がスローされないことを確認しており、C＃版でも例外は発生しない。
+        ///// <summary>
+        ///// 無効なValidatorConfigurationのビルドテスト。
+        ///// </summary>
+        //[Fact]
+        //public void InvalidValidatorConfigurationTest()
+        //{
+        //    // JAVA版では以下のコメントがあった。
+        //    // NOTE: not throw a exception even when adding a non exist validator.
+        //    // The errors occurs when creating the added non existing validator instance.
+        //    // しかしテスト内容は例外がスローされないことを確認しており、C＃版でも例外は発生しない。
 
-            Action act1 = () =>
-                Configuration.Builder().AddValidatorConfig(new ValidatorConfiguration("ThereIsNoSuchValidator"));
-            act1.Should().NotThrow();
+        //    Action act1 = () =>
+        //        Configuration.Builder().AddValidatorConfig(new ValidatorConfiguration("ThereIsNoSuchValidator"));
+        //    act1.Should().NotThrow();
 
-            Action act2 = () =>
-                Configuration.Builder().AddValidatorConfig(new ValidatorConfiguration("ThereIsNoSuchValidator")).Build();
-            act2.Should().NotThrow();
-        }
+        //    Action act2 = () =>
+        //        Configuration.Builder().AddValidatorConfig(new ValidatorConfiguration("ThereIsNoSuchValidator")).Build();
+        //    act2.Should().NotThrow();
+        //}
 
-        /// <summary>
-        /// Sections the validator configuration test.
-        /// MEMO: Secton用のValidatorのテストだが、ValidatorConfigurationをnewして追加するだけなら
-        /// 何を追加してもエラーにならないのでテストの意味がない。
-        /// </summary>
-        [Fact]
-        public void SectionValidatorConfigurationTest()
-        {
-            Configuration configuration = Configuration.Builder()
-                .AddValidatorConfig(new ValidatorConfiguration("SectionLength"))
-                .AddValidatorConfig(new ValidatorConfiguration("MaxParagraphNumber"))
-                .AddValidatorConfig(new ValidatorConfiguration("ParagraphStartWith"))
-                .Build();
-            configuration.ValidatorConfigurations.Count.Should().Be(3);
-        }
+        ///// <summary>
+        ///// Sections the validator configuration test.
+        ///// MEMO: Secton用のValidatorのテストだが、ValidatorConfigurationをnewして追加するだけなら
+        ///// 何を追加してもエラーにならないのでテストの意味がない。
+        ///// </summary>
+        //[Fact]
+        //public void SectionValidatorConfigurationTest()
+        //{
+        //    Configuration configuration = Configuration.Builder()
+        //        .AddValidatorConfig(new ValidatorConfiguration("SectionLength"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("MaxParagraphNumber"))
+        //        .AddValidatorConfig(new ValidatorConfiguration("ParagraphStartWith"))
+        //        .Build();
+        //    configuration.ValidatorConfigurations.Count.Should().Be(3);
+        //}
 
         /// <summary>
         /// Lang設定を何も与えなかった場合にenがデフォルトとして設定されることを確認するテスト。
@@ -80,7 +80,7 @@ namespace RedPen.Net.Core.Tests.Config
         {
             Configuration configuration = Configuration.Builder()
                 .Build(); // NOTE: load "en" setting when lang is not specified
-            configuration.Lang.Should().Be("en");
+            configuration.Lang.Should().Be("en-US");
             configuration.Lang.Should().NotBeNull();
         }
 

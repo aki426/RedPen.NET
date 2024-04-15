@@ -28,11 +28,18 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             this.output = output;
 
             var sentenceLengthConfiguration = new SentenceLengthConfiguration(ValidationLevel.ERROR, 30);
-            validator = new SentenceLengthValidator(sentenceLengthConfiguration);
 
-            validator.PreInit(
-                sentenceLengthConfiguration,
-                Configuration.Builder().Build());
+            // Configuration
+            var config = Configuration.Builder("en-US")
+                .AddValidatorConfig(sentenceLengthConfiguration)
+                .Build();
+
+            validator = new SentenceLengthValidator(
+                ValidationLevel.ERROR,
+                config.CultureInfo,
+                ValidationMessage.ResourceManager,
+                config.SymbolTable,
+                sentenceLengthConfiguration);
         }
 
         /// <summary>
@@ -48,12 +55,9 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             validator.Config.MaxLength.Should().Be(30);
             validator.ValidationName.Should().Be("SentenceLength");
 
-            // Cultureの設定
-            validator.setLocale(new CultureInfo("en-US"));
+            validator.PreValidate(str);
+            List<ValidationError> errors = validator.Validate(str);
 
-            List<ValidationError> errors = new List<ValidationError>();
-            validator.setErrorList(errors);
-            validator.Validate(str);
             errors.Count.Should().Be(1);
 
             errors[0].ValidationName.Should().Be("SentenceLength");
@@ -67,9 +71,9 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         public void WithShortSentenceTest()
         {
             Sentence str = new Sentence("this is a sentence.", 0);
-            List<ValidationError> errors = new List<ValidationError>();
-            validator.setErrorList(errors);
-            validator.Validate(str);
+
+            validator.PreValidate(str);
+            List<ValidationError> errors = validator.Validate(str);
 
             errors.Count.Should().Be(0);
         }
@@ -81,9 +85,9 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         public void WithZeroLengthSentenceTest()
         {
             Sentence str = new Sentence("", 0);
-            List<ValidationError> errors = new List<ValidationError>();
-            validator.setErrorList(errors);
-            validator.Validate(str);
+
+            validator.PreValidate(str);
+            List<ValidationError> errors = validator.Validate(str);
 
             errors.Count.Should().Be(0);
         }

@@ -53,18 +53,18 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// Initializes a new instance of the <see cref="JapaneseExpressionVariationValidator"/> class.
         /// </summary>
         public JapaneseExpressionVariationValidator(
-            ValidationLevel level,
             CultureInfo lang,
             ResourceManager errorMessages,
             SymbolTable symbolTable,
             JapaneseExpressionVariationConfiguration config) :
             base(
-                level,
+                config.Level,
                 lang,
                 errorMessages,
                 symbolTable)
         {
             this.Config = config;
+            Init();
 
             //// MEMO: KeyValueDictionaryValidatorの仕組みをバイパスするための処理。
             //spellingVariationMap = new Dictionary<string, string>();
