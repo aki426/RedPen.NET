@@ -30,28 +30,6 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             this.Config = config;
         }
 
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="SentenceLengthValidator"/> class.
-        ///// </summary>
-        //public SentenceLengthValidator(SentenceLengthConfiguration config)
-        //{
-        //    this.Config = config;
-        //}
-
-        ///// <summary>
-        ///// validates the.
-        ///// </summary>
-        ///// <param name="sentence">The sentence.</param>
-        //public override void Validate(Sentence sentence)
-        //{
-        //    // int maxLength = GetProperty<int>("max_len");
-        //    // int maxLength = GetInt("max_len");
-        //    if (sentence.Content.Length > Config.MaxLength)
-        //    {
-        //        addLocalizedError(sentence, sentence.Content.Length, Config.MaxLength);
-        //    }
-        //}
-
         /// <summary>
         /// Pre validation.
         /// </summary>
@@ -66,15 +44,17 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// </summary>
         /// <param name="sentence">The sentence.</param>
         /// <returns>A ValidationError? .</returns>
-        public ValidationError? Validate(Sentence sentence)
+        public List<ValidationError> Validate(Sentence sentence)
         {
             if (sentence.Content.Length > Config.MaxLength)
             {
-                return GetLocalizedError(sentence, new object[] { sentence.Content.Length, Config.MaxLength });
+                return new List<ValidationError>() {
+                    GetLocalizedError(sentence, new object[] { sentence.Content.Length, Config.MaxLength })
+                };
             }
             else
             {
-                return null;
+                return new List<ValidationError>();
             }
         }
     }

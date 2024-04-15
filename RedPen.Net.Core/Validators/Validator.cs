@@ -5,6 +5,7 @@ using System.Resources;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Tokenizer;
 
 namespace RedPen.Net.Core.Validators
 {
@@ -113,6 +114,29 @@ namespace RedPen.Net.Core.Validators
         }
 
         /// <summary>
+        /// create a ValidationError using the details within the given token &amp; localized message
+        /// </summary>
+        /// <param name="sentenceWithError"></param>
+        /// <param name="token">the TokenElement that has the error</param>
+        /// <param name="args"></param>
+        protected internal ValidationError GetLocalizedErrorFromToken(Sentence sentenceWithError, TokenElement token, object[] args)
+        {
+            // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+            List<object> argList = new List<object>() { token.Surface };
+            foreach (object arg in args)
+            {
+                argList.Add(arg);
+            }
+
+            return GetLocalizedErrorWithPosition(
+                sentenceWithError,
+                argList.ToArray(),
+                token.Offset, // start
+                token.Offset + token.Surface.Length // end
+            );
+        }
+
+        /// <summary>
         /// returns localized error message for the given key formatted with argument
         /// </summary>
         /// <param name="MessageKey">ErrorMessageにキーが設定されている場合はここで設定。通常無いのでデフォルト値はnull。</param>
@@ -158,6 +182,6 @@ namespace RedPen.Net.Core.Validators
     {
         public void PreValidate(Sentence sentence);
 
-        public ValidationError? Validate(Sentence sentence);
+        public List<ValidationError> Validate(Sentence sentence);
     }
 }

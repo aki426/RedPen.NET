@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
+using RedPen.Net.Core;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
@@ -68,11 +70,23 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [Fact]
         public void SimpleValidatoinOperationTest()
         {
-            var validatorConfiguration = new ValidatorConfiguration("InvalidExpression");
+            // DefaultResourceの読み込み。
+            List<string> invalidWords = new List<string>();
+            string v = DefaultResources.ResourceManager.GetString($"InvalidExpression_ja");
+            foreach (string line in v.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                invalidWords.Add(line.Trim());
+            }
+
+            // ValidatorConfiguration
+            var validatorConfiguration = new InvalidExpressionConfiguration(ValidationLevel.ERROR, invalidWords);
+
+            // Configuration
             var config = Configuration.Builder("ja-JP")
                 .AddValidatorConfig(validatorConfiguration)
                 .Build();
 
+            // Document
             Document document = Document.Builder(RedPenTokenizerFactory.CreateTokenizer(config.CultureInfo))
                 .AddSection(1)
                 .AddParagraph()
@@ -84,15 +98,16 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
                 output.WriteLine(token.ToString());
             });
 
-            InvalidExpressionValidator invalidExpressionValidator =
-                ValidatorFactory.GetInstance(validatorConfiguration, config) as InvalidExpressionValidator;
-            invalidExpressionValidator.PreValidate(document); // InvalidExpressionValidatorの場合何もしない。
+            // Validator
+            var invalidExpressionValidator = new InvalidExpressionValidator(
+                ValidationLevel.ERROR,
+                config.CultureInfo,
+                ValidationMessage.ResourceManager,
+                config.SymbolTable,
+                validatorConfiguration);
 
-            List<ValidationError> errors = new List<ValidationError>();
-            invalidExpressionValidator.setErrorList(errors);
-            // InvalidExpressionValidatorはSentenceValidatorなので、直接SentenceをValidateする必要がある。
-            // 実際のプロダクトコードでは、Document内の全SentenceをIterateする設計になる。
-            invalidExpressionValidator.Validate(document.Sections[0].Paragraphs[0].Sentences[0]);
+            invalidExpressionValidator.PreValidate(document.Sections[0].Paragraphs[0].Sentences[0]);
+            var errors = invalidExpressionValidator.Validate(document.Sections[0].Paragraphs[0].Sentences[0]);
 
             errors.Count.Should().Be(1);
 

@@ -248,7 +248,10 @@ namespace RedPen.Net.Core
             {
                 foreach (Validator e in validators)
                 {
-                    e.PreValidate(document);
+                    if (e is IDocumentValidatable)
+                    {
+                        ((IDocumentValidatable)e).PreValidate(document);
+                    }
                 }
             }
 
@@ -258,8 +261,10 @@ namespace RedPen.Net.Core
                 List<ValidationError> errors = new List<ValidationError>();
                 foreach (Validator e in validators)
                 {
-                    e.setErrorList(errors);
-                    e.Validate(document);
+                    if (e is IDocumentValidatable)
+                    {
+                        errors.AddRange(((IDocumentValidatable)e).Validate(document));
+                    }
                 }
                 docErrorsMap[document] = errors;
             }
@@ -279,7 +284,10 @@ namespace RedPen.Net.Core
                 {
                     foreach (Validator e in validators)
                     {
-                        e.PreValidate(section);
+                        if (e is ISectionValidatable)
+                        {
+                            ((ISectionValidatable)e).PreValidate(section);
+                        }
                     }
                 }
             }
@@ -291,8 +299,10 @@ namespace RedPen.Net.Core
                     List<ValidationError> errors = docErrorsMap[document];
                     foreach (Validator e in validators)
                     {
-                        e.setErrorList(errors);
-                        e.Validate(section);
+                        if (e is ISectionValidatable)
+                        {
+                            errors.AddRange(((ISectionValidatable)e).Validate(section));
+                        }
                     }
                 }
             }
@@ -318,7 +328,10 @@ namespace RedPen.Net.Core
                         {
                             foreach (Sentence sentence in paragraph.Sentences)
                             {
-                                e.PreValidate(sentence);
+                                if (e is ISentenceValidatable)
+                                {
+                                    ((ISentenceValidatable)e).PreValidate(sentence);
+                                }
                             }
                         }
                     }
@@ -327,7 +340,10 @@ namespace RedPen.Net.Core
                     {
                         foreach (Sentence sentence in section.HeaderSentences)
                         {
-                            e.PreValidate(sentence);
+                            if (e is ISentenceValidatable)
+                            {
+                                ((ISentenceValidatable)e).PreValidate(sentence);
+                            }
                         }
                     }
 
@@ -340,7 +356,10 @@ namespace RedPen.Net.Core
                             {
                                 foreach (Sentence sentence in listElement.Sentences)
                                 {
-                                    e.PreValidate(sentence);
+                                    if (e is ISentenceValidatable)
+                                    {
+                                        ((ISentenceValidatable)e).PreValidate(sentence);
+                                    }
                                 }
                             }
                         }
@@ -360,20 +379,24 @@ namespace RedPen.Net.Core
                     {
                         foreach (Validator e in validators)
                         {
-                            e.setErrorList(errors);
-                            foreach (Sentence sentence in paragraph.Sentences)
+                            if (e is ISentenceValidatable)
                             {
-                                e.Validate(sentence);
+                                foreach (Sentence sentence in paragraph.Sentences)
+                                {
+                                    errors.AddRange(((ISentenceValidatable)e).Validate(sentence));
+                                }
                             }
                         }
                     }
                     // apply to section header
                     foreach (Validator e in validators)
                     {
-                        e.setErrorList(errors);
-                        foreach (Sentence sentence in section.HeaderSentences)
+                        if (e is ISentenceValidatable)
                         {
-                            e.Validate(sentence);
+                            foreach (Sentence sentence in section.HeaderSentences)
+                            {
+                                errors.AddRange(((ISentenceValidatable)e).Validate(sentence));
+                            }
                         }
                     }
                     // apply to lists
@@ -383,10 +406,12 @@ namespace RedPen.Net.Core
                         {
                             foreach (Validator e in validators)
                             {
-                                e.setErrorList(errors);
-                                foreach (Sentence sentence in listElement.Sentences)
+                                if (e is ISentenceValidatable)
                                 {
-                                    e.Validate(sentence);
+                                    foreach (Sentence sentence in listElement.Sentences)
+                                    {
+                                        errors.AddRange(((ISentenceValidatable)e).Validate(sentence));
+                                    }
                                 }
                             }
                         }
