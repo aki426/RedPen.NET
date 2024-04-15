@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
@@ -50,6 +51,24 @@ namespace VerifyBasicFunction.Tests
             ImmutableList<int> temp = model.ImmutableGraduateYear.Sort();
             temp.SequenceEqual(new List<int> { 2020, 2022, 2024 }.ToImmutableList()).Should().BeTrue();
             temp.SequenceEqual(model.ImmutableGraduateYear).Should().BeFalse();
+        }
+
+        /// <summary>
+        /// With式を用いた一部プロパティ更新のサンプル。
+        /// </summary>
+        [Fact]
+        public void WithExpressionTest()
+        {
+            // With式はC#7.3では利用できないので間接的に呼び出してテストケースとする。
+            var model = new RecordSampleModel(
+                "Taro",
+                20,
+                new List<int> { 2010, 2014, 2018 },
+                new List<int>() { 2022, 2020, 2024 }.ToImmutableList());
+
+            var newInstance = RecordSampleModel.GetNewInstanceWith(model, 30);
+            newInstance.Age.Should().Be(30); // With式でAgeプロパティが更新されていることを確認
+            newInstance.Name.Should().Be("Taro"); // 他のプロパティは変更されていないことを確認
         }
     }
 }

@@ -1,20 +1,40 @@
-﻿using RedPen.Net.Core.Config;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Resources;
+using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Validators.SentenceValidator;
 
 namespace RedPen.Net.Core.Validators.SentecneValidator
 {
-    public sealed class CommaNumberValidator : Validator
+    public sealed class CommaNumberValidator : Validator, ISentenceValidatable
     {
-        public CommaNumberValidator() : base(new object[] { "max_num", 3 })
+        public CommaNumberConfiguration Config { get; init; }
+        private char comma { get; init; }
+
+        public CommaNumberValidator(
+            CultureInfo lang,
+            ResourceManager errorMessages,
+            SymbolTable symbolTable,
+            CommaNumberConfiguration config) :
+            base(config.Level,
+                lang,
+                errorMessages,
+                symbolTable)
         {
+            this.Config = config;
+            this.comma = this.SymbolTable.GetValueOrFallbackToDefault(SymbolType.COMMA);
         }
 
-        private char comma;
-
-        private int getMaxNum() => GetInt("max_num");
-
-        public override void Validate(Sentence sentence)
+        public void PreValidate(Sentence sentence)
         {
+            // nothing.
+        }
+
+        public List<ValidationError> Validate(Sentence sentence)
+        {
+            List<ValidationError> result = new List<ValidationError>();
+
             string content = sentence.Content;
             int commaCount = 0;
             int position = 0;
@@ -24,18 +44,13 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
                 // position + 1 から最後までの文字列を取得。
                 content = content.Substring(position + 1);
             }
-            if (getMaxNum() < commaCount)
+            if (Config.MaxNumber < commaCount)
             {
-                addLocalizedError(sentence, commaCount, getMaxNum());
+                // コンマの数が最大数を超えている場合はエラーとする。
+                result.Add(GetLocalizedError(sentence, new object[] { commaCount, Config.MaxNumber }));
             }
-        }
 
-        /// <summary>
-        /// Inits the.
-        /// </summary>
-        protected override void Init()
-        {
-            this.comma = this.SymbolTable.GetValueOrFallbackToDefault(SymbolType.COMMA);
+            return result;
         }
     }
 }

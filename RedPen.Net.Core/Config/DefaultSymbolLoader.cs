@@ -1,37 +1,95 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using NLog.MessageTemplates;
+using System.Collections.Immutable;
+using System.Globalization;
+using NLog;
 
 namespace RedPen.Net.Core.Config
 {
-    public partial class SymbolTable
+    public class DefaultSymbolLoader
     {
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
+        private static DefaultSymbolLoader instance;
+
+        public static DefaultSymbolLoader GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new DefaultSymbolLoader();
+            }
+
+            return instance;
+        }
+
+        /// <summary>cultureInfoとvariantの設定に応じてデフォルトシンボルのDictionaryを取得する。</summary>
+        public ImmutableDictionary<SymbolType, Symbol> GetSymbolDictionary(CultureInfo cultureInfo, string variant)
+        {
+            return GetSymbolDictionary(cultureInfo.TwoLetterISOLanguageName, variant);
+        }
+
+        /// <summary>lang文字列とvariantの設定に応じてデフォルトシンボルのDictionaryを取得する。</summary>
+        public ImmutableDictionary<SymbolType, Symbol> GetSymbolDictionary(string lang, string variant)
+        {
+            switch (lang)
+            {
+                case "ja-JP":
+                    LOG.Info("\"ja-JP\" is specified.");
+                    switch (variant)
+                    {
+                        case "hankaku":
+                            LOG.Info("\"hankaku\" variant is specified");
+                            return JapaneseHankakuSymbols;
+
+                        case "zenkaku2":
+                            LOG.Info("\"zenkaku2\" variant is specified");
+                            return JapaneseZenkaku2Symbols;
+
+                        default:
+                            LOG.Info("\"zenkaku\" variant is specified");
+                            return JapaneseSymbols;
+                    }
+                default:
+                    LOG.Info("Default symbol settings are loaded");
+                    return DefaultSymbols;
+            }
+        }
+
         /// <summary>
         /// デフォルトSymbolテーブルのReadOnlyDictionaryを生成するための関数。
         /// </summary>
         /// <param name="list">The list.</param>
         /// <returns>A ReadOnlyDictionary.</returns>
-        private static ReadOnlyDictionary<SymbolType, Symbol> InitSymbolDictionary(List<Symbol> list)
+        private static ImmutableDictionary<SymbolType, Symbol> ConvertToSymbolDictionary(List<Symbol> list)
         {
-            var temp = new Dictionary<SymbolType, Symbol>();
+            var builder = ImmutableDictionary.CreateBuilder<SymbolType, Symbol>();
             foreach (var symbol in list)
             {
-                // Java版はTryAddがあったが、C#10.0は無いので、ContainsKeyでチェックしてからAddする。
-                if (!temp.ContainsKey(symbol.Type))
+                // すでに登録されているSymbolTypeに対しては、後勝ちで再設定する。
+                if (builder.ContainsKey(symbol.Type))
                 {
-                    temp.Add(symbol.Type, symbol);
+                    builder[symbol.Type] = symbol;
                 }
                 else
                 {
-                    temp[symbol.Type] = symbol;
+                    builder.Add(symbol.Type, symbol);
                 }
             }
-            return new ReadOnlyDictionary<SymbolType, Symbol>(temp);
+
+            return builder.ToImmutable();
         }
 
-        private static readonly ReadOnlyDictionary<SymbolType, Symbol> DEFAULT_SYMBOLS =
-            InitSymbolDictionary(new List<Symbol>()
+        public ImmutableDictionary<SymbolType, Symbol> DefaultSymbols { get; init; }
+        public ImmutableDictionary<SymbolType, Symbol> JapaneseSymbols { get; init; }
+        public ImmutableDictionary<SymbolType, Symbol> JapaneseZenkaku2Symbols { get; init; }
+        public ImmutableDictionary<SymbolType, Symbol> JapaneseHankakuSymbols { get; init; }
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="DefaultSymbolLoader"/> class from being created.
+        /// </summary>
+        private DefaultSymbolLoader()
+        {
+            // デフォルトシンボルテーブルをハードコード。
+            DefaultSymbols = ConvertToSymbolDictionary(new List<Symbol>()
             {
                 // Common symbols
                 new Symbol(SymbolType.SPACE, ' ', ""),
@@ -82,11 +140,7 @@ namespace RedPen.Net.Core.Config
                 new Symbol(SymbolType.DIGIT_NINE, '9', ""),
             });
 
-        //private static readonly ReadOnlyDictionary<SymbolType, Symbol> RUSSIAN_SYMBOLS =
-        //    new ReadOnlyDictionary<SymbolType, Symbol>(DEFAULT_SYMBOLS);
-
-        private static readonly ReadOnlyDictionary<SymbolType, Symbol> JAPANESE_SYMBOLS =
-            InitSymbolDictionary(new List<Symbol>()
+            JapaneseSymbols = ConvertToSymbolDictionary(new List<Symbol>()
             {
                 // Common symbols
                 new Symbol(SymbolType.SPACE, '　', ""),
@@ -136,21 +190,13 @@ namespace RedPen.Net.Core.Config
                 new Symbol(SymbolType.DIGIT_NINE, '9', ""),
             });
 
-        private static ReadOnlyDictionary<SymbolType, Symbol> InitJaZenkaku2()
-        {
-            // new Dictionary<SymbolType, Symbol>
-            Dictionary<SymbolType, Symbol> tempDict = new Dictionary<SymbolType, Symbol>(JAPANESE_SYMBOLS);
-            tempDict[SymbolType.FULL_STOP] = new Symbol(SymbolType.FULL_STOP, '．', "。");
-            tempDict[SymbolType.COMMA] = new Symbol(SymbolType.COMMA, '，', ",");
+            // JapaneseZenkaku2Symbolsは、JapaneseSymbolsを一部変更したもの。
+            var jaZen2Builder = JapaneseSymbols.ToBuilder();
+            jaZen2Builder[SymbolType.FULL_STOP] = new Symbol(SymbolType.FULL_STOP, '．', "。");
+            jaZen2Builder[SymbolType.COMMA] = new Symbol(SymbolType.COMMA, '，', ",");
+            JapaneseZenkaku2Symbols = jaZen2Builder.ToImmutable();
 
-            return new ReadOnlyDictionary<SymbolType, Symbol>(tempDict);
-        }
-
-        private static readonly ReadOnlyDictionary<SymbolType, Symbol> JAPANESE_ZENKAKU2_SYMBOLS =
-            InitJaZenkaku2();
-
-        private static readonly ReadOnlyDictionary<SymbolType, Symbol> JAPANESE_HANKAKU_SYMBOLS =
-            InitSymbolDictionary(new List<Symbol>()
+            JapaneseHankakuSymbols = ConvertToSymbolDictionary(new List<Symbol>()
             {
                 // Common symbols
                 new Symbol(SymbolType.SPACE, '　', " "),
@@ -199,5 +245,6 @@ namespace RedPen.Net.Core.Config
                 new Symbol(SymbolType.DIGIT_EIGHT, '8', "８"),
                 new Symbol(SymbolType.DIGIT_NINE, '9', "９"),
             });
+        }
     }
 }

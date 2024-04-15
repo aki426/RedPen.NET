@@ -1,5 +1,6 @@
 ﻿namespace RedPen.Net.Core.Config
 {
+    /// <summary>Symbol's type.</summary>
     public enum SymbolType
     {
         AMPERSAND,

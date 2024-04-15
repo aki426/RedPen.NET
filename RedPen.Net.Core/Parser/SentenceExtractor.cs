@@ -8,6 +8,9 @@ using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Parser
 {
+    /// <summary>
+    /// テキストから文を抽出するクラスです。
+    /// </summary>
     public class SentenceExtractor
     {
         private static Logger LOG = LogManager.GetCurrentClassLogger();

@@ -16,6 +16,7 @@
     </PackageReference>
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
     <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.3" />
     <PackageReference Include="ToString.Fody" Version="1.11.1" PrivateAssets="All" />
   </ItemGroup>
 
@@ -38,7 +39,7 @@
       <LastGenOutput>DefaultResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="ValidationMessage.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationMessage.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>

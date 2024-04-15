@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Dynamic;
 
 namespace VerifyBasicFunction
 {
@@ -46,6 +47,31 @@ namespace VerifyBasicFunction
             Age = age;
             GraduateYear = graduateYear;
             ImmutableGraduateYear = immutableGraduateYear;
+        }
+
+        /// <summary>
+        /// Gets the sample data.
+        /// </summary>
+        /// <returns>A RecordSampleModel.</returns>
+        public static RecordSampleModel GetSampleData()
+        {
+            // Arrange
+            return new RecordSampleModel(
+                "Taro",
+                20,
+                new List<int> { 2010, 2014, 2018 },
+                new List<int>() { 2022, 2020, 2024 }.ToImmutableList());
+        }
+
+        /// <summary>
+        /// With式を用いた一部プロパティ更新のサンプル。
+        /// </summary>
+        /// <param name="origin">The origin.</param>
+        /// <param name="newAge">The new age.</param>
+        /// <returns>A RecordSampleModel.</returns>
+        public static RecordSampleModel GetNewInstanceWith(RecordSampleModel origin, int newAge)
+        {
+            return origin with { Age = newAge };
         }
     }
 }

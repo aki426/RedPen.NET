@@ -15,13 +15,13 @@ readpenをC#アプリケーションからスマートに利用したかった�
 ## ソリューション構成
 
 - RedPen.NET.Core
-   - RedPen本体のCoreクラスライブラリ。.NET Standard 2.0対応。
-   - Nullable, init, recordを使用するためC# LangVersionを10.0へ変更済み。
-   - リソース管理をJAVA版のプロパティテキストファイル方式からResXManagerによるリソース管理へ変更。
+  - RedPen本体のCoreクラスライブラリ。.NET Standard 2.0対応。
+  - Nullable, init, recordを使用するためC# LangVersionを10.0へ変更済み。
+  - リソース管理をJAVA版のプロパティテキストファイル方式からResXManagerによるリソース管理へ変更。
 - VerifyBasicFunction
-   - .NET Standard 2.0フレームワークや利用パッケージの動作確認用のクラスライブラリです。
-   - RedPen.NET.Coreと同じ設定、同じ利用パッケージを維持し、フレームワークやパッケージ依存のバグを検出することが目的です。
-   - このプロジェクトにプロダクトコードを追加しないでください。
+  - .NET Standard 2.0フレームワークや利用パッケージの動作確認用のクラスライブラリです。
+  - RedPen.NET.Coreと同じ設定、同じ利用パッケージを維持し、フレームワークやパッケージ依存のバグを検出することが目的です。
+  - このプロジェクトにプロダクトコードを追加しないでください。
 
 ## 利用パッケージ
 
@@ -48,6 +48,32 @@ readpenをC#アプリケーションからスマートに利用したかった�
    2. PlainTextフォーマット以外を対象とするValidation
    3. javascriptアドインValidator
 4. RedPen.NET.Servereの実装（redpen-serverのC#再実装）
+
+## Validator Configuration
+
+|            Name             |      Description       | Lang  |     Property      |
+| --------------------------- | ---------------------- | ----- | ----------------- |
+| SentenceLength              | センテンスの最大文字長 | ANY   | MaxLength         |
+| JapaneseExpressionVariation | 日本語の表記ゆれ       | ja-JP | DictFile, WordMap |
+
+## Configuration Property
+
+- Name
+  - ※すべてのValidator Configurationで必須のプロパティです。
+  - 表のName列に記載されている文字列を記載することで、対象ValidatorのConfigurationであると認識されます。
+  - このプロパティは先頭に記載する必要があります。それ以外の場合構文エラーになります。
+- Level
+  - ※すべてのValidator Configurationで必須のプロパティです。
+  - ERROR, WARN, INFO, OFFの4種類があります。
+  - OFFはValidatorを実行しない選択肢になります。その他はError結果のレベルです。
+- MaxLength
+  - Validatorに対して与える最大長をintで表現したものです。
+- DictFile
+  - Validatorごとに与える辞書定義ファイルです。実行環境におけるファイルへのパスを指定します。
+  - フォーマット：未定。
+- WordMap
+  - Validatorごとに与える辞書定義です。
+  - JsonのオブジェクトとしてKeyに「検出したい表現」を、Valueに「提案したい表現」を記述します。表記上は誤→正の順番になります。
 
 ## License
 

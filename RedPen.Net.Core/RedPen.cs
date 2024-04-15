@@ -20,29 +20,29 @@ namespace RedPen.Net.Core
         private readonly SentenceExtractor sentenceExtractor;
         private readonly List<Validator> validators;
 
-        /// <summary>
-        /// constructs RedPen with specified config file.
-        /// </summary>
-        /// <param name="configFile">config file</param>
-        /// <exception cref="RedPenException">when failed to construct RedPen</exception>
-        public RedPen(FileInfo configFile)
-        {
-            this.configuration = new ConfigurationLoader().Load(configFile);
-            this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
-            this.validators = new List<Validator>();
-        }
+        ///// <summary>
+        ///// constructs RedPen with specified config file.
+        ///// </summary>
+        ///// <param name="configFile">config file</param>
+        ///// <exception cref="RedPenException">when failed to construct RedPen</exception>
+        //public RedPen(FileInfo configFile)
+        //{
+        //    this.configuration = new ConfigurationLoader().Load(configFile);
+        //    this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
+        //    this.validators = new List<Validator>();
+        //}
 
-        /// <summary>
-        /// constructs RedPen with specified config file path.
-        /// </summary>
-        /// <param name="configPath">config file path</param>
-        /// <exception cref="RedPenException">when failed to construct RedPen</exception>
-        public RedPen(string configPath)
-        {
-            this.configuration = new ConfigurationLoader().LoadFromResource(configPath);
-            this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
-            this.validators = new List<Validator>();
-        }
+        ///// <summary>
+        ///// constructs RedPen with specified config file path.
+        ///// </summary>
+        ///// <param name="configPath">config file path</param>
+        ///// <exception cref="RedPenException">when failed to construct RedPen</exception>
+        //public RedPen(string configPath)
+        //{
+        //    this.configuration = new ConfigurationLoader().LoadFromResource(configPath);
+        //    this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
+        //    this.validators = new List<Validator>();
+        //}
 
         /// <summary>
         /// constructs RedPen with specified configuration.
@@ -62,15 +62,16 @@ namespace RedPen.Net.Core
         /// <param name="thresholdStr">The threshold str.</param>
         private void InitializeValidators(string thresholdStr)
         {
-            Level threshold = (Level)Enum.Parse(typeof(Level), thresholdStr.ToUpper());
+            ValidationLevel threshold = (ValidationLevel)Enum.Parse(typeof(ValidationLevel), thresholdStr.ToUpper());
             validators.Clear();
-            foreach (ValidatorConfiguration config in configuration.ValidatorConfigs)
+            foreach (ValidatorConfiguration config in configuration.ValidatorConfigurations)
             {
                 try
                 {
                     if (config.Level.IsWorseThan(threshold))
                     {
-                        validators.Add(ValidatorFactory.GetInstance(config, configuration));
+                        // TODO: ValidatorFactoryをちゃんと実装すること。
+                        // validators.Add(ValidatorFactory.GetInstance(config, configuration));
                     }
                 }
                 catch (RedPenException e)
@@ -80,46 +81,46 @@ namespace RedPen.Net.Core
             }
         }
 
-        /// <summary>
-        /// parse given input stream.
-        /// </summary>
-        /// <param name="parser">DocumentParser parser</param>
-        /// <param name="inputStream">content to parse</param>
-        /// <returns>parsed document</returns>
-        /// <exception cref="RedPenException">when failed to parse input stream</exception>
-        public Document Parse(IDocumentParser parser, Stream inputStream)
-        {
-            return parser.Parse(inputStream, sentenceExtractor, configuration.Tokenizer);
-        }
+        ///// <summary>
+        ///// parse given input stream.
+        ///// </summary>
+        ///// <param name="parser">DocumentParser parser</param>
+        ///// <param name="inputStream">content to parse</param>
+        ///// <returns>parsed document</returns>
+        ///// <exception cref="RedPenException">when failed to parse input stream</exception>
+        //public Document Parse(IDocumentParser parser, Stream inputStream)
+        //{
+        //    return parser.Parse(inputStream, sentenceExtractor, configuration.Tokenizer);
+        //}
 
-        /// <summary>
-        /// parse given content.
-        /// </summary>
-        /// <param name="parser">DocumentParser parser</param>
-        /// <param name="content">content to parse</param>
-        /// <returns>parsed document</returns>
-        /// <exception cref="RedPenException">when failed to parse input stream</exception>
-        public Document Parse(IDocumentParser parser, string content)
-        {
-            return parser.Parse(content, sentenceExtractor, configuration.Tokenizer);
-        }
+        ///// <summary>
+        ///// parse given content.
+        ///// </summary>
+        ///// <param name="parser">DocumentParser parser</param>
+        ///// <param name="content">content to parse</param>
+        ///// <returns>parsed document</returns>
+        ///// <exception cref="RedPenException">when failed to parse input stream</exception>
+        //public Document Parse(IDocumentParser parser, string content)
+        //{
+        //    return parser.Parse(content, sentenceExtractor, configuration.Tokenizer);
+        //}
 
-        /// <summary>
-        /// parse given files.
-        /// </summary>
-        /// <param name="parser">DocumentParser parser</param>
-        /// <param name="files">files to parse</param>
-        /// <returns>parsed documents</returns>
-        /// <exception cref="RedPenException">when failed to parse input stream</exception>
-        public List<Document> Parse(IDocumentParser parser, FileInfo[] files)
-        {
-            List<Document> documents = new List<Document>();
-            foreach (FileInfo file in files)
-            {
-                documents.Add(parser.Parse(file, sentenceExtractor, configuration.Tokenizer));
-            }
-            return documents;
-        }
+        ///// <summary>
+        ///// parse given files.
+        ///// </summary>
+        ///// <param name="parser">DocumentParser parser</param>
+        ///// <param name="files">files to parse</param>
+        ///// <returns>parsed documents</returns>
+        ///// <exception cref="RedPenException">when failed to parse input stream</exception>
+        //public List<Document> Parse(IDocumentParser parser, FileInfo[] files)
+        //{
+        //    List<Document> documents = new List<Document>();
+        //    foreach (FileInfo file in files)
+        //    {
+        //        documents.Add(parser.Parse(file, sentenceExtractor, configuration.Tokenizer));
+        //    }
+        //    return documents;
+        //}
 
         /// <summary>
         /// validate the input document collection. Note that this method call is NOT thread safe. RedPen instances need to be crated for each thread.
@@ -211,7 +212,7 @@ namespace RedPen.Net.Core
                         switch (rule.Type)
                         {
                             case PreprocessorRule.RuleType.SUPPRESS:
-                                if (rule.IsTriggeredBy(document, error.LineNumber, error.ValidatorName))
+                                if (rule.IsTriggeredBy(document, error.LineNumber, error.ValidationName))
                                 {
                                     suppressedErrors.Add(error);
                                 }
@@ -248,7 +249,10 @@ namespace RedPen.Net.Core
             {
                 foreach (Validator e in validators)
                 {
-                    e.PreValidate(document);
+                    if (e is IDocumentValidatable)
+                    {
+                        ((IDocumentValidatable)e).PreValidate(document);
+                    }
                 }
             }
 
@@ -258,8 +262,10 @@ namespace RedPen.Net.Core
                 List<ValidationError> errors = new List<ValidationError>();
                 foreach (Validator e in validators)
                 {
-                    e.setErrorList(errors);
-                    e.Validate(document);
+                    if (e is IDocumentValidatable)
+                    {
+                        errors.AddRange(((IDocumentValidatable)e).Validate(document));
+                    }
                 }
                 docErrorsMap[document] = errors;
             }
@@ -279,7 +285,10 @@ namespace RedPen.Net.Core
                 {
                     foreach (Validator e in validators)
                     {
-                        e.PreValidate(section);
+                        if (e is ISectionValidatable)
+                        {
+                            ((ISectionValidatable)e).PreValidate(section);
+                        }
                     }
                 }
             }
@@ -291,8 +300,10 @@ namespace RedPen.Net.Core
                     List<ValidationError> errors = docErrorsMap[document];
                     foreach (Validator e in validators)
                     {
-                        e.setErrorList(errors);
-                        e.Validate(section);
+                        if (e is ISectionValidatable)
+                        {
+                            errors.AddRange(((ISectionValidatable)e).Validate(section));
+                        }
                     }
                 }
             }
@@ -318,7 +329,10 @@ namespace RedPen.Net.Core
                         {
                             foreach (Sentence sentence in paragraph.Sentences)
                             {
-                                e.PreValidate(sentence);
+                                if (e is ISentenceValidatable)
+                                {
+                                    ((ISentenceValidatable)e).PreValidate(sentence);
+                                }
                             }
                         }
                     }
@@ -327,7 +341,10 @@ namespace RedPen.Net.Core
                     {
                         foreach (Sentence sentence in section.HeaderSentences)
                         {
-                            e.PreValidate(sentence);
+                            if (e is ISentenceValidatable)
+                            {
+                                ((ISentenceValidatable)e).PreValidate(sentence);
+                            }
                         }
                     }
 
@@ -340,7 +357,10 @@ namespace RedPen.Net.Core
                             {
                                 foreach (Sentence sentence in listElement.Sentences)
                                 {
-                                    e.PreValidate(sentence);
+                                    if (e is ISentenceValidatable)
+                                    {
+                                        ((ISentenceValidatable)e).PreValidate(sentence);
+                                    }
                                 }
                             }
                         }
@@ -360,20 +380,24 @@ namespace RedPen.Net.Core
                     {
                         foreach (Validator e in validators)
                         {
-                            e.setErrorList(errors);
-                            foreach (Sentence sentence in paragraph.Sentences)
+                            if (e is ISentenceValidatable)
                             {
-                                e.Validate(sentence);
+                                foreach (Sentence sentence in paragraph.Sentences)
+                                {
+                                    errors.AddRange(((ISentenceValidatable)e).Validate(sentence));
+                                }
                             }
                         }
                     }
                     // apply to section header
                     foreach (Validator e in validators)
                     {
-                        e.setErrorList(errors);
-                        foreach (Sentence sentence in section.HeaderSentences)
+                        if (e is ISentenceValidatable)
                         {
-                            e.Validate(sentence);
+                            foreach (Sentence sentence in section.HeaderSentences)
+                            {
+                                errors.AddRange(((ISentenceValidatable)e).Validate(sentence));
+                            }
                         }
                     }
                     // apply to lists
@@ -383,10 +407,12 @@ namespace RedPen.Net.Core
                         {
                             foreach (Validator e in validators)
                             {
-                                e.setErrorList(errors);
-                                foreach (Sentence sentence in listElement.Sentences)
+                                if (e is ISentenceValidatable)
                                 {
-                                    e.Validate(sentence);
+                                    foreach (Sentence sentence in listElement.Sentences)
+                                    {
+                                        errors.AddRange(((ISentenceValidatable)e).Validate(sentence));
+                                    }
                                 }
                             }
                         }

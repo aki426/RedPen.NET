@@ -10,85 +10,26 @@ namespace RedPen.Net.Core.Validators
     [ToString]
     public class ValidationError
     {
-        private static readonly long serialVersionUID = -1273191135155157144L;
-
-        private readonly string message;
-        private readonly string validatorName;
-        private readonly Sentence sentence;
-        private readonly LineOffset startPosition;
-        private readonly LineOffset endPosition;
-        private readonly Level level;
-
-        /**
-         * Constructor.
-         *
-         * @param validatorName    validator name
-         * @param errorMessage      error message
-         * @param sentenceWithError sentence containing validation error
-         */
-
-        public ValidationError(string validatorName, string errorMessage, Sentence sentenceWithError)
-            : this(validatorName, errorMessage, sentenceWithError, Level.ERROR)
-        {
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param validatorName    validator name
-         * @param errorMessage      error message
-         * @param sentenceWithError sentence containing validation error
-         */
+        public string Message { get; init; }
+        public string ValidationName { get; init; }
+        public Sentence Sentence { get; init; }
+        public LineOffset? StartPosition { get; init; }
+        public LineOffset? EndPosition { get; init; }
+        public ValidationLevel Level { get; init; }
 
         public ValidationError(
-            string validatorName,
+            string validationName,
             string errorMessage,
             Sentence sentenceWithError,
-            Level level)
+            ValidationLevel level = ValidationLevel.ERROR)
         {
-            this.message = errorMessage;
-            this.validatorName = validatorName; ;
-            this.sentence = sentenceWithError;
-            this.startPosition = null;
-            this.endPosition = null;
-            this.level = level;
+            this.Message = errorMessage;
+            this.ValidationName = validationName; ;
+            this.Sentence = sentenceWithError;
+            this.StartPosition = null;
+            this.EndPosition = null;
+            this.Level = level;
         }
-
-        /**
-         * Constructor.
-         *
-         * @param validatorName    validator name
-         * @param errorMessage      error message
-         * @param sentenceWithError sentence containing validation error
-         * @param startPosition     position where error starts
-         * @param endPosition       position where error ends
-         */
-
-        private ValidationError(
-            string validatorName,
-            string errorMessage,
-            Sentence sentenceWithError,
-            int startPosition,
-            int endPosition)
-            : this(
-                  validatorName,
-                  errorMessage,
-                  sentenceWithError,
-                  startPosition,
-                  endPosition,
-                  Level.ERROR)
-        {
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param validatorName    validator name
-         * @param errorMessage      error message
-         * @param sentenceWithError sentence containing validation error
-         * @param startPosition     position where error starts
-         * @param endPosition       position where error ends
-         */
 
         internal ValidationError(
             string validatorName,
@@ -96,77 +37,20 @@ namespace RedPen.Net.Core.Validators
             Sentence sentenceWithError,
             int startPosition,
             int endPosition,
-            Level level)
+            ValidationLevel Level = ValidationLevel.ERROR)
         {
-            this.message = errorMessage;
-            this.validatorName = validatorName;
-            this.sentence = sentenceWithError;
-            this.startPosition = sentenceWithError.GetOffset(startPosition) ?? throw new NullReferenceException("No value present");
-            this.endPosition = sentenceWithError.GetOffset(endPosition) ?? throw new NullReferenceException("No value present");
-            this.level = level;
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param validatorClass    validator class
-         * @param errorMessage      error message
-         * @param sentenceWithError sentence containing validation error
-         * @param startPosition     position where error starts
-         * @param endPosition       position where error ends
-         * @deprecated
-         */
-
-        private ValidationError(
-            Type validatorClass,
-            string errorMessage,
-            Sentence sentenceWithError,
-            LineOffset startPosition,
-            LineOffset endPosition)
-        {
-            this.message = errorMessage;
-            this.validatorName = validatorClass.Name;
-            this.sentence = sentenceWithError;
-            this.startPosition = startPosition;
-            this.endPosition = endPosition;
-            this.level = Level.ERROR;
+            this.Message = errorMessage;
+            this.ValidationName = validatorName;
+            this.Sentence = sentenceWithError;
+            this.StartPosition = sentenceWithError.GetOffset(startPosition) ?? throw new NullReferenceException("No value present");
+            this.EndPosition = sentenceWithError.GetOffset(endPosition) ?? throw new NullReferenceException("No value present");
+            this.Level = Level;
         }
 
         /// <summary>Get line number in which the error occurs.</summary>
-        public int LineNumber => sentence.LineNumber;
-
-        /// <summary>Get error message.</summary>
-        public string Message => message;
+        public int LineNumber => Sentence.LineNumber;
 
         /// <summary>Get column number in which the error occurs.</summary>
-        public int StartColumnNumber => sentence.StartPositionOffset;
-
-        /// <summary>Get sentence containing the error.</summary>
-        public Sentence Sentence => sentence;
-
-        /// <summary>Get validator name.</summary>
-        public string ValidatorName
-        {
-            get
-            {
-                if (validatorName.EndsWith("Validator"))
-                {
-                    return validatorName.Substring(0, validatorName.Length - "Validator".Length);
-                }
-                else
-                {
-                    return validatorName;
-                }
-            }
-        }
-
-        /// <summary>Get error start position.</summary>>
-        public LineOffset? StartPosition => startPosition;
-
-        /// <summary>Get error end position.</summary>
-        public LineOffset? EndPosition => endPosition;
-
-        /// <summary>Get error level.</summary>
-        public Level Level => Level;
+        public int StartColumnNumber => Sentence.StartPositionOffset;
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Validators;
+using RedPen.Net.Core.Validators.SentenceValidator;
 using Xunit;
+using RedPen.Net.Core.Validators.SentecneValidator;
 
 namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 {
@@ -17,17 +20,30 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [Fact]
         public void WithSentenceContainingManyCommasTest()
         {
-            Core.Validators.Validator commaNumberValidator = ValidatorFactory.GetInstance("CommaNumber");
-            commaNumberValidator.setLocale(new System.Globalization.CultureInfo("en-US"));
-            commaNumberValidator.Locale.Name.Should().Be("en-US");
+            // ValidatorConfiguration
+            var commaNumberConfiguration = new CommaNumberConfiguration(ValidationLevel.ERROR, 3);
 
+            // Configuration
+            var config = Configuration.Builder("en-US")
+                .AddValidatorConfig(commaNumberConfiguration)
+                .Build();
+
+            // Sentence
             string content = "is it true, not true, but it should be ture, right, or not right.";
             Sentence str = new Sentence(content, 0);
 
-            List<ValidationError> errors = new List<ValidationError>();
-            commaNumberValidator.setErrorList(errors);
-            commaNumberValidator.Validate(str);
+            // Validator
+            var commaNumberValidator = new CommaNumberValidator(
+                config.CultureInfo,
+                ValidationMessage.ResourceManager,
+                config.SymbolTable,
+                commaNumberConfiguration);
 
+            // Validate
+            commaNumberValidator.PreValidate(str);
+            var errors = commaNumberValidator.Validate(str);
+
+            // Assertion
             errors.Should().NotBeNull();
             errors.Count.Should().Be(1);
             errors[0].Sentence.Content.Should().Be(content);

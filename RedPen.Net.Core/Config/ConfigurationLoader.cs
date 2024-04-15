@@ -1,406 +1,155 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using NLog;
-using System.Xml;
+using RedPen.Net.Core.Validators.DocumentValidator;
+using RedPen.Net.Core.Validators.SentenceValidator;
 
 namespace RedPen.Net.Core.Config
 {
     /// <summary>
-    /// Load the central configuration of {@link cc.redpen.RedPen}.
+    /// RedPenのConfファイルをロードするクラスです。
+    /// MEMO: JAVA版がXML形式であるのに対して、C#版ではJson形式を基本とします。
     /// </summary>
     public class ConfigurationLoader
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-        private bool secure;
 
         /// <summary>
-        /// Creates the symbol.
+        /// Json形式の文字列からConfigurationを読み込む。
         /// </summary>
-        /// <param name="element">The element.</param>
-        /// <returns>A Symbol.</returns>
-        private static Symbol CreateSymbol(XmlElement element)
+        /// <param name="jsonString">The json string.</param>
+        /// <returns>A Configuration.</returns>
+        public static Configuration Load(string jsonString)
         {
-            if (!element.HasAttribute("name") || !element.HasAttribute("value"))
+            var options = new JsonSerializerOptions
             {
-                throw new InvalidOperationException("Found element does not have name and value attribute...");
-            }
-            string value = element.GetAttribute("value");
-            if (value.Length != 1)
+                Converters = {
+                    new ValidatorConfigurationConverter(),
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+            };
+
+            Configuration? configuration = JsonSerializer.Deserialize<Configuration>(jsonString, options);
+            if (configuration == null)
             {
-                throw new RedPenException("value should be one character, specified: " + value);
+                LOG.Error("Failed to load configuration from Json string.");
+                throw new JsonException();
             }
-            char charValue = value[0];
-            return new Symbol(
-                (SymbolType)Enum.Parse(typeof(SymbolType), element.GetAttribute("name")),
-                charValue,
-                element.GetAttribute("invalid-chars"),
-                bool.Parse(element.GetAttribute("before-space")),
-                bool.Parse(element.GetAttribute("after-space")));
+
+            return configuration;
         }
 
         /// <summary>
-        /// parse the input stream. stream will be closed.
+        /// ValidatorConfiguration用のJsonConverter。読み込み（Deserialize）だけでなく書き出し（Serialize）も行う。
         /// </summary>
-        /// <param name="input">stream</param>
-        /// <returns>document object</returns>
-        /// <exception cref="RedPenException">when failed to parse</exception>
-        private static XmlDocument ToDocument(Stream input)
+        public class ValidatorConfigurationConverter : JsonConverter<ValidatorConfiguration>
         {
-            XmlDocument doc = new XmlDocument();
-            try
+            /// <summary>
+            /// Cans the convert.
+            /// </summary>
+            /// <param name="typeToConvert">The type to convert.</param>
+            /// <returns>A bool.</returns>
+            public override bool CanConvert(Type typeToConvert) =>
+                typeof(ValidatorConfiguration).IsAssignableFrom(typeToConvert);
+
+            /// <summary>
+            /// Read ValidatorConfiguration from Json.
+            /// </summary>
+            /// <param name="reader">The reader.</param>
+            /// <param name="typeToConvert">The type to convert.</param>
+            /// <param name="options">The options.</param>
+            /// <returns>A ValidatorConfiguration.</returns>
+            public override ValidatorConfiguration Read(
+                ref Utf8JsonReader reader,
+                Type typeToConvert,
+                JsonSerializerOptions options)
             {
-                doc.XmlResolver = null; // Disable external entity resolution
-                using (BufferedStream bis = new BufferedStream(input))
+                Utf8JsonReader readerClone = reader;
+
+                if (readerClone.TokenType != JsonTokenType.StartObject)
                 {
-                    doc.Load(bis);
+                    throw new JsonException();
                 }
-                return doc;
-            }
-            catch (Exception e)
-            {
-                // TODO: JAVA版を踏襲したが、RedPenExceptionにして再スローする意味はあるか？
-                throw new RedPenException(e);
-            }
-        }
 
-        /// <summary>
-        /// load {@link cc.redpen.RedPen} settings.
-        /// </summary>
-        /// <param name="configFile">input configuration file</param>
-        /// <returns>Validator configuration resources</returns>
-        /// <exception cref="RedPenException">when failed to load configuration from specified configuration file</exception>
-        public Configuration Load(FileInfo configFile)
-        {
-            LOG.Info("Loading config from specified config file: \"{0}\"", configFile.FullName);
-            try
-            {
-                using (FileStream fis = configFile.OpenRead())
+                // 1つ目のプロパティがNameであることを確認する。
+                readerClone.Read();
+                if (readerClone.TokenType != JsonTokenType.PropertyName)
                 {
-                    return Load(fis, configFile.Directory);
+                    throw new JsonException();
                 }
-            }
-            catch (IOException e)
-            {
-                throw new RedPenException(e);
-            }
-        }
 
-        /// <summary>
-        /// load {@link cc.redpen.RedPen} settings.
-        /// </summary>
-        /// <param name="resourcePath">input configuration path</param>
-        /// <returns>Validator configuration resources</returns>
-        /// <exception cref="RedPenException">when failed to load configuration from specified resource</exception>
-        public Configuration LoadFromResource(string resourcePath)
-        {
-            return LoadFromResource(resourcePath, null);
-        }
-
-        /// <summary>
-        /// load {@link cc.redpen.RedPen} settings.
-        /// </summary>
-        /// <param name="resourcePath">input configuration path</param>
-        /// <param name="base">base dir for resolving of relative resources</param>
-        /// <returns>Validator configuration resources</returns>
-        /// <exception cref="RedPenException">when failed to load configuration from specified resource</exception>
-        public Configuration LoadFromResource(string resourcePath, DirectoryInfo? baseDirectory)
-        {
-            using (Stream inputConfigStream = typeof(Configuration).Assembly.GetManifestResourceStream(resourcePath))
-            {
-                return Load(inputConfigStream, baseDirectory);
-            }
-        }
-
-        /// <summary>
-        /// load {@link cc.redpen.RedPen} settings.
-        /// </summary>
-        /// <param name="configString">configuration as String</param>
-        /// <returns>Validator configuration resources</returns>
-        /// <exception cref="RedPenException">when failed to load Configuration from specified string</exception>
-        public Configuration LoadFromString(string configString)
-        {
-            return LoadFromString(configString, null);
-        }
-
-        /// <summary>
-        /// load {@link cc.redpen.RedPen} settings.
-        /// </summary>
-        /// <param name="configString">configuration as String</param>
-        /// <param name="base">base dir for resolving of relative resources</param>
-        /// <returns>Validator configuration resources</returns>
-        /// <exception cref="RedPenException">when failed to load Configuration from specified string</exception>
-        public Configuration LoadFromString(string configString, DirectoryInfo? baseDirectory)
-        {
-            return Load(new MemoryStream(Encoding.UTF8.GetBytes(configString)), baseDirectory);
-        }
-
-        /// <summary>
-        /// load {@link cc.redpen.RedPen} configuration.
-        /// Provided stream will be closed.
-        /// </summary>
-        /// <param name="stream">input configuration settings</param>
-        /// <returns>Configuration loaded from input stream</returns>
-        /// <exception cref="RedPenException">when failed to load configuration from specified stream</exception>
-        public Configuration Load(Stream stream)
-        {
-            return Load(stream, null);
-        }
-
-        // TODO: JAVA版ではConfigファイルはXML形式になっているが、JSON形式への置き換えを検討する。
-        // そもそもValidatorの種類もそう増えないし、Configファイルの定義もそこまで多くないので、
-        // すべての設定がテキスト化されているJSON形式で良い可能性がある。
-        // XML形式ではValidatorのON/OFFをタグの有無で判断しているが、例えばLevelの値にOFFを設定し、
-        // 設定ファイル内から削除せずにValidatorの適用をOFFにできればその方が設定ファイルの管理が楽になる。
-
-        /// <summary>
-        /// load {@link cc.redpen.RedPen} configuration.
-        /// Provided stream will be closed.
-        /// </summary>
-        /// <param name="stream">input configuration settings</param>
-        /// <param name="base">base dir for resolving of relative resources</param>
-        /// <returns>Configuration loaded from input stream</returns>
-        /// <exception cref="RedPenException">when failed to load configuration from specified stream</exception>
-        public Configuration Load(Stream stream, DirectoryInfo? baseDirectory)
-        {
-            XmlDocument doc = ToDocument(stream);
-
-            ConfigurationBuilder configBuilder = new ConfigurationBuilder().SetBaseDir(baseDirectory);
-            if (secure)
-            {
-                configBuilder.SetSecure();
-            }
-
-            XmlElement rootElement = GetRootNode(doc, "redpen-conf");
-
-            string language = rootElement.GetAttribute("lang");
-            if (!string.IsNullOrEmpty(language))
-            {
-                LOG.Info("Language is set to \"{0}\"", language);
-            }
-            else
-            {
-                LOG.Warn("No language configuration...");
-                LOG.Info("Set language to en");
-                // TODO: デフォルトがenで良いのかen-USへ変更するべきか？
-                language = "en";
-            }
-
-            // TODO: 古いtype属性をJAVA版から踏襲しなくてもよいので、どこかのタイミングで削除する。
-            string variant = rootElement.GetAttribute("variant");
-            if (string.IsNullOrEmpty(variant))
-            {
-                variant = rootElement.GetAttribute("type");
-                if (!string.IsNullOrEmpty(variant)) LOG.Info("Deprecated: use \"variant\" attribute instead of \"type\"");
-            }
-
-            if (string.IsNullOrEmpty(variant))
-            {
-                LOG.Warn("No variant configuration...");
-            }
-            else
-            {
-                LOG.Info("Variant is set to \"{0}\"", variant);
-            }
-
-            // extract validator configurations
-            XmlNodeList validatorConfigElementList = GetSpecifiedNodeList(rootElement, "validators");
-
-            if (validatorConfigElementList == null)
-            {
-                LOG.Warn("There is no validators block");
-            }
-            else
-            {
-                XmlNodeList validatorElementList = validatorConfigElementList[0].ChildNodes;
-                ExtractValidatorConfigurations(configBuilder, validatorElementList);
-            }
-
-            // extract symbol configurations
-            XmlNodeList symbolTableConfigElementList =
-                GetSpecifiedNodeList(rootElement, "symbols");
-            configBuilder.SetLang(language);
-            if (!string.IsNullOrEmpty(variant))
-            {
-                configBuilder.SetVariant(variant);
-            }
-
-            if (symbolTableConfigElementList != null)
-            {
-                ExtractSymbolConfig(configBuilder, symbolTableConfigElementList, language);
-            }
-            return configBuilder.Build();
-        }
-
-        /// <summary>
-        /// Extracts the validator configurations.
-        /// </summary>
-        /// <param name="configBuilder">The config builder.</param>
-        /// <param name="validatorElementList">The validator element list.</param>
-        private void ExtractValidatorConfigurations(ConfigurationBuilder configBuilder, XmlNodeList validatorElementList)
-        {
-            ValidatorConfiguration currentConfiguration;
-            Dictionary<string, ValidatorConfiguration> validatorConfigurations = new Dictionary<string, ValidatorConfiguration>();
-            foreach (XmlNode nNode in validatorElementList)
-            {
-                if (nNode.NodeType != XmlNodeType.Element)
+                // 型情報はJsonではNameプロパティが持つ定義とする。
+                string? propertyName = readerClone.GetString();
+                if (propertyName != "Name")
                 {
-                    continue;
+                    throw new JsonException();
                 }
-                XmlElement element = (XmlElement)nNode;
-                if (element.Name == "validator")
+
+                readerClone.Read();
+                if (readerClone.TokenType != JsonTokenType.String)
                 {
-                    string currentValidatorName = element.GetAttribute("name");
-                    currentConfiguration =
-                        new ValidatorConfiguration(currentValidatorName);
-                    // あるValidatorについての設定が複数ある場合は、後勝ちになる。
-                    if (validatorConfigurations.ContainsKey(currentValidatorName))
-                    {
-                        LOG.Warn("Duplicated validator configuration was found: " + currentValidatorName);
-                    }
-                    validatorConfigurations[currentValidatorName] = currentConfiguration;
-                    XmlNodeList propertyElementList = nNode.ChildNodes;
-                    ExtractProperties(currentConfiguration, propertyElementList);
-                    ExtractLevel(currentConfiguration, element);
+                    throw new JsonException();
                 }
-                else
+
+                // NOTE: Nameプロパティの値で型指定されているのでそれを元に型を決定する。
+                // NOTE: 型情報がはっきりした時点でDeserializeを呼び出してオブジェクト読み込みを簡単化する。
+                // TODO: 「ペイロードが独自の型情報を指定できるようにすることは、Webアプリケーションの脆弱性の一般的な原因」
+                // になりうるため、あらかじめ型指定文字列を変換してよい型かどうかをチェックするDictionaryなどが必要になる。
+
+                var typeName = readerClone.GetString();
+                ValidatorConfiguration conf = typeName switch
                 {
-                    LOG.Warn("Invalid block: \"{0}\"", element.Name);
-                    LOG.Warn("Skip this block ...");
-                }
-            }
-            foreach (ValidatorConfiguration config in validatorConfigurations.Values)
-            {
-                configBuilder.AddValidatorConfig(config);
-            }
-        }
+                    // switch式でベタ指定しているが、あらかじめValidatorConfiguration継承型をリストアップした
+                    // Dictionary<string, Type>を作成しておくとよい。
+                    "SentenceLength" => JsonSerializer.Deserialize<SentenceLengthConfiguration>(ref reader, optionForNoLoop)!,
+                    "JapaneseExpressionVariation" => JsonSerializer.Deserialize<JapaneseExpressionVariationConfiguration>(ref reader, optionForNoLoop)!,
+                    _ => throw new JsonException()
+                };
 
-        /// <summary>
-        /// Extracts the level.
-        /// </summary>
-        /// <param name="currentConfiguration">The current configuration.</param>
-        /// <param name="element">The element.</param>
-        private void ExtractLevel(ValidatorConfiguration currentConfiguration, XmlElement element)
-        {
-            string level = element.GetAttribute("level");
-            if (!string.IsNullOrEmpty(level))
-            {
-                currentConfiguration.SetLevel(level);
+                return conf;
             }
-        }
 
-        /// <summary>
-        /// Extracts the properties.
-        /// </summary>
-        /// <param name="currentConfiguration">The current configuration.</param>
-        /// <param name="propertyElementList">The property element list.</param>
-        private void ExtractProperties(ValidatorConfiguration currentConfiguration,
-                                       XmlNodeList propertyElementList)
-        {
-            foreach (XmlNode pNode in propertyElementList)
+            // Convertersを調整しないと、何回もValidatorConfigurationConverterが呼ばれて無限ループになってしまうため。
+            private static JsonSerializerOptions optionForNoLoop = new JsonSerializerOptions
             {
-                if (pNode.NodeType != XmlNodeType.Element)
+                // MEMO: Enumを文字列へ変換し、フォーマットはCamelCaseにする。
+                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+            };
+
+            /// <summary>
+            /// Jsonコンバータの書き出し器。
+            /// </summary>
+            /// <param name="writer">The writer.</param>
+            /// <param name="conf">The person.</param>
+            /// <param name="options">The options.</param>
+            public override void Write(
+                Utf8JsonWriter writer,
+                ValidatorConfiguration conf,
+                JsonSerializerOptions options)
+            {
+                writer.WriteStartObject();
+
+                // NOTE: TypeDiscriminatorというプロパティを追加して、型を判別するための情報を書き出している。
+                // この方式はあらかじめEnumを定義しておかなければならず、汎用性が低い。
+                // できるだけ型情報を明に出したいので、たとえばValidatorNameプロパティで型名を出力するなどの方法が良い。
+
+                var typeName = conf.GetType().Name.Replace("Configuration", "");
+                writer.WriteString("Name", typeName);
+                writer.WriteString("Level", conf.Level.ToString());
+
+                // ValidatorConfiguration.csに定義されたどのInterface型を継承しているかによってプロパティを特定する。
+                if (conf is IMaxLengthConfigParameter maxLengthConf)
                 {
-                    continue;
+                    writer.WriteNumber("MaxLength", maxLengthConf.MaxLength);
                 }
-                XmlElement propertyElement = (XmlElement)pNode;
-                if (propertyElement.Name == "property" && currentConfiguration != null)
+                else if (conf is IWordMapConfigParameter wordMapConf)
                 {
-                    currentConfiguration.AddProperty(
-                        propertyElement.GetAttribute("name"),
-                        propertyElement.GetAttribute("value"));
+                    writer.WritePropertyName("WordMap");
+                    JsonSerializer.Serialize(writer, wordMapConf.WordMap, wordMapConf.WordMap.GetType(), options);
                 }
-            }
-        }
 
-        /// <summary>
-        /// Extracts the symbol config.
-        /// </summary>
-        /// <param name="configBuilder">The config builder.</param>
-        /// <param name="symbolTableConfigElementList">The symbol table config element list.</param>
-        /// <param name="language">The language.</param>
-        private void ExtractSymbolConfig(
-            ConfigurationBuilder configBuilder,
-            XmlNodeList symbolTableConfigElementList,
-            string language)
-        {
-            configBuilder.SetLang(language);
-
-            // TODO: Cast前の型チェックとしてnode.NodeType == XmlNodeType.Elementを追加し例外処理を行う。
-            XmlNodeList? symbolTableElementList =
-                GetSpecifiedNodeList((XmlElement)symbolTableConfigElementList[0], "symbol");
-            if (symbolTableElementList == null)
-            {
-                LOG.Warn("there is no character block");
-                return;
+                writer.WriteEndObject();
             }
-            foreach (XmlNode nNode in symbolTableElementList)
-            {
-                if (nNode.NodeType == XmlNodeType.Element)
-                {
-                    XmlElement element = (XmlElement)nNode;
-                    Symbol currentSymbol = CreateSymbol(element);
-                    configBuilder.AddSymbol(currentSymbol);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the specified node list.
-        /// </summary>
-        /// <param name="rootElement">The root element.</param>
-        /// <param name="elementName">The element name.</param>
-        /// <returns>A XmlNodeList? .</returns>
-        private XmlNodeList? GetSpecifiedNodeList(XmlElement rootElement, string elementName)
-        {
-            XmlNodeList elementList =
-                rootElement.GetElementsByTagName(elementName);
-            if (elementList.Count == 0)
-            {
-                LOG.Info("No \"{0}\" block found in the configuration", elementName);
-                return null;
-            }
-            else if (elementList.Count > 1)
-            {
-                LOG.Info("More than one \"{0}\" blocks in the configuration", elementName);
-            }
-            return elementList;
-        }
-
-        /// <summary>
-        /// Gets the root node.
-        /// </summary>
-        /// <param name="doc">The doc.</param>
-        /// <param name="rootTag">The root tag.</param>
-        /// <returns>A XmlElement.</returns>
-        private XmlElement GetRootNode(XmlDocument doc, string rootTag)
-        {
-            XmlNodeList rootConfigElementList =
-                doc.GetElementsByTagName(rootTag);
-            if (rootConfigElementList.Count == 0)
-            {
-                throw new InvalidOperationException("No \"" + rootTag
-                    + "\" block found in the configuration");
-            }
-            else if (rootConfigElementList.Count > 1)
-            {
-                LOG.Warn("More than one \"{0}\" blocks in the configuration", rootTag);
-            }
-            XmlNode root = rootConfigElementList[0];
-            XmlElement rootElement = (XmlElement)root;
-            LOG.Info("Succeeded to load configuration file");
-            return rootElement;
-        }
-
-        /// <summary>
-        /// Update Secure to true.
-        /// </summary>
-        /// <returns>A ConfigurationLoader.</returns>
-        public ConfigurationLoader Secure()
-        {
-            secure = true;
-            return this;
         }
     }
 }

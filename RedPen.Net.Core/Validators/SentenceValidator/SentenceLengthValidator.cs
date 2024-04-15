@@ -1,4 +1,8 @@
-﻿using RedPen.Net.Core.Model;
+﻿using RedPen.Net.Core.Config;
+using System.Globalization;
+using System.Resources;
+using RedPen.Net.Core.Model;
+using System.Collections.Generic;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
@@ -7,26 +11,50 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     /// <summary>
     /// The sentence length validator.
     /// </summary>
-    public sealed class SentenceLengthValidator : Validator
+    public sealed class SentenceLengthValidator : Validator, ISentenceValidatable
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SentenceLengthValidator"/> class.
-        /// </summary>
-        public SentenceLengthValidator() : base(new object[] { "max_len", 120 })
+        public SentenceLengthConfiguration Config { get; init; }
+
+        public SentenceLengthValidator(
+            ValidationLevel level,
+            CultureInfo lang,
+            ResourceManager errorMessages,
+            SymbolTable symbolTable,
+            SentenceLengthConfiguration config) :
+            base(
+                level,
+                lang,
+                errorMessages,
+                symbolTable)
         {
+            this.Config = config;
         }
 
         /// <summary>
-        /// validates the.
+        /// Pre validation.
         /// </summary>
         /// <param name="sentence">The sentence.</param>
-        public override void Validate(Sentence sentence)
+        public void PreValidate(Sentence sentence)
         {
-            // int maxLength = GetProperty<int>("max_len");
-            int maxLength = GetInt("max_len");
-            if (sentence.Content.Length > maxLength)
+            // nothing.
+        }
+
+        /// <summary>
+        /// Validate sentence.
+        /// </summary>
+        /// <param name="sentence">The sentence.</param>
+        /// <returns>A ValidationError? .</returns>
+        public List<ValidationError> Validate(Sentence sentence)
+        {
+            if (sentence.Content.Length > Config.MaxLength)
             {
-                addLocalizedError(sentence, sentence.Content.Length, maxLength);
+                return new List<ValidationError>() {
+                    GetLocalizedError(sentence, new object[] { sentence.Content.Length, Config.MaxLength })
+                };
+            }
+            else
+            {
+                return new List<ValidationError>();
             }
         }
     }
