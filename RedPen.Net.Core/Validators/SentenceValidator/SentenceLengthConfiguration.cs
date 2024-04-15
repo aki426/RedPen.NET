@@ -6,10 +6,6 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     {
         public int MaxLength { get; init; }
 
-        public SentenceLengthConfiguration(string level, int maxLength) : base(level)
-        {
-            MaxLength = maxLength;
-        }
         public SentenceLengthConfiguration(ValidationLevel level, int maxLength) : base(level)
         {
             MaxLength = maxLength;

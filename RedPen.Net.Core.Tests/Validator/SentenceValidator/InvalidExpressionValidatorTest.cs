@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Parser;
 using RedPen.Net.Core.Tokenizer;
 using RedPen.Net.Core.Validators;
 using RedPen.Net.Core.Validators.SentenceValidator;
@@ -72,11 +69,11 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         public void SimpleValidatoinOperationTest()
         {
             var validatorConfiguration = new ValidatorConfiguration("InvalidExpression");
-            var config = Configuration.Builder("ja")
+            var config = Configuration.Builder("ja-JP")
                 .AddValidatorConfig(validatorConfiguration)
                 .Build();
 
-            Document document = Document.Builder(config.Tokenizer)
+            Document document = Document.Builder(RedPenTokenizerFactory.CreateTokenizer(config.CultureInfo))
                 .AddSection(1)
                 .AddParagraph()
                 .AddSentence(new Sentence("明日地球が滅亡するってマジですか。", 1))

@@ -177,7 +177,9 @@ namespace RedPen.Net.Core.Validators
                 // また、サポート言語がある場合は指定のlangに対応しているかどうかとdeprecatedではないことが条件となる。
                 // TODO: Deprecated属性のValidatorに関してPropertyが取得できないことになるが、これが期待する仕様かどうかは要検討。
                 return (!supportedLanguages.Any() || supportedLanguages.Contains(lang)) && !deprecated;
-            }).Select(e => new ValidatorConfiguration(e.Key, ToStrings(e.Value.getProperties()))).ToList();
+                // }).Select(e => new ValidatorConfiguration(e.Key, ToStrings(e.Value.getProperties()))).ToList();
+                // TODO: 一旦ビルドを通すために暫定的にValidatorConfigurationを生成。
+            }).Select(e => new ValidatorConfiguration(ValidationLevel.ERROR)).ToList();
 
             // TODO: JSのValidatorについては未実装。
             //Dictionary<string, string> emptyMap = new Dictionary<string, string>();
@@ -236,7 +238,7 @@ namespace RedPen.Net.Core.Validators
             // TODO: 普通にvalidatorsから取得するだけのコードに切り替えて良いかどうか要検討。
             Configuration conf = Configuration.Builder().AddValidatorConfig(new ValidatorConfiguration(validatorName)).Build();
 
-            return GetInstance(conf.ValidatorConfigs[0], conf);
+            return GetInstance(conf.ValidatorConfigurations[0], conf);
         }
 
         /// <summary>
@@ -247,7 +249,10 @@ namespace RedPen.Net.Core.Validators
         /// <returns>A Validator.</returns>
         public static Validator GetInstance(ValidatorConfiguration config, Configuration globalConfig)
         {
-            string validatorName = config.ConfigurationName;
+            // MEMO: Configurationは必ずXXXConfigurationの形式で名前がつけられているため、
+            // XXX部分を取り出してValidator名として扱う。
+            string validatorName = config.GetType().Name.Replace("Configuration", "");
+
             // lookup JavaScript validators
             //string script = jsValidators[validatorName];
             //if (script != null)
@@ -258,7 +263,7 @@ namespace RedPen.Net.Core.Validators
             //}
 
             // fallback to validators
-            Validator prototype = validators[config.ConfigurationName];
+            Validator prototype = validators[config.GetType().Name.Replace("Configuration", "")];
 
             Type validatorClass = prototype != null ? prototype.GetType() : LoadPlugin(validatorName);
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
@@ -8,6 +7,7 @@ using RedPen.Net.Core.Validators;
 using RedPen.Net.Core.Validators.DocumentValidator;
 using Xunit;
 using Xunit.Abstractions;
+using RedPenTokenizerFactory = RedPen.Net.Core.Tokenizer.RedPenTokenizerFactory;
 
 namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
 {
@@ -32,12 +32,12 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         {
             ValidatorConfiguration validatorConfiguration = new ValidatorConfiguration("JapaneseExpressionVariation");
             // MEMO: Configuration.Builder("ja")でTokenizerはNeologdが割り当たっている。
-            Configuration localConfig = Configuration.Builder("ja")
+            Configuration localConfig = Configuration.Builder("ja-JP")
                 .AddValidatorConfig(validatorConfiguration)
                 .Build();
 
             // Build中にNeologdでTokenizeされる。
-            Document document = Document.Builder(localConfig.Tokenizer)
+            Document document = Document.Builder(RedPenTokenizerFactory.CreateTokenizer(localConfig.CultureInfo))
               .AddSection(1)
               .AddParagraph()
               .AddSentence(new Sentence("之は山です。これは川です。", 1))
@@ -90,8 +90,8 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         [Fact]
         public void detectSameReadingsInJapaneseCharacters()
         {
-            // MEMO: Configuration.Builder("ja")でTokenizerはNeologdが割り当たっている。
-            config = Configuration.Builder("ja")
+            // MEMO: Configuration.Builder("ja-JP")でTokenizerはNeologdが割り当たっている。
+            config = Configuration.Builder("ja-JP")
                          .AddValidatorConfig(new ValidatorConfiguration(validatorName))
                          .Build();
 
@@ -115,8 +115,8 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         [Fact]
         public void detectSameReadingsInJapaneseCharactersInDefaultDictionary()
         {
-            // MEMO: Configuration.Builder("ja")でTokenizerはNeologdが割り当たっている。
-            config = Configuration.Builder("ja")
+            // MEMO: Configuration.Builder("ja-JP")でTokenizerはNeologdが割り当たっている。
+            config = Configuration.Builder("ja-JP")
                 .AddValidatorConfig(new ValidatorConfiguration(validatorName))
                 .Build();
 
@@ -140,8 +140,8 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         [Fact]
         public void detectSameReadingsInJapaneseCharactersInDefaultDictionaryWithUpperCase()
         {
-            // MEMO: Configuration.Builder("ja")でTokenizerはNeologdが割り当たっている。
-            config = Configuration.Builder("ja")
+            // MEMO: Configuration.Builder("ja-JP")でTokenizerはNeologdが割り当たっている。
+            config = Configuration.Builder("ja-JP")
                 .AddValidatorConfig(new ValidatorConfiguration(validatorName))
                 .Build();
 
@@ -166,7 +166,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         public void detectSameAlphabecicalReadings()
         {
             config = Configuration
-                .Builder("ja")
+                .Builder("ja-JP")
                 .AddValidatorConfig(new ValidatorConfiguration(validatorName))
                 .Build();
 

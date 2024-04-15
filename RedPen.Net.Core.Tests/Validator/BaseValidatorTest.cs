@@ -1,5 +1,6 @@
 ﻿using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
+using RedPenTokenizerFactory = RedPen.Net.Core.Tokenizer.RedPenTokenizerFactory;
 
 namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
 {
@@ -42,7 +43,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         {
             // MEMO: Document.Builder(config.Tokenizer)の時点ですでにTokenizeが完了する。
             // configは言語設定だけでなくTokenizerの引き当てを機能に含む。
-            return Document.Builder(config.Tokenizer)
+            return Document.Builder(RedPenTokenizerFactory.CreateTokenizer(config.CultureInfo))
               .AddSection(1)
               .AddParagraph()
               .AddSentence(new Sentence(sentrence, 1))

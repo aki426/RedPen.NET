@@ -214,16 +214,16 @@ namespace RedPen.Net.Core.Validators
             // JAVA版でもこの関数内ではしていないようなので、別途実施する。
         }
 
-        // MEMO: JAVA版では@Deprecatedアノテーションを使用しているが、C#ではObsolete属性を使用する。
-        /// <summary>
-        /// Return the configuration Properties
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("This method is deprecated.")]
-        public virtual Dictionary<string, string> getConfigAttributes()
-        {
-            return config.Properties;
-        }
+        //// MEMO: JAVA版では@Deprecatedアノテーションを使用しているが、C#ではObsolete属性を使用する。
+        ///// <summary>
+        ///// Return the configuration Properties
+        ///// </summary>
+        ///// <returns></returns>
+        //[Obsolete("This method is deprecated.")]
+        //public virtual Dictionary<string, string> getConfigAttributes()
+        //{
+        //    return config.Properties;
+        //}
 
         /// <summary>
         /// Validation initialization, called after the configuration and symbol tables have been assigned
@@ -240,9 +240,11 @@ namespace RedPen.Net.Core.Validators
         private object? GetOrDefault(string name)
         {
             object? value = null;
-            if (config != null && config.Properties.ContainsKey(name))
+
+            // プロパティ名で取得できる場合は取得する。
+            if (config != null && config.GetType().GetProperty(name) != null)
             {
-                value = config.Properties[name];
+                value = config.GetType().GetProperty(name).GetValue(config);
             }
             // MEMO: 空のDictionaryやHashSetの場合、nullではないのでdefaultPropsから取得されないことに注意。
             if (value == null && defaultProps.ContainsKey(name))
@@ -300,6 +302,7 @@ namespace RedPen.Net.Core.Validators
             }
         }
 
+        // TODO: ValidatorConfigurationの構造を変更するため、この関数は不要になったタイミングで削除する。
         /// <summary>
         /// Gets the string.
         /// </summary>
@@ -307,7 +310,15 @@ namespace RedPen.Net.Core.Validators
         /// <returns>A string.</returns>
         protected string GetString(string name)
         {
-            return config.Properties.GetValueOrDefault(name, (string)defaultProps[name]);
+            // プロパティ名で取得できる場合は取得する。
+            if (config != null && config.GetType().GetProperty(name) != null)
+            {
+                return (string)config.GetType().GetProperty(name).GetValue(config);
+            }
+            else
+            {
+                return (string)defaultProps[name];
+            }
         }
 
         /// <summary>
@@ -357,9 +368,9 @@ namespace RedPen.Net.Core.Validators
         protected internal HashSet<string> GetHashSet(string name)
         {
             object value = null;
-            if (config != null && config.Properties.ContainsKey(name))
+            if (config != null && config.GetType().GetProperty(name) != null)
             {
-                value = config.Properties[name];
+                value = config.GetType().GetProperty(name).GetValue(config);
             }
             if ((value == null || ((string)value).Length == 0) && defaultProps.ContainsKey(name))
             {
@@ -390,9 +401,9 @@ namespace RedPen.Net.Core.Validators
         protected internal Dictionary<string, string>? GetDictionary(string name)
         {
             object value = null;
-            if (config != null && config.Properties.ContainsKey(name))
+            if (config != null && config.GetType().GetProperty(name) != null)
             {
-                value = config.Properties[name];
+                value = config.GetType().GetProperty(name).GetValue(config);
             }
             if ((value == null || ((string)value).Length == 0))
             {
@@ -437,9 +448,9 @@ namespace RedPen.Net.Core.Validators
         /// <returns>A string? .</returns>
         protected internal virtual string? getConfigAttribute(string name)
         {
-            if (config != null && config.Properties.ContainsKey(name))
+            if (config != null && config.GetType().GetProperty(name) != null)
             {
-                return config.Properties[name].ToString();
+                return config.GetType().GetProperty(name).GetValue(config).ToString();
             }
 
             return null;
@@ -475,20 +486,25 @@ namespace RedPen.Net.Core.Validators
         //        return parseDouble(getConfigAttribute(name, Double.toString(defaultValue)));
         //    }
 
+        // TODO: RedPen内のLang文字列表現をCultureInfo.Nameに合わせる。
+
         /// <summary>Gets the symbol table.</summary>
-        protected internal SymbolTable SymbolTable => globalConfig.SymbolTable;
+        protected internal SymbolTable SymbolTable => new SymbolTable(
+            globalConfig.CultureInfo.TwoLetterISOLanguageName,
+            globalConfig.Variant,
+            globalConfig.Symbols);
 
         // TODO: ファイルからのロード系の処理は適切なクラスから実行するように見直す。
 
-        /// <summary>
-        /// finds the file.
-        /// </summary>
-        /// <param name="relativePath">The relative path.</param>
-        /// <returns>A FileInfo.</returns>
-        protected internal FileInfo FindFile(string relativePath)
-        {
-            return globalConfig.FindFile(relativePath);
-        }
+        ///// <summary>
+        ///// finds the file.
+        ///// </summary>
+        ///// <param name="relativePath">The relative path.</param>
+        ///// <returns>A FileInfo.</returns>
+        //protected internal FileInfo FindFile(string relativePath)
+        //{
+        //    return globalConfig.FindFile(relativePath);
+        //}
 
         /// <summary>Validatorに割り当てられたエラーレベルを返す。</summary>
         protected internal ValidationLevel Level => config == null ? ValidationLevel.ERROR : config.Level;

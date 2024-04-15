@@ -20,29 +20,29 @@ namespace RedPen.Net.Core
         private readonly SentenceExtractor sentenceExtractor;
         private readonly List<Validator> validators;
 
-        /// <summary>
-        /// constructs RedPen with specified config file.
-        /// </summary>
-        /// <param name="configFile">config file</param>
-        /// <exception cref="RedPenException">when failed to construct RedPen</exception>
-        public RedPen(FileInfo configFile)
-        {
-            this.configuration = new ConfigurationLoader().Load(configFile);
-            this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
-            this.validators = new List<Validator>();
-        }
+        ///// <summary>
+        ///// constructs RedPen with specified config file.
+        ///// </summary>
+        ///// <param name="configFile">config file</param>
+        ///// <exception cref="RedPenException">when failed to construct RedPen</exception>
+        //public RedPen(FileInfo configFile)
+        //{
+        //    this.configuration = new ConfigurationLoader().Load(configFile);
+        //    this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
+        //    this.validators = new List<Validator>();
+        //}
 
-        /// <summary>
-        /// constructs RedPen with specified config file path.
-        /// </summary>
-        /// <param name="configPath">config file path</param>
-        /// <exception cref="RedPenException">when failed to construct RedPen</exception>
-        public RedPen(string configPath)
-        {
-            this.configuration = new ConfigurationLoader().LoadFromResource(configPath);
-            this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
-            this.validators = new List<Validator>();
-        }
+        ///// <summary>
+        ///// constructs RedPen with specified config file path.
+        ///// </summary>
+        ///// <param name="configPath">config file path</param>
+        ///// <exception cref="RedPenException">when failed to construct RedPen</exception>
+        //public RedPen(string configPath)
+        //{
+        //    this.configuration = new ConfigurationLoader().LoadFromResource(configPath);
+        //    this.sentenceExtractor = new SentenceExtractor(configuration.SymbolTable);
+        //    this.validators = new List<Validator>();
+        //}
 
         /// <summary>
         /// constructs RedPen with specified configuration.
@@ -64,7 +64,7 @@ namespace RedPen.Net.Core
         {
             ValidationLevel threshold = (ValidationLevel)Enum.Parse(typeof(ValidationLevel), thresholdStr.ToUpper());
             validators.Clear();
-            foreach (ValidatorConfiguration config in configuration.ValidatorConfigs)
+            foreach (ValidatorConfiguration config in configuration.ValidatorConfigurations)
             {
                 try
                 {
@@ -80,46 +80,46 @@ namespace RedPen.Net.Core
             }
         }
 
-        /// <summary>
-        /// parse given input stream.
-        /// </summary>
-        /// <param name="parser">DocumentParser parser</param>
-        /// <param name="inputStream">content to parse</param>
-        /// <returns>parsed document</returns>
-        /// <exception cref="RedPenException">when failed to parse input stream</exception>
-        public Document Parse(IDocumentParser parser, Stream inputStream)
-        {
-            return parser.Parse(inputStream, sentenceExtractor, configuration.Tokenizer);
-        }
+        ///// <summary>
+        ///// parse given input stream.
+        ///// </summary>
+        ///// <param name="parser">DocumentParser parser</param>
+        ///// <param name="inputStream">content to parse</param>
+        ///// <returns>parsed document</returns>
+        ///// <exception cref="RedPenException">when failed to parse input stream</exception>
+        //public Document Parse(IDocumentParser parser, Stream inputStream)
+        //{
+        //    return parser.Parse(inputStream, sentenceExtractor, configuration.Tokenizer);
+        //}
 
-        /// <summary>
-        /// parse given content.
-        /// </summary>
-        /// <param name="parser">DocumentParser parser</param>
-        /// <param name="content">content to parse</param>
-        /// <returns>parsed document</returns>
-        /// <exception cref="RedPenException">when failed to parse input stream</exception>
-        public Document Parse(IDocumentParser parser, string content)
-        {
-            return parser.Parse(content, sentenceExtractor, configuration.Tokenizer);
-        }
+        ///// <summary>
+        ///// parse given content.
+        ///// </summary>
+        ///// <param name="parser">DocumentParser parser</param>
+        ///// <param name="content">content to parse</param>
+        ///// <returns>parsed document</returns>
+        ///// <exception cref="RedPenException">when failed to parse input stream</exception>
+        //public Document Parse(IDocumentParser parser, string content)
+        //{
+        //    return parser.Parse(content, sentenceExtractor, configuration.Tokenizer);
+        //}
 
-        /// <summary>
-        /// parse given files.
-        /// </summary>
-        /// <param name="parser">DocumentParser parser</param>
-        /// <param name="files">files to parse</param>
-        /// <returns>parsed documents</returns>
-        /// <exception cref="RedPenException">when failed to parse input stream</exception>
-        public List<Document> Parse(IDocumentParser parser, FileInfo[] files)
-        {
-            List<Document> documents = new List<Document>();
-            foreach (FileInfo file in files)
-            {
-                documents.Add(parser.Parse(file, sentenceExtractor, configuration.Tokenizer));
-            }
-            return documents;
-        }
+        ///// <summary>
+        ///// parse given files.
+        ///// </summary>
+        ///// <param name="parser">DocumentParser parser</param>
+        ///// <param name="files">files to parse</param>
+        ///// <returns>parsed documents</returns>
+        ///// <exception cref="RedPenException">when failed to parse input stream</exception>
+        //public List<Document> Parse(IDocumentParser parser, FileInfo[] files)
+        //{
+        //    List<Document> documents = new List<Document>();
+        //    foreach (FileInfo file in files)
+        //    {
+        //        documents.Add(parser.Parse(file, sentenceExtractor, configuration.Tokenizer));
+        //    }
+        //    return documents;
+        //}
 
         /// <summary>
         /// validate the input document collection. Note that this method call is NOT thread safe. RedPen instances need to be crated for each thread.

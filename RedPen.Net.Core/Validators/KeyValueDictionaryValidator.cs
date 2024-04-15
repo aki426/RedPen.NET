@@ -63,9 +63,9 @@ namespace RedPen.Net.Core.Validators
             if (!string.IsNullOrEmpty(confFile))
             {
                 // TODO: 次の行が何らかの副作用を期待したものだとすると、期待した挙動にならない可能性があるのでテストケースで検証する。こと。
-                GetDictionary("map").Update(loader.LoadCachedFromFile(
-                    FindFile(confFile),
-                    this.GetType().Name + " user dictionary"));
+                //GetDictionary("map").Update(loader.LoadCachedFromFile(
+                //    FindFile(confFile),
+                //    this.GetType().Name + " user dictionary"));
             }
         }
 

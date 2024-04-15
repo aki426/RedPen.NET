@@ -28,7 +28,8 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             this.output = output;
 
             validator.PreInit(
-                new ValidatorConfiguration("SentenceLength").AddProperty("max_len", "30"),
+                new SentenceLengthConfiguration(ValidationLevel.ERROR, 30),
+                // new ValidatorConfiguration("SentenceLength") { } ,
                 Configuration.Builder().Build());
         }
 

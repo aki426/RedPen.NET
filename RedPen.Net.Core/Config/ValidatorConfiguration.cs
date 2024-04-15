@@ -1,9 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace RedPen.Net.Core.Config
 {
+    /// <summary>
+    /// RedPenConfigファイル内のValidatorの設定1つ分に相当するConfigurationを表現するための基底クラス。
+    /// </summary>
+    /// <param name="Level"></param>
     public record ValidatorConfiguration(ValidationLevel Level = ValidationLevel.OFF)
     {
         /// <summary>
@@ -11,8 +13,20 @@ namespace RedPen.Net.Core.Config
         /// </summary>
         /// <param name="level">ValidationLevelのテキスト表現</param>
         public ValidatorConfiguration(string level) : this(ValidationLevelExtend.ConvertFrom(level)) { }
+    }
 
-        // public string GetValidatorClassName() => ConfigurationName + "Validator";
+    /// <summary>ValidatorConfigurationの継承クラスがMaxLengthプロパティを持つことを示すインターフェース。</summary>
+    public interface IMaxLengthConfigParameter
+    {
+        /// <summary>何らかの最長数を表すConfigurationパラメータ。</summary>
+        public int MaxLength { get; init; }
+    }
+
+    /// <summary>ValidatorConfigurationの継承クラスがWordMapプロパティを持つことを示すインターフェース。</summary>
+    public interface IWordMapConfigParameter
+    {
+        /// <summary>何らかの単語のマッピング（辞書）を表すConfigurationパラメータ。</summary>
+        public Dictionary<string, string> WordMap { get; init; }
     }
 
     ///// <summary>
