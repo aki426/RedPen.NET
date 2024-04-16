@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using NLog;
 
 namespace RedPen.Net.Core.Config
@@ -32,6 +33,14 @@ namespace RedPen.Net.Core.Config
         /// <summary>charからSymbolを引くDictionary。</summary>
         public ImmutableDictionary<char, Symbol> CharValueDictionary { get; init; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SymbolTable"/> class.
+        /// </summary>
+        /// <param name="cultureInfo">The culture info.</param>
+        /// <param name="variant">The variant.</param>
+        /// <param name="customSymbols">デフォルトシンボルに対して追加設定したいSymbol</param>
+        public SymbolTable(CultureInfo cultureInfo, string variant, List<Symbol> customSymbols) : this(cultureInfo.Name, variant, customSymbols) { }
+
         // TODO: DefaultSymbolLoaderに依存した実装ではなく、DefaultSymbolをコンストラクタ引数として渡す実装を検討する。
         // その場合SymbolTableがLangとVariantを持つ意味が無くなるため削除してもよい。
         /// <summary>
@@ -53,6 +62,7 @@ namespace RedPen.Net.Core.Config
             {
                 typeDictBuilder.Add(symbol.Type, symbol);
                 // よく考えたらSymbolTypeは一意性があるが、char型の文字は複数のSymbolで同じものが使われているのでDictionaryで表現できない。
+                // TODO: ImmutableDictionary<char, List<Symbol>>への変更を検討する。
                 charDictBuilder[symbol.Value] = symbol;
             }
             foreach (Symbol symbol in customSymbols)

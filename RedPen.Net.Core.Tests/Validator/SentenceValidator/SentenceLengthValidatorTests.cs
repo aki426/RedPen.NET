@@ -17,7 +17,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
     /// </summary>
     public class SentenceLengthValidatorTests
     {
-        private SentenceLengthValidator validator;// = new SentenceLengthValidator();
+        private SentenceLengthValidator validator;
         private readonly ITestOutputHelper output;
 
         /// <summary>
@@ -27,19 +27,27 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         {
             this.output = output;
 
-            var sentenceLengthConfiguration = new SentenceLengthConfiguration(ValidationLevel.ERROR, 30);
+            // あるValidatorを実行するために必要な最低限の設定は次の通り。
 
-            // Configuration
-            var config = Configuration.Builder("en-US")
-                .AddValidatorConfig(sentenceLengthConfiguration)
-                .Build();
+            // 1. 基本パラメータ
+            CultureInfo cultureInfo = new CultureInfo("en-US");
+            string variant = "";
+            ValidationLevel level = ValidationLevel.ERROR;
 
+            // 2. ValidatorConfiguration
+            SentenceLengthConfiguration validatorConfiguration = new SentenceLengthConfiguration(level, 30);
+
+            // 3. SymbolTable
+            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルによるSymbolTableが生成される。
+            SymbolTable symbolTable = new SymbolTable(cultureInfo, variant, new List<Symbol>());
+
+            // 4. validator
             validator = new SentenceLengthValidator(
-                ValidationLevel.ERROR,
-                config.CultureInfo,
+                level,
+                cultureInfo,
                 ValidationMessage.ResourceManager,
-                config.SymbolTable,
-                sentenceLengthConfiguration);
+                symbolTable,
+                validatorConfiguration);
         }
 
         /// <summary>

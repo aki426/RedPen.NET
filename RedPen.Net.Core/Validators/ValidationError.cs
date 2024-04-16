@@ -6,9 +6,7 @@ using RedPen.Net.Core.Parser;
 namespace RedPen.Net.Core.Validators
 {
     // TODO: recordか何かで書き直すことを検討する。
-    [Serializable]
-    [ToString]
-    public class ValidationError
+    public record ValidationError
     {
         public string Message { get; init; }
         public string ValidationName { get; init; }

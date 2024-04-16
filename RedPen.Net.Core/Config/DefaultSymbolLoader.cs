@@ -24,7 +24,7 @@ namespace RedPen.Net.Core.Config
         /// <summary>cultureInfoとvariantの設定に応じてデフォルトシンボルのDictionaryを取得する。</summary>
         public ImmutableDictionary<SymbolType, Symbol> GetSymbolDictionary(CultureInfo cultureInfo, string variant)
         {
-            return GetSymbolDictionary(cultureInfo.TwoLetterISOLanguageName, variant);
+            return GetSymbolDictionary(cultureInfo.Name, variant);
         }
 
         /// <summary>lang文字列とvariantの設定に応じてデフォルトシンボルのDictionaryを取得する。</summary>

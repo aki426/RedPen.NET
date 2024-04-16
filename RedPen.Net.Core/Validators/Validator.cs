@@ -49,7 +49,7 @@ namespace RedPen.Net.Core.Validators
         public CultureInfo Lang { get; init; }
 
         /// <summary>多言語対応のためのエラーメッセージリソースマネージャ</summary>
-        private ResourceManager errorMessages { get; init; }
+        public ResourceManager errorMessages { get; init; }
 
         // MEMO: ValidatorConfigurationはValidatorクラスそのものには実装せず、
         // 継承先の具象クラスとしての個別のValidatorクラスでプロパティとして実装しコンストラクタからDIする。
