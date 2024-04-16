@@ -2,8 +2,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NLog;
-using RedPen.Net.Core.Validators.DocumentValidator;
-using RedPen.Net.Core.Validators.SentenceValidator;
 
 namespace RedPen.Net.Core.Config
 {
@@ -93,23 +91,35 @@ namespace RedPen.Net.Core.Config
 
                 // NOTE: Nameプロパティの値で型指定されているのでそれを元に型を決定する。
                 // NOTE: 型情報がはっきりした時点でDeserializeを呼び出してオブジェクト読み込みを簡単化する。
-                // TODO: 「ペイロードが独自の型情報を指定できるようにすることは、Webアプリケーションの脆弱性の一般的な原因」
-                // になりうるため、あらかじめ型指定文字列を変換してよい型かどうかをチェックするDictionaryなどが必要になる。
 
-                var typeName = readerClone.GetString();
-                ValidatorConfiguration conf = typeName switch
+                // ValidationName文字列に対応したクラスのTypeオブジェクトを取得する。
+                string? typeName = readerClone.GetString();
+                if (typeName == null)
                 {
-                    // switch式でベタ指定しているが、あらかじめValidatorConfiguration継承型をリストアップした
-                    // Dictionary<string, Type>を作成しておくとよい。
-                    "SentenceLength" => JsonSerializer.Deserialize<SentenceLengthConfiguration>(ref reader, optionForNoLoop)!,
-                    "JapaneseExpressionVariation" => JsonSerializer.Deserialize<JapaneseExpressionVariationConfiguration>(ref reader, optionForNoLoop)!,
-                    _ => throw new JsonException()
-                };
+                    throw new JsonException($"Loaded configuration name is null.");
+                }
+
+                // NOTE: 「ペイロードが独自の型情報を指定できるようにすることは、Webアプリケーションの脆弱性の一般的な原因」
+                // になりうるため、Enum型のValidationTypeにアセンブリ内に実在するConfigurationとValidatorのみを指定できる機能を付加している。
+
+                // ConvertFromは対応するValidationTypeが存在しない場合は例外が発生する。
+                ValidationType validationType = ValidationTypeExtend.ConvertFrom(typeName);
+                Type? type = validationType.TypeOfConfigurationClass();
+                if (type == null)
+                {
+                    throw new JsonException($"No such a ValidationType as {typeName}");
+                }
+
+                ValidatorConfiguration? conf = JsonSerializer.Deserialize(ref reader, type, optionForNoLoop) as ValidatorConfiguration;
+                if (conf == null)
+                {
+                    throw new JsonException($"Deserialized {validationType.ConfigurationName()} is null.");
+                }
 
                 return conf;
             }
 
-            // Convertersを調整しないと、何回もValidatorConfigurationConverterが呼ばれて無限ループになってしまうため。
+            // Convertersを調整しないと何回もValidatorConfigurationConverterが呼ばれて無限ループになってしまうため必要。
             private static JsonSerializerOptions optionForNoLoop = new JsonSerializerOptions
             {
                 // MEMO: Enumを文字列へ変換し、フォーマットはCamelCaseにする。
@@ -138,14 +148,27 @@ namespace RedPen.Net.Core.Config
                 writer.WriteString("Level", conf.Level.ToString());
 
                 // ValidatorConfiguration.csに定義されたどのInterface型を継承しているかによってプロパティを特定する。
+                // TODO: ValidatorConfiguration向けのプロパティ用Interfaceを追加した場合はここに書き出しロジックを追加する。
                 if (conf is IMaxLengthConfigParameter maxLengthConf)
                 {
                     writer.WriteNumber("MaxLength", maxLengthConf.MaxLength);
                 }
-                else if (conf is IWordMapConfigParameter wordMapConf)
+
+                if (conf is IWordMapConfigParameter wordMapConf)
                 {
                     writer.WritePropertyName("WordMap");
                     JsonSerializer.Serialize(writer, wordMapConf.WordMap, wordMapConf.WordMap.GetType(), options);
+                }
+
+                if (conf is IWordListConfigParameter wordListConf)
+                {
+                    writer.WritePropertyName("WordList");
+                    JsonSerializer.Serialize(writer, wordListConf.WordList, wordListConf.WordList.GetType(), options);
+                }
+
+                if (conf is IMaxNumberConfigParameter maxNumberConf)
+                {
+                    writer.WriteNumber("MaxNumber", maxNumberConf.MaxNumber);
                 }
 
                 writer.WriteEndObject();

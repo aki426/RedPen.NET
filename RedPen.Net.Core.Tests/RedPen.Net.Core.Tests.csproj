@@ -60,6 +60,7 @@
     <Compile Include="Config\OrderedDictionaryTests.cs" />
     <Compile Include="Config\SymbolTests.cs" />
     <Compile Include="Config\SymbolTypeTests.cs" />
+    <Compile Include="Config\ValidationTypeTests.cs" />
     <Compile Include="Config\ValidatorConfigurationTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\DocumentCollectionTest.cs" />
