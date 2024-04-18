@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using FluentAssertions;
-using RedPen.Net.Core;
 using RedPen.Net.Core.Config;
+using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
-using RedPen.Net.Core.Validators;
 using RedPen.Net.Core.Validators.SentenceValidator;
 using Xunit;
 using Xunit.Abstractions;
@@ -81,42 +81,62 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             // ValidatorConfiguration
             var validatorConfiguration = new InvalidExpressionConfiguration(ValidationLevel.ERROR, invalidWords);
 
-            // Configuration
-            var config = Configuration.Builder("ja-JP")
-                .AddValidatorConfig(validatorConfiguration)
-                .Build();
-
             // Document
-            Document document = Document.Builder(RedPenTokenizerFactory.CreateTokenizer(config.CultureInfo))
-                .AddSection(1)
-                .AddParagraph()
-                .AddSentence(new Sentence("明日地球が滅亡するってマジですか。", 1))
-                .Build();
+            CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
+            Document document = Document.Builder(
+                RedPenTokenizerFactory.CreateTokenizer(CultureInfo.GetCultureInfo("ja-JP")))
+                    .AddSection(1)
+                    .AddParagraph()
+                    .AddSentence(new Sentence("オワタ。明日地球が滅亡するってマジですか。", 1))
+                    .Build(); // TokenizeをBuild時に実行する。
 
             document.Sections[0].Paragraphs[0].Sentences[0].Tokens.ForEach(token =>
             {
                 output.WriteLine(token.ToString());
             });
 
+            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
+            SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
+
             // Validator
             var invalidExpressionValidator = new InvalidExpressionValidator(
                 ValidationLevel.ERROR,
-                config.CultureInfo,
-                ValidationMessage.ResourceManager,
-                config.SymbolTable,
+                documentLang,
+                symbolTable,
                 validatorConfiguration);
 
             invalidExpressionValidator.PreValidate(document.Sections[0].Paragraphs[0].Sentences[0]);
             var errors = invalidExpressionValidator.Validate(document.Sections[0].Paragraphs[0].Sentences[0]);
 
-            errors.Count.Should().Be(1);
+            errors.Count.Should().Be(2);
 
-            //output.WriteLine(errors[0].Message);
-            output.WriteLine(errors[0].Type.ToString());
-            output.WriteLine(errors[0].Sentence.Content);
-            output.WriteLine(errors[0].LineNumber.ToString());
+            // InvalidExpressionの場合、エラーの検出はWordListに入っている不正表現順に行われるので、エラーの順番もその順番で出力される。
+            // TODO: 出力順が重要な場合はStartPositionなどでソートする必要がある。
+            output.WriteLine(errors[0].ToString());
+            output.WriteLine(errors[1].ToString());
 
-            //errors[0].Message.Should().Be("不正な表現 \"マジですか\" がみつかりました。");
+            // 7. エラーメッセージを生成する。
+            var manager = ErrorMessageManager.GetInstance();
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("Found invalid expression \"オワタ\".");
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("不正な表現 \"オワタ\" が見つかりました。");
+
+            manager.GetErrorMessage(
+                errors[1],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("Found invalid expression \"マジですか\".");
+
+            manager.GetErrorMessage(
+                errors[1],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("不正な表現 \"マジですか\" が見つかりました。");
         }
 
         //[Fact]

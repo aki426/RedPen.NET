@@ -46,10 +46,10 @@ namespace RedPen.Net.Core.Validators
         public ValidationLevel Level { get; set; }
 
         /// <summary>このValidatorが出力するErrorMessageの言語設定。</summary>
-        public CultureInfo Lang { get; init; }
+        //public CultureInfo Lang { get; init; }
 
-        /// <summary>多言語対応のためのエラーメッセージリソースマネージャ</summary>
-        public ResourceManager errorMessages { get; init; }
+        ///// <summary>多言語対応のためのエラーメッセージリソースマネージャ</summary>
+        //public ResourceManager errorMessages { get; init; }
 
         // MEMO: ValidatorConfigurationはValidatorクラスそのものには実装せず、
         // 継承先の具象クラスとしての個別のValidatorクラスでプロパティとして実装しコンストラクタからDIする。
@@ -66,21 +66,21 @@ namespace RedPen.Net.Core.Validators
 
         protected Validator(
             ValidationLevel level,
-            CultureInfo lang,
-            ResourceManager errorMessages,
+            CultureInfo documentLang,
+            //ResourceManager errorMessages,
             SymbolTable symbolTable)
         {
             Level = level;
-            Lang = lang;
-            this.errorMessages = errorMessages;
+            //Lang = lang;
+            //this.errorMessages = errorMessages;
             SymbolTable = symbolTable;
 
             // サポート対象言語チェック。
             if (SupportedLanguages.Any())
             {
-                if (!SupportedLanguages.Contains(lang.Name))
+                if (!SupportedLanguages.Contains(documentLang.Name))
                 {
-                    throw new InvalidOperationException($"{this.ValidationName} don't support the language: {lang.Name}");
+                    throw new InvalidOperationException($"{this.ValidationName} don't support the language: {documentLang.Name}");
                 }
             }
         }

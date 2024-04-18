@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Resources;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 
@@ -13,14 +12,13 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
         public InvalidExpressionValidator(
             ValidationLevel level,
-            CultureInfo lang,
-            ResourceManager errorMessages,
+            CultureInfo documentLangForTest,
             SymbolTable symbolTable,
             InvalidExpressionConfiguration config) :
             base(
                 level,
-                lang,
-                errorMessages,
+                documentLangForTest,
+                //errorMessages,
                 symbolTable)
         {
             this.Config = config;
@@ -54,7 +52,14 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
                     // マッチしたInvalid Expressionの全文字位置を登録する。
                     int matchEndPosition = matchStartPosition + invalidWord.Length;
-                    //result.Add(GetLocalizedErrorWithPosition(sentence, new object[] { invalidWord }, matchStartPosition, matchEndPosition));
+                    result.Add(
+                        new ValidationError(
+                            ValidationType.InvalidExpression,
+                            this.Level,
+                            sentence,
+                            matchStartPosition,
+                            matchEndPosition,
+                            MessageArgs: new object[] { invalidWord }));
 
                     // next loop
                     offset = matchEndPosition;

@@ -60,7 +60,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             base(
                 config.Level,
                 lang,
-                errorMessages,
+                //errorMessages,
                 symbolTable)
         {
             this.Config = config;

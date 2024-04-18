@@ -19,7 +19,7 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
             CommaNumberConfiguration config) :
             base(config.Level,
                 lang,
-                errorMessages,
+                //errorMessages,
                 symbolTable)
         {
             this.Config = config;
