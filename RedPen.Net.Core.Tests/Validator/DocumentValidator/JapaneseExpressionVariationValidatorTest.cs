@@ -70,12 +70,19 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                 RedPenTokenizerFactory.CreateTokenizer(documentLang))
                     .AddSection(1)
                     .AddParagraph()
-                    .AddSentence(new Sentence("之は山です。これは川です。", 1))
+                    .AddSentence(new Sentence("之は山です。これは川です。これはヴェトナムの地図です。", 1))
+                    .AddSentence(new Sentence("之も之も海です。", 2))
+                    .AddSentence(new Sentence("ヴェトナム大使館にはベトナム人の大使とベトナム人の職員が常駐しています。", 3))
                     .Build(); // TokenizeをBuild時に実行する。
 
             document.Sections[0].Paragraphs[0].Sentences[0].Tokens.ForEach(token =>
             {
                 output.WriteLine(token.ToString());
+            });
+
+            document.Sections[0].Paragraphs[0].Sentences.ForEach(sentence =>
+            {
+                output.WriteLine(sentence.Content);
             });
 
             // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
@@ -92,7 +99,15 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
-            errors.Count().Should().Be(1);
+            errors.Count().Should().Be(3);
+
+            errors.ForEach(e =>
+            {
+                foreach (object arg in e.MessageArgs)
+                {
+                    output.WriteLine(arg.ToString());
+                }
+            });
 
             // 7. エラーメッセージを生成する。
             var manager = ErrorMessageManager.GetInstance();
@@ -100,12 +115,32 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found possible Japanese word variations for \"之\", \"これ(名詞)\" at (L1,6)");
+                    .Should().Be("Found possible Japanese word variations for \"之\", \"これ(名詞)\" at (L1,6), (L1,13)");
 
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("ja-JP"))
-                    .Should().Be("\"之\" は \"これ(名詞)\"（出現位置：(L1,6)）の揺らぎ表現と考えられます。");
+                    .Should().Be("\"之\" は \"これ(名詞)\"（出現位置：(L1,6), (L1,13)）の揺らぎ表現と考えられます。");
+
+            manager.GetErrorMessage(
+                errors[1],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("Found possible Japanese word variations for \"ヴェトナム\", \"ベトナム(名詞)\" at (L3,10), (L3,19)");
+
+            manager.GetErrorMessage(
+                errors[1],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("\"ヴェトナム\" は \"ベトナム(名詞)\"（出現位置：(L3,10), (L3,19)）の揺らぎ表現と考えられます。");
+
+            manager.GetErrorMessage(
+                errors[2],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("Found possible Japanese word variations for \"大使館\", \"ヴェトナム大使館(名詞)\" at (L3,0)");
+
+            manager.GetErrorMessage(
+                errors[2],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("\"大使館\" は \"ヴェトナム大使館(名詞)\"（出現位置：(L3,0)）の揺らぎ表現と考えられます。");
         }
 
         //[Fact]
