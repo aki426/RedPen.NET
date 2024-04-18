@@ -117,196 +117,196 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="UnexpandedAcronymValidator.UnexpandedAcronym" xml:space="preserve">
-    <value>省略 "{0}"、の正式な表現が入力文書に存在しません。</value>
+  <data name="CommaNumber" xml:space="preserve">
+    <value>カンマの数（{0}）が最大値（{1}）を超えています。</value>
   </data>
-  <data name="FrequentSentenceStartValidator.SentenceStartTooFrequent" xml:space="preserve">
-    <value>{0}% の文が "{1}" からはじまっています。</value>
+  <data name="Contraction" xml:space="preserve">
+    <value>省略語 "{0}" が見つかりました。</value>
   </data>
-  <data name="WordFrequencyValidator.WordUsedTooFrequently" xml:space="preserve">
-    <value>単語 "{0}" の利用率が {1}% です。この単語の使用率は "{2}" 程度が望ましいです。</value>
+  <data name="DoubledConjunctiveParticleGa" xml:space="preserve">
+    <value>一文中複数回使用されている逆説の接続助詞 "{0}" が見つかりました。</value>
   </data>
-  <data name="GappedSectionValidator" xml:space="preserve">
-    <value>節 "{0}" （レベル {1}）の配置が正しくありません。レベル {2} である必要があります。</value>
+  <data name="DoubledJoshi" xml:space="preserve">
+    <value>一文中で二回以上使用されている助詞 "{0}" が見つかりました。</value>
   </data>
-  <data name="JapaneseExpressionVariationValidator" xml:space="preserve">
-    <value>単語 ”{0}” の揺らぎと考えられる表現 ”{1}” が {2}　で見つかりました。</value>
+  <data name="DoubledWord" xml:space="preserve">
+    <value>一文中で二回以上使用されている単語 "{0}" が見つかりました。</value>
   </data>
-  <data name="SectionLengthValidator" xml:space="preserve">
-    <value>セクション内の文字数が最大の"{1}"を超えています（{0}）</value>
+  <data name="DoubleNegative" xml:space="preserve">
+    <value>二重否定表現 "{0}" が見つかりました。</value>
   </data>
-  <data name="ParagraphNumberValidator" xml:space="preserve">
-    <value>セクション内のパラグラフ数が最大の"{0}"を超えています</value>
+  <data name="DuplicatedSection" xml:space="preserve">
+    <value>類似する節（ {0} 行目から開始）が見つかりました。</value>
   </data>
-  <data name="ParagraphStartWithValidator" xml:space="preserve">
-    <value>パラグラフの開始部分が不正です "{0}"</value>
+  <data name="EmptySection" xml:space="preserve">
+    <value>中身の存在しない節 "{0}" が見つかりました。</value>
   </data>
-  <data name="DuplicatedSectionValidator" xml:space="preserve">
-    <value>類似する節（"{0}"行目から開始）が見つかりました</value>
+  <data name="EndOfSentence" xml:space="preserve">
+    <value>不正な文末表現 "{0}" が見つかりました。</value>
   </data>
-  <data name="SectionLevelValidator" xml:space="preserve">
-    <value>節"{0}"のレベルが深すぎます</value>
+  <data name="FrequentSentenceStart_SentenceStartTooFrequent" xml:space="preserve">
+    <value>"{0}" から始まる文が全体の {1}% 存在しています。</value>
   </data>
-  <data name="VoidSectionValidator" xml:space="preserve">
-    <value>節の内容が空です。</value>
+  <data name="GappedSection" xml:space="preserve">
+    <value>節 "{0}" （レベル {1}）の配置が不正です。レベル {2} へ再配置してください。</value>
   </data>
-  <data name="EmptySectionValidator" xml:space="preserve">
-    <value>節 "{0}" に中身がありません。</value>
+  <data name="HankakuKana" xml:space="preserve">
+    <value>半角カナ文字 "{0}" が見つかりました。</value>
   </data>
-  <data name="HeaderLengthValidator" xml:space="preserve">
-    <value>見出し長（"{0}"）が最大値 "{1}" を超えています。</value>
+  <data name="HeaderLength" xml:space="preserve">
+    <value>見出しの長さ（{0}）が最大値（{1}）を超えています。</value>
   </data>
-  <data name="ListLevelValidator" xml:space="preserve">
+  <data name="Hyphenation_HyphenatedInDictionary" xml:space="preserve">
+    <value>"{0}" はハイフンを用いた表現 "{1}" を使用してください。</value>
+  </data>
+  <data name="InvalidExpression" xml:space="preserve">
+    <value>不正な表現 "{0}" が見つかりました。</value>
+  </data>
+  <data name="InvalidSymbol" xml:space="preserve">
+    <value>不正なシンボル "{0}" が見つかりました。</value>
+  </data>
+  <data name="InvalidWord" xml:space="preserve">
+    <value>不正な単語 "{0}" が見つかりました。</value>
+  </data>
+  <data name="JapaneseAmbiguousNounConjunction" xml:space="preserve">
+    <value>助詞「の」が連続する曖昧な名詞接続のパターン "{0}" が見つかりました。</value>
+  </data>
+  <data name="JapaneseAnchorExpression" xml:space="preserve">
+    <value>不正な章節アンカー "{0}" が見つかりました。</value>
+  </data>
+  <data name="JapaneseBrokenExpression" xml:space="preserve">
+    <value>ら抜き言葉 "{0}" が見つかりました。</value>
+  </data>
+  <data name="JapaneseExpressionVariation" xml:space="preserve">
+    <value>"{0}" は "{1}"（出現位置：{2}）の揺らぎ表現と考えられます。</value>
+  </data>
+  <data name="JapaneseJoyoKanji" xml:space="preserve">
+    <value>常用漢字ではない漢字 "{0}" が見つかりました。</value>
+  </data>
+  <data name="JapaneseNumberExpression" xml:space="preserve">
+    <value>不正な計数表現 "{0}" が見つかりました。</value>
+  </data>
+  <data name="JapaneseStyle" xml:space="preserve">
+    <value>不正な日本語のスタイル "{0}" が見つかりました。</value>
+  </data>
+  <data name="KatakanaEndHyphen" xml:space="preserve">
+    <value>不正なハイフンを含むカタカナ単語 "{0}" が見つかりました。</value>
+  </data>
+  <data name="KatakanaSpellCheck" xml:space="preserve">
+    <value>カタカナ単語 "{0}" に類似する単語 "{1}" が {2} 行目で見つかりました。</value>
+  </data>
+  <data name="ListLevel" xml:space="preserve">
     <value>リストのレベルが深すぎます。</value>
   </data>
-  <data name="CommaNumberValidator" xml:space="preserve">
-    <value>カンマの数 ({0}) が最大の "{1}" を超えています。</value>
+  <data name="LongKanjiChain" xml:space="preserve">
+    <value>長すぎる熟語 "{0}"（{1} 文字） が見つかりました。</value>
   </data>
-  <data name="ContractionValidator" xml:space="preserve">
-    <value>省略形 "{0}" が見つかりました。</value>
+  <data name="NumberFormat_TooManyDecimals" xml:space="preserve">
+    <value>数値表現 "{0}" の小数点記号が多すぎます。</value>
   </data>
-  <data name="EndOfSentenceValidator" xml:space="preserve">
-    <value>文末表現が不正 "{0}" です。</value>
+  <data name="NumberFormat_UndelimitedSequenceTooLong" xml:space="preserve">
+    <value>数値表現 "{0}" のデリミタが不正です。三桁ごとにデリミタが必要です。</value>
   </data>
-  <data name="InvalidExpressionValidator" xml:space="preserve">
-    <value>不正な表現 "{0}" がみつかりました。</value>
+  <data name="NumberFormat_UndelimitedSequenceTooShort" xml:space="preserve">
+    <value>数値表現 "{0}" のデリミタの位置が不正です。</value>
   </data>
-  <data name="InvalidSymbolValidator" xml:space="preserve">
-    <value>不正なシンボル "{0}" がみつかりました。</value>
+  <data name="Okurigana" xml:space="preserve">
+    <value>不正な送り仮名 "{0}" が見つかりました。</value>
   </data>
-  <data name="InvalidWordValidator" xml:space="preserve">
-    <value>不正な単語 "{0}" がみつかりました。</value>
+  <data name="ParagraphNumber" xml:space="preserve">
+    <value>セクション内のパラグラフ数（{0}）が最大値（{1}）を超えています。</value>
   </data>
-  <data name="KatakanaEndHyphenValidator" xml:space="preserve">
-    <value>カタカナ単語 "{0}" に不正なハイフンが見つかりました。</value>
+  <data name="ParagraphStartWith" xml:space="preserve">
+    <value>不正なパラグラフ開始部分 "{0}" が見つかりました。</value>
   </data>
-  <data name="KatakanaSpellCheckValidator" xml:space="preserve">
-    <value>カタカナ単語 "{0}" に類似する単語 "{1}" が行 "{2}" でみつかりました。</value>
-  </data>
-  <data name="SentenceLengthValidator" xml:space="preserve">
-    <value>文長（"{0}"）が最大値 "{1}" を超えています。</value>
-  </data>
-  <data name="SpaceBeginningOfSentenceValidator" xml:space="preserve">
-    <value>文頭にスペースが存在しません。</value>
-  </data>
-  <data name="SpellingValidator" xml:space="preserve">
-    <value>ミススペルの可能性がある単語 "{0}" がみつかりました。</value>
-  </data>
-  <data name="StartWithCapitalLetterValidator" xml:space="preserve">
-    <value>文の開始が小文字 "{0}" です。</value>
-  </data>
-  <data name="SuggestExpressionValidator" xml:space="preserve">
-    <value>不正な単語 "{0}" がみつかりました．かわりに "{1}" を利用してください。</value>
-  </data>
-  <data name="WordNumberValidator" xml:space="preserve">
-    <value>一文に存在する単語数 ({0}) が最大値 "{1}" を超えています．。</value>
-  </data>
-  <data name="QuotationValidator.DoubleRight" xml:space="preserve">
-    <value>右クォートが二つ続いています。</value>
-  </data>
-  <data name="QuotationValidator.DoubleLeft" xml:space="preserve">
-    <value>左クォートが二つ続いています。</value>
-  </data>
-  <data name="QuotationValidator.RightSpace" xml:space="preserve">
-    <value>右クォート横にスペースがありません。</value>
-  </data>
-  <data name="QuotationValidator.LeftSpace" xml:space="preserve">
-    <value>左クォート横にスペースがりません。</value>
-  </data>
-  <data name="QuotationValidator.RightExist" xml:space="preserve">
-    <value>右クォートが存在しません。</value>
-  </data>
-  <data name="QuotationValidator.LeftExist" xml:space="preserve">
-    <value>左クォートが存在しません。</value>
-  </data>
-  <data name="SpaceBetweenAlphabeticalWordValidator.Before" xml:space="preserve">
-    <value>アルファベット単語の前にスペースが存在しません。</value>
-  </data>
-  <data name="SpaceBetweenAlphabeticalWordValidator.After" xml:space="preserve">
-    <value>アルファベット単語の後にスペースが存在しません。</value>
-  </data>
-  <data name="SpaceBetweenAlphabeticalWordValidator.Forbidden" xml:space="preserve">
-    <value>単語 "{0}" の周囲にスペースが入っています。</value>
-  </data>
-  <data name="SymbolWithSpaceValidator.Before" xml:space="preserve">
-    <value>シンボルの前にスペースが必要です ({0})。</value>
-  </data>
-  <data name="SymbolWithSpaceValidator.After" xml:space="preserve">
-    <value>シンボルの前にスペースが必要です ({0})。</value>
-  </data>
-  <data name="SymbolWithSpaceValidator.BeforeAfter" xml:space="preserve">
-    <value>シンボルの前にスペースが必要です ({0})。</value>
-  </data>
-  <data name="DoubledWordValidator" xml:space="preserve">
-    <value>一文に二回以上利用されている単語 "{0}" がみつかりました。</value>
-  </data>
-  <data name="SuccessiveWordValidator" xml:space="preserve">
-    <value>単語 "{0}" は連続して使用されています。</value>
-  </data>
-  <data name="HankakuKanaValidator" xml:space="preserve">
-    <value>半角カナの文字 "{0}" が見つかりました。</value>
-  </data>
-  <data name="JapaneseStyleValidator" xml:space="preserve">
-    <value>不正な日本語のスタイルを発見しました "{0}"</value>
-  </data>
-  <data name="DoubleNegativeValidator" xml:space="preserve">
-    <value>二重否定がみつかりました。 "{0}"</value>
-  </data>
-  <data name="NumberFormatValidator.TooManyDecimals" xml:space="preserve">
-    <value>数字表現 {0} には多くの数字が含まれています。</value>
-  </data>
-  <data name="NumberFormatValidator.UndelimitedSequenceTooLong" xml:space="preserve">
-    <value>数値表現 {0} は三つの数字につき一つのデリミタ必要です。</value>
-  </data>
-  <data name="NumberFormatValidator.UndelimitedSequenceTooShort" xml:space="preserve">
-    <value>数値表現 {0} におけるデリミタの位置が不正です。</value>
-  </data>
-  <data name="ParenthesizedSentenceValidator.NestingLevelTooDeep" xml:space="preserve">
+  <data name="ParenthesizedSentence_NestingLevelTooDeep" xml:space="preserve">
     <value>括弧のネストが深すぎます。</value>
   </data>
-  <data name="ParenthesizedSentenceValidator.SubsentenceTooLong" xml:space="preserve">
-    <value>括弧が長すぎます。</value>
+  <data name="ParenthesizedSentence_SubsentenceTooFrequent" xml:space="preserve">
+    <value>括弧の使い過ぎです。</value>
   </data>
-  <data name="ParenthesizedSentenceValidator.SubsentenceTooFrequent" xml:space="preserve">
-    <value>括弧の数が多すぎます。</value>
+  <data name="ParenthesizedSentence_SubsentenceTooLong" xml:space="preserve">
+    <value>括弧内の文が長すぎます。</value>
   </data>
-  <data name="HyphenationValidator.HyphenatedInDictionary" xml:space="preserve">
-    <value>この表現はハイフンを使うべきです（例："{0}"）。</value>
+  <data name="Quotation_DoubleLeft" xml:space="preserve">
+    <value>左クォートが連続して使われています。</value>
   </data>
-  <data name="OkuriganaValidator" xml:space="preserve">
-    <value>不正な送り仮名 "{0}" がみつかりました。</value>
+  <data name="Quotation_DoubleRight" xml:space="preserve">
+    <value>右クォートが連続して使われています。</value>
   </data>
-  <data name="DoubledJoshiValidator" xml:space="preserve">
-    <value>一文に二回以上利用されている助詞 "{0}" がみつかりました。</value>
+  <data name="Quotation_LeftExist" xml:space="preserve">
+    <value>左クォートがありません。</value>
   </data>
-  <data name="WeakExpressionValidator.WeakExpression" xml:space="preserve">
-    <value>{0} は弱い表現です。</value>
+  <data name="Quotation_LeftSpace" xml:space="preserve">
+    <value>左クォートの隣にスペースがありません。</value>
   </data>
-  <data name="JapaneseAnchorExpressionValidator" xml:space="preserve">
-    <value>適切でない章節アンカー "{0}" を利用しています。</value>
+  <data name="Quotation_RightExist" xml:space="preserve">
+    <value>右クォートがありません。</value>
   </data>
-  <data name="RedundantExpressionValidator" xml:space="preserve">
-    <value>{0} は冗長な表現です。</value>
+  <data name="Quotation_RightSpace" xml:space="preserve">
+    <value>右クォートの隣にスペースがありません。</value>
   </data>
-  <data name="LongKanjiChainValidator" xml:space="preserve">
-    <value>長い熟語 "{0}" ({1}) が使われています。</value>
+  <data name="RedundantExpression" xml:space="preserve">
+    <value>"{0}" は冗長な表現です。</value>
   </data>
-  <data name="JapaneseNumberExpressionValidator" xml:space="preserve">
-    <value>適切でない計数表現 "{0}" を利用しています。</value>
+  <data name="SectionLength" xml:space="preserve">
+    <value>セクション内の文字数（{0}）が最大値（{1}）を超えています。</value>
   </data>
-  <data name="JapaneseAmbiguousNounConjunctionValidator" xml:space="preserve">
-    <value>助詞「の」が連続しています: "〜{0}〜"</value>
+  <data name="SectionLevel" xml:space="preserve">
+    <value>節 "{0}" のレベルが深すぎます。</value>
   </data>
-  <data name="JapaneseBrokenExpressionValidator" xml:space="preserve">
-    <value>ら抜き表現を使用しています: "{0}"</value>
+  <data name="SentenceLength" xml:space="preserve">
+    <value>文の長さ（{0}）が最大値（{1}）を超えています。</value>
   </data>
-  <data name="JapaneseJoyoKanjiValidator" xml:space="preserve">
-    <value>常用漢字でない漢字（"{0}"）が使用されています。</value>
+  <data name="SpaceBeginningOfSentence" xml:space="preserve">
+    <value>文頭にスペースがありません。</value>
   </data>
-  <data name="DoubledConjunctiveParticleGaValidator" xml:space="preserve">
-    <value>一文に逆説の接続助詞 "{0}" が複数回使用されています。</value>
+  <data name="SpaceBetweenAlphabeticalWord_After" xml:space="preserve">
+    <value>アルファベット単語 "{0}" の後にスペースが必要です。</value>
   </data>
-  <data name="SuccessiveSentenceValidator" xml:space="preserve">
-    <value>類似する文が二つ続けて使用されています: "{0}"、"{1}"</value>
+  <data name="SpaceBetweenAlphabeticalWord_Before" xml:space="preserve">
+    <value>アルファベット単語 "{0}" の前にスペースが必要です。</value>
+  </data>
+  <data name="SpaceBetweenAlphabeticalWord_Forbidden" xml:space="preserve">
+    <value>アルファベット単語 "{0}" の周囲にスペースが必要です。</value>
+  </data>
+  <data name="Spelling" xml:space="preserve">
+    <value>スペルミスの可能性のある単語 "{0}" が見つかりました。</value>
+  </data>
+  <data name="StartWithCapitalLetter" xml:space="preserve">
+    <value>小文字 "{0}" で開始している文が見つかりました。</value>
+  </data>
+  <data name="SuccessiveSentence" xml:space="preserve">
+    <value>類似する文 "{0}"、"{1}" が連続して使用されています。</value>
+  </data>
+  <data name="SuccessiveWord" xml:space="preserve">
+    <value>連続して使われている単語 "{0}" が見つかりました。</value>
+  </data>
+  <data name="SuggestExpression" xml:space="preserve">
+    <value>不正な単語 "{0}" が見つかりました。代替表現 "{1}" を使用してください。</value>
+  </data>
+  <data name="SymbolWithSpace_After" xml:space="preserve">
+    <value>シンボル "{0}" の後にスペースが必要です 。</value>
+  </data>
+  <data name="SymbolWithSpace_Before" xml:space="preserve">
+    <value>シンボル "{0}" の前にスペースが必要です。</value>
+  </data>
+  <data name="SymbolWithSpace_BeforeAfter" xml:space="preserve">
+    <value>シンボル "{0}" の前後にスペースが必要です。</value>
+  </data>
+  <data name="UnexpandedAcronym_UnexpandedAcronym" xml:space="preserve">
+    <value>省略語 "{0}" の正式な表現が文書中に見つかりませんでした。</value>
+  </data>
+  <data name="VoidSection" xml:space="preserve">
+    <value>節の中身が空です。</value>
+  </data>
+  <data name="WeakExpression_WeakExpression" xml:space="preserve">
+    <value>"{0}" は弱い表現です。</value>
+  </data>
+  <data name="WordFrequency_WordUsedTooFrequently" xml:space="preserve">
+    <value>全単語中、単語 "{0}" が {1}% 使用されています。望ましい使用率は {2}% 程です。</value>
+  </data>
+  <data name="WordNumber" xml:space="preserve">
+    <value>一文中の単語数（{0}）が最大値（{1}）を超えています。</value>
   </data>
 </root>
