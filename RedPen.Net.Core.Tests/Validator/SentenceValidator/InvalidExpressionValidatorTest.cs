@@ -111,12 +111,12 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 
             errors.Count.Should().Be(1);
 
-            output.WriteLine(errors[0].Message);
+            //output.WriteLine(errors[0].Message);
             output.WriteLine(errors[0].Type.ToString());
             output.WriteLine(errors[0].Sentence.Content);
             output.WriteLine(errors[0].LineNumber.ToString());
 
-            errors[0].Message.Should().Be("不正な表現 \"マジですか\" がみつかりました。");
+            //errors[0].Message.Should().Be("不正な表現 \"マジですか\" がみつかりました。");
         }
 
         //[Fact]

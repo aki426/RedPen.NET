@@ -53,6 +53,9 @@ namespace RedPen.Net.Core.Config
         {
             this.Lang = lang;
             this.Variant = variant;
+
+            // MEMO: デフォルトシンボルはnewするときに必ずロードされる。
+            // TODO: DIなどによりDefaultSymbolLoaderの依存関係をコントロールできた方が良いかどうか要検討。
             DefaultSymbols = DefaultSymbolLoader.GetInstance().GetSymbolDictionary(lang, variant);
 
             // デフォルトシンボルとカスタムシンボルを結合してシンボル検索用Dictionaryを作成する。

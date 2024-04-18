@@ -199,7 +199,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 // ゆらぎ表現の出現位置
                 string positionList = AddVariationPositions(variationList);
 
-                errors.Add(GetLocalizedErrorFromToken(sentence, targetToken, new object[] { variation, positionList }));
+                //errors.Add(GetLocalizedErrorFromToken(sentence, targetToken, new object[] { variation, positionList }));
             }
 
             return errors;

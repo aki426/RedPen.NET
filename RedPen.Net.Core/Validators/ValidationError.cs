@@ -9,49 +9,69 @@ namespace RedPen.Net.Core.Validators
     // TODO: recordか何かで書き直すことを検討する。
     public record ValidationError
     {
+        /// <summary>エラータイプ</summary>
         public ValidationType Type { get; init; }
+        /// <summary>エラーレベル</summary>
         public ValidationLevel Level { get; init; }
+        /// <summary>エラー発生したセンテンス。</summary>
         public Sentence Sentence { get; init; }
+        /// <summary>エラー開始位置</summary>
         public LineOffset? StartPosition { get; init; }
+        /// <summary>エラー終了位置</summary>
         public LineOffset? EndPosition { get; init; }
+        /// <summary>Message生成のための引数。MEMO: あらかじめValidatorがエラーメッセージと対応した順番で要素を格納する。</summary>
         public object[] MessageArgs { get; init; }
+        /// <summary>1つのValidation内で複数のMessageがある場合にどれを使用するか指定するための追加Key。</summary>
         public string MessageKey { get; init; }
 
-        public string Message { get; init; }
-        //public string ValidationName { get; init; }
-
+        /// <summary>
+        /// センテンス内の開始終了位置をLineOffset型で与えることができる<see cref="ValidationError"/>コンストラクタ。class.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="level">The level.</param>
+        /// <param name="sentenceWithError">The sentence with error.</param>
+        /// <param name="StartPosition">The start position.</param>
+        /// <param name="EndPosition">The end position.</param>
+        /// <param name="MessageArgs">The message args.</param>
         public ValidationError(
             ValidationType type,
-            // string validationName,
-            string errorMessage,
+            ValidationLevel level,
             Sentence sentenceWithError,
-            ValidationLevel level = ValidationLevel.ERROR)
+            LineOffset? StartPosition = null,
+            LineOffset? EndPosition = null,
+            object[] MessageArgs = null,
+            string MessageKey = "")
         {
-            this.Message = errorMessage;
             this.Type = type;
-            //this.ValidationName = validationName; ;
-            this.Sentence = sentenceWithError;
-            this.StartPosition = null;
-            this.EndPosition = null;
             this.Level = level;
+            this.Sentence = sentenceWithError;
+            this.StartPosition = StartPosition;
+            this.EndPosition = EndPosition;
+            this.MessageArgs = MessageArgs ?? new object[0];
+            this.MessageKey = MessageKey;
         }
 
+        /// <summary>
+        /// センテンス内の開始終了位置をintで与えることができる<see cref="ValidationError"/>コンストラクタ。class.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="Level">The level.</param>
+        /// <param name="sentenceWithError">The sentence with error.</param>
+        /// <param name="startPosition">The start position.</param>
+        /// <param name="endPosition">The end position.</param>
+        /// <param name="MessageArgs">The message args.</param>
         internal ValidationError(
             ValidationType type,
-            //string validatorName,
-            string errorMessage,
+            ValidationLevel Level,
             Sentence sentenceWithError,
             int startPosition,
             int endPosition,
-            ValidationLevel Level = ValidationLevel.ERROR)
+            object[] MessageArgs = null,
+            string MessageKey = "") :
+            this(type, Level, sentenceWithError, null, null, MessageArgs, MessageKey)
         {
-            this.Message = errorMessage;
-            this.Type = type;
-            //this.ValidationName = validatorName;
-            this.Sentence = sentenceWithError;
             this.StartPosition = sentenceWithError.GetOffset(startPosition) ?? throw new NullReferenceException("No value present");
             this.EndPosition = sentenceWithError.GetOffset(endPosition) ?? throw new NullReferenceException("No value present");
-            this.Level = Level;
         }
 
         /// <summary>Get line number in which the error occurs.</summary>

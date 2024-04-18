@@ -47,7 +47,7 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
             if (Config.MaxNumber < commaCount)
             {
                 // コンマの数が最大数を超えている場合はエラーとする。
-                result.Add(GetLocalizedError(sentence, new object[] { commaCount, Config.MaxNumber }));
+                //result.Add(GetLocalizedError(sentence, new object[] { commaCount, Config.MaxNumber }));
             }
 
             return result;

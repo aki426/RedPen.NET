@@ -85,98 +85,98 @@ namespace RedPen.Net.Core.Validators
             }
         }
 
-        /// <summary>
-        /// create a ValidationError for the specified position with localized message with specified message key
-        /// </summary>
-        /// <param name="MessageKey"></param>
-        /// <param name="sentenceWithError"></param>
-        /// <param name="args"></param>
-        protected internal ValidationError GetLocalizedError(
-            Sentence sentenceWithError,
-            object[] args,
-            string? MessageKey = null)
-        {
-            return new ValidationError(
-                ValidationTypeExtend.ConvertFrom(this.ValidationName),
-                // this.ValidationName,
-                GetLocalizedErrorMessage(args, MessageKey),
-                sentenceWithError,
-                Level);
-        }
+        ///// <summary>
+        ///// create a ValidationError for the specified position with localized message with specified message key
+        ///// </summary>
+        ///// <param name="MessageKey"></param>
+        ///// <param name="sentenceWithError"></param>
+        ///// <param name="args"></param>
+        //protected internal ValidationError GetLocalizedError(
+        //    Sentence sentenceWithError,
+        //    object[] args,
+        //    string? MessageKey = null)
+        //{
+        //    return new ValidationError(
+        //        ValidationTypeExtend.ConvertFrom(this.ValidationName),
+        //        // this.ValidationName,
+        //        GetLocalizedErrorMessage(args, MessageKey),
+        //        sentenceWithError,
+        //        Level);
+        //}
 
-        /// <summary>
-        /// create a ValidationError for the specified position with specified message key
-        /// </summary>
-        /// <param name="messageKey"></param>
-        /// <param name="sentenceWithError"></param>
-        /// <param name="start">start position in parsed sentence</param>
-        /// <param name="end">end position in parsed sentence</param>
-        /// <param name="args"></param>
-        protected internal ValidationError GetLocalizedErrorWithPosition(
-            Sentence sentenceWithError,
-            object[] args,
-            int start,
-            int end,
-            string? MessageKey = null)
-        {
-            return new ValidationError(
-                ValidationTypeExtend.ConvertFrom(this.ValidationName),
-                GetLocalizedErrorMessage(args, MessageKey), // メッセージ生成。
-                sentenceWithError,
-                start,
-                end,
-                Level);
-        }
+        ///// <summary>
+        ///// create a ValidationError for the specified position with specified message key
+        ///// </summary>
+        ///// <param name="messageKey"></param>
+        ///// <param name="sentenceWithError"></param>
+        ///// <param name="start">start position in parsed sentence</param>
+        ///// <param name="end">end position in parsed sentence</param>
+        ///// <param name="args"></param>
+        //protected internal ValidationError GetLocalizedErrorWithPosition(
+        //    Sentence sentenceWithError,
+        //    object[] args,
+        //    int start,
+        //    int end,
+        //    string? MessageKey = null)
+        //{
+        //    return new ValidationError(
+        //        ValidationTypeExtend.ConvertFrom(this.ValidationName),
+        //        GetLocalizedErrorMessage(args, MessageKey), // メッセージ生成。
+        //        sentenceWithError,
+        //        start,
+        //        end,
+        //        Level);
+        //}
 
-        /// <summary>
-        /// create a ValidationError using the details within the given token &amp; localized message
-        /// </summary>
-        /// <param name="sentenceWithError"></param>
-        /// <param name="token">the TokenElement that has the error</param>
-        /// <param name="args"></param>
-        protected internal ValidationError GetLocalizedErrorFromToken(Sentence sentenceWithError, TokenElement token, object[] args)
-        {
-            // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
-            List<object> argList = new List<object>() { token.Surface };
-            foreach (object arg in args)
-            {
-                argList.Add(arg);
-            }
+        ///// <summary>
+        ///// create a ValidationError using the details within the given token &amp; localized message
+        ///// </summary>
+        ///// <param name="sentenceWithError"></param>
+        ///// <param name="token">the TokenElement that has the error</param>
+        ///// <param name="args"></param>
+        //protected internal ValidationError GetLocalizedErrorFromToken(Sentence sentenceWithError, TokenElement token, object[] args)
+        //{
+        //    // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+        //    List<object> argList = new List<object>() { token.Surface };
+        //    foreach (object arg in args)
+        //    {
+        //        argList.Add(arg);
+        //    }
 
-            return GetLocalizedErrorWithPosition(
-                sentenceWithError,
-                argList.ToArray(),
-                token.Offset, // start
-                token.Offset + token.Surface.Length // end
-            );
-        }
+        //    return GetLocalizedErrorWithPosition(
+        //        sentenceWithError,
+        //        argList.ToArray(),
+        //        token.Offset, // start
+        //        token.Offset + token.Surface.Length // end
+        //    );
+        //}
 
-        /// <summary>
-        /// returns localized error message for the given key formatted with argument
-        /// </summary>
-        /// <param name="MessageKey">ErrorMessageにキーが設定されている場合はここで設定。通常無いのでデフォルト値はnull。</param>
-        /// <param name="args">objects to format</param>
-        /// <returns>localized error message</returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        protected internal string GetLocalizedErrorMessage(object[] args, string? MessageKey = null)
-        {
-            if (errorMessages == null)
-            {
-                throw new InvalidOperationException("message resource not found.");
-            }
-            else
-            {
-                // ErrorMessageにもValidatorNameだけでなく、エラーの種類によってはキー名を指定することがある。
-                string suffix = MessageKey == null ? "" : "." + MessageKey;
+        ///// <summary>
+        ///// returns localized error message for the given key formatted with argument
+        ///// </summary>
+        ///// <param name="MessageKey">ErrorMessageにキーが設定されている場合はここで設定。通常無いのでデフォルト値はnull。</param>
+        ///// <param name="args">objects to format</param>
+        ///// <returns>localized error message</returns>
+        ///// <exception cref="InvalidOperationException"></exception>
+        //protected internal string GetLocalizedErrorMessage(object[] args, string? MessageKey = null)
+        //{
+        //    if (errorMessages == null)
+        //    {
+        //        throw new InvalidOperationException("message resource not found.");
+        //    }
+        //    else
+        //    {
+        //        // ErrorMessageにもValidatorNameだけでなく、エラーの種類によってはキー名を指定することがある。
+        //        string suffix = MessageKey == null ? "" : "." + MessageKey;
 
-                // ValidationMessage.resxではErrorMessageは"XXXValidator"という形式の識別子で登録されている。
-                // 「Validatorのクラス名 + "." + キー名」という形式の識別子で検索した現在のロケール用のメッセージ。
-                string pattern = errorMessages.GetString(this.GetType().Name + suffix, Lang);
+        //        // ValidationMessage.resxではErrorMessageは"XXXValidator"という形式の識別子で登録されている。
+        //        // 「Validatorのクラス名 + "." + キー名」という形式の識別子で検索した現在のロケール用のメッセージ。
+        //        string pattern = errorMessages.GetString(this.GetType().Name + suffix, Lang);
 
-                // MessageFormatの代わりにstring.Formatを使用
-                return string.Format(Lang, pattern, args);
-            }
-        }
+        //        // MessageFormatの代わりにstring.Formatを使用
+        //        return string.Format(Lang, pattern, args);
+        //    }
+        //}
     }
 
     public interface IDocumentValidatable

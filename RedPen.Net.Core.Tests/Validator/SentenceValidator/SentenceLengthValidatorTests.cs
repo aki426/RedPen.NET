@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
+using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Validators;
 using RedPen.Net.Core.Validators.SentenceValidator;
@@ -17,8 +16,19 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
     /// </summary>
     public class SentenceLengthValidatorTests
     {
-        private SentenceLengthValidator validator;
+        // テスト間で共通の設定を使う場合は、クラス変数を用いる。
+
         private readonly ITestOutputHelper output;
+
+        // あるValidatorを実行するために必要な最低限の設定は次の1~の手順。
+
+        // 1. 基本パラメータ
+        private CultureInfo cultureInfo = new CultureInfo("en-US");
+
+        private string variant = "";
+        private ValidationLevel level = ValidationLevel.ERROR;
+        private SentenceLengthValidator validator;
+        private string messageKey = "";
 
         /// <summary>
         /// Test SetUp.
@@ -27,18 +37,11 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         {
             this.output = output;
 
-            // あるValidatorを実行するために必要な最低限の設定は次の通り。
-
-            // 1. 基本パラメータ
-            CultureInfo cultureInfo = new CultureInfo("en-US");
-            string variant = "";
-            ValidationLevel level = ValidationLevel.ERROR;
-
             // 2. ValidatorConfiguration
             SentenceLengthConfiguration validatorConfiguration = new SentenceLengthConfiguration(level, 30);
 
             // 3. SymbolTable
-            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルによるSymbolTableが生成される。
+            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
             SymbolTable symbolTable = new SymbolTable(cultureInfo, variant, new List<Symbol>());
 
             // 4. validator
@@ -56,20 +59,33 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [Fact]
         public void testWithLongSentence()
         {
+            validator.Config.MaxLength.Should().Be(30);
+            validator.ValidationName.Should().Be("SentenceLength");
+
+            // 5. テスト対象のオブジェクトを生成する。
             Sentence str = new Sentence(
                 "this is a very long long long long long long long long long long long long sentence.",
                 0);
 
-            validator.Config.MaxLength.Should().Be(30);
-            validator.ValidationName.Should().Be("SentenceLength");
-
+            // 6. PreValidate, Validateを実行する。
             validator.PreValidate(str);
             List<ValidationError> errors = validator.Validate(str);
 
             errors.Count.Should().Be(1);
+            errors[0].Type.Should().Be(ValidationType.SentenceLength);
 
-            errors[0].Type.ToString().Should().Be("SentenceLength");
-            errors[0].Message.Should().Be("The length of the sentence (84) exceeds the maximum of 30.");
+            // 7. エラーメッセージを生成する。
+            var manager = ErrorMessageManager.GetInstance();
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("The length of the sentence (84) exceeds the maximum of 30.");
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("文の長さ（84）が最大値（30）を超えています。");
         }
 
         /// <summary>

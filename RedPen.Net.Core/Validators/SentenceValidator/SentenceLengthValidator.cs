@@ -48,21 +48,13 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         {
             if (sentence.Content.Length > Config.MaxLength)
             {
-                //return new List<ValidationError>() {
-                //    GetLocalizedError(sentence, new object[] { sentence.Content.Length, Config.MaxLength })
-                //};
-
-                // ここでやっていることを書き下すと以下のとおり。
-                string pattern = errorMessages.GetString(this.GetType().Name, Lang);
-                string message = string.Format(Lang, pattern, new object[] { sentence.Content.Length, Config.MaxLength });
                 return new List<ValidationError>()
                 {
                     new ValidationError(
-                        //this.GetType().Name,
-                        ValidationType.SentenceLength, //.ToString(),
-                        message,
+                        ValidationType.SentenceLength,
+                        this.Level,
                         sentence,
-                        Level)
+                        MessageArgs: new object[] { sentence.Content.Length, Config.MaxLength })
                 };
             }
             else

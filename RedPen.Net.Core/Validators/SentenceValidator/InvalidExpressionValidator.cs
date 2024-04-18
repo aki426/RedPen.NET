@@ -54,7 +54,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
                     // マッチしたInvalid Expressionの全文字位置を登録する。
                     int matchEndPosition = matchStartPosition + invalidWord.Length;
-                    result.Add(GetLocalizedErrorWithPosition(sentence, new object[] { invalidWord }, matchStartPosition, matchEndPosition));
+                    //result.Add(GetLocalizedErrorWithPosition(sentence, new object[] { invalidWord }, matchStartPosition, matchEndPosition));
 
                     // next loop
                     offset = matchEndPosition;

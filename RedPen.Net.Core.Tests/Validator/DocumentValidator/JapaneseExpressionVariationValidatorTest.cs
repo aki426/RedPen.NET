@@ -89,7 +89,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             errors.Count().Should().Be(1);
 
             // TODO: 次のテストケースはあくまで暫定。
-            errors[0].Message.Should().Be("単語 ”之” の揺らぎと考えられる表現 ”これ(名詞)” が (L1,6)　で見つかりました。");
+            //errors[0].Message.Should().Be("単語 ”之” の揺らぎと考えられる表現 ”これ(名詞)” が (L1,6)　で見つかりました。");
         }
 
         //[Fact]
