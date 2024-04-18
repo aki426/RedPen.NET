@@ -139,12 +139,7 @@ namespace RedPen.Net.Core.Config
             {
                 writer.WriteStartObject();
 
-                // NOTE: TypeDiscriminatorというプロパティを追加して、型を判別するための情報を書き出している。
-                // この方式はあらかじめEnumを定義しておかなければならず、汎用性が低い。
-                // できるだけ型情報を明に出したいので、たとえばValidatorNameプロパティで型名を出力するなどの方法が良い。
-
-                var typeName = conf.GetType().Name.Replace("Configuration", "");
-                writer.WriteString("Name", typeName);
+                writer.WriteString("Name", conf.Name);
                 writer.WriteString("Level", conf.Level.ToString());
 
                 // ValidatorConfiguration.csに定義されたどのInterface型を継承しているかによってプロパティを特定する。

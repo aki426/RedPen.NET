@@ -13,6 +13,12 @@ namespace RedPen.Net.Core.Config
         /// <summary>クラス名からValidationNameを取得する（末尾の"Configuration"を除去したものがValidationの識別子）。</summary>
         public string ValidationName => this.GetType().Name.Substring(0, this.GetType().Name.Length - "Configuration".Length);
 
+        /// <summary>JsonのNameプロパティに出力するためのプロパティ。</summary>
+        public string Name => ValidationName;
+
+        [JsonIgnore]
+        public ValidationType Type => ValidationTypeExtend.ConvertFrom(ValidationName);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidatorConfiguration"/> class.
         /// </summary>
