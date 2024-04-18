@@ -84,7 +84,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             // Document
             CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
             Document document = Document.Builder(
-                RedPenTokenizerFactory.CreateTokenizer(CultureInfo.GetCultureInfo("ja-JP")))
+                RedPenTokenizerFactory.CreateTokenizer(documentLang))
                     .AddSection(1)
                     .AddParagraph()
                     .AddSentence(new Sentence("オワタ。明日地球が滅亡するってマジですか。", 1))

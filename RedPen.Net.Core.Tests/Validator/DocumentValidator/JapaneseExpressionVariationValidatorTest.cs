@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
+using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Validators;
 using RedPen.Net.Core.Validators.DocumentValidator;
@@ -59,27 +60,32 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             }
 
             // Configuration生成。
-            var config = Configuration.Builder("ja-JP")
-                .AddValidatorConfig(japaneseExpressionVariationConfiguration)
-                .Build();
+            //var config = Configuration.Builder("ja-JP")
+            //    .AddValidatorConfig(japaneseExpressionVariationConfiguration)
+            //    .Build();
 
-            // Document生成。
-            Document document = Document.Builder(RedPenTokenizerFactory.CreateTokenizer(config.CultureInfo))
-              .AddSection(1)
-              .AddParagraph()
-              .AddSentence(new Sentence("之は山です。これは川です。", 1))
-              .Build();
+            // Document
+            CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
+            Document document = Document.Builder(
+                RedPenTokenizerFactory.CreateTokenizer(documentLang))
+                    .AddSection(1)
+                    .AddParagraph()
+                    .AddSentence(new Sentence("之は山です。これは川です。", 1))
+                    .Build(); // TokenizeをBuild時に実行する。
 
             document.Sections[0].Paragraphs[0].Sentences[0].Tokens.ForEach(token =>
             {
                 output.WriteLine(token.ToString());
             });
 
+            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
+            SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
+
             // Validatorの生成。
             var japaneseExpressionVariationValidator = new JapaneseExpressionVariationValidator(
-                config.CultureInfo,
-                ValidationMessage.ResourceManager,
-                config.SymbolTable,
+                ValidationLevel.ERROR,
+                documentLang,
+                symbolTable,
                 japaneseExpressionVariationConfiguration);
 
             japaneseExpressionVariationValidator.PreValidate(document);
@@ -88,8 +94,18 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
             errors.Count().Should().Be(1);
 
-            // TODO: 次のテストケースはあくまで暫定。
-            //errors[0].Message.Should().Be("単語 ”之” の揺らぎと考えられる表現 ”これ(名詞)” が (L1,6)　で見つかりました。");
+            // 7. エラーメッセージを生成する。
+            var manager = ErrorMessageManager.GetInstance();
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("Found possible Japanese word variations for \"之\", \"これ(名詞)\" at (L1,6)");
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("\"之\" は \"これ(名詞)\"（出現位置：(L1,6)）の揺らぎ表現と考えられます。");
         }
 
         //[Fact]

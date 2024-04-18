@@ -53,13 +53,13 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// Initializes a new instance of the <see cref="JapaneseExpressionVariationValidator"/> class.
         /// </summary>
         public JapaneseExpressionVariationValidator(
-            CultureInfo lang,
-            ResourceManager errorMessages,
+            ValidationLevel level,
+            CultureInfo documentLangForTest,
             SymbolTable symbolTable,
             JapaneseExpressionVariationConfiguration config) :
             base(
                 config.Level,
-                lang,
+                documentLangForTest,
                 //errorMessages,
                 symbolTable)
         {
@@ -199,10 +199,45 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 // ゆらぎ表現の出現位置
                 string positionList = AddVariationPositions(variationList);
 
-                //errors.Add(GetLocalizedErrorFromToken(sentence, targetToken, new object[] { variation, positionList }));
+                errors.Add(GetLocalizedErrorFromToken(sentence, targetToken, new object[] { variation, positionList }));
             }
 
             return errors;
+        }
+
+        /// <summary>
+        /// create a ValidationError using the details within the given token &amp; localized message
+        /// </summary>
+        /// <param name="sentenceWithError"></param>
+        /// <param name="token">the TokenElement that has the error</param>
+        /// <param name="args"></param>
+        private ValidationError GetLocalizedErrorFromToken(Sentence sentenceWithError, TokenElement token, object[] args)
+        {
+            // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+            List<object> argList = new List<object>() { token.Surface };
+            foreach (object arg in args)
+            {
+                argList.Add(arg);
+            }
+
+            return new ValidationError(
+                ValidationType.JapaneseExpressionVariation,
+                this.Level,
+                sentenceWithError,
+                token.Offset, // start
+                token.Offset + token.Surface.Length, // end
+                MessageArgs: argList.ToArray());
+            //    GetLocalizedErrorMessage(argList.ToArray()),
+            //    sentenceWithError,
+            //    token.Offset,
+            //    token.Offset + token.Surface.Length);
+
+            //return GetLocalizedErrorWithPosition(
+            //    sentenceWithError,
+            //    argList.ToArray(),
+            //    token.Offset, // start
+            //    token.Offset + token.Surface.Length // end
+            //);
         }
 
         private string AddVariationPositions(List<TokenInfo> tokenList) =>
