@@ -97,7 +97,8 @@ namespace RedPen.Net.Core.Validators
             string? MessageKey = null)
         {
             return new ValidationError(
-                this.ValidationName,
+                ValidationTypeExtend.ConvertFrom(this.ValidationName),
+                // this.ValidationName,
                 GetLocalizedErrorMessage(args, MessageKey),
                 sentenceWithError,
                 Level);
@@ -119,7 +120,7 @@ namespace RedPen.Net.Core.Validators
             string? MessageKey = null)
         {
             return new ValidationError(
-                this.ValidationName,
+                ValidationTypeExtend.ConvertFrom(this.ValidationName),
                 GetLocalizedErrorMessage(args, MessageKey), // メッセージ生成。
                 sentenceWithError,
                 start,

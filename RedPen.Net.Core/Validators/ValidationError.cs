@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Parser;
@@ -8,21 +9,27 @@ namespace RedPen.Net.Core.Validators
     // TODO: recordか何かで書き直すことを検討する。
     public record ValidationError
     {
-        public string Message { get; init; }
-        public string ValidationName { get; init; }
+        public ValidationType Type { get; init; }
+        public ValidationLevel Level { get; init; }
         public Sentence Sentence { get; init; }
         public LineOffset? StartPosition { get; init; }
         public LineOffset? EndPosition { get; init; }
-        public ValidationLevel Level { get; init; }
+        public object[] MessageArgs { get; init; }
+        public string MessageKey { get; init; }
+
+        public string Message { get; init; }
+        //public string ValidationName { get; init; }
 
         public ValidationError(
-            string validationName,
+            ValidationType type,
+            // string validationName,
             string errorMessage,
             Sentence sentenceWithError,
             ValidationLevel level = ValidationLevel.ERROR)
         {
             this.Message = errorMessage;
-            this.ValidationName = validationName; ;
+            this.Type = type;
+            //this.ValidationName = validationName; ;
             this.Sentence = sentenceWithError;
             this.StartPosition = null;
             this.EndPosition = null;
@@ -30,7 +37,8 @@ namespace RedPen.Net.Core.Validators
         }
 
         internal ValidationError(
-            string validatorName,
+            ValidationType type,
+            //string validatorName,
             string errorMessage,
             Sentence sentenceWithError,
             int startPosition,
@@ -38,7 +46,8 @@ namespace RedPen.Net.Core.Validators
             ValidationLevel Level = ValidationLevel.ERROR)
         {
             this.Message = errorMessage;
-            this.ValidationName = validatorName;
+            this.Type = type;
+            //this.ValidationName = validatorName;
             this.Sentence = sentenceWithError;
             this.StartPosition = sentenceWithError.GetOffset(startPosition) ?? throw new NullReferenceException("No value present");
             this.EndPosition = sentenceWithError.GetOffset(endPosition) ?? throw new NullReferenceException("No value present");

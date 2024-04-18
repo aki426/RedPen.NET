@@ -59,7 +59,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 {
                     new ValidationError(
                         //this.GetType().Name,
-                        ValidationType.SentenceLength.ToString(),
+                        ValidationType.SentenceLength, //.ToString(),
                         message,
                         sentence,
                         Level)
