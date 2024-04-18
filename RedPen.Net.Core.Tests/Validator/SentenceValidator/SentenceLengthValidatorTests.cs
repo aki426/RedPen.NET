@@ -68,7 +68,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 
             errors.Count.Should().Be(1);
 
-            errors[0].ValidationName.Should().Be("SentenceLength");
+            errors[0].Type.ToString().Should().Be("SentenceLength");
             errors[0].Message.Should().Be("The length of the sentence (84) exceeds the maximum of 30.");
         }
 

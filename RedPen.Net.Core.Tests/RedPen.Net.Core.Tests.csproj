@@ -62,6 +62,7 @@
     <Compile Include="Config\SymbolTypeTests.cs" />
     <Compile Include="Config\ValidationTypeTests.cs" />
     <Compile Include="Config\ValidatorConfigurationTests.cs" />
+    <Compile Include="Errors\ErrorMessageManagerTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\DocumentCollectionTest.cs" />
     <Compile Include="Model\DocumentTests.cs" />
