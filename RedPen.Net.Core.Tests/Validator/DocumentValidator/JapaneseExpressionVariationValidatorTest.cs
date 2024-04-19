@@ -21,6 +21,14 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
     {
         private readonly ITestOutputHelper output;
 
+        private CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
+
+        private Dictionary<string, string> expressionVariationMap;
+
+        private JapaneseExpressionVariationConfiguration japaneseExpressionVariationConfiguration;
+
+        private JapaneseExpressionVariationValidator japaneseExpressionVariationValidator;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="JapaneseExpressionVariationValidatorTest"/> class.
         /// </summary>
@@ -28,13 +36,13 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         public JapaneseExpressionVariationValidatorTest(ITestOutputHelper output) : base("JapaneseExpressionVariation")
         {
             this.output = output;
-        }
 
-        [Fact]
-        public void BasicOperationTest()
-        {
+            // MEMO: ゆらぎ表現のマップ、ValidatorConfigurationの設定、JapaneseExpressionVariationValidatorの生成までは、
+            // 各テストケースで共通なので、コンストラクタで実行してしまってよい。
+            // Documentの違いはPreValidateとValidateで対応可能。
+
             // DefaultResourceの読み込み。
-            var spellingVariationMap = new Dictionary<string, string>();
+            Dictionary<string, string> expressionVariationMap = new Dictionary<string, string>();
             string v = DefaultResources.ResourceManager.GetString($"SpellingVariation_ja");
             foreach (string line in v.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
             {
@@ -42,7 +50,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
 
                 if (result.Length == 2)
                 {
-                    spellingVariationMap[result[0]] = result[1];
+                    expressionVariationMap[result[0]] = result[1];
                 }
                 else
                 {
@@ -51,21 +59,30 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             }
 
             // ValidatorConfigurationの生成。
-            var japaneseExpressionVariationConfiguration =
-                new JapaneseExpressionVariationConfiguration(ValidationLevel.ERROR, spellingVariationMap);
+            japaneseExpressionVariationConfiguration =
+                new JapaneseExpressionVariationConfiguration(ValidationLevel.ERROR, expressionVariationMap);
 
+            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
+            SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
+
+            // Validatorの生成。
+            japaneseExpressionVariationValidator = new JapaneseExpressionVariationValidator(
+                ValidationLevel.ERROR,
+                documentLang,
+                symbolTable,
+                japaneseExpressionVariationConfiguration);
+        }
+
+        [Fact]
+        public void BasicOperationTest()
+        {
+            // ValidatorConfiguration内設定値の確認。
             foreach (var item in japaneseExpressionVariationConfiguration.WordMap)
             {
                 output.WriteLine($"{item.Key} => {item.Value}");
             }
 
-            // Configuration生成。
-            //var config = Configuration.Builder("ja-JP")
-            //    .AddValidatorConfig(japaneseExpressionVariationConfiguration)
-            //    .Build();
-
             // Document
-            CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
             Document document = Document.Builder(
                 RedPenTokenizerFactory.CreateTokenizer(documentLang))
                     .AddSection(1)
@@ -85,16 +102,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                 output.WriteLine(sentence.Content);
             });
 
-            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
-            SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
-
-            // Validatorの生成。
-            var japaneseExpressionVariationValidator = new JapaneseExpressionVariationValidator(
-                ValidationLevel.ERROR,
-                documentLang,
-                symbolTable,
-                japaneseExpressionVariationConfiguration);
-
+            // Validation
             japaneseExpressionVariationValidator.PreValidate(document);
             List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
@@ -142,63 +150,6 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                 CultureInfo.GetCultureInfo("ja-JP"))
                     .Should().Be("\"大使館\" は \"ヴェトナム大使館(名詞)\"（出現位置：(L3,0)）の揺らぎ表現と考えられます。");
         }
-
-        //[Fact]
-        //public void MyTestMethod()
-        //{
-        //    ValidatorConfiguration validatorConfiguration = new ValidatorConfiguration("JapaneseExpressionVariation");
-        //    // MEMO: Configuration.Builder("ja")でTokenizerはNeologdが割り当たっている。
-        //    Configuration localConfig = Configuration.Builder("ja-JP")
-        //        .AddValidatorConfig(validatorConfiguration)
-        //        .Build();
-
-        //    // Build中にNeologdでTokenizeされる。
-        //    Document document = Document.Builder(RedPenTokenizerFactory.CreateTokenizer(localConfig.CultureInfo))
-        //      .AddSection(1)
-        //      .AddParagraph()
-        //      .AddSentence(new Sentence("之は山です。これは川です。", 1))
-        //      .Build();
-
-        //    document.Sections[0].Paragraphs[0].Sentences[0].Tokens.ForEach(token =>
-        //    {
-        //        output.WriteLine(token.ToString());
-        //    });
-
-        //    JapaneseExpressionVariationValidator jaExpVariationValidator
-        //        = ValidatorFactory.GetInstance(validatorConfiguration, localConfig) as JapaneseExpressionVariationValidator;
-        //    jaExpVariationValidator.PreValidate(document);
-
-        //    List<ValidationError> errors = new List<ValidationError>();
-        //    jaExpVariationValidator.setErrorList(errors);
-        //    jaExpVariationValidator.Validate(document);
-
-        //    // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
-        //    errors.Count().Should().Be(1);
-
-        //    // TODO: 次のテストケースはあくまで暫定。
-        //    errors[0].Message.Should().Be("単語 ”之” の揺らぎと考えられる表現 ”これ(名詞)” が (L1,6)　で見つかりました。");
-
-        //    output.WriteLine(errors[0].Message);
-        //    output.WriteLine(errors[0].ValidationName);
-        //    output.WriteLine(errors[0].Sentence.Content);
-        //    output.WriteLine(errors[0].LineNumber.ToString());
-
-        //    document.Sections[0].Paragraphs[0].Sentences[0].Tokens.ForEach(token =>
-        //    {
-        //        output.WriteLine(token.ToString());
-        //    });
-
-        //    _ = jaExpVariationValidator.readingMap[document];
-
-        //    foreach (KeyValuePair<string, List<JapaneseExpressionVariationValidator.TokenInfo>> readingInfo in
-        //        jaExpVariationValidator.readingMap[document])
-        //    {
-        //        readingInfo.Value.ForEach(tokenInfo =>
-        //        {
-        //            output.WriteLine($"{readingInfo.Key} => {tokenInfo}");
-        //        });
-        //    }
-        //}
 
         ///// <summary>
         ///// detects the same readings in japanese characters.
