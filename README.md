@@ -51,10 +51,12 @@ readpenをC#アプリケーションからスマートに利用したかった�
 
 ## Validator Configuration
 
-|            Name             |      Description       | Lang  |     Property      |
-| --------------------------- | ---------------------- | ----- | ----------------- |
-| SentenceLength              | センテンスの最大文字長 | ANY   | MaxLength         |
-| JapaneseExpressionVariation | 日本語の表記ゆれ       | ja-JP | DictFile, WordMap |
+|            Name             |         Description          | Lang  |      Property      |
+| --------------------------- | ---------------------------- | ----- | ------------------ |
+| SentenceLength              | センテンスの最大文字長       | ANY   | MaxLength          |
+| InvalidExpression           | 不正な表現                   | ANY   | DictFile, WordList |
+| CommaNumber                 | センテンス内のコンマの最大数 | ANY   | MaxNumber          |
+| JapaneseExpressionVariation | 日本語の表記ゆれ             | ja-JP | DictFile, WordMap  |
 
 ## Configuration Property
 
@@ -65,12 +67,14 @@ readpenをC#アプリケーションからスマートに利用したかった�
 - Level
   - ※すべてのValidator Configurationで必須のプロパティです。
   - ERROR, WARN, INFO, OFFの4種類があります。
-  - OFFはValidatorを実行しない選択肢になります。その他はError結果のレベルです。
+  - OFFを指定した場合は当該Validatorは実行されません。
 - MaxLength
   - Validatorに対して与える最大長をintで表現したものです。
+- MaxNumber
+  - Validatorに対して与える最大数をintで表現したものです。（※MaxLengthと型の違いはありませんがConfファイルを人が記述する際の可読性のため分けています）
 - DictFile
   - Validatorごとに与える辞書定義ファイルです。実行環境におけるファイルへのパスを指定します。
-  - フォーマット：未定。
+  - フォーマット：WordListをプロパティに持つ場合は1行1文字列のリスト、WordMapをプロパティに持つ場合は1行につき2つの文字列をタブ区切りで記載します。
 - WordMap
   - Validatorごとに与える辞書定義です。
   - JsonのオブジェクトとしてKeyに「検出したい表現」を、Valueに「提案したい表現」を記述します。表記上は誤→正の順番になります。
