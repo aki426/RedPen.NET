@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using FluentAssertions;
-using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Config;
-using RedPen.Net.Core.Validators;
+using RedPen.Net.Core.Errors;
+using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Validators.SentecneValidator;
 using RedPen.Net.Core.Validators.SentenceValidator;
 using Xunit;
-using RedPen.Net.Core.Validators.SentecneValidator;
 
 namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 {
@@ -18,74 +19,149 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         /// Withs the sentence containing many commas test.
         /// </summary>
         [Fact]
-        public void WithSentenceContainingManyCommasTest()
+        public void BasicPositiveTest()
         {
+            CultureInfo cultureInfo = CultureInfo.GetCultureInfo("en-US");
+            string variant = "";
+            ValidationLevel level = ValidationLevel.ERROR;
+
+            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
+            SymbolTable symbolTable = new SymbolTable(cultureInfo, variant, new List<Symbol>());
+
             // ValidatorConfiguration
-            var commaNumberConfiguration = new CommaNumberConfiguration(ValidationLevel.ERROR, 3);
-
-            // Configuration
-            var config = Configuration.Builder("en-US")
-                .AddValidatorConfig(commaNumberConfiguration)
-                .Build();
-
-            // Sentence
-            string content = "is it true, not true, but it should be ture, right, or not right.";
-            Sentence str = new Sentence(content, 0);
+            var commaNumberConfiguration = new CommaNumberConfiguration(level, 3);
 
             // Validator
             var commaNumberValidator = new CommaNumberValidator(
-                config.CultureInfo,
-                ValidationMessage.ResourceManager,
-                config.SymbolTable,
+                ValidationLevel.ERROR,
+                cultureInfo,
+                symbolTable,
                 commaNumberConfiguration);
 
+            // Sentence
+            Sentence sentence = new Sentence("is it true, not true, but it should be ture, right, or not right.", 0);
+
             // Validate
-            commaNumberValidator.PreValidate(str);
-            var errors = commaNumberValidator.Validate(str);
+            commaNumberValidator.PreValidate(sentence);
+            var errors = commaNumberValidator.Validate(sentence);
 
             // Assertion
             errors.Should().NotBeNull();
             errors.Count.Should().Be(1);
-            errors[0].Sentence.Content.Should().Be(content);
-            //errors[0].Message.Should().Be("The number of commas (4) exceeds the maximum of 3.");
+
+            // 7. エラーメッセージを生成する。
+            var manager = ErrorMessageManager.GetInstance();
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("The number of commas (4) exceeds the maximum of 3.");
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("カンマの数（4）が最大値（3）を超えています。");
         }
 
-        //    @Test
-        //    void testWithtSentenceWithoutComma() throws RedPenException
-        //    {
-        //        Validator commaNumberValidator = ValidatorFactory.GetInstance("CommaNumber");
-        //        String content = "is it true.";
-        //        Sentence str = new Sentence(content, 0);
-        //    List<ValidationError> errors = new ArrayList<>();
-        //    commaNumberValidator.setErrorList(errors);
-        //        commaNumberValidator.validate(str);
-        //        assertNotNull(errors);
-        //    assertEquals(0, errors.size());
-        //}
+        [Fact]
+        public void NegativeTest()
 
-        //@Test
-        //    void testWithtZeroLengthSentence() throws RedPenException {
-        //        Validator commaNumberValidator = ValidatorFactory.GetInstance("CommaNumber");
-        //String content = "";
-        //Sentence str = new Sentence(content, 0);
-        //List<ValidationError> errors = new ArrayList<>();
-        //commaNumberValidator.setErrorList(errors);
-        //commaNumberValidator.validate(str);
-        //assertNotNull(errors);
-        //assertEquals(0, errors.size());
-        //    }
+        {
+            CultureInfo cultureInfo = CultureInfo.GetCultureInfo("en-US");
+            string variant = "";
+            ValidationLevel level = ValidationLevel.ERROR;
 
-        //    @Test
-        //    void testJapaneseCornerCase() throws RedPenException {
-        //        Configuration config = Configuration.builder("ja")
-        //                .addValidatorConfig(new ValidatorConfiguration("CommaNumber"))
-        //                .build();
+            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
+            SymbolTable symbolTable = new SymbolTable(cultureInfo, variant, new List<Symbol>());
 
-        //Validator validator = ValidatorFactory.GetInstance(config.getValidatorConfigs().get(0), config);
-        //List<ValidationError> errors = new ArrayList<>();
-        //validator.setErrorList(errors);
-        //validator.validate(new Sentence("しかし、この仕組みで背中を押した結果、挑戦できない人は、ゴールに到達するためのタスクに挑戦するようになりました。", 0));
-        //assertEquals(0, errors.size());
-        //    }
+            // ValidatorConfiguration
+            var commaNumberConfiguration = new CommaNumberConfiguration(level, 3);
+
+            // Validator
+            var commaNumberValidator = new CommaNumberValidator(
+                ValidationLevel.ERROR,
+                cultureInfo,
+                symbolTable,
+                commaNumberConfiguration);
+
+            // Sentence
+            Sentence sentence = new Sentence("is it true.", 0);
+
+            // Validate
+            commaNumberValidator.PreValidate(sentence);
+            var errors = commaNumberValidator.Validate(sentence);
+
+            // Assertion
+            errors.Should().NotBeNull();
+            errors.Count.Should().Be(0); // カンマがないセンテンスなのでエラーは出てこない。
+
+            // Sentence
+            sentence = new Sentence("", 0);
+
+            // Validate
+            commaNumberValidator.PreValidate(sentence);
+            errors = commaNumberValidator.Validate(sentence);
+
+            // Assertion
+            errors.Should().NotBeNull();
+            errors.Count.Should().Be(0); // 空文字列でも正しくエラーは出てこない。
+        }
+
+        [Fact]
+        public void JaCornerCaseTest()
+
+        {
+            CultureInfo cultureInfo = CultureInfo.GetCultureInfo("ja-JP");
+            string variant = "";
+            ValidationLevel level = ValidationLevel.ERROR;
+
+            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
+            SymbolTable symbolTable = new SymbolTable(cultureInfo, variant, new List<Symbol>());
+
+            // ValidatorConfiguration
+            var commaNumberConfiguration = new CommaNumberConfiguration(level, 3);
+
+            // Validator
+            var commaNumberValidator = new CommaNumberValidator(
+                ValidationLevel.ERROR,
+                cultureInfo,
+                symbolTable,
+                commaNumberConfiguration);
+
+            // Sentence
+            Sentence sentence = new Sentence("しかし、この仕組みで背中を押した結果、挑戦できない人は、タスクに挑戦するようになりました。", 0);
+
+            // Validate
+            commaNumberValidator.PreValidate(sentence);
+            var errors = commaNumberValidator.Validate(sentence);
+
+            // Assertion
+            errors.Should().NotBeNull();
+            errors.Count.Should().Be(0);
+
+            // Sentence
+            sentence = new Sentence("今日は、とても、良い天気で、お花見日和だ、と思います。", 0);
+
+            // Validate
+            commaNumberValidator.PreValidate(sentence);
+            errors = commaNumberValidator.Validate(sentence);
+
+            // Assertion
+            errors.Should().NotBeNull();
+            errors.Count.Should().Be(1);
+
+            // 7. エラーメッセージを生成する。
+            var manager = ErrorMessageManager.GetInstance();
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("The number of commas (4) exceeds the maximum of 3.");
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("カンマの数（4）が最大値（3）を超えています。");
+        }
     }
 }
