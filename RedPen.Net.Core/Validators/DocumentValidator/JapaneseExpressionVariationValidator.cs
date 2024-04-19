@@ -10,14 +10,13 @@ using RedPen.Net.Core.Tokenizer;
 
 namespace RedPen.Net.Core.Validators.DocumentValidator
 {
-    /// <summary>
-    /// The japanese expression variation validator.
-    /// </summary>
+    /// <summary>日本語の表記ゆれを検出するValidator。</summary>
     public class JapaneseExpressionVariationValidator : Validator, IDocumentValidatable
     {
         /// <summary>Nlog</summary>
         private static Logger log = LogManager.GetCurrentClassLogger();
 
+        /// <summary>ValidationConfiguration</summary>
         public JapaneseExpressionVariationConfiguration Config { get; init; }
 
         public Dictionary<Document, Dictionary<string, List<TokenInfo>>> readingMap;
@@ -26,25 +25,31 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <summary>あらかじめ定義されたゆらぎ表現のMap。JapaneseExpressionVariationConfiguration.WordMapを用いる。</summary>
         private Dictionary<string, string> spellingVariationMap => Config.WordMap;
 
-        /// <summary>
-        /// The token info.
-        /// </summary>
-        public class TokenInfo
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="TokenInfo"/> class.
-            /// </summary>
-            /// <param name="element">The element.</param>
-            /// <param name="sentence">The sentence.</param>
-            public TokenInfo(TokenElement element, Sentence sentence)
-            {
-                this.element = element;
-                this.sentence = sentence;
-            }
+        /// <summary>サポート対象言語はja-JPのみ。</summary>
+        public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
 
-            public TokenElement element;
-            public Sentence sentence;
-        }
+        /// <summary>TokenInfoレコード。</summary>
+        public record TokenInfo(TokenElement element, Sentence sentence);
+
+        ///// <summary>
+        ///// The token info.
+        ///// </summary>
+        //public class TokenInfo
+        //{
+        //    /// <summary>
+        //    /// Initializes a new instance of the <see cref="TokenInfo"/> class.
+        //    /// </summary>
+        //    /// <param name="element">The element.</param>
+        //    /// <param name="sentence">The sentence.</param>
+        //    public TokenInfo(TokenElement element, Sentence sentence)
+        //    {
+        //        this.element = element;
+        //        this.sentence = sentence;
+        //    }
+
+        //    public TokenElement element;
+        //    public Sentence sentence;
+        //}
 
         // MEMO: newするタイミングでデフォルトリソースから辞書データを読み込む。
 
@@ -59,53 +64,10 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             base(
                 config.Level,
                 documentLangForTest,
-                //errorMessages,
                 symbolTable)
         {
             this.Config = config;
             Init();
-
-            //// MEMO: KeyValueDictionaryValidatorの仕組みをバイパスするための処理。
-            //spellingVariationMap = new Dictionary<string, string>();
-
-            //// DefaultResourceの読み込み。
-            //string v = DefaultResources.ResourceManager.GetString($"SpellingVariation_ja");
-            //foreach (string line in v.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
-            //{
-            //    string[] result = line.Split('\t');
-
-            //    if (result.Length == 2)
-            //    {
-            //        spellingVariationMap[result[0]] = result[1];
-            //    }
-            //    else
-            //    {
-            //        log.Error("Skip to load line... Invalid line: " + line);
-            //    }
-            //}
-        }
-
-        /// <summary>
-        /// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
-        /// </summary>
-        /// <param name="word">The word.</param>
-        /// <returns>A bool.</returns>
-        protected new bool InDictionary(string word) =>
-            spellingVariationMap.ContainsKey(word);
-
-        /// <summary>
-        /// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
-        /// </summary>
-        /// <param name="word">The word.</param>
-        /// <returns>A string? .</returns>
-        protected new string? GetValue(string word)
-        {
-            if (spellingVariationMap != null && spellingVariationMap.ContainsKey(word))
-            {
-                return spellingVariationMap[word];
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -116,9 +78,6 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             this.readingMap = new Dictionary<Document, Dictionary<string, List<TokenInfo>>>();
             this.sentenceMap = new Dictionary<Document, List<Sentence>>();
         }
-
-        /// <summary>サポート対象言語はja-JPのみ。</summary>
-        public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
 
         /// <summary>
         /// PreProcessors to documents
@@ -133,6 +92,103 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             {
                 // Token抽出。
                 ExtractTokensFromSentence(document, sentence);
+            }
+        }
+
+        /// <summary>
+        /// DocumentからSentenceを抽出する関数。
+        /// </summary>
+        /// <param name="document"></param>
+        /// <returns></returns>
+        private List<Sentence> ExtractSentences(Document document)
+        {
+            // 全SectionからSentenceを抽出する。
+            List<Sentence> sentences = new List<Sentence>();
+            foreach (Section section in document.Sections)
+            {
+                // sentences.AddRange(ExtractSentencesFromSection(section));
+
+                // ParagraphsからSentenceを抽出する。
+                sentences.AddRange(section.Paragraphs.SelectMany(i => i.Sentences).ToList());
+                // TODO: 先にParagraphからSentenceを抽出しているのはなぜ？　順番は関係ない？
+                sentences.AddRange(section.HeaderSentences);
+                // ListBlocksからSentenceを抽出する。
+                sentences.AddRange(section.ListBlocks.SelectMany(i => i.ListElements.SelectMany(j => j.Sentences)).ToList());
+            }
+
+            return sentences;
+        }
+
+        ///// <summary>
+        ///// SectionからSentenceを抽出する関数。
+        ///// </summary>
+        ///// <param name="section"></param>
+        ///// <returns></returns>
+        //private List<Sentence> ExtractSentencesFromSection(Section section)
+        //{
+        //    // ParagraphsからSentenceを抽出する。
+        //    List<Sentence> sentencesInSection = section.Paragraphs.SelectMany(i => i.Sentences).ToList();
+        //    // TODO: 先にParagraphからSentenceを抽出しているのはなぜ？　順番は関係ない？
+        //    sentencesInSection.AddRange(section.HeaderSentences);
+        //    // ListBlocksからSentenceを抽出する。
+        //    sentencesInSection.AddRange(section.ListBlocks.SelectMany(i => i.ListElements.SelectMany(j => j.Sentences)).ToList());
+
+        //    return sentencesInSection;
+        //}
+
+        /// <summary>
+        /// すべてのTokenを抽出する。
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="sentence">The sentence.</param>
+        private void ExtractTokensFromSentence(Document document, Sentence sentence)
+        {
+            List<TokenElement> nouns = new List<TokenElement>();
+            foreach (TokenElement token in sentence.Tokens)
+            {
+                // 半角スペーススキップ。
+                if (token.Surface.Equals(" "))
+                {
+                    continue;
+                }
+
+                // 対応readingMapが不在の場合初期化。
+                if (!this.readingMap.ContainsKey(document))
+                {
+                    this.readingMap[document] = new Dictionary<string, List<TokenInfo>>();
+                }
+                string reading = GetReading(token);
+                if (!this.readingMap[document].ContainsKey(reading))
+                {
+                    this.readingMap[document][reading] = new List<TokenInfo>();
+                }
+
+                // reading->Tokenの関係を登録。
+                this.readingMap[document][reading].Add(new TokenInfo(token, sentence));
+
+                // 名詞を収集。
+                if (token.Tags[0].Equals("名詞"))
+                {
+                    nouns.Add(token);
+                }
+                else
+                {
+                    // Tagの筆頭が名詞ではない場合で、nounsが2以上の場合？
+                    if (nouns.Count > 1)
+                    {
+                        // 複合名詞として追加登録する。これはNeologdのTokenizeルールによって分割された単語を結合する働きをする。
+                        // TODO: Sentenceが体言止めで終わっていた場合の複合名詞登録処理がされないケースが想定される。要チェック。
+                        TokenInfo compoundNoun = GenerateTokenFromNounsList(nouns, sentence);
+                        if (!this.readingMap[document].ContainsKey(compoundNoun.element.Reading))
+                        {
+                            this.readingMap[document][compoundNoun.element.Reading] = new List<TokenInfo>();
+                        }
+                        this.readingMap[document][compoundNoun.element.Reading].Add(compoundNoun);
+                    }
+
+                    // 複合名詞を登録したら一旦リストはクリアする。つまり複合名詞は最長のもの1つが登録される。
+                    nouns.Clear();
+                }
             }
         }
 
@@ -164,6 +220,28 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             }
 
             return errors;
+        }
+
+        /// <summary>
+        /// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns>A bool.</returns>
+        protected new bool InDictionary(string word) => spellingVariationMap.ContainsKey(word);
+
+        /// <summary>
+        /// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns>A string? .</returns>
+        protected new string? GetValue(string word)
+        {
+            if (spellingVariationMap != null && spellingVariationMap.ContainsKey(word))
+            {
+                return spellingVariationMap[word];
+            }
+
+            return null;
         }
 
         // 仮に「単語 ”Node” の揺らぎと考えられる表現 ”ノード(名詞)”」という表現が正とすると、
@@ -310,108 +388,6 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 .Replace("ヴェ", "ベ").Replace("ヴォ", "ボ").Replace("ヴ", "ブ");
 
         // TODO: 以下のextract関数は汎用的なものなので他のクラスで実装すべきでは？
-
-        /// <summary>
-        /// DocumentからSentenceを抽出する関数。
-        /// </summary>
-        /// <param name="document"></param>
-        /// <returns></returns>
-        private List<Sentence> ExtractSentences(Document document)
-        {
-            // 全SectionからSentenceを抽出する。
-            List<Sentence> sentences = new List<Sentence>();
-            foreach (Section section in document.Sections)
-            {
-                sentences.AddRange(ExtractSentencesFromSection(section));
-            }
-            return sentences;
-        }
-
-        /// <summary>
-        /// SectionからSentenceを抽出する関数。
-        /// </summary>
-        /// <param name="section"></param>
-        /// <returns></returns>
-        private List<Sentence> ExtractSentencesFromSection(Section section)
-        {
-            List<Sentence> sentencesInSection = new List<Sentence>();
-
-            // ParagraphsからSentenceを抽出する。
-            foreach (Paragraph paragraph in section.Paragraphs)
-            {
-                sentencesInSection.AddRange(paragraph.Sentences);
-            }
-
-            // TODO: 先にParagraphからSentenceを抽出しているのはなぜ？　順番は関係ない？
-            sentencesInSection.AddRange(section.HeaderSentences);
-
-            // ListBlocksからSentenceを抽出する。
-            foreach (ListBlock listBlock in section.ListBlocks)
-            {
-                foreach (ListElement listElement in listBlock.ListElements)
-                {
-                    sentencesInSection.AddRange(listElement.Sentences);
-                }
-            }
-
-            return sentencesInSection;
-        }
-
-        /// <summary>
-        /// すべてのTokenを抽出する。
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="sentence">The sentence.</param>
-        private void ExtractTokensFromSentence(Document document, Sentence sentence)
-        {
-            List<TokenElement> nouns = new List<TokenElement>();
-            foreach (TokenElement token in sentence.Tokens)
-            {
-                // 半角スペーススキップ。
-                if (token.Surface.Equals(" "))
-                {
-                    continue;
-                }
-
-                // 対応readingMapが不在の場合初期化。
-                if (!this.readingMap.ContainsKey(document))
-                {
-                    this.readingMap[document] = new Dictionary<string, List<TokenInfo>>();
-                }
-                string reading = GetReading(token);
-                if (!this.readingMap[document].ContainsKey(reading))
-                {
-                    this.readingMap[document][reading] = new List<TokenInfo>();
-                }
-
-                // reading->Tokenの関係を登録。
-                this.readingMap[document][reading].Add(new TokenInfo(token, sentence));
-
-                // 名詞を収集。
-                if (token.Tags[0].Equals("名詞"))
-                {
-                    nouns.Add(token);
-                }
-                else
-                {
-                    // Tagの筆頭が名詞ではない場合で、nounsが2以上の場合？
-                    if (nouns.Count > 1)
-                    {
-                        // 複合名詞として追加登録する。これはNeologdのTokenizeルールによって分割された単語を結合する働きをする。
-                        // TODO: Sentenceが体言止めで終わっていた場合の複合名詞登録処理がされないケースが想定される。要チェック。
-                        TokenInfo compoundNoun = GenerateTokenFromNounsList(nouns, sentence);
-                        if (!this.readingMap[document].ContainsKey(compoundNoun.element.Reading))
-                        {
-                            this.readingMap[document][compoundNoun.element.Reading] = new List<TokenInfo>();
-                        }
-                        this.readingMap[document][compoundNoun.element.Reading].Add(compoundNoun);
-                    }
-
-                    // 複合名詞を登録したら一旦リストはクリアする。つまり複合名詞は最長のもの1つが登録される。
-                    nouns.Clear();
-                }
-            }
-        }
 
         /// <summary>
         /// 複数の名詞から1つの複合名詞用TokenInfoを生成する。
