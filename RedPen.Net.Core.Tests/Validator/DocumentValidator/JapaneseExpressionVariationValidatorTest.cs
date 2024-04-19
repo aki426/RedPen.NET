@@ -151,58 +151,104 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                     .Should().Be("\"大使館\" は \"ヴェトナム大使館(名詞)\"（出現位置：(L3,0)）の揺らぎ表現と考えられます。");
         }
 
-        ///// <summary>
-        ///// detects the same readings in japanese characters.
-        ///// </summary>
-        //[Fact]
-        //public void detectSameReadingsInJapaneseCharacters()
-        //{
-        //    // MEMO: Configuration.Builder("ja-JP")でTokenizerはNeologdが割り当たっている。
-        //    config = Configuration.Builder("ja-JP")
-        //                 .AddValidatorConfig(new ValidatorConfiguration(validatorName))
-        //                 .Build();
+        [Fact]
+        public void DefaultDictionaryTest()
+        {
+            // Document
+            Document document = Document.Builder(
+                RedPenTokenizerFactory.CreateTokenizer(documentLang))
+                    .AddSection(1)
+                    .AddParagraph()
+                    .AddSentence(new Sentence("nodeは英語です。ノードはカタカナです。", 1))
+                    .Build(); // TokenizeをBuild時に実行する。
 
-        //    Document document = prepareSimpleDocument("之は山です。これは川です。");
+            // Validation
+            japaneseExpressionVariationValidator.PreValidate(document);
+            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
-        //    RedPen redPen = new RedPen(config);
-        //    Dictionary<Document, List<ValidationError>> errors = redPen.Validate(new List<Document>() { document });
+            // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
+            errors.Count().Should().Be(1);
 
-        //    // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
-        //    errors[document].Count().Should().Be(1);
+            // 7. エラーメッセージを生成する。
+            var manager = ErrorMessageManager.GetInstance();
 
-        //    // TODO: 次のテストケースはあくまで暫定。
-        //    errors[document][0].Message.Should().Be("単語 ”之” の揺らぎと考えられる表現 ”これ(名詞)” が (L1,6)　で見つかりました。");
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("Found possible Japanese word variations for \"node\", \"ノード(名詞)\" at (L1,10)");
 
-        //    output.WriteLine(errors[document][0].Message);
-        //    output.WriteLine(errors[document][0].ValidationName);
-        //    output.WriteLine(errors[document][0].Sentence.Content);
-        //    output.WriteLine(errors[document][0].LineNumber.ToString());
-        //}
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("\"node\" は \"ノード(名詞)\"（出現位置：(L1,10)）の揺らぎ表現と考えられます。");
+        }
 
-        //[Fact]
-        //public void detectSameReadingsInJapaneseCharactersInDefaultDictionary()
-        //{
-        //    // MEMO: Configuration.Builder("ja-JP")でTokenizerはNeologdが割り当たっている。
-        //    config = Configuration.Builder("ja-JP")
-        //        .AddValidatorConfig(new ValidatorConfiguration(validatorName))
-        //        .Build();
+        [Fact]
+        public void AppearPositionTest()
+        {
+            // Document
+            Document document = Document.Builder(
+                RedPenTokenizerFactory.CreateTokenizer(documentLang))
+                    .AddSection(1)
+                    .AddParagraph()
+                    .AddSentence(new Sentence("肖像権が正解で、昭三権は実在しない用語でありゆらぎ表現です。", 1))
+                    .Build(); // TokenizeをBuild時に実行する。
 
-        //    Document document = prepareSimpleDocument("nodeは英語です。ノードはカタカナです。");
+            // Validation
+            japaneseExpressionVariationValidator.PreValidate(document);
+            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
-        //    RedPen redPen = new RedPen(config);
-        //    Dictionary<Document, List<ValidationError>> errors = redPen.Validate(new List<Document>() { document });
+            // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
+            errors.Count().Should().Be(1);
 
-        //    // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
-        //    errors[document].Count.Should().Be(1);
+            // 7. エラーメッセージを生成する。
+            var manager = ErrorMessageManager.GetInstance();
 
-        //    // TODO: 次のテストケースはあくまで暫定。
-        //    errors[document][0].Message.Should().Be("単語 ”node” の揺らぎと考えられる表現 ”ノード(名詞)” が (L1,10)　で見つかりました。");
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("Found possible Japanese word variations for \"肖像\", \"昭三(名詞)\" at (L1,8)");
 
-        //    output.WriteLine(errors[document][0].Message);
-        //    output.WriteLine(errors[document][0].ValidationName);
-        //    output.WriteLine(errors[document][0].Sentence.Content);
-        //    output.WriteLine(errors[document][0].LineNumber.ToString());
-        //}
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("\"肖像\" は \"昭三(名詞)\"（出現位置：(L1,8)）の揺らぎ表現と考えられます。");
+
+            // Document
+            document = Document.Builder(
+                RedPenTokenizerFactory.CreateTokenizer(documentLang))
+                    .AddSection(1)
+                    .AddParagraph()
+                    .AddSentence(new Sentence("昭三権は実在しない用語でありゆらぎ表現で、肖像権が正解です。", 1))
+                    .Build(); // TokenizeをBuild時に実行する。
+
+            // Validation
+            japaneseExpressionVariationValidator.PreValidate(document);
+            errors = japaneseExpressionVariationValidator.Validate(document);
+
+            // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
+            errors.Count().Should().Be(1);
+
+            // 7. エラーメッセージを生成する。
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("en-US"))
+                    .Should().Be("Found possible Japanese word variations for \"昭三\", \"肖像(名詞)\" at (L1,21)");
+
+            manager.GetErrorMessage(
+                errors[0],
+                CultureInfo.GetCultureInfo("ja-JP"))
+                    .Should().Be("\"昭三\" は \"肖像(名詞)\"（出現位置：(L1,21)）の揺らぎ表現と考えられます。");
+        }
+
+        // MEMO: 現在の仕様では、ゆらぎと判断される2つの表現があった場合、先に出現したものがゆらぎ、後に出現したものが正としてエラーが出力される。
+        // このようなケースでは、例えば数が多いほうを正、少ないほうをゆらぎとするなどの判断が必要になる。
+        // 完全に同数だった場合は、エラーメッセージのバリエーションを変えて対応する必要がある。
+        // 例）『"XXX"（出現位置：(Lx,xx)）と "YYY"（出現位置：(Ly,yyy)）はどちらかが揺らぎ表現と考えられます。』
+        // この場合すべての出現箇所をエラーメッセージとして出す必要がある？
+
+        // TODO: ごく短い1文字の表現もゆらぎとしてカウントされると良くないので、テストケースを書いて検討する。
+        // 最終的にはMinLengthパラメータを実装して、指定文字数以下の表現はゆらぎとしてカウントしないようにする必要がありそう。
 
         //[Fact]
         //public void detectSameReadingsInJapaneseCharactersInDefaultDictionaryWithUpperCase()
