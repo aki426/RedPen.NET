@@ -89,12 +89,12 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <param name="document">The document.</param>
         public void PreValidate(Document document)
         {
-            // Sentence抽出。
-            sentenceMap[document] = ExtractSentences(document);
+            // すべてのSentenceを抽出し、ReadingMapを作成する。
+            sentenceMap[document] = GetAllSentences(document);
             foreach (Sentence sentence in sentenceMap[document])
             {
                 // Token抽出。
-                ExtractTokensFromSentence(document, sentence);
+                UpdateReadingMap(document, sentence);
             }
         }
 
@@ -103,7 +103,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// </summary>
         /// <param name="document"></param>
         /// <returns></returns>
-        private List<Sentence> ExtractSentences(Document document)
+        private List<Sentence> GetAllSentences(Document document)
         {
             // 全SectionからSentenceを抽出する。
             List<Sentence> sentences = new List<Sentence>();
@@ -144,7 +144,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="sentence">The sentence.</param>
-        private void ExtractTokensFromSentence(Document document, Sentence sentence)
+        private void UpdateReadingMap(Document document, Sentence sentence)
         {
             // 対応readingMapが不在の場合初期化する。
             if (!this.readingMap.ContainsKey(document))
@@ -256,6 +256,11 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             input.Replace("ー", "").Replace("ッ", "").Replace("ヴァ", "バ").Replace("ヴィ", "ビ")
                 .Replace("ヴェ", "ベ").Replace("ヴォ", "ボ").Replace("ヴ", "ブ");
 
+        /// <summary>
+        /// Validate document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <returns>A list of ValidationErrors.</returns>
         public List<ValidationError> Validate(Document document)
         {
             List<ValidationError> errors = new List<ValidationError>();
@@ -279,6 +284,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     // tokenに対して取得したreadingでエラーを生成する。
                     errors.AddRange(GenerateErrors(document, sentence, token, reading));
 
+                    // なんでエラー1個生成したら削除？
                     this.readingMap[document].Remove(reading);
                 }
             }
@@ -286,27 +292,27 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             return errors;
         }
 
-        /// <summary>
-        /// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
-        /// </summary>
-        /// <param name="word">The word.</param>
-        /// <returns>A bool.</returns>
-        protected new bool InDictionary(string word) => spellingVariationMap.ContainsKey(word);
+        ///// <summary>
+        ///// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
+        ///// </summary>
+        ///// <param name="word">The word.</param>
+        ///// <returns>A bool.</returns>
+        //protected new bool InDictionary(string word) => spellingVariationMap.ContainsKey(word);
 
-        /// <summary>
-        /// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
-        /// </summary>
-        /// <param name="word">The word.</param>
-        /// <returns>A string? .</returns>
-        protected new string? GetValue(string word)
-        {
-            if (spellingVariationMap != null && spellingVariationMap.ContainsKey(word))
-            {
-                return spellingVariationMap[word];
-            }
+        ///// <summary>
+        ///// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
+        ///// </summary>
+        ///// <param name="word">The word.</param>
+        ///// <returns>A string? .</returns>
+        //protected new string? GetValue(string word)
+        //{
+        //    if (spellingVariationMap != null && spellingVariationMap.ContainsKey(word))
+        //    {
+        //        return spellingVariationMap[word];
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         // 仮に「単語 ”Node” の揺らぎと考えられる表現 ”ノード(名詞)”」という表現が正とすると、
         // Nodeが正しい表現で、ノードがゆらぎ表現としてエラーだ、という意味になる。
@@ -320,8 +326,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// </summary>
         /// <param name="document"></param>
         /// <param name="sentence"></param>
-        /// <param name="targetToken"></param>
-        /// <param name="reading"></param>
+        /// <param name="targetToken">評価対象のToken</param>
+        /// <param name="reading">正規化されたtargetTokenのReading</param>
         private List<ValidationError> GenerateErrors(
             Document document,
             Sentence sentence,
@@ -338,108 +344,117 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 // ゆらぎ表現を説明する文字列
                 string variation = $"{surface}({variationList[0].element.Tags[0]})"; // generateErrorMessage(variationList, surface);
                 // ゆらぎ表現の出現位置
-                string positionList = AddVariationPositions(variationList);
+                string positionsText = ConvertToTokenPositionsText(variationList);
 
-                errors.Add(GetLocalizedErrorFromToken(sentence, targetToken, new object[] { variation, positionList }));
+                // errors.Add(GetLocalizedErrorFromToken(sentence, targetToken, new object[] { variation, positionList }));
+                errors.Add(new ValidationError(
+                    ValidationType.JapaneseExpressionVariation,
+                    this.Level,
+                    sentence,
+                    targetToken.Offset, // start
+                    targetToken.Offset + targetToken.Surface.Length, // end
+                    MessageArgs: new object[] { targetToken.Surface, variation, positionsText } // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+                ));
             }
 
             return errors;
         }
 
-        /// <summary>
-        /// create a ValidationError using the details within the given token &amp; localized message
-        /// </summary>
-        /// <param name="sentenceWithError"></param>
-        /// <param name="token">the TokenElement that has the error</param>
-        /// <param name="args"></param>
-        private ValidationError GetLocalizedErrorFromToken(Sentence sentenceWithError, TokenElement token, object[] args)
-        {
-            // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
-            List<object> argList = new List<object>() { token.Surface };
-            foreach (object arg in args)
-            {
-                argList.Add(arg);
-            }
-
-            return new ValidationError(
-                ValidationType.JapaneseExpressionVariation,
-                this.Level,
-                sentenceWithError,
-                token.Offset, // start
-                token.Offset + token.Surface.Length, // end
-                MessageArgs: argList.ToArray());
-            //    GetLocalizedErrorMessage(argList.ToArray()),
-            //    sentenceWithError,
-            //    token.Offset,
-            //    token.Offset + token.Surface.Length);
-
-            //return GetLocalizedErrorWithPosition(
-            //    sentenceWithError,
-            //    argList.ToArray(),
-            //    token.Offset, // start
-            //    token.Offset + token.Surface.Length // end
-            //);
-        }
-
-        private string AddVariationPositions(List<TokenInSentence> tokenList) =>
-            string.Join(", ", tokenList.Select(i => GetTokenPositionString(i)));
-
-        private string GetTokenPositionString(TokenInSentence token) =>
-            $"(L{token.sentence.LineNumber},{token.element.Offset})";
-
         private Dictionary<string, List<TokenInSentence>> GenerateVariationMap(
             Document document, TokenElement targetToken, string reading)
         {
+            // SurfaceをキーとしてTokenとその出現位置をValueとするマップとして機能している。
             Dictionary<string, List<TokenInSentence>> variationMap = new Dictionary<string, List<TokenInSentence>>();
 
-            // readingに対するTokenリストを取得。
-            foreach (TokenInSentence variation in this.readingMap[document][reading])
+            // readingを同じくするTokenのリストを取得。
+            foreach (TokenInSentence token in this.readingMap[document][reading])
             {
-                if (variation.element != targetToken && !targetToken.Surface.Equals(variation.element.Surface))
+                if (token.element != targetToken && !targetToken.Surface.Equals(token.element.Surface))
                 {
                     // 存在しなければListを登録。
-                    if (!variationMap.ContainsKey(variation.element.Surface))
+                    if (!variationMap.ContainsKey(token.element.Surface))
                     {
-                        variationMap[variation.element.Surface] = new List<TokenInSentence>();
+                        variationMap[token.element.Surface] = new List<TokenInSentence>();
                     }
 
                     // readingをキーとして取得したTokenを今度はSurfaceをキーとして登録する。
                     // これによって、ゆらぎのマップを作成する。
-                    variationMap[variation.element.Surface].Add(variation);
+                    variationMap[token.element.Surface].Add(token);
                 }
             }
             return variationMap;
         }
 
-        private string GenerateErrorMessage(List<TokenInSentence> variationList, string surface) =>
-            $"{surface}({variationList[0].element.Tags[0]})";
+        private string ConvertToTokenPositionsText(List<TokenInSentence> tokenList) =>
+            string.Join(", ", tokenList.Select(i => $"(L{i.sentence.LineNumber},{i.element.Offset})"));
+
+        ///// <summary>
+        ///// create a ValidationError using the details within the given token &amp; localized message
+        ///// </summary>
+        ///// <param name="sentence"></param>
+        ///// <param name="targetToken">the TokenElement that has the error</param>
+        ///// <param name="args"></param>
+        //private ValidationError GetLocalizedErrorFromToken(Sentence sentence, TokenElement targetToken, object[] args)
+        //{
+        //    // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+        //    List<object> argList = new List<object>() { targetToken.Surface };
+        //    foreach (object arg in args)
+        //    {
+        //        argList.Add(arg);
+        //    }
+
+        //    return new ValidationError(
+        //        ValidationType.JapaneseExpressionVariation,
+        //        this.Level,
+        //        sentence,
+        //        targetToken.Offset, // start
+        //        targetToken.Offset + targetToken.Surface.Length, // end
+        //        MessageArgs: argList.ToArray());
+        //    //    GetLocalizedErrorMessage(argList.ToArray()),
+        //    //    sentenceWithError,
+        //    //    token.Offset,
+        //    //    token.Offset + token.Surface.Length);
+
+        //    //return GetLocalizedErrorWithPosition(
+        //    //    sentenceWithError,
+        //    //    argList.ToArray(),
+        //    //    token.Offset, // start
+        //    //    token.Offset + token.Surface.Length // end
+        //    //);
+        //}
+
+        //private string GetTokenPositionString(TokenInSentence i) =>
+        //    $"(L{i.sentence.LineNumber},{i.element.Offset})";
+
+        //private string GenerateErrorMessage(List<TokenInSentence> variationList, string surface) =>
+        //    $"{surface}({variationList[0].element.Tags[0]})";
 
         // TODO: 以下のextract関数は汎用的なものなので他のクラスで実装すべきでは？
 
-        /// <summary>
-        /// 複数の名詞から1つの複合名詞用TokenInfoを生成する。
-        /// </summary>
-        /// <param name="nouns">The nouns.</param>
-        /// <param name="sentence">The sentence.</param>
-        /// <returns>A TokenInfo.</returns>
-        private TokenInSentence GenerateTokenFromNounsList(List<TokenElement> nouns, Sentence sentence)
-        {
-            // 単純連結。
-            StringBuilder surface = new StringBuilder();
-            StringBuilder reading = new StringBuilder();
-            foreach (TokenElement noun in nouns)
-            {
-                surface.Append(noun.Surface);
-                reading.Append(noun.Reading);
-            }
+        ///// <summary>
+        ///// 複数の名詞から1つの複合名詞用TokenInfoを生成する。
+        ///// </summary>
+        ///// <param name="nouns">The nouns.</param>
+        ///// <param name="sentence">The sentence.</param>
+        ///// <returns>A TokenInfo.</returns>
+        //private TokenInSentence GenerateTokenFromNounsList(List<TokenElement> nouns, Sentence sentence)
+        //{
+        //    // 単純連結。
+        //    StringBuilder surface = new StringBuilder();
+        //    StringBuilder reading = new StringBuilder();
+        //    foreach (TokenElement noun in nouns)
+        //    {
+        //        surface.Append(noun.Surface);
+        //        reading.Append(noun.Reading);
+        //    }
 
-            // Tag、Offsetは先頭のものを流用する。
-            TokenElement element = new TokenElement(
-                surface.ToString(),
-                nouns[0].Tags,
-                nouns[0].Offset,
-                reading.ToString());
-            return new TokenInSentence(element, sentence);
-        }
+        //    // Tag、Offsetは先頭のものを流用する。
+        //    TokenElement element = new TokenElement(
+        //        surface.ToString(),
+        //        nouns[0].Tags,
+        //        nouns[0].Offset,
+        //        reading.ToString());
+        //    return new TokenInSentence(element, sentence);
+        //}
     }
 }
