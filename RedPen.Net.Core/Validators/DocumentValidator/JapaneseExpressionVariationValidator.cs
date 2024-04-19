@@ -19,7 +19,10 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <summary>ValidationConfiguration</summary>
         public JapaneseExpressionVariationConfiguration Config { get; init; }
 
-        public Dictionary<Document, Dictionary<string, List<TokenInfo>>> readingMap;
+        // readingMapもsentenceMapもDocumentをキーとするDictionaryだが、このValidatorは複数のDocumentに共通する情報を持つ必要があるのか？
+        // Validationはたかだが1つのDocument内に閉じた情報と出力だけなら複数Documentの情報を持つ必要はないはず。
+
+        public Dictionary<Document, Dictionary<string, List<TokenInSentence>>> readingMap;
         public Dictionary<Document, List<Sentence>> sentenceMap;
 
         /// <summary>あらかじめ定義されたゆらぎ表現のMap。JapaneseExpressionVariationConfiguration.WordMapを用いる。</summary>
@@ -28,8 +31,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <summary>サポート対象言語はja-JPのみ。</summary>
         public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
 
-        /// <summary>TokenInfoレコード。</summary>
-        public record TokenInfo(TokenElement element, Sentence sentence);
+        /// <summary>TokenInSentence</summary>
+        public record TokenInSentence(TokenElement element, Sentence sentence);
 
         ///// <summary>
         ///// The token info.
@@ -75,7 +78,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// </summary>
         private void Init()
         {
-            this.readingMap = new Dictionary<Document, Dictionary<string, List<TokenInfo>>>();
+            this.readingMap = new Dictionary<Document, Dictionary<string, List<TokenInSentence>>>();
             this.sentenceMap = new Dictionary<Document, List<Sentence>>();
         }
 
@@ -106,8 +109,6 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             List<Sentence> sentences = new List<Sentence>();
             foreach (Section section in document.Sections)
             {
-                // sentences.AddRange(ExtractSentencesFromSection(section));
-
                 // ParagraphsからSentenceを抽出する。
                 sentences.AddRange(section.Paragraphs.SelectMany(i => i.Sentences).ToList());
                 // TODO: 先にParagraphからSentenceを抽出しているのはなぜ？　順番は関係ない？
@@ -136,6 +137,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         //    return sentencesInSection;
         //}
 
+        //private void ExtractTokens()
+
         /// <summary>
         /// すべてのTokenを抽出する。
         /// </summary>
@@ -143,7 +146,15 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <param name="sentence">The sentence.</param>
         private void ExtractTokensFromSentence(Document document, Sentence sentence)
         {
+            // 対応readingMapが不在の場合初期化する。
+            if (!this.readingMap.ContainsKey(document))
+            {
+                this.readingMap[document] = new Dictionary<string, List<TokenInSentence>>();
+            }
+
+            // 名詞のみ収集するためのリスト。
             List<TokenElement> nouns = new List<TokenElement>();
+
             foreach (TokenElement token in sentence.Tokens)
             {
                 // 半角スペーススキップ。
@@ -152,19 +163,14 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     continue;
                 }
 
-                // 対応readingMapが不在の場合初期化。
-                if (!this.readingMap.ContainsKey(document))
-                {
-                    this.readingMap[document] = new Dictionary<string, List<TokenInfo>>();
-                }
-                string reading = GetReading(token);
+                // tokenの正規化された読みであるreadingを取得し、readingMapに登録する。
+                string reading = GetNormalizedReading(token);
                 if (!this.readingMap[document].ContainsKey(reading))
                 {
-                    this.readingMap[document][reading] = new List<TokenInfo>();
+                    this.readingMap[document][reading] = new List<TokenInSentence>();
                 }
-
-                // reading->Tokenの関係を登録。
-                this.readingMap[document][reading].Add(new TokenInfo(token, sentence));
+                // reading->token->sentenceの関係を登録。
+                this.readingMap[document][reading].Add(new TokenInSentence(token, sentence));
 
                 // 名詞を収集。
                 if (token.Tags[0].Equals("名詞"))
@@ -173,24 +179,82 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 }
                 else
                 {
-                    // Tagの筆頭が名詞ではない場合で、nounsが2以上の場合？
+                    // 名詞ではない場合で、nounsが2以上の場合、それは複合名詞がnouns内に格納されているということ。
                     if (nouns.Count > 1)
                     {
                         // 複合名詞として追加登録する。これはNeologdのTokenizeルールによって分割された単語を結合する働きをする。
-                        // TODO: Sentenceが体言止めで終わっていた場合の複合名詞登録処理がされないケースが想定される。要チェック。
-                        TokenInfo compoundNoun = GenerateTokenFromNounsList(nouns, sentence);
-                        if (!this.readingMap[document].ContainsKey(compoundNoun.element.Reading))
+                        // TODO: Sentenceが体言止めで終わっていた場合、Sentenceの終わりでこのケースに落ちてこないので
+                        // 名詞登録処理がされないケースが想定される。要チェック。
+
+                        //TokenInSentence compoundNoun = GenerateTokenFromNounsList(nouns, sentence);
+
+                        TokenInSentence compoundNoun = new TokenInSentence(
+                            new TokenElement(
+                                string.Join("", nouns.Select(i => i.Surface)),
+                                nouns[0].Tags,
+                                nouns[0].Offset,
+                                string.Join("", nouns.Select(i => i.Reading))), // Normalizeしたいが、他TokenのReadingもNormalizeされているわけではないので保留。
+                            sentence);
+
+                        // 読みを正規化してからreadingMapに登録する。
+                        string compoundReading = GetNormalizedReading(compoundNoun.element);
+                        if (!this.readingMap[document].ContainsKey(compoundReading))
                         {
-                            this.readingMap[document][compoundNoun.element.Reading] = new List<TokenInfo>();
+                            this.readingMap[document][compoundReading] = new List<TokenInSentence>();
                         }
-                        this.readingMap[document][compoundNoun.element.Reading].Add(compoundNoun);
+                        this.readingMap[document][compoundReading].Add(compoundNoun);
                     }
 
-                    // 複合名詞を登録したら一旦リストはクリアする。つまり複合名詞は最長のもの1つが登録される。
-                    nouns.Clear();
+                    // 名詞意外の品詞が来たら、そこで名詞の連続は切れているのでクリアする。
+                    // つまり複合名詞は最長のもの1つが登録されるし、たかだか1個の名詞のあと他品詞が来た場合は複合名詞化はされない。
+                    if (nouns.Any()) { nouns.Clear(); }
                 }
             }
         }
+
+        /// <summary>
+        /// 辞書から引かれたゆらぎの表現を含む、正規化されたReadingを取得する。
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private string GetNormalizedReading(TokenElement token) =>
+            Normalize(GetPlainReading(token));
+
+        /// <summary>
+        /// gets the plain reading.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns>A string.</returns>
+        private string GetPlainReading(TokenElement token)
+        {
+            string surface = token.Surface.ToLower(); // MEMO: ToLower()の時点でsurfaceは英語表現だと期待されている？
+
+            // MEMO: むしろゆらぎ表現マップは英語表現の日本語読み辞書として機能している？
+
+            // ゆらぎ表現マップに「誤」として存在するかチェック。
+            return spellingVariationMap.ContainsKey(surface) ?
+                spellingVariationMap[surface] :
+                // surfaceが辞書に存在しない場合は、TokenElementからreadingまたはsurfaceを返す。
+                (token.Reading == null ? surface : token.Reading);
+
+            //if (spellingVariationMap.ContainsKey(surface))
+            //{
+            //    return spellingVariationMap[surface];
+            //}
+
+            //// surfaceが辞書に存在しない場合は、TokenElementからreadingまたはsurfaceを返す。
+            //return token.Reading == null ? surface : token.Reading;
+        }
+
+        /// <summary>
+        /// normalizes the.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>A string.</returns>
+        private string Normalize(string input) =>
+            // MEMO: 長音、促音、ヴ行、を正規化＝使用しない表現に置換。
+            input.Replace("ー", "").Replace("ッ", "").Replace("ヴァ", "バ").Replace("ヴィ", "ビ")
+                .Replace("ヴェ", "ベ").Replace("ヴォ", "ボ").Replace("ヴ", "ブ");
 
         public List<ValidationError> Validate(Document document)
         {
@@ -206,7 +270,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 foreach (TokenElement token in sentence.Tokens)
                 {
                     // readingを取得。ゆらぎ表現が含まれる。
-                    string reading = GetReading(token);
+                    string reading = GetNormalizedReading(token);
                     if (!this.readingMap[document].ContainsKey(reading))
                     {
                         continue;
@@ -267,10 +331,10 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             List<ValidationError> errors = new List<ValidationError>();
 
             // ゆらぎ表現をリストアップする。
-            Dictionary<string, List<TokenInfo>> variationMap = GenerateVariationMap(document, targetToken, reading);
+            Dictionary<string, List<TokenInSentence>> variationMap = GenerateVariationMap(document, targetToken, reading);
             foreach (string surface in variationMap.Keys)
             {
-                List<TokenInfo> variationList = variationMap[surface];
+                List<TokenInSentence> variationList = variationMap[surface];
                 // ゆらぎ表現を説明する文字列
                 string variation = $"{surface}({variationList[0].element.Tags[0]})"; // generateErrorMessage(variationList, surface);
                 // ゆらぎ表現の出現位置
@@ -317,26 +381,26 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             //);
         }
 
-        private string AddVariationPositions(List<TokenInfo> tokenList) =>
+        private string AddVariationPositions(List<TokenInSentence> tokenList) =>
             string.Join(", ", tokenList.Select(i => GetTokenPositionString(i)));
 
-        private string GetTokenPositionString(TokenInfo token) =>
+        private string GetTokenPositionString(TokenInSentence token) =>
             $"(L{token.sentence.LineNumber},{token.element.Offset})";
 
-        private Dictionary<string, List<TokenInfo>> GenerateVariationMap(
+        private Dictionary<string, List<TokenInSentence>> GenerateVariationMap(
             Document document, TokenElement targetToken, string reading)
         {
-            Dictionary<string, List<TokenInfo>> variationMap = new Dictionary<string, List<TokenInfo>>();
+            Dictionary<string, List<TokenInSentence>> variationMap = new Dictionary<string, List<TokenInSentence>>();
 
             // readingに対するTokenリストを取得。
-            foreach (TokenInfo variation in this.readingMap[document][reading])
+            foreach (TokenInSentence variation in this.readingMap[document][reading])
             {
                 if (variation.element != targetToken && !targetToken.Surface.Equals(variation.element.Surface))
                 {
                     // 存在しなければListを登録。
                     if (!variationMap.ContainsKey(variation.element.Surface))
                     {
-                        variationMap[variation.element.Surface] = new List<TokenInfo>();
+                        variationMap[variation.element.Surface] = new List<TokenInSentence>();
                     }
 
                     // readingをキーとして取得したTokenを今度はSurfaceをキーとして登録する。
@@ -347,45 +411,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             return variationMap;
         }
 
-        private string GenerateErrorMessage(List<TokenInfo> variationList, string surface) =>
+        private string GenerateErrorMessage(List<TokenInSentence> variationList, string surface) =>
             $"{surface}({variationList[0].element.Tags[0]})";
-
-        /// <summary>
-        /// 辞書から引かれたゆらぎの表現を含む、正規化されたReadingを取得する。
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        private string GetReading(TokenElement token) =>
-            Normalize(GetPlainReading(token));
-
-        /// <summary>
-        /// gets the plain reading.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <returns>A string.</returns>
-        private string GetPlainReading(TokenElement token)
-        {
-            string surface = token.Surface.ToLower();
-            if (InDictionary(surface))
-            {
-                // surfaceが辞書に存在する場合は、その値を返す。
-                // 例）surface:nodeに大して「ノード」を取得する。
-                return GetValue(surface);
-            }
-
-            // surfaceが辞書に存在しない場合は、readingを返す。
-            return token.Reading == null ? surface : token.Reading;
-        }
-
-        /// <summary>
-        /// normalizes the.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns>A string.</returns>
-        private string Normalize(string input) =>
-            // MEMO: 長音、促音、ヴ行、を正規化＝使用しない表現に置換。
-            input.Replace("ー", "").Replace("ッ", "").Replace("ヴァ", "バ").Replace("ヴィ", "ビ")
-                .Replace("ヴェ", "ベ").Replace("ヴォ", "ボ").Replace("ヴ", "ブ");
 
         // TODO: 以下のextract関数は汎用的なものなので他のクラスで実装すべきでは？
 
@@ -395,7 +422,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <param name="nouns">The nouns.</param>
         /// <param name="sentence">The sentence.</param>
         /// <returns>A TokenInfo.</returns>
-        private TokenInfo GenerateTokenFromNounsList(List<TokenElement> nouns, Sentence sentence)
+        private TokenInSentence GenerateTokenFromNounsList(List<TokenElement> nouns, Sentence sentence)
         {
             // 単純連結。
             StringBuilder surface = new StringBuilder();
@@ -412,7 +439,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 nouns[0].Tags,
                 nouns[0].Offset,
                 reading.ToString());
-            return new TokenInfo(element, sentence);
+            return new TokenInSentence(element, sentence);
         }
     }
 }
