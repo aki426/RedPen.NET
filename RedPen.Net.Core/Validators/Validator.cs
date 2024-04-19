@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Resources;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Tokenizer;
 
 namespace RedPen.Net.Core.Validators
 {
@@ -45,16 +43,9 @@ namespace RedPen.Net.Core.Validators
         /// <summary>ValidationLevel</summary>
         public ValidationLevel Level { get; set; }
 
-        /// <summary>このValidatorが出力するErrorMessageの言語設定。</summary>
-        //public CultureInfo Lang { get; init; }
-
-        ///// <summary>多言語対応のためのエラーメッセージリソースマネージャ</summary>
-        //public ResourceManager errorMessages { get; init; }
-
-        // MEMO: ValidatorConfigurationはValidatorクラスそのものには実装せず、
-        // 継承先の具象クラスとしての個別のValidatorクラスでプロパティとして実装しコンストラクタからDIする。
-
         // MEMO: Configurationの中でValidation時に必要な情報は個別のValidatorConfigurationとSymbolTableのみである。
+        // SymbolTableは入力文書に応じた言語設定で決定されるものなので、Validatorは外部からDIされValidate時に利用する。
+
         /// <summary>Validation中に使用するSymbolTable</summary>
         public SymbolTable SymbolTable { get; init; }
 
@@ -64,15 +55,18 @@ namespace RedPen.Net.Core.Validators
         /// </summary>
         public virtual List<string> SupportedLanguages => new List<string>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Validator"/> class.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="documentLang">The document lang.</param>
+        /// <param name="symbolTable">The symbol table.</param>
         protected Validator(
             ValidationLevel level,
             CultureInfo documentLang,
-            //ResourceManager errorMessages,
             SymbolTable symbolTable)
         {
             Level = level;
-            //Lang = lang;
-            //this.errorMessages = errorMessages;
             SymbolTable = symbolTable;
 
             // サポート対象言語チェック。
@@ -84,119 +78,89 @@ namespace RedPen.Net.Core.Validators
                 }
             }
         }
-
-        ///// <summary>
-        ///// create a ValidationError for the specified position with localized message with specified message key
-        ///// </summary>
-        ///// <param name="MessageKey"></param>
-        ///// <param name="sentenceWithError"></param>
-        ///// <param name="args"></param>
-        //protected internal ValidationError GetLocalizedError(
-        //    Sentence sentenceWithError,
-        //    object[] args,
-        //    string? MessageKey = null)
-        //{
-        //    return new ValidationError(
-        //        ValidationTypeExtend.ConvertFrom(this.ValidationName),
-        //        // this.ValidationName,
-        //        GetLocalizedErrorMessage(args, MessageKey),
-        //        sentenceWithError,
-        //        Level);
-        //}
-
-        ///// <summary>
-        ///// create a ValidationError for the specified position with specified message key
-        ///// </summary>
-        ///// <param name="messageKey"></param>
-        ///// <param name="sentenceWithError"></param>
-        ///// <param name="start">start position in parsed sentence</param>
-        ///// <param name="end">end position in parsed sentence</param>
-        ///// <param name="args"></param>
-        //protected internal ValidationError GetLocalizedErrorWithPosition(
-        //    Sentence sentenceWithError,
-        //    object[] args,
-        //    int start,
-        //    int end,
-        //    string? MessageKey = null)
-        //{
-        //    return new ValidationError(
-        //        ValidationTypeExtend.ConvertFrom(this.ValidationName),
-        //        GetLocalizedErrorMessage(args, MessageKey), // メッセージ生成。
-        //        sentenceWithError,
-        //        start,
-        //        end,
-        //        Level);
-        //}
-
-        ///// <summary>
-        ///// create a ValidationError using the details within the given token &amp; localized message
-        ///// </summary>
-        ///// <param name="sentenceWithError"></param>
-        ///// <param name="token">the TokenElement that has the error</param>
-        ///// <param name="args"></param>
-        //protected internal ValidationError GetLocalizedErrorFromToken(Sentence sentenceWithError, TokenElement token, object[] args)
-        //{
-        //    // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
-        //    List<object> argList = new List<object>() { token.Surface };
-        //    foreach (object arg in args)
-        //    {
-        //        argList.Add(arg);
-        //    }
-
-        //    return GetLocalizedErrorWithPosition(
-        //        sentenceWithError,
-        //        argList.ToArray(),
-        //        token.Offset, // start
-        //        token.Offset + token.Surface.Length // end
-        //    );
-        //}
-
-        ///// <summary>
-        ///// returns localized error message for the given key formatted with argument
-        ///// </summary>
-        ///// <param name="MessageKey">ErrorMessageにキーが設定されている場合はここで設定。通常無いのでデフォルト値はnull。</param>
-        ///// <param name="args">objects to format</param>
-        ///// <returns>localized error message</returns>
-        ///// <exception cref="InvalidOperationException"></exception>
-        //protected internal string GetLocalizedErrorMessage(object[] args, string? MessageKey = null)
-        //{
-        //    if (errorMessages == null)
-        //    {
-        //        throw new InvalidOperationException("message resource not found.");
-        //    }
-        //    else
-        //    {
-        //        // ErrorMessageにもValidatorNameだけでなく、エラーの種類によってはキー名を指定することがある。
-        //        string suffix = MessageKey == null ? "" : "." + MessageKey;
-
-        //        // ValidationMessage.resxではErrorMessageは"XXXValidator"という形式の識別子で登録されている。
-        //        // 「Validatorのクラス名 + "." + キー名」という形式の識別子で検索した現在のロケール用のメッセージ。
-        //        string pattern = errorMessages.GetString(this.GetType().Name + suffix, Lang);
-
-        //        // MessageFormatの代わりにstring.Formatを使用
-        //        return string.Format(Lang, pattern, args);
-        //    }
-        //}
     }
 
+    /// <summary>ValidatorがDocumentを対象にValidateする場合に実装するインターフェース。</summary>
     public interface IDocumentValidatable
     {
+        /// <summary>Validate前の前処理</summary>
         public void PreValidate(Document document);
 
+        /// <summary>Validation処理本体</summary>
         public List<ValidationError> Validate(Document document);
     }
 
+    /// <summary>ValidatorがSectionを対象にValidateする場合に実装するインターフェース。</summary>
     public interface ISectionValidatable
     {
+        /// <summary>Validate前の前処理</summary>
         public void PreValidate(Section section);
 
+        /// <summary>Validation処理本体</summary>
         public List<ValidationError> Validate(Section section);
     }
 
+    /// <summary>ValidatorがSentenceを対象にValidateする場合に実装するインターフェース。</summary>
     public interface ISentenceValidatable
     {
+        /// <summary>Validate前の前処理</summary>
         public void PreValidate(Sentence sentence);
 
+        /// <summary>Validation処理本体</summary>
         public List<ValidationError> Validate(Sentence sentence);
     }
+
+    // MEMO: 以下はValidator実装のボイラープレート。
+
+    // TODO: Validator初期実装時は以下を適宜コピペして使ってもよい。
+
+    //// TODO: Validation対象に応じて、IDocumentValidatable, ISectionValidatable, ISentenceValidatableを実装する。
+    //public class XXXValidator : Validator, ISentenceValidatable
+    //{
+    //    /// <summary>Nlog</summary>
+    //    private static Logger log = LogManager.GetCurrentClassLogger();
+
+    //    // TODO: 専用のValidatorConfigurationを別途定義する。
+
+    //    public XXXConfiguration Config { get; init; }
+
+    //    // TODO: サポート対象言語がANYではない場合overrideで再定義する。
+    //    /// <summary></summary>
+    //    public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
+
+    //    // TODO: コンストラクタの引数定義は共通にすること。
+    //    public XXXValidator(
+    //        ValidationLevel level,
+    //        CultureInfo documentLangForTest,
+    //        SymbolTable symbolTable,
+    //        XXXConfiguration config) :
+    //        base(
+    //            config.Level,
+    //            documentLangForTest,
+    //            symbolTable)
+    //    {
+    //        this.Config = config;
+    //    }
+
+    //    public void PreValidate(Document document)
+    //    {
+    //        // nothing.
+    //    }
+
+    //    public List<ValidationError> Validate(Sentence sentence)
+    //    {
+    //        List<ValidationError> result = new List<ValidationError>();
+
+    //        // validation
+
+    //        // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
+    //        result.Add(new ValidationError(
+    //            ValidationType.XXX,
+    //            this.Level,
+    //            sentence,
+    //            MessageArgs: new object[] { argsForMessageArg }));
+
+    //        return result;
+    //    }
+    //}
 }

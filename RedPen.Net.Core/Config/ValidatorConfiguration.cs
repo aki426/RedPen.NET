@@ -3,6 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace RedPen.Net.Core.Config
 {
+    // MEMO: 個別のValidatorConfigurationクラスの実装方法は既存のクラスを参照してください。
+
     /// <summary>
     /// RedPenConfigファイル内のValidatorの設定1つ分に相当するConfigurationを表現するための基底クラス。
     /// </summary>
@@ -18,12 +20,6 @@ namespace RedPen.Net.Core.Config
 
         [JsonIgnore]
         public ValidationType Type => ValidationTypeExtend.ConvertFrom(ValidationName);
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ValidatorConfiguration"/> class.
-        /// </summary>
-        /// <param name="level">ValidationLevelのテキスト表現</param>
-        public ValidatorConfiguration(string level) : this(ValidationLevelExtend.ConvertFrom(level)) { }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがMaxLengthプロパティを持つことを示すインターフェース。</summary>
@@ -33,6 +29,12 @@ namespace RedPen.Net.Core.Config
         public int MaxLength { get; init; }
     }
 
+    /// <summary>ValidatorConfigurationの継承クラスがMaxNumberプロパティを持つことを示すインターフェース。</summary>
+    public interface IMaxNumberConfigParameter
+    {
+        public int MaxNumber { get; init; }
+    }
+
     /// <summary>ValidatorConfigurationの継承クラスがWordMapプロパティを持つことを示すインターフェース。</summary>
     public interface IWordMapConfigParameter
     {
@@ -40,13 +42,9 @@ namespace RedPen.Net.Core.Config
         public Dictionary<string, string> WordMap { get; init; }
     }
 
+    /// <summary>ValidatorConfigurationの継承クラスがWordListプロパティを持つことを示すインターフェース。</summary>
     public interface IWordListConfigParameter
     {
         public List<string> WordList { get; init; }
-    }
-
-    public interface IMaxNumberConfigParameter
-    {
-        public int MaxNumber { get; init; }
     }
 }
