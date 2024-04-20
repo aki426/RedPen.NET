@@ -59,13 +59,13 @@ namespace RedPen.Net.Core.Tests.Utility
             // MEMO: TokenElementの仕様は無視してSurfaceのみで比較している。
             // TODO: TokenElementの実態に即した使い方に変更する。
             expressionRule.Match(new List<TokenElement>() {
-                new TokenElement("He", new List<string> { "tag" }, 0, "reading"),
-                new TokenElement("said", new List<string> { "tag" }, 0, "reading"),
-                new TokenElement(",", new List<string> { "tag" }, 0, "reading"),
-                new TokenElement("This", new List<string> { "tag" }, 0, "reading"),
-                new TokenElement("is", new List<string> { "tag" }, 0, "reading"),
-                new TokenElement("a", new List<string> { "tag" }, 0, "reading"),
-                new TokenElement("pen", new List<string> { "tag" }, 0, "reading"),
+                new TokenElement("He", new List<string> { "tag" }, 1, 0, "reading"),
+                new TokenElement("said", new List<string> { "tag" },1,  0, "reading"),
+                new TokenElement(",", new List<string> { "tag" },1,  0, "reading"),
+                new TokenElement("This", new List<string> { "tag" },1,  0, "reading"),
+                new TokenElement("is", new List<string> { "tag" },1,  0, "reading"),
+                new TokenElement("a", new List<string> { "tag" },1,  0, "reading"),
+                new TokenElement("pen", new List<string> { "tag" }, 1, 0, "reading"),
             }).Should().BeTrue();
         }
     }

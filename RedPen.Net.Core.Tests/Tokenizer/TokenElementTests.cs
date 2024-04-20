@@ -19,7 +19,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [Fact(DisplayName = "TokenElementのコンストラクタ基本テスト")]
         public void TokenElementTest()
         {
-            TokenElement actual = new TokenElement("word", new List<string> { "tag" }, 0, "reading");
+            TokenElement actual = new TokenElement("word", new List<string> { "tag" }, 1, 0, "reading");
             actual.Surface.Should().Be("word");
             actual.Tags.Should().BeEquivalentTo(new List<string> { "tag" });
             actual.Offset.Should().Be(0);
@@ -29,7 +29,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [Fact(DisplayName = "TokenElementのImmutable性テスト")]
         public void TokenElementImmutableTest()
         {
-            TokenElement actual = new TokenElement("word", new List<string> { "tag" }, 0, "reading");
+            TokenElement actual = new TokenElement("word", new List<string> { "tag" }, 1, 0, "reading");
 
             // Build error.
             //actual.Invoking(i => i.Surface = "new Surface")
@@ -63,7 +63,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [Fact()]
         public void ToStringTest()
         {
-            TokenElement actual = new TokenElement("surface of word", new List<string> { "tag", "list" }, 42, "reading");
+            TokenElement actual = new TokenElement("surface of word", new List<string> { "tag", "list" }, 1, 42, "reading");
             output.WriteLine(actual.ToString());
         }
     }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -33,26 +32,6 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
 
         /// <summary>TokenInSentence</summary>
         public record TokenInSentence(TokenElement element, Sentence sentence);
-
-        ///// <summary>
-        ///// The token info.
-        ///// </summary>
-        //public class TokenInfo
-        //{
-        //    /// <summary>
-        //    /// Initializes a new instance of the <see cref="TokenInfo"/> class.
-        //    /// </summary>
-        //    /// <param name="element">The element.</param>
-        //    /// <param name="sentence">The sentence.</param>
-        //    public TokenInfo(TokenElement element, Sentence sentence)
-        //    {
-        //        this.element = element;
-        //        this.sentence = sentence;
-        //    }
-
-        //    public TokenElement element;
-        //    public Sentence sentence;
-        //}
 
         // MEMO: newするタイミングでデフォルトリソースから辞書データを読み込む。
 
@@ -120,25 +99,6 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             return sentences;
         }
 
-        ///// <summary>
-        ///// SectionからSentenceを抽出する関数。
-        ///// </summary>
-        ///// <param name="section"></param>
-        ///// <returns></returns>
-        //private List<Sentence> ExtractSentencesFromSection(Section section)
-        //{
-        //    // ParagraphsからSentenceを抽出する。
-        //    List<Sentence> sentencesInSection = section.Paragraphs.SelectMany(i => i.Sentences).ToList();
-        //    // TODO: 先にParagraphからSentenceを抽出しているのはなぜ？　順番は関係ない？
-        //    sentencesInSection.AddRange(section.HeaderSentences);
-        //    // ListBlocksからSentenceを抽出する。
-        //    sentencesInSection.AddRange(section.ListBlocks.SelectMany(i => i.ListElements.SelectMany(j => j.Sentences)).ToList());
-
-        //    return sentencesInSection;
-        //}
-
-        //private void ExtractTokens()
-
         /// <summary>
         /// すべてのTokenを抽出する。
         /// </summary>
@@ -192,6 +152,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                             new TokenElement(
                                 string.Join("", nouns.Select(i => i.Surface)),
                                 nouns[0].Tags,
+                                nouns[0].LineNumber,
                                 nouns[0].Offset,
                                 string.Join("", nouns.Select(i => i.Reading))), // Normalizeしたいが、他TokenのReadingもNormalizeされているわけではないので保留。
                             sentence);
@@ -236,14 +197,6 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 spellingVariationMap[surface] :
                 // surfaceが辞書に存在しない場合は、TokenElementからreadingまたはsurfaceを返す。
                 (token.Reading == null ? surface : token.Reading);
-
-            //if (spellingVariationMap.ContainsKey(surface))
-            //{
-            //    return spellingVariationMap[surface];
-            //}
-
-            //// surfaceが辞書に存在しない場合は、TokenElementからreadingまたはsurfaceを返す。
-            //return token.Reading == null ? surface : token.Reading;
         }
 
         /// <summary>
@@ -291,28 +244,6 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
 
             return errors;
         }
-
-        ///// <summary>
-        ///// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
-        ///// </summary>
-        ///// <param name="word">The word.</param>
-        ///// <returns>A bool.</returns>
-        //protected new bool InDictionary(string word) => spellingVariationMap.ContainsKey(word);
-
-        ///// <summary>
-        ///// KeyValueDictionaryValidatorのDictionaryアクセスをバイパスするためのメソッド。
-        ///// </summary>
-        ///// <param name="word">The word.</param>
-        ///// <returns>A string? .</returns>
-        //protected new string? GetValue(string word)
-        //{
-        //    if (spellingVariationMap != null && spellingVariationMap.ContainsKey(word))
-        //    {
-        //        return spellingVariationMap[word];
-        //    }
-
-        //    return null;
-        //}
 
         // 仮に「単語 ”Node” の揺らぎと考えられる表現 ”ノード(名詞)”」という表現が正とすると、
         // Nodeが正しい表現で、ノードがゆらぎ表現としてエラーだ、という意味になる。
@@ -369,6 +300,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             // readingを同じくするTokenのリストを取得。
             foreach (TokenInSentence token in this.readingMap[document][reading])
             {
+                // 確認中のtargetTokenとSurfaceが異なるものについて、
                 if (token.element != targetToken && !targetToken.Surface.Equals(token.element.Surface))
                 {
                     // 存在しなければListを登録。
@@ -378,7 +310,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     }
 
                     // readingをキーとして取得したTokenを今度はSurfaceをキーとして登録する。
-                    // これによって、ゆらぎのマップを作成する。
+                    // つまりReadingが同じだけど、Surfaceが異なるマップ＝Surfaceに大してゆらいでいるとみなせる相手先のTokenのDictionaryを作成。
                     variationMap[token.element.Surface].Add(token);
                 }
             }
@@ -387,74 +319,5 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
 
         private string ConvertToTokenPositionsText(List<TokenInSentence> tokenList) =>
             string.Join(", ", tokenList.Select(i => $"(L{i.sentence.LineNumber},{i.element.Offset})"));
-
-        ///// <summary>
-        ///// create a ValidationError using the details within the given token &amp; localized message
-        ///// </summary>
-        ///// <param name="sentence"></param>
-        ///// <param name="targetToken">the TokenElement that has the error</param>
-        ///// <param name="args"></param>
-        //private ValidationError GetLocalizedErrorFromToken(Sentence sentence, TokenElement targetToken, object[] args)
-        //{
-        //    // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
-        //    List<object> argList = new List<object>() { targetToken.Surface };
-        //    foreach (object arg in args)
-        //    {
-        //        argList.Add(arg);
-        //    }
-
-        //    return new ValidationError(
-        //        ValidationType.JapaneseExpressionVariation,
-        //        this.Level,
-        //        sentence,
-        //        targetToken.Offset, // start
-        //        targetToken.Offset + targetToken.Surface.Length, // end
-        //        MessageArgs: argList.ToArray());
-        //    //    GetLocalizedErrorMessage(argList.ToArray()),
-        //    //    sentenceWithError,
-        //    //    token.Offset,
-        //    //    token.Offset + token.Surface.Length);
-
-        //    //return GetLocalizedErrorWithPosition(
-        //    //    sentenceWithError,
-        //    //    argList.ToArray(),
-        //    //    token.Offset, // start
-        //    //    token.Offset + token.Surface.Length // end
-        //    //);
-        //}
-
-        //private string GetTokenPositionString(TokenInSentence i) =>
-        //    $"(L{i.sentence.LineNumber},{i.element.Offset})";
-
-        //private string GenerateErrorMessage(List<TokenInSentence> variationList, string surface) =>
-        //    $"{surface}({variationList[0].element.Tags[0]})";
-
-        // TODO: 以下のextract関数は汎用的なものなので他のクラスで実装すべきでは？
-
-        ///// <summary>
-        ///// 複数の名詞から1つの複合名詞用TokenInfoを生成する。
-        ///// </summary>
-        ///// <param name="nouns">The nouns.</param>
-        ///// <param name="sentence">The sentence.</param>
-        ///// <returns>A TokenInfo.</returns>
-        //private TokenInSentence GenerateTokenFromNounsList(List<TokenElement> nouns, Sentence sentence)
-        //{
-        //    // 単純連結。
-        //    StringBuilder surface = new StringBuilder();
-        //    StringBuilder reading = new StringBuilder();
-        //    foreach (TokenElement noun in nouns)
-        //    {
-        //        surface.Append(noun.Surface);
-        //        reading.Append(noun.Reading);
-        //    }
-
-        //    // Tag、Offsetは先頭のものを流用する。
-        //    TokenElement element = new TokenElement(
-        //        surface.ToString(),
-        //        nouns[0].Tags,
-        //        nouns[0].Offset,
-        //        reading.ToString());
-        //    return new TokenInSentence(element, sentence);
-        //}
     }
 }

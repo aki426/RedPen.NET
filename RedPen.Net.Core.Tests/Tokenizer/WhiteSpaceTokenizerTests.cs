@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
+using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 using Xunit;
 
@@ -12,7 +12,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         public void TokenizeTest()
         {
             IRedPenTokenizer tokenizer = new WhiteSpaceTokenizer();
-            List<TokenElement> results = tokenizer.Tokenize("this is a\u00A0pen");
+            List<TokenElement> results = tokenizer.Tokenize(new Sentence("this is a\u00A0pen", 1));
 
             results.Count.Should().Be(4);
 
@@ -33,7 +33,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         public void TokenizeSentenceWithNoSpaceBracketTest()
         {
             IRedPenTokenizer tokenizer = new WhiteSpaceTokenizer();
-            List<TokenElement> results = tokenizer.Tokenize("distributed(cluster) systems are good");
+            List<TokenElement> results = tokenizer.Tokenize(new Sentence("distributed(cluster) systems are good", 1));
 
             results.Count.Should().Be(7);
 
@@ -63,7 +63,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         public void TokenizeSentenceEndsWithPeriodTest()
         {
             IRedPenTokenizer tokenizer = new WhiteSpaceTokenizer();
-            List<TokenElement> results = tokenizer.Tokenize("I am an engineer.");
+            List<TokenElement> results = tokenizer.Tokenize(new Sentence("I am an engineer.", 1));
 
             results.Count.Should().Be(5);
 
@@ -87,7 +87,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         public void TokenizeSentenceWithContractionTest()
         {
             IRedPenTokenizer tokenizer = new WhiteSpaceTokenizer();
-            List<TokenElement> results = tokenizer.Tokenize("I'm an engineer");
+            List<TokenElement> results = tokenizer.Tokenize(new Sentence("I'm an engineer", 1));
 
             results.Count.Should().Be(3);
             results[0].Surface.Should().Be("I'm");

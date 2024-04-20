@@ -92,7 +92,7 @@ namespace RedPen.Net.Core.Model
 
             foreach (Sentence sentence in section.HeaderSentences)
             {
-                sentence.Tokens = this.Tokenizer.Tokenize(sentence.Content);
+                sentence.Tokens = this.Tokenizer.Tokenize(sentence);
             }
 
             Sections.Add(section);
@@ -151,7 +151,7 @@ namespace RedPen.Net.Core.Model
                 sentence.IsFirstSentence = true;
             }
 
-            sentence.Tokens = Tokenizer.Tokenize(sentence.Content);
+            sentence.Tokens = Tokenizer.Tokenize(sentence);
             return this;
         }
 
@@ -192,7 +192,7 @@ namespace RedPen.Net.Core.Model
 
             foreach (Sentence sentence in contents)
             {
-                sentence.Tokens = Tokenizer.Tokenize(sentence.Content);
+                sentence.Tokens = Tokenizer.Tokenize(sentence);
             }
             lastSection.AppendListElement(contents, level);
             return this;
@@ -242,7 +242,7 @@ namespace RedPen.Net.Core.Model
             }
             List<Sentence> headers = lastSection.HeaderSentences;
             Sentence sentence = new Sentence(header, headers.Count);
-            sentence.Tokens = Tokenizer.Tokenize(sentence.Content);
+            sentence.Tokens = Tokenizer.Tokenize(sentence);
             headers.Add(sentence);
             return this;
         }

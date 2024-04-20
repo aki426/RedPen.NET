@@ -29,7 +29,8 @@ namespace RedPen.Net.Core.Utility
                     tagStr = wordSegments[1];
                 }
 
-                rule.Add(new TokenElement(surface, tagStr.Split(',').ToList(), 0));
+                // ExpressionRuleのTokenElementは特殊なので位置指定が実際の出現位置と結びついていない。
+                rule.Add(new TokenElement(surface, tagStr.Split(',').ToList(), 0, 0));
             }
             return rule;
         }

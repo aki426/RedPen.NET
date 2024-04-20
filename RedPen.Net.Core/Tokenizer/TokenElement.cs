@@ -21,6 +21,14 @@ namespace RedPen.Net.Core.Tokenizer
         /// </summary>
         public ImmutableList<string> Tags { get; init; }
 
+        // MEMO: JapaneseExpressionVariationValidator.ConvertToTokenPositionsText()では、
+        // シンプルにTokenElementに紐づけられたSentence.LineNumberをTokenElementの出現行数として使っている。
+        // このことから、一旦Sentenceが複数行にまたがるケースの検討は留保し、
+        // Sentence.LineNumberをTokenElement.LineNumberに引きうつすこととする。
+
+        /// <summary>the line of the sentence as the line of the token.</summary>
+        public int LineNumber { get; init; }
+
         /// <summary>
         /// the character position of the token in the sentence
         /// </summary>
@@ -38,10 +46,11 @@ namespace RedPen.Net.Core.Tokenizer
         /// <param name="tagList">The tag list.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="reading">The reading.</param>
-        public TokenElement(string word, IList<string> tagList, int offset, string reading)
+        public TokenElement(string word, IList<string> tagList, int lineNumber, int offset, string reading)
         {
             this.Surface = word;
             this.Tags = tagList.ToImmutableList();
+            this.LineNumber = lineNumber;
             this.Offset = offset;
             this.Reading = reading;
         }
@@ -52,8 +61,8 @@ namespace RedPen.Net.Core.Tokenizer
         /// <param name="word">The word.</param>
         /// <param name="tags">The tags.</param>
         /// <param name="offset">The offset.</param>
-        public TokenElement(string word, IList<string> tags, int offset) :
-            this(word, tags, offset, word)
+        public TokenElement(string word, IList<string> tags, int lineNumber, int offset) :
+            this(word, tags, offset, lineNumber, word)
         { }
     }
 }

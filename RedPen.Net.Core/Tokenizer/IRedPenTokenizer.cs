@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Tokenizer
 {
@@ -12,6 +13,8 @@ namespace RedPen.Net.Core.Tokenizer
         /// </summary>
         /// <param name="sentence">input sentence</param>
         /// <returns>a set of tokens in the input sentence</returns>
-        public List<TokenElement> Tokenize(string sentence);
+        // public List<TokenElement> Tokenize(string sentence);
+
+        public List<TokenElement> Tokenize(Sentence sentence);
     }
 }

@@ -33,6 +33,13 @@ namespace RedPen.Net.Core.Model
             this.OffsetMap = new List<LineOffset>();
         }
 
+        // MEMMO: TokenElementにLineNumberを追加するにあたり、Sentenceは1行内に収まっており、
+        // 改行された場合は別のSentenceと考えるルールを前提に置く。
+        // TODO: この前提はテストケースによって検証されなければならない。
+        // MEMO: 例えばMarkdownやAsciiDocの場合、改行はレンダリング時に無視されて1行に連結されてしまうので、
+        // あくまでテキストファイルの行数を基準にした場合にSentenceを分割する必要があり、それが実際の意味上のセンテンスの区切り
+        // （FullStopまでを1文とみなす）ことと食い違ってしまう可能性がある。
+
         public Sentence(string content, List<LineOffset> offsetMap, List<string> links)
         {
             this.Content = content;

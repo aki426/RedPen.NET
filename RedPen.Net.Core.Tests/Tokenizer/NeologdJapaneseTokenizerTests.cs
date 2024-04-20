@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
+using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 using Xunit;
 
@@ -14,7 +15,8 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         public void TokenizeTest()
         {
             NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
-            List<TokenElement> tokens = tokenizer.Tokenize("今日も晴天だ。");
+
+            List<TokenElement> tokens = tokenizer.Tokenize(new Sentence("今日も晴天だ。", 1));
 
             tokens.Count.Should().Be(5);
 
@@ -38,7 +40,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         public void TokenizeVoidTest()
         {
             NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
-            List<TokenElement> tokens = tokenizer.Tokenize("");
+            List<TokenElement> tokens = tokenizer.Tokenize(new Sentence("", 1));
             tokens.Count.Should().Be(0);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Lucene.Net.Analysis.Ja;
 using Lucene.Net.Analysis.Ja.TokenAttributes;
 using Lucene.Net.Analysis.TokenAttributes;
+using RedPen.Net.Core.Model;
 using System.Collections.Generic;
 using System.IO;
 
@@ -26,12 +27,36 @@ namespace RedPen.Net.Core.Tokenizer
                 JapaneseTokenizerMode.NORMAL);
         }
 
+        ///// <summary>
+        ///// Tokenizes the.
+        ///// </summary>
+        ///// <param name="sentence">The sentence.</param>
+        ///// <returns>A list of TokenElements.</returns>
+        //public List<TokenElement> Tokenize(string sentence)
+        //{
+        //    List<TokenElement> tokens = new List<TokenElement>();
+        //    try
+        //    {
+        //        foreach (TokenElement token in KuromojiNeologd(sentence))
+        //        {
+        //            tokens.Add(token);
+        //        }
+        //    }
+        //    catch (IOException e)
+        //    {
+        //        // TODO: StackTraceを出力するように変更。
+        //        throw;
+        //    }
+
+        //    return tokens;
+        //}
+
         /// <summary>
         /// Tokenizes the.
         /// </summary>
         /// <param name="sentence">The sentence.</param>
         /// <returns>A list of TokenElements.</returns>
-        public List<TokenElement> Tokenize(string sentence)
+        public List<TokenElement> Tokenize(Sentence sentence)
         {
             List<TokenElement> tokens = new List<TokenElement>();
             try
@@ -50,14 +75,47 @@ namespace RedPen.Net.Core.Tokenizer
             return tokens;
         }
 
+        ///// <summary>
+        ///// Kuromojis the neologd.
+        ///// </summary>
+        ///// <param name="src">The src.</param>
+        ///// <returns>A list of TokenElements.</returns>
+        //private List<TokenElement> KuromojiNeologd(string src)
+        //{
+        //    tokenizer.SetReader(new StringReader(src));
+        //    List<TokenElement> tokens = new List<TokenElement>();
+        //    IBaseFormAttribute baseAttr = tokenizer.AddAttribute<IBaseFormAttribute>();
+        //    ICharTermAttribute charAttr = tokenizer.AddAttribute<ICharTermAttribute>();
+        //    IPartOfSpeechAttribute posAttr = tokenizer.AddAttribute<IPartOfSpeechAttribute>();
+        //    IReadingAttribute readAttr = tokenizer.AddAttribute<IReadingAttribute>();
+        //    IOffsetAttribute offsetAttr = tokenizer.AddAttribute<IOffsetAttribute>();
+        //    IInflectionAttribute inflectionAttr = tokenizer.AddAttribute<IInflectionAttribute>();
+
+        //    tokenizer.Reset();
+        //    while (tokenizer.IncrementToken())
+        //    {
+        //        string surface = charAttr.ToString();
+        //        tokens.Add(new TokenElement(surface,
+        //                GetTagList(posAttr, inflectionAttr),
+        //                0,
+        //                offsetAttr.StartOffset,
+        //                readAttr.GetReading()
+
+        //        ));
+        //    }
+        //    tokenizer.Dispose();
+
+        //    return tokens;
+        //}
+
         /// <summary>
         /// Kuromojis the neologd.
         /// </summary>
         /// <param name="src">The src.</param>
         /// <returns>A list of TokenElements.</returns>
-        private List<TokenElement> KuromojiNeologd(string src)
+        private List<TokenElement> KuromojiNeologd(Sentence src)
         {
-            tokenizer.SetReader(new StringReader(src));
+            tokenizer.SetReader(new StringReader(src.Content));
             List<TokenElement> tokens = new List<TokenElement>();
             IBaseFormAttribute baseAttr = tokenizer.AddAttribute<IBaseFormAttribute>();
             ICharTermAttribute charAttr = tokenizer.AddAttribute<ICharTermAttribute>();
@@ -72,6 +130,7 @@ namespace RedPen.Net.Core.Tokenizer
                 string surface = charAttr.ToString();
                 tokens.Add(new TokenElement(surface,
                         GetTagList(posAttr, inflectionAttr),
+                        src.LineNumber,
                         offsetAttr.StartOffset,
                         readAttr.GetReading()
 

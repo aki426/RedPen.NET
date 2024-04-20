@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Tokenizer
 {
@@ -24,12 +25,54 @@ namespace RedPen.Net.Core.Tokenizer
         {
         }
 
-        /// <summary>
-        /// Tokenizes the.
-        /// </summary>
-        /// <param name="sentence">The sentence.</param>
-        /// <returns>A list of TokenElements.</returns>
-        public List<TokenElement> Tokenize(string sentence)
+        ///// <summary>
+        ///// Tokenizes the.
+        ///// </summary>
+        ///// <param name="sentence">The sentence.</param>
+        ///// <returns>A list of TokenElements.</returns>
+        //public List<TokenElement> Tokenize(string sentence)
+        //{
+        //    List<TokenElement> tokens = new List<TokenElement>();
+
+        //    string surface = "";
+        //    int offset = 0;
+        //    List<string> tags = new List<string>();
+
+        //    for (int i = 0; i < sentence.Length; i++)
+        //    {
+        //        char ch = sentence[i];
+        //        if ((DELIMITERS.IndexOf(ch) != -1) || IsWrappedDelimiters(sentence, i))
+        //        {
+        //            if (IsSuitableToken(surface))
+        //            {
+        //                tokens.Add(new TokenElement(surface, tags, 0, offset));
+        //            }
+        //            if (!char.IsWhiteSpace(ch) && ch != '\u00A0')
+        //            {
+        //                tokens.Add(new TokenElement(ch.ToString(), tags, 0, i));
+        //            }
+        //            surface = "";
+        //            offset = -1;
+        //        }
+        //        else
+        //        {
+        //            if (offset < 0)
+        //            {
+        //                offset = i;
+        //            }
+        //            surface += ch;
+        //        }
+        //    }
+
+        //    if (IsSuitableToken(surface))
+        //    {
+        //        tokens.Add(new TokenElement(surface, tags, 0, offset));
+        //    }
+
+        //    return tokens;
+        //}
+
+        public List<TokenElement> Tokenize(Sentence sentence)
         {
             List<TokenElement> tokens = new List<TokenElement>();
 
@@ -37,18 +80,18 @@ namespace RedPen.Net.Core.Tokenizer
             int offset = 0;
             List<string> tags = new List<string>();
 
-            for (int i = 0; i < sentence.Length; i++)
+            for (int i = 0; i < sentence.Content.Length; i++)
             {
-                char ch = sentence[i];
-                if ((DELIMITERS.IndexOf(ch) != -1) || IsWrappedDelimiters(sentence, i))
+                char ch = sentence.Content[i];
+                if ((DELIMITERS.IndexOf(ch) != -1) || IsWrappedDelimiters(sentence.Content, i))
                 {
                     if (IsSuitableToken(surface))
                     {
-                        tokens.Add(new TokenElement(surface, tags, offset));
+                        tokens.Add(new TokenElement(surface, tags, sentence.LineNumber, offset));
                     }
                     if (!char.IsWhiteSpace(ch) && ch != '\u00A0')
                     {
-                        tokens.Add(new TokenElement(ch.ToString(), tags, i));
+                        tokens.Add(new TokenElement(ch.ToString(), tags, sentence.LineNumber, i));
                     }
                     surface = "";
                     offset = -1;
@@ -65,7 +108,7 @@ namespace RedPen.Net.Core.Tokenizer
 
             if (IsSuitableToken(surface))
             {
-                tokens.Add(new TokenElement(surface, tags, offset));
+                tokens.Add(new TokenElement(surface, tags, sentence.LineNumber, offset));
             }
 
             return tokens;
