@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using RedPen.Net.Core.Parser;
 
 namespace RedPen.Net.Core.Tokenizer
 {
@@ -28,6 +29,8 @@ namespace RedPen.Net.Core.Tokenizer
 
         /// <summary>the line of the sentence as the line of the token.</summary>
         public int LineNumber { get; init; }
+
+        // TODO: TokenElementにLineOffsetを持たせることで、TokenElementの出現位置をより詳細に表現できるようにする。
 
         /// <summary>
         /// the character position of the token in the sentence

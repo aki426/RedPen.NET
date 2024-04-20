@@ -5,19 +5,21 @@ using System.IO;
 namespace RedPen.Net.Core.Parser
 {
     /// <summary>
-    /// The preprocessing reader.
+    /// This class wraps a Stream as StreamReader.
+    /// It looks for preprocessor instructions in the input text and converts this to a list of PreprocessorRules.
     /// </summary>
     public class PreprocessingReader : IDisposable
     {
-        // PreprocessingReaderがStreamを持つべきかStreamReaderを持つべきか、またBufferedStreamへの変換が必要か検討する。
-        // https://stackoverflow.com/questions/492283/when-to-use-net-bufferedstream-class
-        private BufferedStream bufferedStream;
+        // MEMO: JAVA版ではBufferedStreamを使っているが、C#版では必要なさそうなのでStreamReaderで代用する。
+        // PreprocessingReaderがStreamからのBuffering機能を持つ必要はなく、どのようなStreamを与えるかで利用側がコントロールすればよい。
+
+        private StreamReader streamReader;
+        private int lineNumber = 0;
+
+        private IDocumentParser? parser = null;
 
         public HashSet<PreprocessorRule> PreprocessorRules { get; init; } = new HashSet<PreprocessorRule>();
-
-        private int lineNumber = 0;
         private PreprocessorRule? lastRule = null;
-        private IDocumentParser? parser = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PreprocessingReader"/> class.
@@ -26,39 +28,41 @@ namespace RedPen.Net.Core.Parser
         /// <param name="parser">The parser.</param>
         public PreprocessingReader(Stream stream, IDocumentParser parser)
         {
-            this.bufferedStream = new BufferedStream(stream);
+            this.streamReader = new StreamReader(stream);
             this.parser = parser;
         }
 
         // MEMO: JAVAのCloseはC#のDisposeに相当する
-        /// <summary>
-        /// Disposes the.
-        /// </summary>
+
+        /// <summary>Dispose this.</summary>
         public void Dispose()
         {
-            // MEMO: BufferedStream.DisposeはCloseを再呼び出ししている
-            bufferedStream.Dispose();
+            streamReader.Dispose();
         }
 
         /// <summary>
-        /// Reads the line.
+        /// A wrapper method of StreamReader.ReadLine().
         /// </summary>
-        /// <returns>A string? .</returns>
+        /// <returns>a line string.</returns>
         public string? ReadLine()
         {
+            // PreprocessingReaderは各種フォーマットの特殊なルールを読み取る機能をReaderに持たせるためのものなので、
+            // 仮にこの処理を個別のフォーマット用Parserに実装したらこの関数は不要になる？
+
+            // MEMO: クラス内に状態としてStreamReaderを持つ設計なので、Streamは開きっぱなしである。
             // TODO: using句を使う実装を検討する。
-            // TODO: 文字コードをUTF8に固定する実装を検討する。
-            StreamReader sr = new StreamReader(this.bufferedStream);
-            var line = sr.ReadLine();
+
+            // TODO: 文字コードをUTF8に固定した方が良いか検討する。……利用側でコントロールすればよいか？
+
+            var line = this.streamReader.ReadLine();
             lineNumber++;
 
             // line == nullではなくsr.Peek() == -1で判定すべき？
             if (line == null) { return line; }
 
-            string ruleText = line;
-
             // TODO: Parserを実装したらコメントアウトを外す。
             // TODO: switch式を使う実装を検討する。
+            //string ruleText = line;
             //if (parser is AsciiDocParser)
             //{
             //    if (ruleText.ToLower().StartsWith("[suppress"))

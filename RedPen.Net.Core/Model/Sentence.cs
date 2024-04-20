@@ -16,7 +16,8 @@ namespace RedPen.Net.Core.Model
         public List<string> Links { get; init; } // need getter. List.add()はJAVA版でも使用実績がある。
         public List<TokenElement> Tokens { get; set; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
         public int StartPositionOffset { get; init; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
-        public List<LineOffset> OffsetMap { get; init; }// need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
+        /// <summary>SentenceのContentがLineOffset表現でどのような位置関係にあるかを1文字ずつ表現したもの</summary>
+        public List<LineOffset> OffsetMap { get; init; }
 
         public Sentence(string sentenceContent, int lineNum) : this(sentenceContent, lineNum, 0)
         {
@@ -39,6 +40,8 @@ namespace RedPen.Net.Core.Model
         // MEMO: 例えばMarkdownやAsciiDocの場合、改行はレンダリング時に無視されて1行に連結されてしまうので、
         // あくまでテキストファイルの行数を基準にした場合にSentenceを分割する必要があり、それが実際の意味上のセンテンスの区切り
         // （FullStopまでを1文とみなす）ことと食い違ってしまう可能性がある。
+
+        // MEMO: この辺りの実態はList<LineOffset> OffsetMapに複数行の位置指定があるかどうかで判断する必要がある。
 
         public Sentence(string content, List<LineOffset> offsetMap, List<string> links)
         {

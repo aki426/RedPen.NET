@@ -67,8 +67,10 @@
     <Compile Include="Model\DocumentCollectionTest.cs" />
     <Compile Include="Model\DocumentTests.cs" />
     <Compile Include="Model\SectionTests.cs" />
+    <Compile Include="Parser\BaseDocumentParserTests.cs" />
     <Compile Include="Parser\Common\LineTests.cs" />
     <Compile Include="Parser\LineOffsetTests.cs" />
+    <Compile Include="Parser\PlainTextParserTests.cs" />
     <Compile Include="Parser\SentenceExtractorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedPenUtilityTests.cs" />
