@@ -32,5 +32,10 @@ namespace RedPen.Net.Core.Parser
 
             return this.Offset - other.Offset;
         }
+
+        public string ConvertToText()
+        {
+            return $"(L{LineNum},{Offset})";
+        }
     }
 }
