@@ -146,10 +146,12 @@ Happy life. Happy home. Tama Home.
             paragraphs[1].Sentences[3].StartPositionOffset.Should().Be(0);
 
             // 改行無しでセンテンスが続いた場合のOffsetMapのOffsetは原文テキスト通りになっている。
+            _output.WriteLine($"=> {paragraphs[1].Sentences[1].Content}");
             foreach (var item in paragraphs[1].Sentences[1].OffsetMap)
             {
                 _output.WriteLine(item.ToString());
             }
+            _output.WriteLine("");
 
             // MEMO: 複数行に分かれたセンテンスは1つのSentenceオブジェクトにまとめられる。
             // その際、本来のテキストの位置情報はOffsetMapに格納される。
@@ -158,6 +160,14 @@ Happy life. Happy home. Tama Home.
             // 野を越え山越え、十里はなれた此のシラクスの市にやって来た。"
             paragraphs[2].Sentences[0].LineNumber.Should().Be(7);
             paragraphs[2].Sentences[0].StartPositionOffset.Should().Be(0);
+
+            int contentLength = paragraphs[2].Sentences[0].Content.Count();
+            int sumOfTokenSurface = paragraphs[2].Sentences[0].Tokens.Sum(t => t.Surface.Length);
+            int lineOffsetIndexLength = paragraphs[2].Sentences[0].OffsetMap.Count;
+
+            contentLength.Should().Be(44);
+            sumOfTokenSurface.Should().Be(44);
+            lineOffsetIndexLength.Should().Be(44);
 
             // MEMO: 日本語の場合、センテンス内の改行は無視されてただ連結される。
             // 目視確認のため制御文字を考慮して出力。
