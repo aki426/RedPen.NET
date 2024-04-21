@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -17,6 +18,24 @@ namespace RedPen.Net.Core.Tests.Parser
                 output.Add(new Sentence(line.Substring(first, second - first), 0));
             }
             return output;
+        }
+
+        [Fact]
+        public void GetOffsetTest()
+        {
+            // setup
+
+            // 日本語の改行されたテキスト表現を考える。
+            string origin = @"サン
+プル。";
+
+            // 日本語テキストの場合改行は単に連結される。
+            var sentence = new Sentence("サンプル。", 1, 0);
+            sentence.OffsetMap.Add(new LineOffset(1, 0)); // サ
+            sentence.OffsetMap.Add(new LineOffset(1, 1)); // ン
+            sentence.OffsetMap.Add(new LineOffset(2, 0)); // プ
+            sentence.OffsetMap.Add(new LineOffset(2, 1)); // ル
+            sentence.OffsetMap.Add(new LineOffset(2, 2)); // 。
         }
 
         [Fact]

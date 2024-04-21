@@ -63,8 +63,10 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [Fact()]
         public void ToStringTest()
         {
-            TokenElement actual = new TokenElement("surface of word", new List<string> { "tag", "list" }, 1, 42, "reading");
+            TokenElement actual = new TokenElement("surface of word", new List<string>() { "tag", "list" }, 1, 42, "reading");
+
             output.WriteLine(actual.ToString());
+            actual.ToString().Should().Be("TokenElement { Surface = \"surface of word\", Reading = \"reading\", LineNumber = 1, Offset = 42 , Tags = [ \"tag\", \"list\" ]}");
         }
     }
 }

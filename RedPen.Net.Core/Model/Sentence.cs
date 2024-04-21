@@ -1,6 +1,7 @@
 ﻿using RedPen.Net.Core.Parser;
 using RedPen.Net.Core.Tokenizer;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RedPen.Net.Core.Model
 {
@@ -63,9 +64,9 @@ namespace RedPen.Net.Core.Model
         {
             if (position >= 0)
             {
-                // MEMO: あらかじめContentの全文字とLineOffsetの対応関係を表現した
+                // MEMO: あらかじめContentの全文字とLineOffset（元テキストでの出現位置）の対応関係を表現した
                 // List<LineOffset>が作成されており、Contentの文字数とList＜LineOffset>の要素数が同じに保たれていることが前提。
-                if (this.OffsetMap.Count > position)
+                if (position < this.OffsetMap.Count)
                 {
                     return this.OffsetMap[position];
                 }
@@ -73,11 +74,18 @@ namespace RedPen.Net.Core.Model
                 {
                     // MEMO: Contentが空文字列ではない場合の末尾指定。改行かEOLのためのもの？
                     LineOffset last = this.OffsetMap[this.OffsetMap.Count - 1];
-                    return new LineOffset(last.LineNum, last.Offset + 1);
+                    return last with { Offset = last.Offset + 1 };
                 }
-
-                // MEMO: Contentの長さを超えてLineOffsetを返すことになるはず。
-                return new LineOffset(this.LineNumber, position);
+                else if (this.OffsetMap.Any())
+                {
+                    LineOffset last = this.OffsetMap[this.OffsetMap.Count - 1];
+                    return last with { Offset = position - this.OffsetMap.Count }; // 改行に関して考慮するとこのようになる。
+                }
+                else
+                {
+                    // MEMO: Contentの長さを超えてLineOffsetを返すことになるはず。
+                    return new LineOffset(this.LineNumber, position);
+                }
             }
 
             return null;
@@ -90,7 +98,8 @@ namespace RedPen.Net.Core.Model
         /// <returns>the position in the setence's content</returns>
         public int GetOffsetPosition(LineOffset offset)
         {
-            int position = this.OffsetMap.IndexOf(offset);
+            int position = this.OffsetMap.IndexOf(offset); // 発見されなかった場合は-1が返る。
+            // TODO: 発見されなかった場合に0を返すのは正しいか？
             return position < 0 ? 0 : position;
         }
 

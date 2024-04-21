@@ -183,22 +183,20 @@ namespace RedPen.Net.Core.Parser
             return this.endOfSentenceDetector.GetSentenceEndPosition(str, 0);
         }
 
-        //    /**
-        //     * Return the string that should be used to re-join lines broken with \n in
-        //     * <p>
-        //     * For English, this is a space.
-        //     * For Japanese, it is an empty string.
-        //     *
-        //     * The specification of this string should be moved to part of the configuration
-        //     *
-        //     * @return a string used to join lines that have been 'broken'
-        //     */
+        /// <summary>
+        /// 改行で分割されたテキストを再結合するための文字列を返します。
+        /// １センテンスであるべき文字列が改行で分割された場合にそれを連結することを想定しています。
+        /// 日本語の場合：空文字列
+        /// 英語などそれ以外の言語の場合：半角空白
+        /// TODO: The specification of this string should be moved to part of the configuration
+        /// </summary>
+        /// <returns>A string.</returns>
         public string getBrokenLineSeparator()
         {
             // 日本語設定のみのハードコーディングだが、日本語は空文字列で
             // それ以外の言語は半角空白をBlokenLineSeparatorとする、という2択で良いのか疑問が残る。
             // TODO: 多言語対応の際には、このメソッドの実装を見直す。
-            return (symbolTable != null) && (symbolTable.Lang == "ja") ? "" : " ";
+            return (symbolTable != null) && (symbolTable.Lang == "ja-JP") ? "" : " ";
         }
     }
 }

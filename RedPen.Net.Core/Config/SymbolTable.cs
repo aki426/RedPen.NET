@@ -12,7 +12,7 @@ namespace RedPen.Net.Core.Config
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        /// <summary>Lang</summary>
+        /// <summary>言語表現。CultureInfo.Nameである必要がある。</summary>
         public string Lang { get; init; }
 
         /// <summary>Variant</summary>

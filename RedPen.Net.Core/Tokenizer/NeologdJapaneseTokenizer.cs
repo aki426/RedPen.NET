@@ -61,6 +61,8 @@ namespace RedPen.Net.Core.Tokenizer
             List<TokenElement> tokens = new List<TokenElement>();
             try
             {
+                // TODO: 現状、Tokenに原文の位置を渡せていないので、
+                // TokenizeしたSurfaceの文字数をカウントしてSentence.GetOffsetから位置情報を取得してTokenに渡す。
                 foreach (TokenElement token in KuromojiNeologd(sentence))
                 {
                     tokens.Add(token);

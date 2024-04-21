@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using RedPen.Net.Core.Parser;
 
 namespace RedPen.Net.Core.Tokenizer
@@ -67,5 +68,15 @@ namespace RedPen.Net.Core.Tokenizer
         public TokenElement(string word, IList<string> tags, int lineNumber, int offset) :
             this(word, tags, offset, lineNumber, word)
         { }
+
+        /// <summary>
+        /// ToString()
+        /// </summary>
+        /// <returns>A string.</returns>
+        public override string ToString()
+        {
+            string tags = string.Join(", ", this.Tags.Select(i => $"\"{i}\""));
+            return $"TokenElement {{ Surface = \"{this.Surface}\", Reading = \"{this.Reading}\", LineNumber = {this.LineNumber}, Offset = {this.Offset} , Tags = [ {tags} ]}}";
+        }
     }
 }
