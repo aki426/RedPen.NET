@@ -80,6 +80,9 @@ namespace RedPen.Net.Core.Tokenizer
             int offset = 0;
             List<string> tags = new List<string>();
 
+            // TODO: 現状、Tokenに原文の位置を渡せていないので、
+            // TokenizeしたSurfaceの文字数をカウントしてSentence.GetOffsetから位置情報を取得してTokenに渡す。
+
             for (int i = 0; i < sentence.Content.Length; i++)
             {
                 char ch = sentence.Content[i];

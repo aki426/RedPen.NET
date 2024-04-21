@@ -52,7 +52,7 @@ namespace RedPen.Net.Core.Tokenizer
         //}
 
         /// <summary>
-        /// Tokenizes the.
+        /// Tokenize a sentence.
         /// </summary>
         /// <param name="sentence">The sentence.</param>
         /// <returns>A list of TokenElements.</returns>

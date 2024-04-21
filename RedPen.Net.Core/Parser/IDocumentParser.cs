@@ -5,6 +5,11 @@ using System.IO;
 
 namespace RedPen.Net.Core.Parser
 {
+    // TODO: C#では存在意義が無いので削除する。
+    // そもそもすべてのParserはBaseDocumentParserを継承しており、BaseDocumentParserにParse関数があるため
+    // IDocumentParserが無くても言語仕様上同じ機能を果たす。
+    // また、IDocumentParserがあるためにVSでParse関数の定義／参照箇所を検索した際に実装のないIDocumentParserがヒットしてしまう。
+
     public interface IDocumentParser
     {
         Document Parse(Stream inputStream, SentenceExtractor sentenceExtractor, IRedPenTokenizer tokenizer);
