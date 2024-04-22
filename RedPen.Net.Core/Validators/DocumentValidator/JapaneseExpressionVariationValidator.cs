@@ -22,7 +22,13 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         // readingMapもsentenceMapもDocumentをキーとするDictionaryだが、このValidatorは複数のDocumentに共通する情報を持つ必要があるのか？
         // Validationはたかだが1つのDocument内に閉じた情報と出力だけなら複数Documentの情報を持つ必要はないはず。
 
+        // TODO: Documentをまたいでゆらぎ表現を検出するニーズが無いのであれば、複数Documentの情報をValidatorが持つ必要はない。
+        // また、LineOffsetはTokenElementが持っているので、TokenInSentenceは不要。
+
+        // Dictionary<string, List<TokenElement>>へ修正する。
         public Dictionary<Document, Dictionary<string, List<TokenInSentence>>> readingMap;
+
+        // sentenceMapはおそらく不要。
         public Dictionary<Document, List<Sentence>> sentenceMap;
 
         /// <summary>あらかじめ定義されたゆらぎ表現のMap。JapaneseExpressionVariationConfiguration.WordMapを用いる。</summary>
@@ -72,34 +78,12 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         public void PreValidate(Document document)
         {
             // すべてのSentenceを抽出し、ReadingMapを作成する。
-            sentenceMap[document] = GetAllSentences(document);
+            sentenceMap[document] = document.GetAllSentences(); // GetAllSentences(document);
             foreach (Sentence sentence in sentenceMap[document])
             {
                 // Token抽出。
                 UpdateReadingMap(document, sentence);
             }
-        }
-
-        /// <summary>
-        /// DocumentからSentenceを抽出する関数。
-        /// </summary>
-        /// <param name="document"></param>
-        /// <returns></returns>
-        private List<Sentence> GetAllSentences(Document document)
-        {
-            // 全SectionからSentenceを抽出する。
-            List<Sentence> sentences = new List<Sentence>();
-            foreach (Section section in document.Sections)
-            {
-                // ParagraphsからSentenceを抽出する。
-                sentences.AddRange(section.Paragraphs.SelectMany(i => i.Sentences).ToList());
-                // TODO: 先にParagraphからSentenceを抽出しているのはなぜ？　順番は関係ない？
-                sentences.AddRange(section.HeaderSentences);
-                // ListBlocksからSentenceを抽出する。
-                sentences.AddRange(section.ListBlocks.SelectMany(i => i.ListElements.SelectMany(j => j.Sentences)).ToList());
-            }
-
-            return sentences;
         }
 
         /// <summary>
