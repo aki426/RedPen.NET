@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Parser;
@@ -74,6 +76,24 @@ namespace RedPen.Net.Core.Tests.Parser
 
             lineOneOffsetTwo.ToString().Should().Be("LineOffset { LineNum = 1, Offset = 2 }");
             output.WriteLine(lineOneOffsetTwo.ToString());
+        }
+
+        [Fact]
+        public void FirstAndFirstOrDefaultTest()
+        {
+            ImmutableList.Create<LineOffset>().FirstOrDefault().Should().BeNull(); // null
+
+            Action act = () => ImmutableList.Create<LineOffset>().First();
+            act.Should().Throw<InvalidOperationException>()
+                .WithMessage("シーケンスに要素が含まれていません"); // Exception
+
+            ImmutableList<LineOffset>.Builder builder = ImmutableList.CreateBuilder<LineOffset>();
+            builder.Add(new LineOffset(1, 1));
+            builder.Add(new LineOffset(2, 2));
+            var immutable = builder.ToImmutable();
+
+            immutable.First().Should().Be(new LineOffset(1, 1));
+            immutable.FirstOrDefault().Should().Be(new LineOffset(1, 1));
         }
     }
 }

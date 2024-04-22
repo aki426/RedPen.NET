@@ -43,6 +43,19 @@ namespace RedPen.Net.Core.Tokenizer
         /// </summary>
         public string Reading { get; init; }
 
+        /// <summary>TokenのSurfaceがLineOffset表現でどのような位置関係にあるかを1文字ずつ表現したもの</summary>
+        public ImmutableList<LineOffset> OffsetMap { get; init; }
+
+        public TokenElement(string word, ImmutableList<string> tagList, string reading, ImmutableList<LineOffset> offsetMap)
+        {
+            this.Surface = word;
+            this.Tags = tagList;
+            this.LineNumber = offsetMap.First().LineNum; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
+            this.Offset = offsetMap.First().Offset; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
+            this.Reading = reading;
+            this.OffsetMap = offsetMap;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenElement"/> class.
         /// </summary>

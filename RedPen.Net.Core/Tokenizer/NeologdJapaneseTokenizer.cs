@@ -4,6 +4,12 @@ using Lucene.Net.Analysis.TokenAttributes;
 using RedPen.Net.Core.Model;
 using System.Collections.Generic;
 using System.IO;
+using System;
+
+using System.Collections.Generic;
+
+using System.Linq;
+using System.Collections.Immutable;
 
 namespace RedPen.Net.Core.Tokenizer
 {
@@ -127,16 +133,23 @@ namespace RedPen.Net.Core.Tokenizer
             IInflectionAttribute inflectionAttr = tokenizer.AddAttribute<IInflectionAttribute>();
 
             tokenizer.Reset();
+            int currentOffset = 0;
             while (tokenizer.IncrementToken())
             {
                 string surface = charAttr.ToString();
-                tokens.Add(new TokenElement(surface,
-                        GetTagList(posAttr, inflectionAttr),
-                        src.LineNumber,
-                        offsetAttr.StartOffset,
-                        readAttr.GetReading()
 
+                tokens.Add(new TokenElement(
+                    surface,
+                    GetTagList(posAttr, inflectionAttr).ToImmutableList(),
+                    //src.LineNumber,
+                    //offsetAttr.StartOffset,
+                    readAttr.GetReading(),
+                    // surfaceに対応するOffsetMapをSentenceから取得する。
+                    Enumerable.Range(currentOffset, surface.Length).Select(i => src.ConvertToLineOffset(i)).ToImmutableList()
                 ));
+
+                // iteration.
+                currentOffset += surface.Length;
             }
             tokenizer.Dispose();
 

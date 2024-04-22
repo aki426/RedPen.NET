@@ -1,4 +1,5 @@
-﻿using RedPen.Net.Core.Parser;
+﻿using NLog;
+using RedPen.Net.Core.Parser;
 using RedPen.Net.Core.Tokenizer;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,8 @@ namespace RedPen.Net.Core.Model
     public record class Sentence
     {
         // TODO: recordで実装したが、隠ぺいしたほうが良いものはアクセシビリティを変更する。
+
+        private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
         private static readonly long serialVersionUID = 3761982769692999924L;
 
@@ -46,6 +49,21 @@ namespace RedPen.Net.Core.Model
 
         public Sentence(string content, List<LineOffset> offsetMap, List<string> links)
         {
+            // MEMO: 位置が存在しないSentenceは存在しないという前提。
+            if (!offsetMap.Any() || offsetMap.Count == 0)
+            {
+                string msg = "OffsetMap is empty. Sentence content: " + content;
+                LOG.Error(msg);
+                throw new System.ArgumentException(msg);
+            }
+            // MEMO: Contentの文字数とOffsetMapの要素数が一致していない場合はエラーとする。
+            if (content.Count() != offsetMap.Count)
+            {
+                string msg = "Content length and OffsetMap size are different. Sentence content: " + content;
+                LOG.Error(msg);
+                throw new System.ArgumentException(msg);
+            }
+
             this.Content = content;
             this.LineNumber = offsetMap[0].LineNum;
             this.IsFirstSentence = false;
@@ -89,6 +107,28 @@ namespace RedPen.Net.Core.Model
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Sentence.ContentのIndexに対して元のテキストのLineOffsetを返す関数。
+        /// </summary>
+        /// <param name="index">0始まり、Sentence.Content.Length - 1まで</param>
+        /// <returns>指定IndexのLineOffset</returns>
+        public LineOffset ConvertToLineOffset(int index)
+        {
+            // MEMO: OffsetMapはOffsetなので、文字の前に何文字存在するかを表す。
+            // イメージとして「あいう」という文字列があったら、「い」のOffsetは「あ」と「い」の間の隙間の位置。
+
+            // MEMO: OffsetMapは空ではないこととContentと同じ要素数であることがコンストラクタで保証されている。
+            // 範囲外のIndexへのアクセスはエラーとする。
+            if (index < 0 || this.OffsetMap.Count <= index)
+            {
+                string msg = $"Invalid index: {index} in sentence : {this.Content}";
+                LOG.Error(msg);
+                throw new System.ArgumentException(msg);
+            }
+
+            return this.OffsetMap[index];
         }
 
         /// <summary>

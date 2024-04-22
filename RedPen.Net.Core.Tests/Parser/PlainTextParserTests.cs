@@ -173,11 +173,13 @@ Happy life. Happy home. Tama Home.
             // 目視確認のため制御文字を考慮して出力。
             _output.WriteLine(ConvertToControlCharVisible(paragraphs[2].Sentences[0].Content));
 
+            // MEMO: TokenElementにもOffsetMapを持たせているので、それを利用して元のテキストの位置情報を取得できる。
+            // 改行されていることをOffsetMapで確認できる。
             foreach (LineOffset item in paragraphs[2].Sentences[0].OffsetMap)
             {
                 _output.WriteLine(item.ConvertToText());
             }
-
+            // Tokenの位置を正確にOffsetMapで保持しているので、元のテキストの位置情報を取得できる。
             foreach (var item in paragraphs[2].Sentences[0].Tokens)
             {
                 _output.WriteLine(item.ToString());
