@@ -19,30 +19,20 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <summary>ValidationConfiguration</summary>
         public JapaneseExpressionVariationConfiguration Config { get; init; }
 
-        // readingMapもsentenceMapもDocumentをキーとするDictionaryだが、このValidatorは複数のDocumentに共通する情報を持つ必要があるのか？
-        // Validationはたかだが1つのDocument内に閉じた情報と出力だけなら複数Documentの情報を持つ必要はないはず。
+        // MEMO: 一旦、複数Documentをまたいだゆらぎ表現検出は対応しないものとする。
+        // 1Documentにつき1Validationを原則とする。
 
-        // TODO: Documentをまたいでゆらぎ表現を検出するニーズが無いのであれば、複数Documentの情報をValidatorが持つ必要はない。
-        // また、LineOffsetはTokenElementが持っているので、TokenInSentenceは不要。
+        /// <summary>ドキュメント内のすべてのTokenの正規化されたReadingをキーとしたマップ</summary>
+        public Dictionary<string, List<TokenElement>> readingMap;
 
-        // Dictionary<string, List<TokenElement>>へ修正する。
-        public Dictionary<Document, Dictionary<string, List<TokenInSentence>>> readingMap;
-
-        // sentenceMapはおそらく不要。
-        public Dictionary<Document, List<Sentence>> sentenceMap;
-
-        /// <summary>あらかじめ定義されたゆらぎ表現のMap。JapaneseExpressionVariationConfiguration.WordMapを用いる。</summary>
+        /// <summary>あらかじめ定義されたゆらぎ検出のためのReadingのMap。JapaneseExpressionVariationConfiguration.WordMapを用いる。</summary>
         private Dictionary<string, string> spellingVariationMap => Config.WordMap;
 
         /// <summary>サポート対象言語はja-JPのみ。</summary>
         public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
 
-        // TODO: TokenElementが完全なOffsetMapを持つので、TokenInSentenceは不要。
-
-        /// <summary>TokenInSentence</summary>
-        public record TokenInSentence(TokenElement element, Sentence sentence);
-
-        // MEMO: newするタイミングでデフォルトリソースから辞書データを読み込む。
+        // MEMO: デフォルトリソースからの辞書データ読み込みはJapaneseExpressionVariationConfiguration生成時に行う。
+        // ValidatorはJapaneseExpressionVariationConfigurationの設定情報のみを用いて処理を行う。
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JapaneseExpressionVariationValidator"/> class.
@@ -58,16 +48,16 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 symbolTable)
         {
             this.Config = config;
-            Init();
+            this.readingMap = new Dictionary<string, List<TokenElement>>();
         }
 
-        /// <summary>
-        /// 現在蓄積されている文章構造Map情報を初期化する。
-        /// </summary>
+        /// <summary>現在Validatorが持つReadingMapを初期化する。</summary>
         private void Init()
         {
-            this.readingMap = new Dictionary<Document, Dictionary<string, List<TokenInSentence>>>();
-            this.sentenceMap = new Dictionary<Document, List<Sentence>>();
+            if (this.readingMap == null || this.readingMap.Any())
+            {
+                this.readingMap = new Dictionary<string, List<TokenElement>>();
+            }
         }
 
         /// <summary>
@@ -77,28 +67,23 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <param name="document">The document.</param>
         public void PreValidate(Document document)
         {
+            // readingMap初期化。
+            Init();
+
             // すべてのSentenceを抽出し、ReadingMapを作成する。
-            sentenceMap[document] = document.GetAllSentences(); // GetAllSentences(document);
-            foreach (Sentence sentence in sentenceMap[document])
+            foreach (Sentence sentence in document.GetAllSentences())
             {
                 // Token抽出。
-                UpdateReadingMap(document, sentence);
+                UpdateReadingMap(sentence);
             }
         }
 
         /// <summary>
         /// すべてのTokenを抽出する。
         /// </summary>
-        /// <param name="document">The document.</param>
         /// <param name="sentence">The sentence.</param>
-        private void UpdateReadingMap(Document document, Sentence sentence)
+        private void UpdateReadingMap(Sentence sentence)
         {
-            // 対応readingMapが不在の場合初期化する。
-            if (!this.readingMap.ContainsKey(document))
-            {
-                this.readingMap[document] = new Dictionary<string, List<TokenInSentence>>();
-            }
-
             // 名詞のみ収集するためのリスト。
             List<TokenElement> nouns = new List<TokenElement>();
 
@@ -112,12 +97,12 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
 
                 // tokenの正規化された読みであるreadingを取得し、readingMapに登録する。
                 string reading = GetNormalizedReading(token);
-                if (!this.readingMap[document].ContainsKey(reading))
+                if (!this.readingMap.ContainsKey(reading))
                 {
-                    this.readingMap[document][reading] = new List<TokenInSentence>();
+                    this.readingMap[reading] = new List<TokenElement>();
                 }
-                // reading->token->sentenceの関係を登録。
-                this.readingMap[document][reading].Add(new TokenInSentence(token, sentence));
+                // reading->tokenの関係を登録。
+                this.readingMap[reading].Add(token);
 
                 // 名詞を収集。
                 if (token.Tags[0].Equals("名詞"))
@@ -126,33 +111,27 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 }
                 else
                 {
-                    // 名詞ではない場合で、nounsが2以上の場合、それは複合名詞がnouns内に格納されているということ。
+                    // 名詞ではない場合で、nounsが2以上の場合、それは複合名詞がnouns内に格納されておりかつ複合名詞の区切りということ。
                     if (nouns.Count > 1)
                     {
                         // 複合名詞として追加登録する。これはNeologdのTokenizeルールによって分割された単語を結合する働きをする。
-                        // TODO: Sentenceが体言止めで終わっていた場合、Sentenceの終わりでこのケースに落ちてこないので
+                        // TODO: Sentenceが体言止めで終わっておりかつFullStopが無い場合、Sentenceの終わりでこのケースに落ちてこないので
                         // 名詞登録処理がされないケースが想定される。要チェック。
 
-                        //TokenInSentence compoundNoun = GenerateTokenFromNounsList(nouns, sentence);
-
-                        TokenInSentence compoundNoun = new TokenInSentence(
-                            new TokenElement(
-                                string.Join("", nouns.Select(i => i.Surface)),
-                                nouns[0].Tags.ToImmutableList(),
-                                //nouns[0].LineNumber,
-                                //nouns[0].Offset,
-                                string.Join("", nouns.Select(i => i.Reading)),
-                                nouns.SelectMany(n => n.OffsetMap).ToImmutableList()
-                                ),
-                            sentence);
+                        var compoundNounToken = new TokenElement(
+                            string.Join("", nouns.Select(i => i.Surface)),
+                            nouns[0].Tags.ToImmutableList(),
+                            string.Join("", nouns.Select(i => i.Reading)),
+                            nouns.SelectMany(n => n.OffsetMap).ToImmutableList()
+                        );
 
                         // 読みを正規化してからreadingMapに登録する。
-                        string compoundReading = GetNormalizedReading(compoundNoun.element);
-                        if (!this.readingMap[document].ContainsKey(compoundReading))
+                        string compoundReading = GetNormalizedReading(compoundNounToken);
+                        if (!this.readingMap.ContainsKey(compoundReading))
                         {
-                            this.readingMap[document][compoundReading] = new List<TokenInSentence>();
+                            this.readingMap[compoundReading] = new List<TokenElement>();
                         }
-                        this.readingMap[document][compoundReading].Add(compoundNoun);
+                        this.readingMap[compoundReading].Add(compoundNounToken);
                     }
 
                     // 名詞意外の品詞が来たら、そこで名詞の連続は切れているのでクリアする。
@@ -201,33 +180,28 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <summary>
         /// Validate document.
         /// </summary>
-        /// <param name="document">The document.</param>
+        /// <param name="document">※不要。</param>
         /// <returns>A list of ValidationErrors.</returns>
         public List<ValidationError> Validate(Document document)
         {
             List<ValidationError> errors = new List<ValidationError>();
 
-            if (!sentenceMap.ContainsKey(document))
-            {
-                throw new InvalidOperationException
-                    ("Document " + document.FileName + " does not have any sentence");
-            }
-            foreach (Sentence sentence in sentenceMap[document])
+            foreach (Sentence sentence in document.GetAllSentences())
             {
                 foreach (TokenElement token in sentence.Tokens)
                 {
                     // readingを取得。ゆらぎ表現が含まれる。
                     string reading = GetNormalizedReading(token);
-                    if (!this.readingMap[document].ContainsKey(reading))
+                    if (!this.readingMap.ContainsKey(reading))
                     {
                         continue;
                     }
 
                     // tokenに対して取得したreadingでエラーを生成する。
-                    errors.AddRange(GenerateErrors(document, sentence, token, reading));
+                    errors.AddRange(GenerateErrors(sentence, token, reading));
 
                     // TODO: なんでエラー1個生成したら削除？　ゆらぎの出現箇所は複数ある可能性がある。
-                    this.readingMap[document].Remove(reading);
+                    this.readingMap.Remove(reading);
                 }
             }
 
@@ -242,7 +216,6 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <param name="targetToken">評価対象のToken</param>
         /// <param name="reading">正規化されたtargetTokenのReading</param>
         private List<ValidationError> GenerateErrors(
-            Document document,
             Sentence sentence,
             TokenElement targetToken,
             string reading)
@@ -250,7 +223,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             List<ValidationError> errors = new List<ValidationError>();
 
             // ゆらぎ表現をリストアップする。
-            var variations = GetVariationTokens(document, targetToken, reading);
+            var variations = GetVariationTokens(targetToken, reading);
             foreach (string surface in variations.Keys)
             {
                 List<TokenElement> variationList = variations[surface];
@@ -281,28 +254,30 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <param name="reading">The reading.</param>
         /// <returns>A Dictionary.</returns>
         private Dictionary<string, List<TokenElement>> GetVariationTokens(
-            Document document, TokenElement targetToken, string reading)
+            TokenElement targetToken, string reading)
         {
             // SurfaceをキーとしてゆらぎのTokenリスト引くDictionary。
             Dictionary<string, List<TokenElement>> variationMap = new Dictionary<string, List<TokenElement>>();
 
             // readingを同じくするTokenのリストを取得。
-            foreach (TokenInSentence token in this.readingMap[document][reading])
+            foreach (TokenElement token in this.readingMap[reading])
             {
                 // 確認中のtargetTokenとSurfaceが異なるものを集める。品詞は考慮していない。
                 // TODO: 複数の品詞のTokenが一緒くたにListに入ってしまうのでそのようなケースを考慮すべきか検討する。
-                if (targetToken.Surface != token.element.Surface)
+                // TODO: Readingが全く同じでSurfaceが異なるTokenが3種類以上ある場合、2者間でのゆらぎ判定ではなく、3者間でのゆらぎ判定となる。
+                // TODO: ゆらぎの判定は、2種類のSurfaceがあった場合に片方に偏っている場合、数が少ないほうをタイポ＝ゆらぎと推測することができる。
+                if (targetToken.Surface != token.Surface)
                 {
                     // 存在しなければListを登録。
-                    if (!variationMap.ContainsKey(token.element.Surface))
+                    if (!variationMap.ContainsKey(token.Surface))
                     {
-                        variationMap[token.element.Surface] = new List<TokenElement>();
+                        variationMap[token.Surface] = new List<TokenElement>();
                     }
 
                     // readingをキーとして取得したTokenを今度はSurfaceをキーとして登録する。
                     // つまりReadingが同じだけど、Surfaceが異なるToken＝言及対象のTokenのSurfaceに対してゆらいでいるとみなせる相手先のToken
                     // のDictionaryを作成。
-                    variationMap[token.element.Surface].Add(token.element);
+                    variationMap[token.Surface].Add(token);
                 }
             }
             return variationMap;
