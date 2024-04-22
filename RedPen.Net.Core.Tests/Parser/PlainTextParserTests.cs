@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
@@ -212,6 +213,50 @@ Happy life. Happy home. Tama Home.
         }
 
         [Fact]
+        public void EnglishShortMultiLineTest()
+        {
+            string sampleText = @"This is
+a very
+verylong pen.
+";
+            Document doc = GenerateDocument(sampleText, "en-US");
+            Section section = doc.GetLastSection();
+            if (section == null)
+            {
+                Assert.False(true);
+            }
+
+            // 3行に分割された1センテンス。
+            section.Paragraphs.Count.Should().Be(1);
+            section.Paragraphs.Sum(p => p.Sentences.Count).Should().Be(1);
+
+            var sentence = section.Paragraphs[0].Sentences[0];
+
+            // 改行を連結する際にスペースが入るので"This is a very verylong pen."となり28文字。
+            sentence.Content.Length.Should().Be(28);
+
+            sentence.Tokens[3].Surface.Should().Be("very");
+            sentence.Tokens[3].OffsetMap[0].Should().Be(new LineOffset(2, 2));
+
+            sentence.Tokens[5].Surface.Should().Be("pen");
+            sentence.Tokens[5].OffsetMap[0].Should().Be(new LineOffset(3, 9));
+
+            sentence.Tokens[6].Surface.Should().Be(".");
+            sentence.Tokens[6].OffsetMap[0].Should().Be(new LineOffset(3, 12));
+
+            // OffsetMapを目視確認。
+            foreach (var item in sentence.OffsetMap)
+            {
+                _output.WriteLine(item.ToString());
+            }
+
+            foreach (var item in sentence.Tokens)
+            {
+                _output.WriteLine(item.ToString());
+            }
+        }
+
+        [Fact]
         public void JapaneseShortMultiLineTest()
         {
             string sampleText = @"サン
@@ -224,37 +269,47 @@ Happy life. Happy home. Tama Home.
                 Assert.False(true);
             }
 
-            // 2行改行があるので、7センテンスが3セクションに分割される。
+            // 改行が連結されて1センテンスになる。
             section.Paragraphs.Count.Should().Be(1);
             section.Paragraphs.Sum(p => p.Sentences.Count).Should().Be(1);
 
-            var paragraphs = section.Paragraphs;
-
-            paragraphs[0].Sentences.Count.Should().Be(1);
             // "サンプル。"
-            var sentence = paragraphs[0].Sentences[0];
-            sentence.Content.Should().Be("サンプル。");
-            sentence.LineNumber.Should().Be(1);
-            sentence.StartPositionOffset.Should().Be(0);
+            var sentence = section.Paragraphs[0].Sentences[0];
 
+            sentence.Content.Should().Be("サンプル。");
             sentence.OffsetMap.Count.Should().Be(5);
+            sentence.Tokens.Count().Should().Be(2);
+
+            sentence.Tokens[0].Surface.Should().Be("サンプル");
+            sentence.Tokens[0].OffsetMap[0].Should().Be(new LineOffset(1, 0));
+            sentence.Tokens[0].OffsetMap[1].Should().Be(new LineOffset(1, 1));
+            sentence.Tokens[0].OffsetMap[2].Should().Be(new LineOffset(2, 0));
+            sentence.Tokens[0].OffsetMap[3].Should().Be(new LineOffset(2, 1));
+
+            sentence.Tokens[1].Surface.Should().Be("。");
+            sentence.Tokens[1].OffsetMap[0].Should().Be(new LineOffset(2, 2));
 
             foreach (var item in sentence.OffsetMap)
             {
                 _output.WriteLine(item.ToString());
             }
 
-            // Sentenceはそれ以前の情報までは持っていないので0より小さい場合はnullを返す。
-            sentence.GetOffset(-1).Should().BeNull();
+            // Sentenceはそれ以前の情報までは持っていないので0より小さい場合はExceptionを投げる。
+            Action act = () => sentence.ConvertToLineOffset(-1);
+            act.Should().Throw<ArgumentException>()
+                .WithMessage("Invalid index: -1 in sentence : サンプル。"); // Exception
+
             // SentenceのContentの1文字ずつが元のテキストのどこに位置しているか。
-            sentence.GetOffset(0).Should().Be(new LineOffset(1, 0));
-            sentence.GetOffset(1).Should().Be(new LineOffset(1, 1));
-            sentence.GetOffset(2).Should().Be(new LineOffset(2, 0));
-            sentence.GetOffset(3).Should().Be(new LineOffset(2, 1));
-            sentence.GetOffset(4).Should().Be(new LineOffset(2, 2));
-            // Sentence.Contentの範囲を超えた場合は、推定位置として最後の文字と同じ行の相当する文字位置を返す。
-            // つまりこの場合LineOffset(2, 5)にはならない。
-            sentence.GetOffset(5).Should().Be(new LineOffset(2, 3));
+            sentence.ConvertToLineOffset(0).Should().Be(new LineOffset(1, 0));
+            sentence.ConvertToLineOffset(1).Should().Be(new LineOffset(1, 1));
+            sentence.ConvertToLineOffset(2).Should().Be(new LineOffset(2, 0));
+            sentence.ConvertToLineOffset(3).Should().Be(new LineOffset(2, 1));
+            sentence.ConvertToLineOffset(4).Should().Be(new LineOffset(2, 2));
+
+            // Sentence.Contentの範囲を超えた場合はその情報を持っていないのでExceptionを投げる。
+            act = () => sentence.ConvertToLineOffset(5);
+            act.Should().Throw<ArgumentException>()
+                .WithMessage("Invalid index: 5 in sentence : サンプル。"); // Exception
         }
 
         // 残りのテストケースも同様に変換
