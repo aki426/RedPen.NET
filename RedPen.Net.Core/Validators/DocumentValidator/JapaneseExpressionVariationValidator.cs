@@ -31,6 +31,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <summary>サポート対象言語はja-JPのみ。</summary>
         public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
 
+        // TODO: TokenElementが完全なOffsetMapを持つので、TokenInSentenceは不要。
+
         /// <summary>TokenInSentence</summary>
         public record TokenInSentence(TokenElement element, Sentence sentence);
 
@@ -185,10 +187,10 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             Normalize(GetPlainReading(token));
 
         /// <summary>
-        /// gets the plain reading.
+        /// 英語表現は小文字に、WordMapから取得できるReadingがあればそれを、なければTokenElementからReadingまたはSurfaceを取得する。
         /// </summary>
         /// <param name="token">The token.</param>
-        /// <returns>A string.</returns>
+        /// <returns>小文字化またはWordMapから取得されたReadingか元々のTokenのReadingまたはSurface</returns>
         private string GetPlainReading(TokenElement token)
         {
             string surface = token.Surface.ToLower(); // MEMO: ToLower()の時点でsurfaceは英語表現だと期待されている？
@@ -240,7 +242,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     // tokenに対して取得したreadingでエラーを生成する。
                     errors.AddRange(GenerateErrors(document, sentence, token, reading));
 
-                    // なんでエラー1個生成したら削除？
+                    // TODO: なんでエラー1個生成したら削除？　ゆらぎの出現箇所は複数ある可能性がある。
                     this.readingMap[document].Remove(reading);
                 }
             }
@@ -248,15 +250,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             return errors;
         }
 
-        // 仮に「単語 ”Node” の揺らぎと考えられる表現 ”ノード(名詞)”」という表現が正とすると、
-        // Nodeが正しい表現で、ノードがゆらぎ表現としてエラーだ、という意味になる。
-        // ところがRedPenの辞書表現は1列目に誤、2列目に正とする「誤正表」になっている。
-        // デフォルト辞書は「node	ノード」なので、この場合は「ノード」が正しい表現で、nodeがゆらぎ表現＝エラーだ、
-        // という意味になる。
-        // エラーメッセージと辞書の定義が逆転している。
-
         /// <summary>
-        /// エラーメッセージを生成する。
+        /// TargetTokenに対してReadingが同じだがSurfaceが異なるTokenを取得し、その出現位置を示すエラーメッセージを生成する。
         /// </summary>
         /// <param name="document"></param>
         /// <param name="sentence"></param>
@@ -271,56 +266,62 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             List<ValidationError> errors = new List<ValidationError>();
 
             // ゆらぎ表現をリストアップする。
-            Dictionary<string, List<TokenInSentence>> variationMap = GenerateVariationMap(document, targetToken, reading);
-            foreach (string surface in variationMap.Keys)
+            var variations = GetVariationTokens(document, targetToken, reading);
+            foreach (string surface in variations.Keys)
             {
-                List<TokenInSentence> variationList = variationMap[surface];
+                List<TokenElement> variationList = variations[surface];
                 // ゆらぎ表現を説明する文字列
-                string variation = $"{surface}({variationList[0].element.Tags[0]})"; // generateErrorMessage(variationList, surface);
+                string variationSurfaceStr = $"{surface}({variationList[0].Tags[0]})";
                 // ゆらぎ表現の出現位置
-                string positionsText = ConvertToTokenPositionsText(variationList);
+                string positionsText = string.Join(", ", variationList.Select(t => t.OffsetMap[0].ConvertToShortText()));
 
-                // errors.Add(GetLocalizedErrorFromToken(sentence, targetToken, new object[] { variation, positionList }));
                 errors.Add(new ValidationError(
                     ValidationType.JapaneseExpressionVariation,
                     this.Level,
                     sentence,
                     targetToken.OffsetMap[0],
                     targetToken.OffsetMap[^1],
-                    MessageArgs: new object[] { targetToken.Surface, variation, positionsText } // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+                    // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+                    MessageArgs: new object[] { targetToken.Surface, variationSurfaceStr, positionsText }
                 ));
             }
 
             return errors;
         }
 
-        private Dictionary<string, List<TokenInSentence>> GenerateVariationMap(
+        /// <summary>
+        /// TargetTokenに対してReadingが同じでSurfaceが異なるTokenを取得する。
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="targetToken">The target token.</param>
+        /// <param name="reading">The reading.</param>
+        /// <returns>A Dictionary.</returns>
+        private Dictionary<string, List<TokenElement>> GetVariationTokens(
             Document document, TokenElement targetToken, string reading)
         {
-            // SurfaceをキーとしてTokenとその出現位置をValueとするマップとして機能している。
-            Dictionary<string, List<TokenInSentence>> variationMap = new Dictionary<string, List<TokenInSentence>>();
+            // SurfaceをキーとしてゆらぎのTokenリスト引くDictionary。
+            Dictionary<string, List<TokenElement>> variationMap = new Dictionary<string, List<TokenElement>>();
 
             // readingを同じくするTokenのリストを取得。
             foreach (TokenInSentence token in this.readingMap[document][reading])
             {
-                // 確認中のtargetTokenとSurfaceが異なるものについて、
-                if (token.element != targetToken && !targetToken.Surface.Equals(token.element.Surface))
+                // 確認中のtargetTokenとSurfaceが異なるものを集める。品詞は考慮していない。
+                // TODO: 複数の品詞のTokenが一緒くたにListに入ってしまうのでそのようなケースを考慮すべきか検討する。
+                if (targetToken.Surface != token.element.Surface)
                 {
                     // 存在しなければListを登録。
                     if (!variationMap.ContainsKey(token.element.Surface))
                     {
-                        variationMap[token.element.Surface] = new List<TokenInSentence>();
+                        variationMap[token.element.Surface] = new List<TokenElement>();
                     }
 
                     // readingをキーとして取得したTokenを今度はSurfaceをキーとして登録する。
-                    // つまりReadingが同じだけど、Surfaceが異なるマップ＝Surfaceに大してゆらいでいるとみなせる相手先のTokenのDictionaryを作成。
-                    variationMap[token.element.Surface].Add(token);
+                    // つまりReadingが同じだけど、Surfaceが異なるToken＝言及対象のTokenのSurfaceに対してゆらいでいるとみなせる相手先のToken
+                    // のDictionaryを作成。
+                    variationMap[token.element.Surface].Add(token.element);
                 }
             }
             return variationMap;
         }
-
-        private string ConvertToTokenPositionsText(List<TokenInSentence> tokenList) =>
-            string.Join(", ", tokenList.Select(i => $"(L{i.sentence.LineNumber},{i.element.Offset})"));
     }
 }

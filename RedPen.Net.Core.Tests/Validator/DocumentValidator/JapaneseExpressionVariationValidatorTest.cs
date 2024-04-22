@@ -183,6 +183,44 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                     .Should().Be("\"node\" は \"ノード(名詞)\"（出現位置：(L1,10)）の揺らぎ表現と考えられます。");
         }
 
+        /// <summary>
+        /// デフォルト辞書に登録されているnodeのReading「ノード」が本文中に現れない場合もゆらぎ表現としてエラーとなることを確認するテスト。
+        /// </summary>
+        [Fact]
+        public void OnlyDefaultDictionaryVariationTest()
+        {
+            // Document
+            Document document = Document.Builder(
+                RedPenTokenizerFactory.CreateTokenizer(documentLang))
+                    .AddSection(1)
+                    .AddParagraph()
+                    .AddSentence(new Sentence("nodeは英語です。", 1))
+                    .Build(); // TokenizeをBuild時に実行する。
+
+            // Validation
+            japaneseExpressionVariationValidator.PreValidate(document);
+            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
+
+            // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
+            // TODO: 現状、デフォルト辞書のReadingが本文中に現れない場合はエラーにはならない。
+            // つまりデフォルト辞書はあくまでもReadingのマップであり、そのReadingを同じくする別のSrufaceが現れない限り
+            // エラーを検出しない。これは仕様としてよいのか？
+            errors.Count().Should().Be(0);
+
+            //// 7. エラーメッセージを生成する。
+            //var manager = ErrorMessageManager.GetInstance();
+
+            //manager.GetErrorMessage(
+            //    errors[0],
+            //    CultureInfo.GetCultureInfo("en-US"))
+            //        .Should().Be("Found possible Japanese word variations for \"node\", \"ノード(名詞)\" at (L1,10)");
+
+            //manager.GetErrorMessage(
+            //    errors[0],
+            //    CultureInfo.GetCultureInfo("ja-JP"))
+            //        .Should().Be("\"node\" は \"ノード(名詞)\"（出現位置：(L1,10)）の揺らぎ表現と考えられます。");
+        }
+
         [Fact]
         public void AppearPositionTest()
         {
