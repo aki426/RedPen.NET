@@ -10,79 +10,63 @@ namespace RedPen.Net.Core.Tokenizer
     /// </summary>
     public record TokenElement
     {
-        // オリジナルでの使用実績がなかったのでコメントアウト。
-        //private static readonly long serialVersionUID = -9055285891555999514L;
-
-        /// <summary>
-        /// the surface form of the token
-        /// </summary>
+        /// <summary>the surface form of the token</summary>
         public string Surface { get; init; }
 
-        /// <summary>
-        /// token metadata (POS, etc)
-        /// </summary>
+        /// <summary>token metadata (POS, etc)</summary>
         public ImmutableList<string> Tags { get; init; }
 
-        // MEMO: JapaneseExpressionVariationValidator.ConvertToTokenPositionsText()では、
-        // シンプルにTokenElementに紐づけられたSentence.LineNumberをTokenElementの出現行数として使っている。
-        // このことから、一旦Sentenceが複数行にまたがるケースの検討は留保し、
-        // Sentence.LineNumberをTokenElement.LineNumberに引きうつすこととする。
-
-        /// <summary>the line of the sentence as the line of the token.</summary>
-        public int LineNumber => this.OffsetMap.First().LineNum; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。 //{ get; init; }
-
-        // TODO: TokenElementにLineOffsetを持たせることで、TokenElementの出現位置をより詳細に表現できるようにする。
-
-        /// <summary>
-        /// the character position of the token in the sentence
-        /// </summary>
-        public int Offset => this.OffsetMap.First().Offset; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。 // { get; init; }
-
-        /// <summary>
-        /// token reading
-        /// </summary>
+        /// <summary>the reading of this token</summary>
         public string Reading { get; init; }
 
         /// <summary>TokenのSurfaceがLineOffset表現でどのような位置関係にあるかを1文字ずつ表現したもの</summary>
         public ImmutableList<LineOffset> OffsetMap { get; init; }
 
-        public TokenElement(string word, ImmutableList<string> tagList, string reading, ImmutableList<LineOffset> offsetMap)
+        // MEMO: 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
+
+        /// <summary>the line of the token's first character.</summary>
+        public int LineNumber => this.OffsetMap.First().LineNum;
+
+        /// <summary>the position of the first character in this token.</summary>
+        public int Offset => this.OffsetMap.First().Offset;
+
+        /// <summary>
+        /// Surface, Tags, Reading, OffsetMapを完全に指定してTokenElementを生成する。
+        /// Initializes a new instance of the <see cref="TokenElement"/> class.
+        /// </summary>
+        /// <param name="surface">The word.</param>
+        /// <param name="tags">The tag list.</param>
+        /// <param name="reading">The reading.</param>
+        /// <param name="offsetMap">The offset map.</param>
+        public TokenElement(string surface, ImmutableList<string> tags, string reading, ImmutableList<LineOffset> offsetMap)
         {
-            this.Surface = word;
-            this.Tags = tagList;
-            //this.LineNumber = offsetMap.First().LineNum; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
-            //this.Offset = offsetMap.First().Offset; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
+            this.Surface = surface;
+            this.Tags = tags;
             this.Reading = reading;
             this.OffsetMap = offsetMap;
         }
 
         /// <summary>
+        /// Token開始行、開始オフセット位置のみ与えて、OffsetMapを自動生成するコンストラクタ。Surface全体が連続していて1行に収まっていることを前提とする。
         /// Initializes a new instance of the <see cref="TokenElement"/> class.
         /// </summary>
-        /// <param name="word">The word.</param>
-        /// <param name="tagList">The tag list.</param>
+        /// <param name="surface">The word.</param>
+        /// <param name="tags">The tag list.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="reading">The reading.</param>
-        public TokenElement(string word, IList<string> tagList, int lineNumber, int offset, string reading) :
-            this(word, tagList.ToImmutableList(), reading, LineOffset.MakeOffsetList(lineNumber, offset, word).ToImmutableList())
-        {
-            //this.Surface = word;
-            //this.Tags = tagList.ToImmutableList();
-            //this.LineNumber = lineNumber;
-            //this.Offset = offset;
-            //this.Reading = reading;
-
-            //;
-        }
+        public TokenElement(string surface, IList<string> tags, int lineNumber, int offset, string reading) :
+            this(surface, tags.ToImmutableList(), reading, LineOffset.MakeOffsetList(lineNumber, offset, surface).ToImmutableList())
+        { }
 
         /// <summary>
+        /// ReadingがSurfaceと同じで、かつToken開始行、開始オフセット位置のみ与えて、OffsetMapを自動生成するコンストラクタ。Surface全体が連続していて1行に収まっていることを前提とする。
         /// Initializes a new instance of the <see cref="TokenElement"/> class.
         /// </summary>
-        /// <param name="word">The word.</param>
+        /// <param name="surface">The word.</param>
         /// <param name="tags">The tags.</param>
         /// <param name="offset">The offset.</param>
-        public TokenElement(string word, IList<string> tags, int lineNumber, int offset) :
-            this(word, tags, offset, lineNumber, word)
+        public TokenElement(string surface, IList<string> tags, int lineNumber, int offset) :
+            this(surface, tags, offset, lineNumber, surface)
         { }
 
         /// <summary>

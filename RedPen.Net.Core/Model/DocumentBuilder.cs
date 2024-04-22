@@ -111,6 +111,7 @@ namespace RedPen.Net.Core.Model
 
         /// <summary>
         /// Adds the sentence.
+        /// Tokenizeも同時に行われる。
         /// </summary>
         /// <param name="sentence">The sentence.</param>
         /// <returns>A DocumentBuilder.</returns>
