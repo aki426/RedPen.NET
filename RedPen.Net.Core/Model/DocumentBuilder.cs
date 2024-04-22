@@ -78,10 +78,16 @@ namespace RedPen.Net.Core.Model
             // Buildフラグの検証。不正の場合は例外をスローする。
             EnsureNotBuilt();
 
-            foreach (Sentence sentence in section.HeaderSentences)
+            // すべてのHeaderSentencesに対してTokenizeを実行する。
+            section = section with
             {
-                sentence.Tokens = this.Tokenizer.Tokenize(sentence);
-            }
+                HeaderSentences = section.HeaderSentences.Select(sentence => sentence with { Tokens = Tokenizer.Tokenize(sentence) }).ToList()
+            };
+
+            //foreach (Sentence sentence in section.HeaderSentences)
+            //{
+            //    sentence.Tokens = this.Tokenizer.Tokenize(sentence);
+            //}
 
             Sections.Add(section);
 
@@ -156,6 +162,7 @@ namespace RedPen.Net.Core.Model
         {
             EnsureNotBuilt();
 
+            // TODO: 登録すべき先のオブジェクトが存在しない場合に自動的に追加する／Exceptionを投げる差はどこにあるのか要検討。
             if (Sections.Count == 0)
             {
                 throw new InvalidOperationException("No section to add a sentence");
@@ -177,17 +184,24 @@ namespace RedPen.Net.Core.Model
         public DocumentBuilder AddListElement(int level, List<Sentence> contents)
         {
             EnsureNotBuilt();
+
+            // TODO: 登録すべき先のオブジェクトが存在しない場合に自動的に追加する／Exceptionを投げる差はどこにあるのか要検討。
             if (Sections.Count == 0)
             {
                 throw new InvalidOperationException("No section to add a sentence");
             }
             Section lastSection = Sections.Last();
 
-            foreach (Sentence sentence in contents)
-            {
-                sentence.Tokens = Tokenizer.Tokenize(sentence);
-            }
-            lastSection.AppendListElement(contents, level);
+            //foreach (Sentence sentence in contents)
+            //{
+            //    sentence.Tokens = Tokenizer.Tokenize(sentence);
+            //}
+
+            // Tokenize済みのSentenceリストを追加する。
+            lastSection.AppendListElement(
+                contents.Select(sentence => sentence with { Tokens = Tokenizer.Tokenize(sentence) }).ToList(),
+                level);
+
             return this;
         }
 
@@ -221,22 +235,32 @@ namespace RedPen.Net.Core.Model
         }
 
         /// <summary>
-        /// Adds the section header.
+        /// SectionHeaderとして文字列を追加する。
+        /// 文字列は現在の最後のSectionのHeaderSentencesの末尾に1行追加される。
+        /// Tokenizeも同時に行われる。
         /// </summary>
-        /// <param name="header">The header.</param>
+        /// <param name="header">The header string.</param>
         /// <returns>A DocumentBuilder.</returns>
         public DocumentBuilder AddSectionHeader(string header)
         {
             EnsureNotBuilt();
+
+            // TODO: 登録すべき先のオブジェクトが存在しない場合に自動的に追加する／Exceptionを投げる差はどこにあるのか要検討。
             Section lastSection = Sections.Last();
             if (null == lastSection)
             {
                 throw new InvalidOperationException("Document does not have any section");
             }
+
+            // 登録先のSectionのHeaderSentences。
             List<Sentence> headers = lastSection.HeaderSentences;
+
+            // TODO: 新しいSentenceのLineNumはheaders.Count + 1になるべきでは？
             Sentence sentence = new Sentence(header, headers.Count);
-            sentence.Tokens = Tokenizer.Tokenize(sentence);
+            sentence = sentence with { Tokens = Tokenizer.Tokenize(sentence) };
+
             headers.Add(sentence);
+
             return this;
         }
 

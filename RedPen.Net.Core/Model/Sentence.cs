@@ -26,7 +26,7 @@ namespace RedPen.Net.Core.Model
 
         public int StartPositionOffset => this.OffsetMap[0].Offset;
         public List<string> Links { get; init; }
-        public List<TokenElement> Tokens { get; set; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
+        public List<TokenElement> Tokens { get; init; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
 
         /// <summary>
         /// lineNum行にオフセット位置0で開始しているSentenceを生成する。
