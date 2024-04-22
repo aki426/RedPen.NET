@@ -29,14 +29,14 @@ namespace RedPen.Net.Core.Tokenizer
         // Sentence.LineNumberをTokenElement.LineNumberに引きうつすこととする。
 
         /// <summary>the line of the sentence as the line of the token.</summary>
-        public int LineNumber { get; init; }
+        public int LineNumber => this.OffsetMap.First().LineNum; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。 //{ get; init; }
 
         // TODO: TokenElementにLineOffsetを持たせることで、TokenElementの出現位置をより詳細に表現できるようにする。
 
         /// <summary>
         /// the character position of the token in the sentence
         /// </summary>
-        public int Offset { get; init; }
+        public int Offset => this.OffsetMap.First().Offset; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。 // { get; init; }
 
         /// <summary>
         /// token reading
@@ -50,8 +50,8 @@ namespace RedPen.Net.Core.Tokenizer
         {
             this.Surface = word;
             this.Tags = tagList;
-            this.LineNumber = offsetMap.First().LineNum; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
-            this.Offset = offsetMap.First().Offset; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
+            //this.LineNumber = offsetMap.First().LineNum; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
+            //this.Offset = offsetMap.First().Offset; // 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
             this.Reading = reading;
             this.OffsetMap = offsetMap;
         }
@@ -63,13 +63,16 @@ namespace RedPen.Net.Core.Tokenizer
         /// <param name="tagList">The tag list.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="reading">The reading.</param>
-        public TokenElement(string word, IList<string> tagList, int lineNumber, int offset, string reading)
+        public TokenElement(string word, IList<string> tagList, int lineNumber, int offset, string reading) :
+            this(word, tagList.ToImmutableList(), reading, LineOffset.MakeOffsetList(lineNumber, offset, word).ToImmutableList())
         {
-            this.Surface = word;
-            this.Tags = tagList.ToImmutableList();
-            this.LineNumber = lineNumber;
-            this.Offset = offset;
-            this.Reading = reading;
+            //this.Surface = word;
+            //this.Tags = tagList.ToImmutableList();
+            //this.LineNumber = lineNumber;
+            //this.Offset = offset;
+            //this.Reading = reading;
+
+            //;
         }
 
         /// <summary>

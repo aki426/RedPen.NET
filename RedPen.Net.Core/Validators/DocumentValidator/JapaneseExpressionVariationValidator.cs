@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using NLog;
@@ -151,10 +152,12 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                         TokenInSentence compoundNoun = new TokenInSentence(
                             new TokenElement(
                                 string.Join("", nouns.Select(i => i.Surface)),
-                                nouns[0].Tags,
-                                nouns[0].LineNumber,
-                                nouns[0].Offset,
-                                string.Join("", nouns.Select(i => i.Reading))), // Normalizeしたいが、他TokenのReadingもNormalizeされているわけではないので保留。
+                                nouns[0].Tags.ToImmutableList(),
+                                //nouns[0].LineNumber,
+                                //nouns[0].Offset,
+                                string.Join("", nouns.Select(i => i.Reading)),
+                                nouns.SelectMany(n => n.OffsetMap).ToImmutableList()
+                                ),
                             sentence);
 
                         // 読みを正規化してからreadingMapに登録する。
