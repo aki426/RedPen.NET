@@ -17,7 +17,7 @@ namespace RedPen.Net.Core.Model
 
         public bool IsFirstSentence { get; init; } // need getter.
 
-        public string Content { get; set; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
+        public string Content { get; init; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
 
         /// <summary>SentenceのContentがLineOffset表現でどのような位置関係にあるかを1文字ずつ表現したもの</summary>
         public List<LineOffset> OffsetMap { get; init; }

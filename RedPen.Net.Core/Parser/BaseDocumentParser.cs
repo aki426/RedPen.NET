@@ -2,6 +2,7 @@
 using RedPen.Net.Core.Tokenizer;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace RedPen.Net.Core.Parser
@@ -88,12 +89,8 @@ namespace RedPen.Net.Core.Parser
                 return string.IsNullOrEmpty(Content);
             }
 
-            public ValueWithOffsets Append(string line, List<LineOffset> offsets)
-            {
-                Content += line;
-                OffsetMap.AddRange(offsets);
-                return this;
-            }
+            public ValueWithOffsets Append(string line, List<LineOffset> offsets) =>
+                this with { Content = Content + line, OffsetMap = OffsetMap.Concat(offsets).ToList() };
 
             public ValueWithOffsets Extract(int start, int end)
             {
