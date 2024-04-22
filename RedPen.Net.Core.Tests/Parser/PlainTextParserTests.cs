@@ -179,7 +179,7 @@ Happy life. Happy home. Tama Home.
             // 改行されていることをOffsetMapで確認できる。
             foreach (LineOffset item in paragraphs[2].Sentences[0].OffsetMap)
             {
-                _output.WriteLine(item.ConvertToText());
+                _output.WriteLine(item.ConvertToShortText());
             }
             // Tokenの位置を正確にOffsetMapで保持しているので、元のテキストの位置情報を取得できる。
             foreach (var item in paragraphs[2].Sentences[0].Tokens)

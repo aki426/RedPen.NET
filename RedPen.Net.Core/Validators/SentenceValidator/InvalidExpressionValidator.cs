@@ -51,18 +51,20 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     }
 
                     // マッチしたInvalid Expressionの全文字位置を登録する。
-                    int matchEndPosition = matchStartPosition + invalidWord.Length;
+                    int matchEndPosition = matchStartPosition + invalidWord.Length - 1;
                     result.Add(
                         new ValidationError(
                             ValidationType.InvalidExpression,
                             this.Level,
                             sentence,
-                            matchStartPosition,
-                            matchEndPosition,
+                            sentence.ConvertToLineOffset(matchStartPosition),
+                            //matchStartPosition,
+                            sentence.ConvertToLineOffset(matchEndPosition),
+                            //matchEndPosition,
                             MessageArgs: new object[] { invalidWord }));
 
-                    // next loop
-                    offset = matchEndPosition;
+                    // next loop. マッチしたinvalidWordの次の文字から再検索するため+1。
+                    offset = matchEndPosition + 1;
                 }
             }
 

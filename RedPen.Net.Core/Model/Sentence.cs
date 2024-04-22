@@ -15,18 +15,26 @@ namespace RedPen.Net.Core.Model
 
         //private static readonly long serialVersionUID = 3761982769692999924L;
 
-        public bool IsFirstSentence { get; init; } // need getter.
+        /// <summary>センテンスがパラグラフ内で最初のセンテンスである場合Trueになるフラグ。</summary>
+        public bool IsFirstSentence { get; init; }
 
-        public string Content { get; init; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
+        /// <summary>原文のセンテンスから改行など不要な要素を除去されたPlainな文字列。</summary>
+        public string Content { get; init; }
 
         /// <summary>SentenceのContentがLineOffset表現でどのような位置関係にあるかを1文字ずつ表現したもの</summary>
         public List<LineOffset> OffsetMap { get; init; }
 
+        /// <summary>＜非推奨＞センテンスの先頭文字が存在する行番号。</summary>
         public int LineNumber => this.OffsetMap[0].LineNum;
 
+        /// <summary>＜非推奨＞センテンスの先頭文字が存在するオフセット位置。</summary>
         public int StartPositionOffset => this.OffsetMap[0].Offset;
+
+        /// <summary>センテンスが参照しているリンクのリスト。</summary>
         public List<string> Links { get; init; }
-        public List<TokenElement> Tokens { get; init; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
+
+        /// <summary>センテンスを構成するTokenのリスト。</summary>
+        public List<TokenElement> Tokens { get; init; }
 
         /// <summary>
         /// lineNum行にオフセット位置0で開始しているSentenceを生成する。
@@ -93,41 +101,41 @@ namespace RedPen.Net.Core.Model
             this.OffsetMap = offsetMap;
         }
 
-        /// <summary>
-        /// Get offset position for specified character position.
-        /// </summary>
-        /// <param name="position">character position in a sentence</param>
-        /// <returns>offset position</returns>
-        public LineOffset? GetOffset(int position)
-        {
-            if (position >= 0)
-            {
-                // MEMO: あらかじめContentの全文字とLineOffset（元テキストでの出現位置）の対応関係を表現した
-                // List<LineOffset>が作成されており、Contentの文字数とList＜LineOffset>の要素数が同じに保たれていることが前提。
-                if (position < this.OffsetMap.Count)
-                {
-                    return this.OffsetMap[position];
-                }
-                else if ((position > 0) && (this.OffsetMap.Count == position))
-                {
-                    // MEMO: Contentが空文字列ではない場合の末尾指定。改行かEOLのためのもの？
-                    LineOffset last = this.OffsetMap[this.OffsetMap.Count - 1];
-                    return last with { Offset = last.Offset + 1 };
-                }
-                else if (this.OffsetMap.Any())
-                {
-                    LineOffset last = this.OffsetMap[this.OffsetMap.Count - 1];
-                    return last with { Offset = position - this.OffsetMap.Count }; // 改行に関して考慮するとこのようになる。
-                }
-                else
-                {
-                    // MEMO: Contentの長さを超えてLineOffsetを返すことになるはず。
-                    return new LineOffset(this.LineNumber, position);
-                }
-            }
+        ///// <summary>
+        ///// Get offset position for specified character position.
+        ///// </summary>
+        ///// <param name="position">character position in a sentence</param>
+        ///// <returns>offset position</returns>
+        //public LineOffset? GetOffset(int position)
+        //{
+        //    if (position >= 0)
+        //    {
+        //        // MEMO: あらかじめContentの全文字とLineOffset（元テキストでの出現位置）の対応関係を表現した
+        //        // List<LineOffset>が作成されており、Contentの文字数とList＜LineOffset>の要素数が同じに保たれていることが前提。
+        //        if (position < this.OffsetMap.Count)
+        //        {
+        //            return this.OffsetMap[position];
+        //        }
+        //        else if ((position > 0) && (this.OffsetMap.Count == position))
+        //        {
+        //            // MEMO: Contentが空文字列ではない場合の末尾指定。改行かEOLのためのもの？
+        //            LineOffset last = this.OffsetMap[this.OffsetMap.Count - 1];
+        //            return last with { Offset = last.Offset + 1 };
+        //        }
+        //        else if (this.OffsetMap.Any())
+        //        {
+        //            LineOffset last = this.OffsetMap[this.OffsetMap.Count - 1];
+        //            return last with { Offset = position - this.OffsetMap.Count }; // 改行に関して考慮するとこのようになる。
+        //        }
+        //        else
+        //        {
+        //            // MEMO: Contentの長さを超えてLineOffsetを返すことになるはず。
+        //            return new LineOffset(this.LineNumber, position);
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         /// <summary>
         /// Sentence.ContentのIndexに対して元のテキストのLineOffsetを返す関数。
@@ -151,25 +159,25 @@ namespace RedPen.Net.Core.Model
             return this.OffsetMap[index];
         }
 
-        /// <summary>
-        /// Get the position of the supplied offset (ie: the position in the source text) in this sentence's normalized content
-        /// </summary>
-        /// <param name="offset">the position in the source text</param>
-        /// <returns>the position in the setence's content</returns>
-        public int GetOffsetPosition(LineOffset offset)
-        {
-            int position = this.OffsetMap.IndexOf(offset); // 発見されなかった場合は-1が返る。
-            // TODO: 発見されなかった場合に0を返すのは正しいか？
-            return position < 0 ? 0 : position;
-        }
+        ///// <summary>
+        ///// Get the position of the supplied offset (ie: the position in the source text) in this sentence's normalized content
+        ///// </summary>
+        ///// <param name="offset">the position in the source text</param>
+        ///// <returns>the position in the setence's content</returns>
+        //public int GetOffsetPosition(LineOffset offset)
+        //{
+        //    int position = this.OffsetMap.IndexOf(offset); // 発見されなかった場合は-1が返る。
+        //    // TODO: 発見されなかった場合に0を返すのは正しいか？
+        //    return position < 0 ? 0 : position;
+        //}
 
-        /// <summary>
-        /// Get size of offset mapping table (the size should be same as the content length).
-        /// </summary>
-        /// <returns>size of position mapping table</returns>
-        public int GetOffsetMapSize()
-        {
-            return this.OffsetMap.Count;
-        }
+        ///// <summary>
+        ///// Get size of offset mapping table (the size should be same as the content length).
+        ///// </summary>
+        ///// <returns>size of position mapping table</returns>
+        //public int GetOffsetMapSize()
+        //{
+        //    return this.OffsetMap.Count;
+        //}
     }
 }

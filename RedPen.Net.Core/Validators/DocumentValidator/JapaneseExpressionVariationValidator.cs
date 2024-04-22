@@ -285,8 +285,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     ValidationType.JapaneseExpressionVariation,
                     this.Level,
                     sentence,
-                    targetToken.Offset, // start
-                    targetToken.Offset + targetToken.Surface.Length, // end
+                    targetToken.OffsetMap[0],
+                    targetToken.OffsetMap[^1],
                     MessageArgs: new object[] { targetToken.Surface, variation, positionsText } // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
                 ));
             }

@@ -4,11 +4,20 @@ using System.Linq;
 
 namespace RedPen.Net.Core.Parser
 {
-    public record class LineOffset : IComparable<LineOffset>
+    /// <summary>原文テキストにおける行番号とオフセット位置を表す。
+    /// 原文テキストにおけるある文字の位置を、1始まりの行Indexと0始まるの列Indexで表現したもの、という解釈も成り立つ。</summary>
+    public record LineOffset : IComparable<LineOffset>
     {
+        /// <summary>行番号。1始まり。</summary>
         public int LineNum { get; init; }
+        /// <summary>オフセット位置。0始まり。ある1文字の列番号と解釈してもよい。</summary>
         public int Offset { get; init; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineOffset"/> class.
+        /// </summary>
+        /// <param name="lineNum">The line num.</param>
+        /// <param name="offset">The offset.</param>
         public LineOffset(int lineNum, int offset)
         {
             this.LineNum = lineNum;
@@ -35,7 +44,11 @@ namespace RedPen.Net.Core.Parser
             return this.Offset - other.Offset;
         }
 
-        public string ConvertToText()
+        /// <summary>
+        /// (L1,2)のような行＋オフセットの表示形式に変換する。
+        /// </summary>
+        /// <returns>A string.</returns>
+        public string ConvertToShortText()
         {
             return $"(L{LineNum},{Offset})";
         }
