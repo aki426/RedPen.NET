@@ -5,13 +5,15 @@ using System.IO;
 
 namespace RedPen.Net.Core.Parser
 {
-    /// <summary>
-    /// The plain text parser.
-    /// </summary>
+    // MEMO: Parserは文章構造を解析しDocumentへ変換するクラス。
+    // 一方、TokenizerはSentenceオブジェクトを取り文章を単語や句読点などのTokenElementに分割するクラス。
+    // Document >>> Sentence > TokenElementという構造になる。
+
+    /// <summary>The plain text parser.</summary>
     public sealed class PlainTextParser : BaseDocumentParser
     {
         /// <summary>
-        /// Parses the.
+        /// Parse input stream as document.
         /// </summary>
         /// <param name="inputStream">The input stream.</param>
         /// <param name="fileName">The file name.</param>
@@ -47,6 +49,7 @@ namespace RedPen.Net.Core.Parser
                     {
                         if (paragraphText != string.Empty)
                         {
+                            // パラグラフに対してSentenceのListを生成する。
                             this.ExtractSentences(paragraphStartLine, paragraphText, sentenceExtractor, documentBuilder);
                         }
 

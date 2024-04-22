@@ -16,34 +16,22 @@ namespace RedPen.Net.Core.Model
     /// </summary>
     public class DocumentBuilder
     {
-        /// <summary>
-        /// Gets or sets the tokenizer.
-        /// </summary>
+        /// <summary>IRedPenTokenizer</summary>
         public IRedPenTokenizer Tokenizer { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether built.
-        /// </summary>
+        /// <summary>The flag of built</summary>
         public bool Built { get; set; } = false;
 
-        /// <summary>
-        /// Gets the sections.
-        /// </summary>
+        /// <summary>Section list</summary>
         public List<Section> Sections { get; init; }
 
-        /// <summary>
-        /// Gets or sets the file name.
-        /// </summary>
+        /// <summary>File name of this document</summary>
         public string? FileName { get; set; }
 
-        /// <summary>
-        /// Gets or sets the preprocessor rules.
-        /// </summary>
+        /// <summary>RedPen preprocessor rules</summary>
         public HashSet<PreprocessorRule> PreprocessorRules { get; set; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentBuilder"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="DocumentBuilder"/> class.</summary>
         public DocumentBuilder() : this(new WhiteSpaceTokenizer())
         {
         }

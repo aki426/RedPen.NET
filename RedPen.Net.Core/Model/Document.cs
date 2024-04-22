@@ -8,11 +8,11 @@ namespace RedPen.Net.Core.Model
     public record class Document
     {
         // MEMO: 何のため？
-        private static readonly long serialVersionUID = 1628589004095293831L;
+        //private static readonly long serialVersionUID = 1628589004095293831L;
 
         public List<Section> Sections { get; init; }
 
-        public string? FileName { get; init; }
+        public string? FileName { get; init; } // TODO: このプロパティは必要？　Documentモデル自身が元ファイル名を知っている必要ある？
 
         public HashSet<PreprocessorRule> PreprocessorRules { get; init; }
 
