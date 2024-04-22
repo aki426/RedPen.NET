@@ -110,8 +110,8 @@ namespace RedPen.Net.Core.Model
         }
 
         /// <summary>
-        /// Adds the sentence.
-        /// Tokenizeも同時に行われる。
+        /// Sentenceを追加する。入れるべきSectionやParagraphが存在しない場合は自動的に追加される。
+        /// 追加されるSentenceのTokenizeも同時に行われる。
         /// </summary>
         /// <param name="sentence">The sentence.</param>
         /// <returns>A DocumentBuilder.</returns>
@@ -119,28 +119,32 @@ namespace RedPen.Net.Core.Model
         {
             EnsureNotBuilt();
 
+            // Sectionが存在しない場合は、Sectionを作成する。
             if (Sections.Count == 0)
             {
                 List<Sentence> headers = new List<Sentence>();
                 headers.Add(new Sentence("", 0));
                 this.AppendSection(new Section(0, headers));
             }
-
             Section lastSection = this.Sections.Last();
+
+            // Paragraphが存在しない場合は、Paragraphを作成する。
             if (lastSection.Paragraphs.Count == 0)
             {
-                AddParagraph(); // Note: add paragraph automatically
+                AddParagraph();
             }
-
             Paragraph lastParagraph = lastSection.Paragraphs.Last();
 
-            lastParagraph.AppendSentence(sentence);
-            if (lastParagraph.Sentences.Count == 1)
+            // Paragraphで最初のSentenceだった場合、フラグをTrueに設定する。
+            if (lastParagraph.Sentences.Count == 0)
             {
-                sentence.IsFirstSentence = true;
+                sentence = sentence with { IsFirstSentence = true };
             }
+            // Tokenize
+            sentence = sentence with { Tokens = Tokenizer.Tokenize(sentence) };
 
-            sentence.Tokens = Tokenizer.Tokenize(sentence);
+            lastParagraph.AppendSentence(sentence);
+
             return this;
         }
 

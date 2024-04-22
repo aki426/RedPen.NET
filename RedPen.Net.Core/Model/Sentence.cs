@@ -15,7 +15,7 @@ namespace RedPen.Net.Core.Model
 
         //private static readonly long serialVersionUID = 3761982769692999924L;
 
-        public bool IsFirstSentence { get; set; } // need getter.
+        public bool IsFirstSentence { get; init; } // need getter.
 
         public string Content { get; set; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
 
