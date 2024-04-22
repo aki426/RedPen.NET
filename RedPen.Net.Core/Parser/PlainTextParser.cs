@@ -2,6 +2,7 @@
 using RedPen.Net.Core.Tokenizer;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace RedPen.Net.Core.Parser
 {
@@ -98,7 +99,9 @@ namespace RedPen.Net.Core.Parser
             int periodPosition = sentenceExtractor.GetSentenceEndPosition(paragraphText);
             if (periodPosition == -1)
             {
-                addSentence(lineOffset, paragraphText, sentenceExtractor, builder);
+                //addSentence(lineOffset, paragraphText, sentenceExtractor, builder);
+                var value = CreateSentence(lineOffset, paragraphText, sentenceExtractor.getBrokenLineSeparator());
+                builder.AddSentence(value.sentence);
             }
             else
             {
@@ -107,21 +110,98 @@ namespace RedPen.Net.Core.Parser
                 {
                     // MEMO: periodPositionが文字列の長さを超える値だった場合、Java ではStringIndexOutOfBoundsExceptionが発生しますが、
                     // C#では単に文字列の終端までの部分文字列が返されます。
-                    lineOffset = addSentence(lineOffset, paragraphText.Substring(0, periodPosition + 1), sentenceExtractor, builder);
+                    //lineOffset = addSentence(lineOffset, paragraphText.Substring(0, periodPosition + 1), sentenceExtractor, builder);
+                    var value = CreateSentence(lineOffset, paragraphText.Substring(0, periodPosition + 1), sentenceExtractor.getBrokenLineSeparator());
+                    builder.AddSentence(value.sentence);
+                    lineOffset = value.nextStartOffset;
+
                     paragraphText = paragraphText.Substring(periodPosition + 1, paragraphText.Length - (periodPosition + 1));
 
                     periodPosition = sentenceExtractor.GetSentenceEndPosition(paragraphText);
                     if (periodPosition == -1)
                     {
+                        // paragraphTextの次のセンテンスの終了位置がない＝残りは1センテンスの可能性。
                         if (paragraphText != string.Empty)
                         {
-                            addSentence(lineOffset, paragraphText, sentenceExtractor, builder);
+                            //addSentence(lineOffset, paragraphText, sentenceExtractor, builder);
+                            var value2 = CreateSentence(lineOffset, paragraphText, sentenceExtractor.getBrokenLineSeparator());
+                            builder.AddSentence(value2.sentence);
                         }
                         return;
                     }
                 }
             }
         }
+
+        ///// <summary>
+        ///// Sentenceインスタンスを生成し、DocumentBuilderに追加する。
+        ///// </summary>
+        ///// <param name="lineOffset">rawSentenceTextの戦闘位置の行＋オフセット位置</param>
+        ///// <param name="rawSentenceText">改行を含む可能性がある、句点で区切られた１センテンスのテキスト</param>
+        ///// <param name="sentenceExtractor">The sentence extractor.</param>
+        ///// <param name="builder">The builder.</param>
+        ///// <returns>終了位置＝次のセンテンスの開始位置</returns>
+        //public static LineOffset addSentence(
+        //    LineOffset lineOffset,
+        //    string rawSentenceText,
+        //    SentenceExtractor sentenceExtractor,
+        //    DocumentBuilder builder)
+        //{
+        //    int lineNum = lineOffset.LineNum; // 現在処理中の元テキストの行番号。
+        //    int offset = lineOffset.Offset;
+
+        //    int sentenceStartLineNum = lineNum;
+        //    int sentenceStartLineOffset = offset;
+
+        //    List<LineOffset> offsetMap = new List<LineOffset>();
+        //    string normalizedSentence = ""; // 改行などを除去したSentence.Contentに格納される文字列。
+        //    int i; // MEMO: 連続する2つのfor文用。
+        //    // skip leading line breaks to find the start line of the sentence
+        //    for (i = 0; i < rawSentenceText.Length; i++)
+        //    {
+        //        char ch = rawSentenceText[i];
+        //        // 改行コードはLF。
+        //        if (ch == '\n')
+        //        {
+        //            sentenceStartLineNum++; // 改行により行数をカウントアップ。
+        //            lineNum++; // 改行により行数をカウントアップ。
+        //            sentenceStartLineOffset = 0; // 改行によりオフセット位置を初期化。
+        //            offset = 0; // 改行によりオフセット位置を初期化。
+        //        }
+        //        else
+        //        {
+        //            break;
+        //        }
+        //    }
+        //    for (; i < rawSentenceText.Length; i++)
+        //    {
+        //        char ch = rawSentenceText[i];
+        //        if (ch == '\n')
+        //        {
+        //            // 改行されたセンテンスを再結合するための文字列を取得。
+        //            if (sentenceExtractor.getBrokenLineSeparator() != string.Empty)
+        //            {
+        //                offsetMap.Add(new LineOffset(lineNum, offset));
+        //                normalizedSentence += sentenceExtractor.getBrokenLineSeparator();
+        //            }
+        //            lineNum++; // 改行により行数をカウントアップ。
+        //            offset = 0;
+        //        }
+        //        else
+        //        {
+        //            // 1文字ずつ元テキストでの位置を記録。
+        //            normalizedSentence += ch;
+        //            offsetMap.Add(new LineOffset(lineNum, offset));
+        //            offset++; // 次の文字のオフセット位置へカウントアップ。※このまま次のセンテンスのオフセット位置を指すこともできる。
+        //        }
+        //    }
+
+        //    Sentence sentence = new Sentence(normalizedSentence, sentenceStartLineNum, sentenceStartLineOffset);
+        //    sentence = sentence with { OffsetMap = offsetMap };
+        //    builder.AddSentence(sentence);
+
+        //    return new LineOffset(lineNum, offset); // 終了位置＝次のセンテンスの開始位置を返す。
+        //}
 
         /// <summary>
         /// Sentenceインスタンスを生成し、DocumentBuilderに追加する。
@@ -131,31 +211,33 @@ namespace RedPen.Net.Core.Parser
         /// <param name="sentenceExtractor">The sentence extractor.</param>
         /// <param name="builder">The builder.</param>
         /// <returns>終了位置＝次のセンテンスの開始位置</returns>
-        public static LineOffset addSentence(
+        public static (Sentence sentence, LineOffset nextStartOffset) CreateSentence(
             LineOffset lineOffset,
             string rawSentenceText,
-            SentenceExtractor sentenceExtractor,
-            DocumentBuilder builder)
+            string brokenLineSeparator // 改行によってブレークされたSentenceを連結する際の文字列。
+        )
         {
             int lineNum = lineOffset.LineNum; // 現在処理中の元テキストの行番号。
             int offset = lineOffset.Offset;
 
-            int sentenceStartLineNum = lineNum;
-            int sentenceStartLineOffset = offset;
+            //int sentenceStartLineNum = lineNum;
+            //int sentenceStartLineOffset = offset;
 
             List<LineOffset> offsetMap = new List<LineOffset>();
             string normalizedSentence = ""; // 改行などを除去したSentence.Contentに格納される文字列。
             int i; // MEMO: 連続する2つのfor文用。
+
             // skip leading line breaks to find the start line of the sentence
+            // MEMO: ムダなように見えるが、冒頭の改行スキップのため必要。
             for (i = 0; i < rawSentenceText.Length; i++)
             {
                 char ch = rawSentenceText[i];
                 // 改行コードはLF。
                 if (ch == '\n')
                 {
-                    sentenceStartLineNum++; // 改行により行数をカウントアップ。
+                    //sentenceStartLineNum++; // 改行により行数をカウントアップ。
                     lineNum++; // 改行により行数をカウントアップ。
-                    sentenceStartLineOffset = 0; // 改行によりオフセット位置を初期化。
+                    //sentenceStartLineOffset = 0; // 改行によりオフセット位置を初期化。
                     offset = 0; // 改行によりオフセット位置を初期化。
                 }
                 else
@@ -169,10 +251,11 @@ namespace RedPen.Net.Core.Parser
                 if (ch == '\n')
                 {
                     // 改行されたセンテンスを再結合するための文字列を取得。
-                    if (sentenceExtractor.getBrokenLineSeparator() != string.Empty)
+                    if (brokenLineSeparator != string.Empty)
                     {
-                        offsetMap.Add(new LineOffset(lineNum, offset));
-                        normalizedSentence += sentenceExtractor.getBrokenLineSeparator();
+                        // 通常brokenLineSeparatorは半角スペースか空文字列だが、念のためリストを生成する。
+                        offsetMap.AddRange(LineOffset.MakeOffsetList(lineNum, offset, brokenLineSeparator));
+                        normalizedSentence += brokenLineSeparator;
                     }
                     lineNum++; // 改行により行数をカウントアップ。
                     offset = 0;
@@ -186,11 +269,12 @@ namespace RedPen.Net.Core.Parser
                 }
             }
 
-            Sentence sentence = new Sentence(normalizedSentence, sentenceStartLineNum, sentenceStartLineOffset);
-            sentence = sentence with { OffsetMap = offsetMap };
-            builder.AddSentence(sentence);
+            // Sentence生成。
+            Sentence sentence = new Sentence(normalizedSentence, offsetMap, new List<string>());
+            //sentence = sentence with { OffsetMap = offsetMap };
+            //builder.AddSentence(sentence);
 
-            return new LineOffset(lineNum, offset); // 終了位置＝次のセンテンスの開始位置を返す。
+            return (sentence, new LineOffset(lineNum, offset)); // 終了位置＝次のセンテンスの開始位置を返す。
         }
     }
 }
