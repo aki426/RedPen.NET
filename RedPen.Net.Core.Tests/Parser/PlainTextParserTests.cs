@@ -57,11 +57,12 @@ pen is not oranges.
 Happy life. Happy home. Tama Home.
 ";
             Document doc = GenerateDocument(sampleText, "en-US");
-            Section section = doc.GetLastSection();
-            if (section == null)
+            if (!doc.Sections.Any())
             {
                 Assert.False(true);
             }
+
+            Section section = doc.Sections.Last();
 
             // 2行改行があるので、6センテンスが3セクションに分割される。
             section.Paragraphs.Count.Should().Be(3);
@@ -310,6 +311,31 @@ verylong pen.
             act = () => sentence.ConvertToLineOffset(5);
             act.Should().Throw<ArgumentException>()
                 .WithMessage("Invalid index: 5 in sentence : サンプル。"); // Exception
+        }
+
+        [Fact]
+        public void MultiParagraphTest()
+        {
+            // "1パラグラフ目
+            //
+            // 2パラグラフ目。
+            //
+            //
+            // 4パラグラフ目。
+            // "
+            string sampleText = "1パラグラフ目\r\n\r\n2パラグラフ目。\r\n\r\n\r\n4パラグラフ目。\r\n";
+
+            Document doc = GenerateDocument(sampleText, "ja-JP");
+            doc.Sections[0].Paragraphs.Count().Should().Be(4);
+
+            doc.Sections[0].Paragraphs[0].Sentences.Count().Should().Be(1);
+            doc.Sections[0].Paragraphs[0].Sentences[0].Content.Should().Be("1パラグラフ目");
+            doc.Sections[0].Paragraphs[1].Sentences.Count().Should().Be(1);
+            doc.Sections[0].Paragraphs[1].Sentences[0].Content.Should().Be("2パラグラフ目。");
+            // MEMO: 2パラグラフ目と4パラグラフ目の間の空行2行で空のパラグラフが1つ作成される。
+            doc.Sections[0].Paragraphs[2].Sentences.Count().Should().Be(0);
+            doc.Sections[0].Paragraphs[3].Sentences.Count().Should().Be(1);
+            doc.Sections[0].Paragraphs[3].Sentences[0].Content.Should().Be("4パラグラフ目。");
         }
 
         // 残りのテストケースも同様に変換

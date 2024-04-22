@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Model;
 using Xunit;
@@ -32,8 +34,15 @@ namespace RedPen.Net.Core.Tests.Model
 
             // Headerがない場合
             section = new Section(0);
-            section.GetJoinedHeaderContents().Content.Should().Be("");
-            section.GetJoinedHeaderContents().LineNumber.Should().Be(0);
+            section.HeaderSentences.Any().Should().BeFalse();
+
+            Action act = () => section.GetJoinedHeaderContents();
+            act.Should().Throw<InvalidOperationException>()
+                .WithMessage("No header sentence found in the section.");
+
+            //var joinedHeaderSentence = section.GetJoinedHeaderContents();
+            //joinedHeaderSentence.Content.Should().Be("");
+            //joinedHeaderSentence.LineNumber.Should().Be(0);
         }
     }
 }

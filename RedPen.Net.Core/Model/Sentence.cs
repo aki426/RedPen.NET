@@ -6,47 +6,67 @@ using System.Linq;
 
 namespace RedPen.Net.Core.Model
 {
+    /// <summary>原文のテキスト位置と文字列の対応関係を記録した1センテンス分のオブジェクト。</summary>
     public record class Sentence
     {
         // TODO: recordで実装したが、隠ぺいしたほうが良いものはアクセシビリティを変更する。
 
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        private static readonly long serialVersionUID = 3761982769692999924L;
+        //private static readonly long serialVersionUID = 3761982769692999924L;
+
+        public bool IsFirstSentence { get; set; } // need getter.
 
         public string Content { get; set; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
-        public int LineNumber { get; init; } // need getter. setterはJAVA版でも使用実績がないので不要。
-        public bool IsFirstSentence { get; set; } // need getter.
-        public List<string> Links { get; init; } // need getter. List.add()はJAVA版でも使用実績がある。
-        public List<TokenElement> Tokens { get; set; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
-        public int StartPositionOffset { get; init; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
+
         /// <summary>SentenceのContentがLineOffset表現でどのような位置関係にあるかを1文字ずつ表現したもの</summary>
         public List<LineOffset> OffsetMap { get; init; }
 
+        public int LineNumber => this.OffsetMap[0].LineNum;
+
+        public int StartPositionOffset => this.OffsetMap[0].Offset;
+        public List<string> Links { get; init; }
+        public List<TokenElement> Tokens { get; set; } // need getter. setterはJAVA版で使用実績があるが必要に応じて対応する。
+
+        /// <summary>
+        /// lineNum行にオフセット位置0で開始しているSentenceを生成する。
+        /// Initializes a new instance of the <see cref="Sentence"/> class.
+        /// </summary>
+        /// <param name="sentenceContent">The sentence content.</param>
+        /// <param name="lineNum">The line num.</param>
         public Sentence(string sentenceContent, int lineNum) : this(sentenceContent, lineNum, 0)
         {
         }
 
+        /// <summary>
+        /// lineNum行の位置startOffsetで開始しているSentenceを生成する。
+        /// Initializes a new instance of the <see cref="Sentence"/> class.
+        /// </summary>
+        /// <param name="sentenceContent">The sentence content.</param>
+        /// <param name="lineNum">The line num.</param>
+        /// <param name="startOffset">The start offset.</param>
         public Sentence(string sentenceContent, int lineNum, int startOffset)
         {
             this.Content = sentenceContent;
-            this.LineNumber = lineNum;
+            //this.LineNumber = lineNum;
             this.IsFirstSentence = false;
             this.Links = new List<string>();
             this.Tokens = new List<TokenElement>();
-            this.StartPositionOffset = startOffset;
-            this.OffsetMap = new List<LineOffset>();
+            //this.StartPositionOffset = startOffset;
+
+            // MEMO: Sentenceは1行内に収まっていることを前提にしている。
+            this.OffsetMap = Enumerable.Range(startOffset, sentenceContent.Length).Select(offset => new LineOffset(lineNum, offset)).ToList();
         }
 
-        // MEMMO: TokenElementにLineNumberを追加するにあたり、Sentenceは1行内に収まっており、
-        // 改行された場合は別のSentenceと考えるルールを前提に置く。
-        // TODO: この前提はテストケースによって検証されなければならない。
-        // MEMO: 例えばMarkdownやAsciiDocの場合、改行はレンダリング時に無視されて1行に連結されてしまうので、
-        // あくまでテキストファイルの行数を基準にした場合にSentenceを分割する必要があり、それが実際の意味上のセンテンスの区切り
-        // （FullStopまでを1文とみなす）ことと食い違ってしまう可能性がある。
+        // MEMO: 複数行に分割されたセンテンスはParserによってList<LineOffset> OffsetMapを計算され与えられる。
 
-        // MEMO: この辺りの実態はList<LineOffset> OffsetMapに複数行の位置指定があるかどうかで判断する必要がある。
-
+        /// <summary>
+        /// 複数行にまたがるSentenceをサポートする、1文字ずつのLineOffsetを記録した完全なSentenceインスタンスを生成する。
+        /// Initializes a new instance of the <see cref="Sentence"/> class.
+        /// </summary>
+        /// <param name="content">The content.</param>
+        /// <param name="offsetMap">The offset map.</param>
+        /// <param name="links">The links.</param>
         public Sentence(string content, List<LineOffset> offsetMap, List<string> links)
         {
             // MEMO: 位置が存在しないSentenceは存在しないという前提。
@@ -65,11 +85,11 @@ namespace RedPen.Net.Core.Model
             }
 
             this.Content = content;
-            this.LineNumber = offsetMap[0].LineNum;
+            //this.LineNumber = offsetMap[0].LineNum;
             this.IsFirstSentence = false;
             this.Links = links;
             this.Tokens = new List<TokenElement>();
-            this.StartPositionOffset = offsetMap[0].Offset;
+            //this.StartPositionOffset = offsetMap[0].Offset;
             this.OffsetMap = offsetMap;
         }
 

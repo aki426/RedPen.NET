@@ -58,6 +58,11 @@ namespace RedPen.Net.Core.Model
         /// <returns>sentence containing all header contents in the section</returns>
         public Sentence GetJoinedHeaderContents()
         {
+            if (!this.HeaderSentences.Any())
+            {
+                throw new System.InvalidOperationException("No header sentence found in the section.");
+            }
+
             int lineNum = HeaderSentences.Count > 0 ? HeaderSentences[0].LineNumber : 0;
 
             return new Sentence(string.Join(" ", HeaderSentences.Select(s => s.Content)), lineNum);
