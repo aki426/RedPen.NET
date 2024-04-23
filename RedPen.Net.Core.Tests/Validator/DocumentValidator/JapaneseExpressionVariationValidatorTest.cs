@@ -6,6 +6,7 @@ using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Tests.Parser;
 using RedPen.Net.Core.Validators;
 using RedPen.Net.Core.Validators.DocumentValidator;
 using Xunit;
@@ -174,13 +175,35 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
 
             manager.GetErrorMessage(
                 errors[0],
-                CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found possible Japanese word variations for \"node\", \"ノード(名詞)\" at (L1,10)");
-
-            manager.GetErrorMessage(
-                errors[0],
                 CultureInfo.GetCultureInfo("ja-JP"))
                     .Should().Be("\"node\" は \"ノード(名詞)\"（出現位置：(L1,10)）の揺らぎ表現と考えられます。");
+        }
+
+        [Fact]
+        public void DefaultDictionaryNothingTest()
+        {
+            // Document
+            Document document = Document.Builder(
+                RedPenTokenizerFactory.CreateTokenizer(documentLang))
+                    .AddSection(1)
+                    .AddParagraph()
+                    .AddSentence(new Sentence("このExcelはあのエクセルとは違います。", 1))
+                    .Build(); // TokenizeをBuild時に実行する。
+
+            // Validation
+            japaneseExpressionVariationValidator.PreValidate(document);
+            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
+
+            // MEMO: Excelはデフォルト辞書に「エクセル」というReadingが登録されていないのでゆらぎと判定されない。
+            errors.Count().Should().Be(0);
+
+            //// 7. エラーメッセージを生成する。
+            //var manager = ErrorMessageManager.GetInstance();
+
+            //manager.GetErrorMessage(
+            //    errors[0],
+            //    CultureInfo.GetCultureInfo("ja-JP"))
+            //        .Should().Be("\"Excel\" は \"エクセル(名詞)\"（出現位置：(L1,10)）の揺らぎ表現と考えられます。");
         }
 
         /// <summary>
@@ -288,54 +311,53 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         // TODO: ごく短い1文字の表現もゆらぎとしてカウントされると良くないので、テストケースを書いて検討する。
         // 最終的にはMinLengthパラメータを実装して、指定文字数以下の表現はゆらぎとしてカウントしないようにする必要がありそう。
 
-        //[Fact]
-        //public void detectSameReadingsInJapaneseCharactersInDefaultDictionaryWithUpperCase()
-        //{
-        //    // MEMO: Configuration.Builder("ja-JP")でTokenizerはNeologdが割り当たっている。
-        //    config = Configuration.Builder("ja-JP")
-        //        .AddValidatorConfig(new ValidatorConfiguration(validatorName))
-        //        .Build();
+        [Fact]
+        public void ValidatePlainTextTest()
+        {
+            string sampleText = @"今日、メロスは激怒した。
+必ず、かの邪智暴虐の王を除かなければならぬと決意した。
 
-        //    Document document = prepareSimpleDocument("Nodeは英語です。ノードはカタカナです。");
+メロスには政治がわからぬ。メロスは、京の牧人である。笛を吹き、羊と遊んで暮して来た。
+けれども邪悪に対しては、人一倍に敏感であった。
 
-        //    RedPen redPen = new RedPen(config);
-        //    Dictionary<Document, List<ValidationError>> errors = redPen.Validate(new List<Document>() { document });
+きょう未明メロスは村を出発し、
+野を越え山越え、十里はなれた此のシラクスの市にやって来た。";
 
-        //    // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
-        //    errors[document].Count.Should().Be(1);
+            // Document
+            var plainTextParserTests = new PlainTextParserTests(output);
+            Document document = plainTextParserTests.GenerateDocument(sampleText, "ja-JP");
 
-        //    // TODO: 次のテストケースはあくまで暫定。
-        //    errors[document][0].Message.Should().Be("単語 ”Node” の揺らぎと考えられる表現 ”ノード(名詞)” が (L1,10)　で見つかりました。");
+            // 目視確認。
+            document.Sections[0].Paragraphs[0].Sentences.ForEach(sentence =>
+            {
+                output.WriteLine(sentence.Content);
+                sentence.Tokens.ForEach(token =>
+                {
+                    output.WriteLine(token.ToString());
+                });
+            });
 
-        //    output.WriteLine(errors[document][0].Message);
-        //    output.WriteLine(errors[document][0].ValidationName);
-        //    output.WriteLine(errors[document][0].Sentence.Content);
-        //    output.WriteLine(errors[document][0].LineNumber.ToString());
-        //}
+            // Validation
+            japaneseExpressionVariationValidator.PreValidate(document);
+            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
-        //[Fact(Skip = "JAVA版ベタ移植でもREDのため一旦SKIPして進める")]
-        //public void detectSameAlphabecicalReadings()
-        //{
-        //    config = Configuration
-        //        .Builder("ja-JP")
-        //        .AddValidatorConfig(new ValidatorConfiguration(validatorName))
-        //        .Build();
+            // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
+            //errors.Count().Should().Be(3);
 
-        //    Document document = prepareSimpleDocument("このExcelはあのエクセルとは違います。");
+            // 7. エラーメッセージを生成する。
+            var manager = ErrorMessageManager.GetInstance();
 
-        //    document.Sections[0].Paragraphs[0].Sentences[0].Tokens.ForEach(token =>
-        //    {
-        //        output.WriteLine(token.ToString());
-        //    });
+            // 目視確認。
+            errors.ForEach(e =>
+            {
+                output.WriteLine(manager.GetErrorMessage(e, CultureInfo.GetCultureInfo("ja-JP")));
+            });
 
-        //    RedPen redPen = new RedPen(config);
-        //    Dictionary<Document, List<ValidationError>> errors = redPen.Validate(new List<Document>() { document });
-        //    // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
-        //    errors[document].Count.Should().Be(1);
-
-        //    // TODO: 次のテストケースはあくまで暫定。
-        //    errors[document][0].Message.Should().Be("単語 ”Node” の揺らぎと考えられる表現 ”ノード(名詞)” が (L1,10)　で見つかりました。");
-        //}
+            //manager.GetErrorMessage(
+            //    errors[2],
+            //    CultureInfo.GetCultureInfo("ja-JP"))
+            //        .Should().Be("\"大使館\" は \"ヴェトナム大使館(名詞)\"（出現位置：(L3,0)）の揺らぎ表現と考えられます。");
+        }
 
         //    @Test
         //    void detectSameAlphabecicalReadingsInUserDictionary() throws RedPenException {

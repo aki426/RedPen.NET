@@ -209,7 +209,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         }
 
         /// <summary>
-        /// TargetTokenに対してReadingが同じだがSurfaceが異なるTokenを取得し、その出現位置を示すエラーメッセージを生成する。
+        /// TargetTokenに対してReadingが同じだがSurfaceが異なる複数のTokenを取得し、その出現位置を示すエラーメッセージを生成する。
         /// </summary>
         /// <param name="document"></param>
         /// <param name="sentence"></param>
@@ -226,6 +226,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             var variations = GetVariationTokens(targetToken, reading);
             foreach (string surface in variations.Keys)
             {
+                // targetTokenとSurfaceが異なる、Surfaceを同じくするTokenのリストを取得。
                 List<TokenElement> variationList = variations[surface];
                 // ゆらぎ表現を説明する文字列
                 string variationSurfaceStr = $"{surface}({variationList[0].Tags[0]})";
@@ -247,7 +248,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         }
 
         /// <summary>
-        /// TargetTokenに対してReadingが同じでSurfaceが異なるTokenを取得する。
+        /// TargetTokenに対してReadingが同じでSurfaceが異なる複数のTokenを取得する。
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="targetToken">The target token.</param>
@@ -256,16 +257,23 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         private Dictionary<string, List<TokenElement>> GetVariationTokens(
             TokenElement targetToken, string reading)
         {
-            // SurfaceをキーとしてゆらぎのTokenリスト引くDictionary。
+            // SurfaceをキーとしてゆらぎのTokenリストを引くDictionary。
             Dictionary<string, List<TokenElement>> variationMap = new Dictionary<string, List<TokenElement>>();
 
             // readingを同じくするTokenのリストを取得。
             foreach (TokenElement token in this.readingMap[reading])
             {
                 // 確認中のtargetTokenとSurfaceが異なるものを集める。品詞は考慮していない。
-                // TODO: 複数の品詞のTokenが一緒くたにListに入ってしまうのでそのようなケースを考慮すべきか検討する。
+
+                // TODO: 複数の品詞のTokenが一緒くたにListに入ってしまうのでそのようなケースを考慮すべきか検討する。つまり品詞ごとに分ける。
+
                 // TODO: Readingが全く同じでSurfaceが異なるTokenが3種類以上ある場合、2者間でのゆらぎ判定ではなく、3者間でのゆらぎ判定となる。
+                // つまり最も数が多い種類を正しい表現と推測し、他をゆらぎ表現とみなす。
+                // 3者以上が同数だった場合は、両者をお互いにゆらぎ表現とみなす。
+
                 // TODO: ゆらぎの判定は、2種類のSurfaceがあった場合に片方に偏っている場合、数が少ないほうをタイポ＝ゆらぎと推測することができる。
+                // 同数だった場合は、両者をお互いにゆらぎ表現とみなす。
+
                 if (targetToken.Surface != token.Surface)
                 {
                     // 存在しなければListを登録。

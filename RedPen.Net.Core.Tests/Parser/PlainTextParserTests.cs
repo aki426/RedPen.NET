@@ -22,7 +22,7 @@ namespace RedPen.Net.Core.Tests.Parser
 
         private readonly IDocumentParser _parser = new PlainTextParser(); //DocumentParser.PLAIN;
 
-        private Document GenerateDocument(string sampleText, string lang)
+        public Document GenerateDocument(string sampleText, string lang)
         {
             Document doc = null;
             // Lang設定以外はデフォルト。
