@@ -31,6 +31,22 @@ namespace RedPen.Net.Core.Tokenizer
         public int Offset => this.OffsetMap.First().Offset;
 
         /// <summary>
+        /// SurfaceとTagsの1つ目の文字列を取って人が目視可能な文字列表現を取得する関数。
+        /// </summary>
+        /// <returns>A string.</returns>
+        public string GetSurfaceAndTagString()
+        {
+            if (this.Tags.Any())
+            {
+                return $"{this.Surface}({this.Tags[0]})";
+            }
+            else
+            {
+                return $"{this.Surface}(unknown)";
+            }
+        }
+
+        /// <summary>
         /// Surface, Tags, Reading, OffsetMapを完全に指定してTokenElementを生成する。
         /// Initializes a new instance of the <see cref="TokenElement"/> class.
         /// </summary>

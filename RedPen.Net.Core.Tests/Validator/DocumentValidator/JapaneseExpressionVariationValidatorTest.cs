@@ -108,7 +108,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
-            errors.Count().Should().Be(3);
+            errors.Count().Should().Be(2);
 
             errors.ForEach(e =>
             {
@@ -124,32 +124,32 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found possible Japanese word variations for \"之\", \"これ(名詞)\" at (L1,6), (L1,13)");
+                    .Should().Be("Found possible Japanese word variations for \"之(名詞)\", \"これ(名詞)\" at (L1,6), (L1,13)");
 
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("ja-JP"))
-                    .Should().Be("\"之\" は \"これ(名詞)\"（出現位置：(L1,6), (L1,13)）の揺らぎ表現と考えられます。");
+                    .Should().Be("\"之(名詞)\" は \"これ(名詞)\"（出現位置：(L1,6), (L1,13)）の揺らぎ表現と考えられます。");
 
             manager.GetErrorMessage(
                 errors[1],
                 CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found possible Japanese word variations for \"ヴェトナム\", \"ベトナム(名詞)\" at (L3,10), (L3,19)");
+                    .Should().Be("Found possible Japanese word variations for \"ヴェトナム(名詞)\", \"ベトナム(名詞)\" at (L3,10), (L3,19)");
 
             manager.GetErrorMessage(
                 errors[1],
                 CultureInfo.GetCultureInfo("ja-JP"))
-                    .Should().Be("\"ヴェトナム\" は \"ベトナム(名詞)\"（出現位置：(L3,10), (L3,19)）の揺らぎ表現と考えられます。");
+                    .Should().Be("\"ヴェトナム(名詞)\" は \"ベトナム(名詞)\"（出現位置：(L3,10), (L3,19)）の揺らぎ表現と考えられます。");
 
-            manager.GetErrorMessage(
-                errors[2],
-                CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found possible Japanese word variations for \"大使館\", \"ヴェトナム大使館(名詞)\" at (L3,0)");
+            //manager.GetErrorMessage(
+            //    errors[2],
+            //    CultureInfo.GetCultureInfo("en-US"))
+            //        .Should().Be("Found possible Japanese word variations for \"大使館(名詞)\", \"ヴェトナム大使館(名詞)\" at (L3,0)");
 
-            manager.GetErrorMessage(
-                errors[2],
-                CultureInfo.GetCultureInfo("ja-JP"))
-                    .Should().Be("\"大使館\" は \"ヴェトナム大使館(名詞)\"（出現位置：(L3,0)）の揺らぎ表現と考えられます。");
+            //manager.GetErrorMessage(
+            //    errors[2],
+            //    CultureInfo.GetCultureInfo("ja-JP"))
+            //        .Should().Be("\"大使館(名詞)\" は \"ヴェトナム大使館(名詞)\"（出現位置：(L3,0)）の揺らぎ表現と考えられます。");
         }
 
         [Fact]
@@ -176,7 +176,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("ja-JP"))
-                    .Should().Be("\"node\" は \"ノード(名詞)\"（出現位置：(L1,10)）の揺らぎ表現と考えられます。");
+                    .Should().Be("\"node(名詞)\" は \"ノード(名詞)\"（出現位置：(L1,10)）の揺らぎ表現と考えられます。");
         }
 
         [Fact]
@@ -268,12 +268,12 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found possible Japanese word variations for \"肖像\", \"昭三(名詞)\" at (L1,8)");
+                    .Should().Be("Found possible Japanese word variations for \"肖像(名詞)\", \"昭三(名詞)\" at (L1,8)");
 
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("ja-JP"))
-                    .Should().Be("\"肖像\" は \"昭三(名詞)\"（出現位置：(L1,8)）の揺らぎ表現と考えられます。");
+                    .Should().Be("\"肖像(名詞)\" は \"昭三(名詞)\"（出現位置：(L1,8)）の揺らぎ表現と考えられます。");
 
             // Document
             document = Document.Builder(
@@ -294,12 +294,12 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found possible Japanese word variations for \"昭三\", \"肖像(名詞)\" at (L1,21)");
+                    .Should().Be("Found possible Japanese word variations for \"昭三(名詞)\", \"肖像(名詞)\" at (L1,21)");
 
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("ja-JP"))
-                    .Should().Be("\"昭三\" は \"肖像(名詞)\"（出現位置：(L1,21)）の揺らぎ表現と考えられます。");
+                    .Should().Be("\"昭三(名詞)\" は \"肖像(名詞)\"（出現位置：(L1,21)）の揺らぎ表現と考えられます。");
         }
 
         // MEMO: 現在の仕様では、ゆらぎと判断される2つの表現があった場合、先に出現したものがゆらぎ、後に出現したものが正としてエラーが出力される。

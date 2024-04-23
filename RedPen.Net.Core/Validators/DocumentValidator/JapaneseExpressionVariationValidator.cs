@@ -121,7 +121,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                         var compoundNounToken = new TokenElement(
                             string.Join("", nouns.Select(i => i.Surface)),
                             nouns[0].Tags.ToImmutableList(),
-                            string.Join("", nouns.Select(i => i.Reading)),
+                            string.Join("", nouns.Select(i => GetNormalizedReading(i))),
                             nouns.SelectMany(n => n.OffsetMap).ToImmutableList()
                         );
 
@@ -228,9 +228,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             {
                 // targetTokenとSurfaceが異なる、Surfaceを同じくするTokenのリストを取得。
                 List<TokenElement> variationList = variations[surface];
-                // ゆらぎ表現を説明する文字列
-                string variationSurfaceStr = $"{surface}({variationList[0].Tags[0]})";
-                // ゆらぎ表現の出現位置
+                // ゆらぎ表現の出現位置（先頭位置で良い）
                 string positionsText = string.Join(", ", variationList.Select(t => t.OffsetMap[0].ConvertToShortText()));
 
                 errors.Add(new ValidationError(
@@ -239,8 +237,13 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     sentence,
                     targetToken.OffsetMap[0],
                     targetToken.OffsetMap[^1],
-                    // Surface, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
-                    MessageArgs: new object[] { targetToken.Surface, variationSurfaceStr, positionsText }
+                    // エラー箇所のToken表現, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+                    MessageArgs: new object[]
+                    {
+                        targetToken.GetSurfaceAndTagString(),
+                        variationList[0].GetSurfaceAndTagString(),
+                        positionsText
+                    }
                 ));
             }
 
