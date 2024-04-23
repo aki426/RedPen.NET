@@ -321,7 +321,8 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
 けれども邪悪に対しては、人一倍に敏感であった。
 
 きょう未明メロスは村を出発し、
-野を越え山越え、十里はなれた此のシラクスの市にやって来た。";
+野を越え山越え、今
+日の午後、十里はなれた此のシラクスの市にやって来た。";
 
             // Document
             var plainTextParserTests = new PlainTextParserTests(output);
