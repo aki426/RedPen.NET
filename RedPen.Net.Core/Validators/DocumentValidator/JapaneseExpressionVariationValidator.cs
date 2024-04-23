@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
@@ -199,9 +198,6 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
 
                     // tokenに対して取得したreadingでエラーを生成する。
                     errors.AddRange(GenerateErrors(sentence, token, reading));
-
-                    // TODO: なんでエラー1個生成したら削除？　ゆらぎの出現箇所は複数ある可能性がある。
-                    this.readingMap.Remove(reading);
                 }
             }
 
@@ -222,76 +218,157 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         {
             List<ValidationError> errors = new List<ValidationError>();
 
-            // ゆらぎ表現をリストアップする。
-            var variations = GetVariationTokens(targetToken, reading);
-            foreach (string surface in variations.Keys)
-            {
-                // targetTokenとSurfaceが異なる、Surfaceを同じくするTokenのリストを取得。
-                List<TokenElement> variationList = variations[surface];
-                // ゆらぎ表現の出現位置（先頭位置で良い）
-                string positionsText = string.Join(", ", variationList.Select(t => t.OffsetMap[0].ConvertToShortText()));
+            // ReadingマップからtargetTokenの出現回数を取得。
+            var targetTokenCount = this.readingMap[reading].Where(i => i.Surface == targetToken.Surface).Count();
 
-                errors.Add(new ValidationError(
-                    ValidationType.JapaneseExpressionVariation,
-                    this.Level,
-                    sentence,
-                    targetToken.OffsetMap[0],
-                    targetToken.OffsetMap[^1],
-                    // エラー箇所のToken表現, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
-                    MessageArgs: new object[]
+            // MEMO: 確認中のtargetTokenとSurfaceが異なるものを集める。品詞は考慮していない。
+            // TODO: 複数の品詞のTokenが一緒くたにListに入ってしまうのでそのようなケースを考慮すべきか検討する。つまり品詞ごとに分けるか。
+            IEnumerable<List<TokenElement>> enumerable = this.readingMap[reading].GroupBy(t => t.Surface)
+                // targetTokenとSurfaceが異なるものを集める。
+                .Where(g => g.Key != targetToken.Surface)
+                // targetTokenと同じかより多い数のTokenがある場合は、targetTokenがゆらぎで、相手が正しい表現の可能性がある。
+                .Where(g => targetTokenCount <= g.Count())
+                .Select(g => g.ToList());
+
+            foreach (List<TokenElement> tokenList in enumerable)
+            {
+                if (tokenList.Any())
+                {
+                    string positionsText = string.Join(", ", tokenList.Select(t => t.OffsetMap[0].ConvertToShortText()));
+
+                    if (targetTokenCount == tokenList.Count())
                     {
-                        targetToken.GetSurfaceAndTagString(),
-                        variationList[0].GetSurfaceAndTagString(),
-                        positionsText
+                        // 出現数が同数の場合、どちらかがゆらぎでどちらかが正の可能性。=> key: SameCount
+                        errors.Add(new ValidationError(
+                            ValidationType.JapaneseExpressionVariation,
+                            this.Level,
+                            sentence,
+                            targetToken.OffsetMap[0],
+                            targetToken.OffsetMap[^1],
+                            // エラー箇所のToken表現, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+                            MessageArgs: new object[]
+                            {
+                                targetToken.GetSurfaceAndTagString(),
+                                tokenList[0].GetSurfaceAndTagString(),
+                                positionsText
+                            },
+                            MessageKey: "SameCount"
+                        ));
                     }
-                ));
+                    else
+                    {
+                        // 相手の方が多い場合、targetTokenがゆらぎで相手が正と推測。=> key: Normal
+                        errors.Add(new ValidationError(
+                            ValidationType.JapaneseExpressionVariation,
+                            this.Level,
+                            sentence,
+                            targetToken.OffsetMap[0],
+                            targetToken.OffsetMap[^1],
+                            // エラー箇所のToken表現, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+                            MessageArgs: new object[]
+                            {
+                                targetToken.GetSurfaceAndTagString(),
+                                tokenList[0].GetSurfaceAndTagString(),
+                                positionsText
+                            },
+                            MessageKey: "Normal"
+                        ));
+                    }
+                }
             }
+
+            //// ゆらぎ表現をリストアップする。
+            //var variations = GetVariationTokens(targetToken, reading);
+            //foreach (string surface in variations.Keys)
+            //{
+            //    // targetTokenとSurfaceが異なる、Surfaceを同じくするTokenのリストを取得。
+            //    List<TokenElement> variationList = variations[surface];
+            //    // ゆらぎ表現の出現位置（先頭位置で良い）
+            //    string positionsText = string.Join(", ", variationList.Select(t => t.OffsetMap[0].ConvertToShortText()));
+
+            //    errors.Add(new ValidationError(
+            //        ValidationType.JapaneseExpressionVariation,
+            //        this.Level,
+            //        sentence,
+            //        targetToken.OffsetMap[0],
+            //        targetToken.OffsetMap[^1],
+            //        // エラー箇所のToken表現, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
+            //        MessageArgs: new object[]
+            //        {
+            //            targetToken.GetSurfaceAndTagString(),
+            //            variationList[0].GetSurfaceAndTagString(),
+            //            positionsText
+            //        }
+            //    ));
+            //}
 
             return errors;
         }
 
-        /// <summary>
-        /// TargetTokenに対してReadingが同じでSurfaceが異なる複数のTokenを取得する。
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="targetToken">The target token.</param>
-        /// <param name="reading">The reading.</param>
-        /// <returns>A Dictionary.</returns>
-        private Dictionary<string, List<TokenElement>> GetVariationTokens(
-            TokenElement targetToken, string reading)
-        {
-            // SurfaceをキーとしてゆらぎのTokenリストを引くDictionary。
-            Dictionary<string, List<TokenElement>> variationMap = new Dictionary<string, List<TokenElement>>();
+        ///// <summary>
+        ///// TargetTokenに対してReadingが同じでSurfaceが異なる複数のTokenを取得する。
+        ///// </summary>
+        ///// <param name="document">The document.</param>
+        ///// <param name="targetToken">The target token.</param>
+        ///// <param name="reading">The reading.</param>
+        ///// <returns>A Dictionary.</returns>
+        //private Dictionary<string, List<TokenElement>> GetVariationTokens(
+        //    TokenElement targetToken, string reading)
+        //{
+        //    // SurfaceをキーとしてゆらぎのTokenリストを引くDictionary。
+        //    Dictionary<string, List<TokenElement>> variationMap = new Dictionary<string, List<TokenElement>>();
 
-            // readingを同じくするTokenのリストを取得。
-            foreach (TokenElement token in this.readingMap[reading])
-            {
-                // 確認中のtargetTokenとSurfaceが異なるものを集める。品詞は考慮していない。
+        //    var targetTokenCount = this.readingMap[reading].Where(i => i.Surface == targetToken.Surface).Count();
 
-                // TODO: 複数の品詞のTokenが一緒くたにListに入ってしまうのでそのようなケースを考慮すべきか検討する。つまり品詞ごとに分ける。
+        //    IEnumerable<List<TokenElement>> enumerable = this.readingMap[reading].GroupBy(t => t.Surface)
+        //        .Where(g => g.Key != targetToken.Surface) // targetTokenとSurfaceが異なるものを集める。
+        //        .Where(g => targetTokenCount <= g.Count()) // targetTokenと同じかより多い数のTokenがある場合は、targetTokenがゆらぎで、相手が正しい表現の可能性がある。
+        //        .Select(g => g.ToList());
 
-                // TODO: Readingが全く同じでSurfaceが異なるTokenが3種類以上ある場合、2者間でのゆらぎ判定ではなく、3者間でのゆらぎ判定となる。
-                // つまり最も数が多い種類を正しい表現と推測し、他をゆらぎ表現とみなす。
-                // 3者以上が同数だった場合は、両者をお互いにゆらぎ表現とみなす。
+        //    foreach (List<TokenElement> tokenList in enumerable)
+        //    {
+        //        if (tokenList.Any())
+        //        {
+        //            if (targetTokenCount == tokenList.Count())
+        //            {
+        //                // 出現数が同数の場合。
+        //            }
+        //            else
+        //            {
+        //                // 相手の方が多い場合。
+        //            }
+        //        }
+        //    }
 
-                // TODO: ゆらぎの判定は、2種類のSurfaceがあった場合に片方に偏っている場合、数が少ないほうをタイポ＝ゆらぎと推測することができる。
-                // 同数だった場合は、両者をお互いにゆらぎ表現とみなす。
+        //    // readingを同じくするTokenのリストを取得。
+        //    foreach (TokenElement token in this.readingMap[reading])
+        //    {
+        //        // 確認中のtargetTokenとSurfaceが異なるものを集める。品詞は考慮していない。
 
-                if (targetToken.Surface != token.Surface)
-                {
-                    // 存在しなければListを登録。
-                    if (!variationMap.ContainsKey(token.Surface))
-                    {
-                        variationMap[token.Surface] = new List<TokenElement>();
-                    }
+        //        // TODO: 複数の品詞のTokenが一緒くたにListに入ってしまうのでそのようなケースを考慮すべきか検討する。つまり品詞ごとに分けるか。
 
-                    // readingをキーとして取得したTokenを今度はSurfaceをキーとして登録する。
-                    // つまりReadingが同じだけど、Surfaceが異なるToken＝言及対象のTokenのSurfaceに対してゆらいでいるとみなせる相手先のToken
-                    // のDictionaryを作成。
-                    variationMap[token.Surface].Add(token);
-                }
-            }
-            return variationMap;
-        }
+        //        // TODO: Readingが全く同じでSurfaceが異なるTokenが3種類以上ある場合、2者間でのゆらぎ判定ではなく、3者間でのゆらぎ判定となる。
+        //        // つまり最も数が多い種類を正しい表現と推測し、他をゆらぎ表現とみなす。
+        //        // 3者以上が同数だった場合は、両者をお互いにゆらぎ表現とみなす。
+
+        //        // TODO: ゆらぎの判定は、2種類のSurfaceがあった場合に片方に偏っている場合、数が少ないほうをタイポ＝ゆらぎと推測することができる。
+        //        // 同数だった場合は、両者をお互いにゆらぎ表現とみなす。
+
+        //        if (targetToken.Surface != token.Surface)
+        //        {
+        //            // 存在しなければListを登録。
+        //            if (!variationMap.ContainsKey(token.Surface))
+        //            {
+        //                variationMap[token.Surface] = new List<TokenElement>();
+        //            }
+
+        //            // readingをキーとして取得したTokenを今度はSurfaceをキーとして登録する。
+        //            // つまりReadingが同じだけど、Surfaceが異なるToken＝言及対象のTokenのSurfaceに対してゆらいでいるとみなせる相手先のToken
+        //            // のDictionaryを作成。
+        //            variationMap[token.Surface].Add(token);
+        //        }
+        //    }
+        //    return variationMap;
+        //}
     }
 }
