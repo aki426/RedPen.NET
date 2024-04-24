@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Net;
-using J2N.Text;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
@@ -35,7 +31,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
         public void PreValidate(Sentence sentence)
         {
-            throw new NotImplementedException();
+            // nothing.
         }
 
         public List<ValidationError> Validate(Sentence sentence)
