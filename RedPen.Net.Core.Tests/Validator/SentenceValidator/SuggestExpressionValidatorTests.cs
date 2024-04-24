@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -169,10 +168,37 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             // 一方、「おはおは」は「おはようございます」の一部ではあるが、それは「おはおは」に対する正表現ではないため、エラーとして検出される。
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
                 .Be("不正な単語 \"おはおは\" が見つかりました。代替表現 \"朝の挨拶\" を使用してください。");
+
+            suggestExpressionConfiguration = new SuggestExpressionConfiguration(
+                ValidationLevel.ERROR,
+                new Dictionary<string, string>
+                {
+                    { "おはおは", "おはようございます" }
+                }
+             );
+
+            validator = new SuggestExpressionValidator(
+                new CultureInfo("ja-JP"),
+                new SymbolTable(new CultureInfo("ja-JP"), "", new List<Symbol>()),
+                suggestExpressionConfiguration
+                );
+
+            errors = validator.Validate(new Sentence("おはおは日本。", 1));
+            errors.Count.Should().Be(1);
+            manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
+                .Be("不正な単語 \"おはおは\" が見つかりました。代替表現 \"おはようございます\" を使用してください。");
+
+            // MEMO: 一方、正表現が誤表現の一部をマスクするような関係の場合、期待する誤表現が検出されなくなってしまう。
+            errors = validator.Validate(new Sentence("おはおはようございます日本。", 1));
+            errors.Count.Should().Be(0);
+
+            // 単純に誤表現を検出したいだけならInvalidExpressionがあるので、SuggestExpressionでは
+            // 正表現が使われている場合の誤表現は検出しない方がより使用者の意図にかなう、という考えでこの仕様とする。
         }
 
+        /// <summary>GetNullMaskedの動作確認テスト。</summary>
         [Fact]
-        public void IgnoreValidExpression()
+        public void GetNullMaskedTest()
         {
             // MEMO: 誤表現と正表現が一部重複するようなケースでは、正表現を除去した文字列内のどこに誤表現が含まれるかを検出すればよい。
             // content内の正表現出現箇所をNUL文字で置換した文字列であれば、文字列の長さや位置関係が変わらないため、
