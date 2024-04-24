@@ -8,6 +8,13 @@ using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
+    public record JapaneseStyleConfiguration : ValidatorConfiguration
+    {
+        public JapaneseStyleConfiguration(ValidationLevel level) : base(level)
+        {
+        }
+    }
+
     public class JapaneseStyleValidator : Validator, ISentenceValidatable
     {
         /// <summary>Nlog</summary>
