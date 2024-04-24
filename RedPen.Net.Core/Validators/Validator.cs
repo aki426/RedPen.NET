@@ -130,7 +130,6 @@ namespace RedPen.Net.Core.Validators
 
     //    // TODO: コンストラクタの引数定義は共通にすること。
     //    public XXXValidator(
-    //        ValidationLevel level,
     //        CultureInfo documentLangForTest,
     //        SymbolTable symbolTable,
     //        XXXConfiguration config) :
