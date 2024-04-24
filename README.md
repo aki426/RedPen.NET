@@ -51,12 +51,34 @@ readpenをC#アプリケーションからスマートに利用したかった�
 
 ## Validator Configuration
 
-|            Name             |         Description          | Lang  |      Property      |
-| --------------------------- | ---------------------------- | ----- | ------------------ |
-| SentenceLength              | センテンスの最大文字長       | ANY   | MaxLength          |
-| InvalidExpression           | 不正な表現                   | ANY   | DictFile, WordList |
-| CommaNumber                 | センテンス内のコンマの最大数 | ANY   | MaxNumber          |
-| JapaneseExpressionVariation | 日本語の表記ゆれ             | ja-JP | DictFile, WordMap  |
+当面優先して実装予定のValidatorのConfigurationです。
+
+| Done |               Name               |                         Description                          | Lang  |            Property            |
+| ---- | -------------------------------- | ------------------------------------------------------------ | ----- | ------------------------------ |
+| v    | SentenceLength                   | 最大文字長を超えるセンテンス                                 | ANY   | MaxLength                      |
+| v    | InvalidExpression                | 不正な表現                                                   | ANY   | DictFile, WordList             |
+| v    | CommaNumber                      | センテンス内の最大回数を超えるコンマの使用                   | ANY   | MaxNumber                      |
+| v    | SuggestExpression                | 不正な表現に対する推奨表現の提案                             | ANY   | DictFile, WordMap              |
+|      | InvalidSymbol                    | 不正なシンボル                                               | ANY   | ※Symbolsブロックで定義         |
+|      | SymbolWithSpace                  | シンボル前後のスペースの有無                                 | ANY   | ※Symbolsブロックで定義         |
+|      | KatakanaEndHyphen                | JIS Z8301、G.6.2.2 b、G.3.基準のカタカナ単語の語尾のハイフン | ANY   | WordList                       |
+|      | KatakanaSpellCheck               | カタカナ単語の表記ゆれ                                       | ja-JP | DictFile, MinRatio, MinFreq    |
+|      | SpaceBetweenAlphabeticalWord     | アルファベット単語前後の空白                                 | ja-JP | NoSpace                        |
+|      | DoubledWord                      | センテンス内の同一表現の重複使用                             | ANY   | DictFile, WordList             |
+|      | SuccessiveWord                   | 同一の単語の連続使用                                         | ANY   |                                |
+|      | JapaneseStyle                    | ですます調とである調の混在                                   | ja-JP |                                |
+|      | DoubleNegative                   | 二重否定                                                     | ja-JP |                                |
+|      | ParenthesizedSentence            | 不正な括弧                                                   | ANY   | MaxLength, MaxNumber, MaxLevel |
+|      | DoubledJoshi                     | センテンス内の同一助詞の重複使用                             | ja-JP |                                |
+|      | HankakuKana                      | 半角カナ文字                                                 | ja-JP |                                |
+|      | Okurigana                        | 不正な送りがな                                               | ja-JP |                                |
+|      | LongKanjiChain                   | 最大文字長を超える漢字の連続                                 | ja-JP | Maxlength                      |
+|      | JapaneseAmbiguousNounConjunction | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）       | ja-JP |                                |
+|      | JapaneseJoyoKanji                | 常用漢字以外の漢字                                           | ja-JP |                                |
+| v    | JapaneseExpressionVariation      | 日本語の表記ゆれ                                             | ja-JP | DictFile, WordMap              |
+|      | JapaneseNumberExpression         | 計数表現スタイルの一貫性                                     | ja-JP | NumberStyle                    |
+|      | SuccessiveSentence               | 最小文字長以上かつ編集距離閾値以下の類似文の二回連続使用     | ANY   | Distance, MinLength            |
+|      | DoubledConjunctiveParticleGa     | センテンス内の接続助詞「が」の2回以上の使用                  | ja-JP |                                |
 
 ## Configuration Property
 
