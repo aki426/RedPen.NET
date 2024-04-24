@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -40,16 +41,23 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
             foreach (KeyValuePair<string, string> kvp in Config.WordMap)
             {
+                string content = sentence.Content;
+                // 日本語の場合、正表現の中に誤表現が含まれる場合があるので、先に正表現をマスキングした文字列で判定を行う。
+                if (this.DocumentLang.Name == "ja-JP")
+                {
+                    content = GetNullMasked(content, kvp.Value);
+                }
+
                 int end = -1; // MEMO: 初期状態はIndexOfに渡す走査開始Indexを0にしたいので-1にしておく。
 
                 // まだ未走査の文字列がある＝endが文字列の最後に達していない場合はキーワードの検出を続ける。
                 while (end < sentence.Content.Length - 1)
                 {
-                    int start = sentence.Content.IndexOf(kvp.Key, end + 1);
+                    int start = content.IndexOf(kvp.Key, end + 1); // 誤表現の検出はマスク済みの文字列で行う。
                     if (start < 0) break; // not found.
                     end = start + kvp.Key.Length - 1; // LineOffsetイコール文字位置とみなす。startが開始文字、endが終了文字。
 
-                    // 日本語の判定は入力ドキュメントの言語設定で行う。
+                    // 言語の判定は入力ドキュメントの言語設定で行う。
                     if (this.DocumentLang.Name == "ja-JP")
                     {
                         // go to resutl.Add( error )
@@ -84,6 +92,18 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// 文字列strに対して、マスキングすべきすべての文字列をNUL文字で置き換えた文字列を取得する。
+        /// </summary>
+        /// <param name="str">The str.</param>
+        /// <param name="masking">The masking.</param>
+        /// <returns>A string.</returns>
+        public static string GetNullMasked(string str, string masking)
+        {
+            string mask = new string('\0', masking.Length);
+            return Regex.Replace(str, Regex.Escape(masking), mask);
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Errors;
@@ -32,6 +34,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             // 文字が文字(アルファベット)かどうかを判定する。
             char.IsLetter('a').Should().BeTrue();
             char.IsLetter('1').Should().BeFalse();
+            char.IsLetter('\0').Should().BeFalse();
 
             // 文字列の各文字を判定する。
             "Hello今日は雨".ToList().ForEach(c =>
@@ -135,7 +138,8 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
                 ValidationLevel.ERROR,
                 new Dictionary<string, string>
                 {
-                    { "おはよう", "おはようございます" }
+                    { "おはよう", "おはようございます" },
+                    { "おはおは", "朝の挨拶" }
                 }
             );
 
@@ -156,12 +160,37 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
                 .Be("不正な単語 \"おはよう\" が見つかりました。代替表現 \"おはようございます\" を使用してください。");
 
-            // TODO: 誤表現が正表現の一部である場合、正表現が使用されているにもかかわらず誤表現が検出されてしまう。要検討。
-            errors = validator.Validate(new Sentence("おはようございます日本。", 1));
+            // MEMO: 誤表現が正表現の一部である場合、正表現が使用されている場合は誤表現を検出しない。
+            // MEMO: ただし、誤表現のスキップは1組の正誤の中でだけの話で、他の正誤の組み合わせに対して検出キャンセルはしない。
+            errors = validator.Validate(new Sentence("おはおはようございます日本。", 1));
             errors.Count.Should().Be(1);
 
+            // 「おはよう」は「おはようございます」の一部であるため、エラーとして検出されない。
+            // 一方、「おはおは」は「おはようございます」の一部ではあるが、それは「おはおは」に対する正表現ではないため、エラーとして検出される。
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
-                .Be("不正な単語 \"おはよう\" が見つかりました。代替表現 \"おはようございます\" を使用してください。");
+                .Be("不正な単語 \"おはおは\" が見つかりました。代替表現 \"朝の挨拶\" を使用してください。");
+        }
+
+        [Fact]
+        public void IgnoreValidExpression()
+        {
+            // MEMO: 誤表現と正表現が一部重複するようなケースでは、正表現を除去した文字列内のどこに誤表現が含まれるかを検出すればよい。
+            // content内の正表現出現箇所をNUL文字で置換した文字列であれば、文字列の長さや位置関係が変わらないため、
+            // 誤表現の検出方法および位置の特定もシンプルな実装にできる。
+
+            string content = "おはようございます日本、おはようございます世界。";
+            string invalid = "おはよう";
+            string valid = "おはようございます";
+
+            string replace = new string('\0', valid.Length);
+            string newContent = Regex.Replace(content, Regex.Escape(valid), replace);
+
+            newContent.Should().Be("\0\0\0\0\0\0\0\0\0日本、\0\0\0\0\0\0\0\0\0世界。");
+            newContent.Contains(invalid).Should().BeFalse();
+
+            SuggestExpressionValidator.GetNullMasked(content, valid)
+                .Should().Be("\0\0\0\0\0\0\0\0\0日本、\0\0\0\0\0\0\0\0\0世界。");
+            SuggestExpressionValidator.GetNullMasked(content, valid).Contains(invalid).Should().BeFalse();
         }
     }
 }
