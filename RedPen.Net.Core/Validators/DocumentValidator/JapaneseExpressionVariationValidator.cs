@@ -58,6 +58,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             }
         }
 
+        // TODO: Prevalidateは実質不要なので、Interfaceを含めて削除するか検討する。
+
         /// <summary>
         /// PreProcessors to documents
         /// MEMO: Validateメソッドの前に実行される前処理関数。

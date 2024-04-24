@@ -104,7 +104,8 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
                 symbolTable,
                 validatorConfiguration);
 
-            invalidExpressionValidator.PreValidate(document.Sections[0].Paragraphs[0].Sentences[0]);
+            // PreValidateは不要。
+            //invalidExpressionValidator.PreValidate(document.Sections[0].Paragraphs[0].Sentences[0]);
             var errors = invalidExpressionValidator.Validate(document.Sections[0].Paragraphs[0].Sentences[0]);
 
             errors.Count.Should().Be(2);
