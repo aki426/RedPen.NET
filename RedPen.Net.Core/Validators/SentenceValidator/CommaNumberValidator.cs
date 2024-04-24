@@ -23,7 +23,6 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
         /// <param name="symbolTable">The symbol table.</param>
         /// <param name="config">The config.</param>
         public CommaNumberValidator(
-            ValidationLevel level,
             CultureInfo documentLangForTest,
             SymbolTable symbolTable,
             CommaNumberConfiguration config) :

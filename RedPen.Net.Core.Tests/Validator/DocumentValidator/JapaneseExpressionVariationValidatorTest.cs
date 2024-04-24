@@ -68,7 +68,6 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
 
             // Validatorの生成。
             japaneseExpressionVariationValidator = new JapaneseExpressionVariationValidator(
-                ValidationLevel.ERROR,
                 documentLang,
                 symbolTable,
                 japaneseExpressionVariationConfiguration);

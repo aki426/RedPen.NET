@@ -16,12 +16,11 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         public SentenceLengthConfiguration Config { get; init; }
 
         public SentenceLengthValidator(
-            ValidationLevel level,
             CultureInfo documentLangForTest,
             SymbolTable symbolTable,
             SentenceLengthConfiguration config) :
             base(
-                level,
+                config.Level,
                 documentLangForTest,
                 //errorMessages,
                 symbolTable)

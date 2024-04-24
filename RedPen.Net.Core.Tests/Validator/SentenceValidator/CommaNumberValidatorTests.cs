@@ -33,7 +33,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 
             // Validator
             var commaNumberValidator = new CommaNumberValidator(
-                ValidationLevel.ERROR,
                 cultureInfo,
                 symbolTable,
                 commaNumberConfiguration);
@@ -79,7 +78,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 
             // Validator
             var commaNumberValidator = new CommaNumberValidator(
-                ValidationLevel.ERROR,
                 cultureInfo,
                 symbolTable,
                 commaNumberConfiguration);
@@ -123,7 +121,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 
             // Validator
             var commaNumberValidator = new CommaNumberValidator(
-                ValidationLevel.ERROR,
                 cultureInfo,
                 symbolTable,
                 commaNumberConfiguration);

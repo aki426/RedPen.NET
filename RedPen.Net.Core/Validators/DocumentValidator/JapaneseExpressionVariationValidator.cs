@@ -37,7 +37,6 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// Initializes a new instance of the <see cref="JapaneseExpressionVariationValidator"/> class.
         /// </summary>
         public JapaneseExpressionVariationValidator(
-            ValidationLevel level,
             CultureInfo documentLangForTest,
             SymbolTable symbolTable,
             JapaneseExpressionVariationConfiguration config) :

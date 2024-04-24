@@ -11,12 +11,11 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         public InvalidExpressionConfiguration Config { get; init; }
 
         public InvalidExpressionValidator(
-            ValidationLevel level,
             CultureInfo documentLangForTest,
             SymbolTable symbolTable,
             InvalidExpressionConfiguration config) :
             base(
-                level,
+                config.Level,
                 documentLangForTest,
                 //errorMessages,
                 symbolTable)

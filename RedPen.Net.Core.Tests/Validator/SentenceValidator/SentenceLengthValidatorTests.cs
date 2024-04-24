@@ -46,7 +46,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 
             // 4. validator
             validator = new SentenceLengthValidator(
-                level,
                 cultureInfo,
                 //ValidationMessage.ResourceManager,
                 symbolTable,

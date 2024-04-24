@@ -100,7 +100,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 
             // Validator
             var invalidExpressionValidator = new InvalidExpressionValidator(
-                ValidationLevel.ERROR,
                 documentLang,
                 symbolTable,
                 validatorConfiguration);

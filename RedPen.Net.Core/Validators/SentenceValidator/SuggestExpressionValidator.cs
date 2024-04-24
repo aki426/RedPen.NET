@@ -22,7 +22,6 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         public CultureInfo DocumentLang { get; init; }
 
         public SuggestExpressionValidator(
-            ValidationLevel level,
             CultureInfo documentLangForTest,
             SymbolTable symbolTable,
             SuggestExpressionConfiguration config) : base(
