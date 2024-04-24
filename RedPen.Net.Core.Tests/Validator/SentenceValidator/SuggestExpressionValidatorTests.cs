@@ -1,29 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Validators;
 using RedPen.Net.Core.Validators.SentenceValidator;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 {
+    /// <summary>SuggestExpressionValidatorのテスト。</summary>
     public class SuggestExpressionValidatorTests
     {
         private ITestOutputHelper output;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SuggestExpressionValidatorTests"/> class.
+        /// </summary>
+        /// <param name="output">The output.</param>
         public SuggestExpressionValidatorTests(ITestOutputHelper output)
         {
             this.output = output;
         }
 
+        /// <summary>char.IsLetterのテスト。</summary>
         [Fact]
         public void FrameworkBasicTest()
         {
@@ -43,15 +45,16 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             });
         }
 
+        /// <summary>最も単純な基本形のテスト。</summary>
         [Fact]
-        public void TestSynonym()
+        public void BasicTest()
         {
             var suggestExpressionConfiguration = new SuggestExpressionConfiguration(
                 ValidationLevel.ERROR,
                 new Dictionary<string, string>
                 {
-                        { "like", "such as" },
-                        { "info", "information" }
+                    { "like", "such as" },
+                    { "info", "information" }
                 }
             );
 
@@ -77,54 +80,88 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
                 .Be("不正な単語 \"like\" が見つかりました。代替表現 \"such as\" を使用してください。");
         }
 
-        //[Fact]
-        //public void TestSynonymSplitPlusWhiteSpace()
-        //{
-        //    var config = new Configuration
-        //    {
-        //        ValidatorConfigs = new List<ValidatorConfiguration>
-        //        {
-        //            new ValidatorConfiguration("SuggestExpression")
-        //            {
-        //                Properties = new Dictionary<string, string>
-        //                {
-        //                    { "map", "{like, such as}" }
-        //                }
-        //            }
-        //        }
-        //    };
+        /// <summary>英語文のテスト。</summary>
+        [Fact]
+        public void EnglishSentenceTest()
+        {
+            var suggestExpressionConfiguration = new SuggestExpressionConfiguration(
+                ValidationLevel.ERROR,
+                new Dictionary<string, string>
+                {
+                    { "like", "such as" },
+                    { "info", "information" }
+                }
+            );
 
-        //    var validator = ValidatorFactory.GetInstance(config.ValidatorConfigs[0], config);
-        //    var errors = new List<ValidationError>();
-        //    validator.ErrorList = errors;
-        //    validator.Validate(new Sentence("they like a piece of a cake.", 0));
-        //    errors.Should().HaveCount(1);
-        //}
+            var validator = new SuggestExpressionValidator(
+                new CultureInfo("en-US"),
+                new SymbolTable(new CultureInfo("en-US"), "", new List<Symbol>()),
+                suggestExpressionConfiguration
+                );
 
-        //[Fact]
-        //public void TestWithoutSynonym()
-        //{
-        //    var config = new Configuration
-        //    {
-        //        ValidatorConfigs = new List<ValidatorConfiguration>
-        //        {
-        //            new ValidatorConfiguration("SuggestExpression")
-        //            {
-        //                Properties = new Dictionary<string, string>
-        //                {
-        //                    { "map", "{like,such as}, {info,information}" }
-        //                }
-        //            }
-        //        }
-        //    };
+            var errors = validator.Validate(new Sentence("", 1));
+            errors.Count.Should().Be(0);
 
-        //    var validator = ValidatorFactory.GetInstance(config.ValidatorConfigs[0], config);
-        //    var errors = new List<ValidationError>();
-        //    validator.ErrorList = errors;
-        //    validator.Validate(new Sentence("it loves a piece of a cake.", 0));
-        //    errors.Should().BeEmpty();
-        //}
+            errors = validator.Validate(new Sentence("it loves a piece of a cake.", 1));
+            errors.Count.Should().Be(0);
 
-        // 他のテストメソッドも同様に書き換えられます。
+            errors = validator.Validate(new Sentence("it likes a piece of a cake.", 1));
+            errors.Count.Should().Be(0);
+
+            errors = validator.Validate(new Sentence("I like a pen like this.", 1));
+            errors.Count.Should().Be(2);
+
+            // 7. エラーメッセージを生成する。
+            var manager = ErrorMessageManager.GetInstance();
+            manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("en-US")).Should()
+                .Be("Found invalid word \"like\". Use the synonym \"such as\" instead.");
+            manager.GetErrorMessage(errors[1], CultureInfo.GetCultureInfo("en-US")).Should()
+                .Be("Found invalid word \"like\". Use the synonym \"such as\" instead.");
+
+            errors = validator.Validate(new Sentence("it like a info.", 1));
+            errors.Count.Should().Be(2);
+
+            manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("en-US")).Should()
+                .Be("Found invalid word \"like\". Use the synonym \"such as\" instead.");
+            manager.GetErrorMessage(errors[1], CultureInfo.GetCultureInfo("en-US")).Should()
+                .Be("Found invalid word \"info\". Use the synonym \"information\" instead.");
+        }
+
+        /// <summary>日本語文のテスト。</summary>
+        [Fact]
+        public void JapaneseSentenceTest()
+        {
+            var suggestExpressionConfiguration = new SuggestExpressionConfiguration(
+                ValidationLevel.ERROR,
+                new Dictionary<string, string>
+                {
+                    { "おはよう", "おはようございます" }
+                }
+            );
+
+            var validator = new SuggestExpressionValidator(
+                new CultureInfo("ja-JP"),
+                new SymbolTable(new CultureInfo("ja-JP"), "", new List<Symbol>()),
+                suggestExpressionConfiguration
+                );
+
+            var errors = validator.Validate(new Sentence("", 1));
+            errors.Count.Should().Be(0);
+
+            errors = validator.Validate(new Sentence("おはよう日本。", 1));
+            errors.Count.Should().Be(1);
+
+            // 7. エラーメッセージを生成する。
+            var manager = ErrorMessageManager.GetInstance();
+            manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
+                .Be("不正な単語 \"おはよう\" が見つかりました。代替表現 \"おはようございます\" を使用してください。");
+
+            // TODO: 誤表現が正表現の一部である場合、正表現が使用されているにもかかわらず誤表現が検出されてしまう。要検討。
+            errors = validator.Validate(new Sentence("おはようございます日本。", 1));
+            errors.Count.Should().Be(1);
+
+            manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
+                .Be("不正な単語 \"おはよう\" が見つかりました。代替表現 \"おはようございます\" を使用してください。");
+        }
     }
 }
