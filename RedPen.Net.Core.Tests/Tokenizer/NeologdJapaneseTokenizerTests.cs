@@ -108,6 +108,8 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData(9, 1, "食事します。", "ます")]
         // 体言止め
         [InlineData(10, 1, "吾輩。", "")]
+        // 助動詞意外の「ます」
+        [InlineData(11, 1, "それで済ますことはない。", "ない")]
         public void GetJodoshiTest(int nouse1, int nouser2, string text, string jodoshi)
         {
             NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();

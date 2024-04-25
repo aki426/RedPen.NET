@@ -16,11 +16,11 @@ namespace RedPen.Net.Core.Utility
 
         // TODO: 関数名、変数名などの命名を見直してわかりやすくする。
 
-        /// <summary>ピリオド文字列が含まれていても文末とはみなさないホワイトワードのリスト。</summary>
-        private List<string> whiteWords;
-
         /// <summary>ピリオド文字列のパターン。</summary>
         private Regex periodPattern;
+
+        /// <summary>ピリオド文字列が含まれていても文末とはみなさないホワイトワードのリスト。</summary>
+        private List<string> whiteWords;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EndOfSentenceDetector"/> class.
@@ -34,11 +34,11 @@ namespace RedPen.Net.Core.Utility
         /// Initializes a new instance of the <see cref="EndOfSentenceDetector"/> class.
         /// </summary>
         /// <param name="periodPattern">The periodPattern.</param>
-        /// <param name="whiteWordList">The white word list.</param>
-        public EndOfSentenceDetector(Regex periodPattern, List<string> whiteWordList)
+        /// <param name="whiteWords">The white word list.</param>
+        public EndOfSentenceDetector(Regex periodPattern, List<string> whiteWords)
         {
             this.periodPattern = periodPattern;
-            this.whiteWords = whiteWordList;
+            this.whiteWords = whiteWords;
         }
 
         /// <summary>
@@ -51,7 +51,8 @@ namespace RedPen.Net.Core.Utility
         {
             // positionがstrのIndexとして成立するかどうか、だけでなく末尾の1文字前までかどうかを判定する。
             // つまりpositionの取りうる値は0からstr.Length - 2までとなり末尾のstr.Length - 1の位置の文字は含まれない。
-            return -1 < position && position < str.Length - 1;
+            // MEMO: 例えばstrが「みかん」だった場合、この関数がTrueを返すのはpositionは0（み）, 1（か）のいずれかということになる。
+            return 0 <= position && position < str.Length - 1;
         }
 
         // TODO: efficient computing with common prefix search.
@@ -110,7 +111,7 @@ namespace RedPen.Net.Core.Utility
         private int HandleSuccessivePeriods(string str, int position, HashSet<int> whitePositions)
         {
             int nextPosition = position + 1;
-            System.Text.RegularExpressions.Match matcher = this.periodPattern.Match(str, nextPosition);
+            Match matcher = this.periodPattern.Match(str, nextPosition);
             int matchPosition = -1;
             if (matcher.Success)
             {
@@ -242,7 +243,7 @@ namespace RedPen.Net.Core.Utility
             {
                 // NOTE: period in end of sentence should be the end of the sentence
                 // even if there is NO tailing whitespace.
-                // 文字列末尾が空白や改行でなく、ピリオドが置かれていた場合はそこを文末とみます。
+                // 文字列末尾が空白や改行でなく、ピリオドが置かれていた場合はそこを文末とみなす。
                 return value.endPosition - 1;
             }
 

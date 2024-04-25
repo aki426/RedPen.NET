@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -10,7 +11,8 @@ namespace RedPen.Net.Core.Tests.Parser
 {
     public class SentenceExtractorTests
     {
-        private List<Sentence> CreateSentences(List<(int, int)> outputPositions, int lastPosition, string line)
+        //private List<Sentence> CreateSentences(List<(int, int)> outputPositions, int lastPosition, string line)
+        private List<Sentence> CreateSentences(List<(int, int)> outputPositions, string line)
         {
             var output = new List<Sentence>();
             foreach (var (first, second) in outputPositions)
@@ -41,13 +43,20 @@ namespace RedPen.Net.Core.Tests.Parser
         [Fact]
         public void TestSimple()
         {
-            //var extractor = new SentenceExtractor(Configuration.Builder().Build().SymbolTable);
+            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
             //var outputPositions = new List<(int, int)>();
-            //var input = "this is a pen.";
-            //var lastPosition = extractor.Extract(input, outputPositions);
-            //var outputSentences = CreateSentences(outputPositions, lastPosition, input);
-            //outputSentences.Should().HaveCount(1);
-            //outputSentences[0].Content.Should().Be(input);
+            var input = "this is a pen.";
+            //int lastPosition = extractor.Extract(input, outputPositions);
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+
+            List<Sentence> outputsentences = CreateSentences(outputPositions, input);
+
+            outputsentences.Count.Should().Be(1);
+            outputsentences[0].Content.Should().Be(input);
+
+            outputPositions.Last().second.Should().Be(input.Length);
+            outputPositions.Last().second.Should().Be(14);
             //lastPosition.Should().Be(14);
         }
 
