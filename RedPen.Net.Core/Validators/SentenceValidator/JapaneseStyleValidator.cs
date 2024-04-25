@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Text.RegularExpressions;
 using NLog;
 using RedPen.Net.Core.Config;
@@ -9,6 +7,9 @@ using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
+    // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
+
+    /// <summary>JapaneseStyleのConfiguration</summary>
     public record JapaneseStyleConfiguration : ValidatorConfiguration
     {
         public JapaneseStyleConfiguration(ValidationLevel level) : base(level)
@@ -16,6 +17,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         }
     }
 
+    /// <summary>JapaneseStyleのValidator</summary>
     public class JapaneseStyleValidator : Validator, ISentenceValidatable
     {
         /// <summary>Nlog</summary>
@@ -45,6 +47,22 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         private int dearuCount = 0;
         private int desumasuCount = 0;
 
+        private int CountMatch(Sentence sentence, Regex pattern)
+        {
+            var content = sentence.Content;
+            var matches = pattern.Matches(content);
+            return matches.Count;
+        }
+
+        private void DetectPattern(Sentence sentence, Regex pattern)
+        {
+            var matches = pattern.Matches(sentence.Content);
+            foreach (Match match in matches)
+            {
+                //AddLocalizedErrorWithPosition(sentence, match.Index, match.Index + match.Length, match.Value);
+            }
+        }
+
         public void PreValidate(Sentence sentence)
         {
             // コンテンツとのマッチを数える
@@ -58,16 +76,16 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
             //// validation
             ///
-            var forceDearu = GetBoolean("ForceDearu");
+            //var forceDearu = GetBoolean("ForceDearu");
 
-            if (dearuCount > desumasuCount || forceDearu)
-            {
-                DetectPattern(sentence, DesumasuPattern);
-            }
-            else
-            {
-                DetectPattern(sentence, DearuPattern);
-            }
+            //if (dearuCount > desumasuCount || forceDearu)
+            //{
+            //    DetectPattern(sentence, DesumasuPattern);
+            //}
+            //else
+            //{
+            //    DetectPattern(sentence, DearuPattern);
+            //}
 
             //// TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
             //result.Add(new ValidationError(
@@ -77,22 +95,6 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             //    MessageArgs: new object[] { argsForMessageArg }));
 
             return result;
-        }
-
-        private int CountMatch(Sentence sentence, Regex pattern)
-        {
-            var content = sentence.Content;
-            var matches = pattern.Matches(content);
-            return matches.Count;
-        }
-
-        private void DetectPattern(Sentence sentence, Regex pattern)
-        {
-            var matches = pattern.Matches(sentence.Content);
-            foreach (Match match in matches)
-            {
-                AddLocalizedErrorWithPosition(sentence, match.Index, match.Index + match.Length, match.Value);
-            }
         }
     }
 }

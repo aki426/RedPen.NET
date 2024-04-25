@@ -114,6 +114,16 @@ namespace RedPen.Net.Core.Validators
 
     // TODO: Validator初期実装時は以下を適宜コピペして使ってもよい。
 
+    //// TODO: Configurationにはパラメータに応じたInterfaceがあるので、必要なパラメータはInterfaceを実装することで定義する。
+
+    ///// <summary>XXXのConfiguration</summary>
+    //public record XXXConfiguration : ValidatorConfiguration
+    //{
+    //    public XXXConfiguration(ValidationLevel level) : base(level)
+    //    {
+    //    }
+    //}
+
     //// TODO: Validation対象に応じて、IDocumentValidatable, ISectionValidatable, ISentenceValidatableを実装する。
     //public class XXXValidator : Validator, ISentenceValidatable
     //{
