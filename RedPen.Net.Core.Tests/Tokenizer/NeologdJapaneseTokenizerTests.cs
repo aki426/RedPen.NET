@@ -154,6 +154,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData(1, 3, "吾輩は猫", true)]
         [InlineData(1, 4, "吾輩は猫、", false)]
         [InlineData(1, 5, "吾輩は猫？", false)]
+        [InlineData(1, 6, "吾輩は猫 ", false)]
         public void TaigendomeTest(int nouse1, int nouser2, string text, bool taigendomeFlag)
         {
             NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
