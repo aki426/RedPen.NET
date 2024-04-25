@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text.RegularExpressions;
 using FluentAssertions;
@@ -110,9 +111,9 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         public void GetJodoshiTest(int nouse1, int nouser2, string text, string jodoshi)
         {
             NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
-
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
+            // Token目視。
             foreach (var token in tokens)
             {
                 output.WriteLine(token.ToString());
@@ -144,6 +145,44 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             output.WriteLine(string.Join(",", jodoshiChunk));
 
             string.Join(",", jodoshiChunk).Should().Be(jodoshi);
+        }
+
+        [Theory]
+        // 断定
+        [InlineData(1, 1, "吾輩は猫だ。", false)]
+        [InlineData(1, 2, "吾輩は猫。", true)]
+        [InlineData(1, 3, "吾輩は猫", true)]
+        [InlineData(1, 4, "吾輩は猫、", false)]
+        [InlineData(1, 5, "吾輩は猫？", false)]
+        public void TaigendomeTest(int nouse1, int nouser2, string text, bool taigendomeFlag)
+        {
+            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
+
+            // Token目視。
+            foreach (var token in tokens)
+            {
+                output.WriteLine(token.ToString());
+            }
+
+            var lastone = tokens[tokens.Count() - 1];
+            var lasttwo = tokens[tokens.Count() - 2];
+            bool isTaigendome = false;
+
+            if (lastone.Tags[0] == "名詞")
+            {
+                isTaigendome = true;
+            }
+            else if (lastone.Tags[0] == "記号" && lastone.Tags[1] == "句点" && lasttwo.Tags[0] == "名詞")
+            {
+                isTaigendome = true;
+            }
+            else
+            {
+                isTaigendome = false;
+            }
+
+            isTaigendome.Should().Be(taigendomeFlag);
         }
     }
 }
