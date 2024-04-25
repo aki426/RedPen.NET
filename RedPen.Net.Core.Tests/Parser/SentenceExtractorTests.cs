@@ -6,11 +6,19 @@ using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Parser;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Parser
 {
     public class SentenceExtractorTests
     {
+        private ITestOutputHelper output;
+
+        public SentenceExtractorTests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+
         //private List<Sentence> CreateSentences(List<(int, int)> outputPositions, int lastPosition, string line)
         private List<Sentence> CreateSentences(List<(int, int)> outputPositions, string line)
         {
@@ -18,36 +26,22 @@ namespace RedPen.Net.Core.Tests.Parser
             foreach (var (first, second) in outputPositions)
             {
                 // MEMO: OffsetMap生成のために開始位置オフセットをコンストラクタ引数で渡しておく。
-                output.Add(new Sentence(line.Substring(first, second - first), 0, first));
+                output.Add(new Sentence(line.Substring(first, second - first), 1, first));
             }
             return output;
         }
 
         [Fact]
-        public void GetOffsetTest()
+        public void JapaneseSplitedSentenceTest()
         {
             // setup
 
             // 日本語の改行されたテキスト表現を考える。
-            string origin = @"サン
+            string input = @"サン
 プル。";
 
-            // 日本語テキストの場合改行は単に連結される。
-            var sentence = new Sentence("サンプル。", 1, 0);
-            sentence.OffsetMap.Add(new LineOffset(1, 0)); // サ
-            sentence.OffsetMap.Add(new LineOffset(1, 1)); // ン
-            sentence.OffsetMap.Add(new LineOffset(2, 0)); // プ
-            sentence.OffsetMap.Add(new LineOffset(2, 1)); // ル
-            sentence.OffsetMap.Add(new LineOffset(2, 2)); // 。
-        }
-
-        [Fact]
-        public void TestSimple()
-        {
-            var input = "this is a pen.";
-
             // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
+            var extractor = new SentenceExtractor(new SymbolTable("ja-JP", "", new List<Symbol>()));
 
             // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
             List<(int first, int second)> outputPositions = extractor.Extract(input);
@@ -59,14 +53,33 @@ namespace RedPen.Net.Core.Tests.Parser
 
             // 最後の位置は入力した文字列の末尾位置に一致する。
             outputPositions.Last().second.Should().Be(input.Length);
-            outputPositions.Last().second.Should().Be(14);
+            outputPositions.Last().second.Should().Be(7);
+
+            // オフセットマップは改行を考慮して計算して渡してやらないと、Sentenceコンストラクタのデフォルトでは
+            // ただ単に開始行と開始位置から連続するオフセットを生成して格納するだけなので、以下のように改行は反映されない。
+            outputSentences[0].OffsetMap.Count.Should().Be(7);
+            outputSentences[0].OffsetMap[0].Should().Be(new LineOffset(1, 0)); // サ
+            outputSentences[0].OffsetMap[1].Should().Be(new LineOffset(1, 1)); // ン
+            outputSentences[0].OffsetMap[2].Should().Be(new LineOffset(1, 2)); // \r ←PlainTextParserなどでは\r\nは\nに変換される。
+            outputSentences[0].OffsetMap[3].Should().Be(new LineOffset(1, 3)); // \n
+            outputSentences[0].OffsetMap[4].Should().Be(new LineOffset(1, 4)); // プ
+            outputSentences[0].OffsetMap[5].Should().Be(new LineOffset(1, 5)); // ル
+            outputSentences[0].OffsetMap[6].Should().Be(new LineOffset(1, 6)); // 。
+
+            outputSentences[0].Content[2].Should().Be('\r');
+            outputSentences[0].Content[3].Should().Be('\n');
+            outputSentences[0].Content[6].Should().Be('。');
         }
 
-        [Fact]
-        public void TestMultipleSentences()
+        [Theory]
+        // 最もシンプルなケース。1行で1センテンス。
+        [InlineData("001", "this is a pen.", 1, "this is a pen.", "")]
+        // 1行でピリオド終わりのテキスト複数の表現。
+        [InlineData("002", "this is a pen. that is a paper.", 2, "this is a pen.", " that is a paper.")]
+        // 1行でピリオドと疑問符で終わるテキスト複数の表現。
+        [InlineData("003", "is this a pen? that is a paper.", 2, "is this a pen?", " that is a paper.")]
+        public void EnglishSentencesTest(string nouse1, string input, int sentenceCount, string extractedFirst, string extractedSecond)
         {
-            var input = "this is a pen. that is a paper.";
-
             // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
             var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
 
@@ -75,179 +88,226 @@ namespace RedPen.Net.Core.Tests.Parser
             List<Sentence> outputSentences = CreateSentences(outputPositions, input);
 
             // Assert
-            outputSentences.Count.Should().Be(2);
+            outputSentences.Count.Should().Be(sentenceCount);
 
+            // 1つしかセンテンスが抽出されない場合と2つ抽出される場合で分ける。このテストは2センテンスまでなのでそれ以外はエラー。
+            if (sentenceCount == 1)
+            {
+                output.WriteLine($"outputSentences[0].Content : {outputSentences[0].Content}");
+                outputSentences[0].Content.Should().Be(extractedFirst);
+            }
+            else if (sentenceCount == 2)
+            {
+                output.WriteLine($"outputSentences[0].Content : {outputSentences[0].Content}");
+                output.WriteLine($"outputSentences[1].Content : {outputSentences[1].Content}");
+
+                // 2センテンス抽出できた場合は2つ目のセンテンスの終了位置が入力文字列の長さと一致する前提。
+                // MEMO: これが崩れるパターンを検証したい場合は要注意。
+                outputPositions.Last().second.Should().Be(input.Length);
+
+                outputSentences[0].Content.Should().Be(extractedFirst);
+                outputSentences[1].Content.Should().Be(extractedSecond);
+            }
+            else
+            {
+                Assert.True(false);
+            }
+        }
+
+        [Fact]
+        public void MultipleNoPeriodTest()
+        {
+            // 1行でピリオド終わりが無い複数テキストの表現を考える。
+            var input = "this is a pen. that is a paper";
+
+            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
+
+            // Assert
+            outputSentences.Should().HaveCount(1);
             outputSentences[0].Content.Should().Be("this is a pen.");
-            outputSentences[1].Content.Should().Be(" that is a paper.");
 
-            outputPositions.Last().second.Should().Be(input.Length);
-            outputPositions.Last().second.Should().Be(31);
+            // SentenceExtractorはあくまでセンテンスの終わりを検出するだけで、
+            // センテンスの終わりがない場合はそのまま終了する。
+            // そのため、センテンスの終わりがない場合はセンテンスが分割されない。
+            //outputSentences[1].Content.Should().Be(" that is a paper");
+
+            // outputPositions.Last().secondは1つ目のセンテンスの終わり位置の半角スペースを示す。
+            outputPositions.Last().second.Should().Be(14);
+            input[outputPositions.Last().second].Should().Be(' ');
         }
 
         [Fact]
-        public void TestTwoSentencesWithDifferentStopCharacters()
+        public void SingleWithDoubleQuotationSentenceTest()
         {
-            var input = "is this a pen? that is a paper.";
+            // 1行でダブルクォーテーション終わりのテキスト表現を考える。
+            var input = "this is a \"pen.\"";
 
             // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
             var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-
             // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
             List<(int first, int second)> outputPositions = extractor.Extract(input);
             List<Sentence> outputSentences = CreateSentences(outputPositions, input);
 
             // Assert
-            outputSentences.Should().HaveCount(2);
-
-            outputSentences[0].Content.Should().Be("is this a pen?");
-            outputSentences[1].Content.Should().Be(" that is a paper.");
-
+            outputSentences.Should().HaveCount(1);
+            outputSentences[0].Content.Should().Be("this is a \"pen.\"");
+            // 右引用符がセンテンスの終わりとして検出される。
             outputPositions.Last().second.Should().Be(input.Length);
-            outputPositions.Last().second.Should().Be(31);
+            outputPositions.Last().second.Should().Be(16);
         }
 
-        //        @Test
-        //    void testMultipleSentencesWithoutPeriodInTheEnd()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(Configuration.builder().build().getSymbolTable());
-        //            final String input = "this is a pen. that is a paper";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(1, outputSentences.size());
-        //            assertEquals("this is a pen.", outputSentences.get(0).getContent());
-        //            assertEquals(14, lastPosition); // NOTE: second sentence start with white space.
-        //        }
+        [Fact]
+        public void SingleWithQuotationSentenceTest()
+        {
+            // 1行でシングルクォーテーション終わりのテキスト表現を考える。
+            var input = "this is a \'pen.\'";
 
-        //        @Test
-        //    void testEndWithDoubleQuotation()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            final String input = "this is a \"pen.\"";
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(1, outputSentences.size());
-        //            assertEquals("this is a \"pen.\"", outputSentences.get(0).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
+            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
 
-        //        @Test
-        //    void testEndWithSingleQuotation()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            final String input = "this is a \'pen.\'";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(1, outputSentences.size());
-        //            assertEquals("this is a \'pen.\'", outputSentences.get(0).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
+            // Assert
+            outputSentences.Should().HaveCount(1);
+            outputSentences[0].Content.Should().Be("this is a \'pen.\'");
+            // 右引用符がセンテンスの終わりとして検出される。
+            outputPositions.Last().second.Should().Be(input.Length);
+            outputPositions.Last().second.Should().Be(16);
+        }
 
-        //        @Test
-        //    void testEndWithDoubleQuotationEnglishVersion()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            final String input = "this is a \"pen\".";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(1, outputSentences.size());
-        //            assertEquals("this is a \"pen\".", outputSentences.get(0).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
+        [Fact]
+        public void SingleWithDoubleQuotatedWordTest()
+        {
+            // 1行でダブルクォーテーションで囲まれた単語のテキスト表現を考える。
+            var input = "this is a \"pen\".";
 
-        //        @Test
-        //    void testEndWithSingleQuotationEnglishVersion()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            final String input = "this is a \'pen\'.";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(1, outputSentences.size());
-        //            assertEquals("this is a \'pen\'.", outputSentences.get(0).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
+            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
 
-        //        @Test
-        //    void testMultipleSentencesOneOfThemIsEndWithDoubleQuotation()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            final String input = "this is a \"pen.\" Another one is not a pen.";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(2, outputSentences.size());
-        //            assertEquals("this is a \"pen.\"", outputSentences.get(0).getContent());
-        //            assertEquals(" Another one is not a pen.", outputSentences.get(1).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
+            // Assert
+            outputSentences.Should().HaveCount(1);
+            outputSentences[0].Content.Should().Be("this is a \"pen\".");
+            // 右引用符がセンテンスの終わりとして検出される。
+            outputPositions.Last().second.Should().Be(input.Length);
+            outputPositions.Last().second.Should().Be(16);
+        }
 
-        //        @Test
-        //    void testMultipleSentencesWithPartialSplit()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            final String input = "this is a pen. Another\n" + "one is not a pen.";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(2, outputSentences.size());
-        //            assertEquals("this is a pen.", outputSentences.get(0).getContent());
-        //            assertEquals(" Another\none is not a pen.", outputSentences.get(1).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
+        [Fact]
+        public void SingleWithQuotatedWordTest()
+        {
+            // 1行でシングルクォーテーションで囲まれた単語のテキスト表現を考える。
+            var input = "this is a \'pen\'.";
 
-        //        @Test
-        //    void testMultipleSentencesWithSplitInEndOfSentence()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            final String input = "this is a pen.\nAnother one is not a pen.";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(2, outputSentences.size());
-        //            assertEquals("this is a pen.", outputSentences.get(0).getContent());
-        //            assertEquals("\nAnother one is not a pen.", outputSentences.get(1).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
+            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
 
-        //        @Test
-        //    void testMultipleSentencesWithPartialSentence()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            final String input = "this is a pen. Another\n";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(1, outputSentences.size());
-        //            assertEquals("this is a pen.", outputSentences.get(0).getContent());
-        //            assertEquals(14, lastPosition);
-        //        }
+            // Assert
+            outputSentences.Should().HaveCount(1);
+            outputSentences[0].Content.Should().Be("this is a \'pen\'.");
+            // 右引用符がセンテンスの終わりとして検出される。
+            outputPositions.Last().second.Should().Be(input.Length);
+            outputPositions.Last().second.Should().Be(16);
+        }
 
-        //        @Test
-        //    void testJapaneseSimple()
-        //        {
-        //            char[] stopChars = { '。', '？' };
-        //            SentenceExtractor extractor = new SentenceExtractor(stopChars);
-        //            final String input = "これは埼玉ですか？いいえ群馬です。";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(2, outputSentences.size());
-        //            assertEquals("これは埼玉ですか？", outputSentences.get(0).getContent());
-        //            assertEquals("いいえ群馬です。", outputSentences.get(1).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
+        [Fact]
+        public void MultipleWithDoubleQuotationEndSentenceTest()
+        {
+            // 1行でダブルクォーテーションで終わる複数テキストの表現を考える。
+            var input = "\"this is a pen.\" Another one is not a pen.";
+
+            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
+
+            outputSentences.Should().HaveCount(2);
+            outputSentences[0].Content.Should().Be("\"this is a pen.\"");
+            outputSentences[1].Content.Should().Be(" Another one is not a pen.");
+            outputPositions.Last().second.Should().Be(input.Length);
+        }
+
+        [Fact]
+        public void MultipleWithPartialSplitSentenceTest()
+        {
+            // 1行で部分的に分割された複数テキストの表現を考える。
+            var input = "this is a pen. Another\n" + "one is not a pen.";
+
+            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
+
+            outputSentences.Should().HaveCount(2);
+            outputSentences[0].Content.Should().Be("this is a pen.");
+            // SentenceExtractorなので改行を変換したりはしない。
+            // Parserでは改行を考慮して正しいセンテンスに変換することもするのであくまでSentenceExtractorの仕様確認。
+            outputSentences[1].Content.Should().Be(" Another\none is not a pen.");
+            outputPositions.Last().second.Should().Be(input.Length);
+        }
+
+        [Fact]
+        public void MultipleWithSplitInEndOfSentenceTest()
+        {
+            // センテンスの終わりで改行された複数テキストの表現を考える。
+            var input = "this is a pen.\n" + "Another one is not a pen.";
+
+            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
+
+            outputSentences.Should().HaveCount(2);
+            outputSentences[0].Content.Should().Be("this is a pen.");
+            outputSentences[1].Content.Should().Be("\nAnother one is not a pen.");
+            outputPositions.Last().second.Should().Be(input.Length);
+        }
+
+        [Fact]
+        public void MultipleWithPartialSentence()
+        {
+            // センテンスの途中で改行された不十分なテキストの表現を考える。
+            var input = "this is a pen. Another\n";
+
+            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
+
+            outputSentences.Should().HaveCount(1);
+            outputSentences[0].Content.Should().Be("this is a pen.");
+            // Anotherはセンテンスの終わりが無いのでSentenceExtractorにセンテンスとして認識されない。
+            //outputPositions.Last().second.Should().Be(input.Length);
+        }
+
+        //[Fact]
+        //public void testJapaneseSimple()
+        //{
+        //    char[] stopChars = { '。', '？' };
+        //    SentenceExtractor extractor = new SentenceExtractor(stopChars);
+        //    final String input = "これは埼玉ですか？いいえ群馬です。";
+        //    List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
+        //    int lastPosition = extractor.extract(input, outputPositions);
+        //    List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
+        //    assertEquals(2, outputSentences.size());
+        //    assertEquals("これは埼玉ですか？", outputSentences.get(0).getContent());
+        //    assertEquals("いいえ群馬です。", outputSentences.get(1).getContent());
+        //    assertEquals(input.length(), lastPosition);
+        //}
 
         //        @Test
         //    void testJapaneseSimpleWithSpace()
