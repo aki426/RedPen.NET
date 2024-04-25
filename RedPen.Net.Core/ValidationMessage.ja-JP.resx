@@ -312,4 +312,7 @@
   <data name="JapaneseExpressionVariation_SameCount" xml:space="preserve">
     <value>"{0}" と "{1}"（出現位置：{2}）は同じ回数出現しているため、どちらかが揺らぎ表現と考えられます。</value>
   </data>
+  <data name="Taigendome" xml:space="preserve">
+    <value>体言止め "{0}" が見つかりました。</value>
+  </data>
 </root>

@@ -151,7 +151,7 @@ namespace RedPen.Net.Core.Validators
     //        this.Config = config;
     //    }
 
-    //    public void PreValidate(Document document)
+    //    public void PreValidate(Sentence sentence)
     //    {
     //        // nothing.
     //    }

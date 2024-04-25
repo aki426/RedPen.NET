@@ -601,6 +601,15 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
+        ///   Found noun &quot;{0}&quot; at end of sentence. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Taigendome {
+            get {
+                return ResourceManager.GetString("Taigendome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   The expanded form of the acronym {0} is not present in the document. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string UnexpandedAcronym_UnexpandedAcronym {

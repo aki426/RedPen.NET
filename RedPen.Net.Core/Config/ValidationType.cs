@@ -69,6 +69,7 @@ namespace RedPen.Net.Core.Config
         SuccessiveWord,
         SuggestExpression,
         SymbolWithSpace,
+        Taigendome,
         UnexpandedAcronym,
         VoidSection,
         WeakExpression,

@@ -292,4 +292,7 @@
   <data name="JapaneseExpressionVariation_SameCount" xml:space="preserve">
     <value>Found possible Japanese word variations "{0}", "{1}" at {2}</value>
   </data>
+  <data name="Taigendome" xml:space="preserve">
+    <value>Found noun "{0}" at end of sentence.</value>
+  </data>
 </root>
