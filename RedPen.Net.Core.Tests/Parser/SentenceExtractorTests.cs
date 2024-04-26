@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
@@ -78,6 +77,24 @@ namespace RedPen.Net.Core.Tests.Parser
         [InlineData("002", "this is a pen. that is a paper.", 2, "this is a pen.", " that is a paper.")]
         // 1行でピリオドと疑問符で終わるテキスト複数の表現。
         [InlineData("003", "is this a pen? that is a paper.", 2, "is this a pen?", " that is a paper.")]
+        // 1行でピリオド終わりが無い複数テキストの表現。
+        [InlineData("004", "this is a pen. that is a paper", 1, "this is a pen.", "")]
+        // 1行でダブルクォーテーション終わりのテキスト表現。
+        [InlineData("004", "this is a \"pen.\"", 1, "this is a \"pen.\"", "")]
+        // 1行でシングルクォーテーション終わりのテキスト表現。
+        [InlineData("005", "this is a \'pen.\'", 1, "this is a \'pen.\'", "")]
+        // 1行でダブルクォーテーションで囲まれた単語のテキスト表現。
+        [InlineData("005", "this is a \"pen\".", 1, "this is a \"pen\".", "")]
+        // 1行でシングルクォーテーションで囲まれた単語のテキスト表現。
+        [InlineData("006", "this is a \'pen\'.", 1, "this is a \'pen\'.", "")]
+        // 1行でダブルクォーテーションで終わる複数テキストの表現。
+        [InlineData("007", "\"this is a pen.\" Another one is not a pen.", 2, "\"this is a pen.\"", " Another one is not a pen.")]
+        // 1行で部分的に分割された複数テキストの表現。
+        [InlineData("008", "this is a pen. Another\n" + "one is not a pen.", 2, "this is a pen.", " Another\none is not a pen.")]
+        // センテンスの終わりで改行された複数テキストの表現を考える。
+        [InlineData("009", "this is a pen.\n" + "Another one is not a pen.", 2, "this is a pen.", "\nAnother one is not a pen.")]
+        // センテンスの途中で改行された不十分なテキストの表現を考える。
+        [InlineData("010", "this is a pen. Another\n", 1, "this is a pen.", "")]
         public void EnglishSentencesTest(string nouse1, string input, int sentenceCount, string extractedFirst, string extractedSecond)
         {
             // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
@@ -112,186 +129,6 @@ namespace RedPen.Net.Core.Tests.Parser
             {
                 Assert.True(false);
             }
-        }
-
-        [Fact]
-        public void MultipleNoPeriodTest()
-        {
-            // 1行でピリオド終わりが無い複数テキストの表現を考える。
-            var input = "this is a pen. that is a paper";
-
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
-            List<(int first, int second)> outputPositions = extractor.Extract(input);
-            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
-
-            // Assert
-            outputSentences.Should().HaveCount(1);
-            outputSentences[0].Content.Should().Be("this is a pen.");
-
-            // SentenceExtractorはあくまでセンテンスの終わりを検出するだけで、
-            // センテンスの終わりがない場合はそのまま終了する。
-            // そのため、センテンスの終わりがない場合はセンテンスが分割されない。
-            //outputSentences[1].Content.Should().Be(" that is a paper");
-
-            // outputPositions.Last().secondは1つ目のセンテンスの終わり位置の半角スペースを示す。
-            outputPositions.Last().second.Should().Be(14);
-            input[outputPositions.Last().second].Should().Be(' ');
-        }
-
-        [Fact]
-        public void SingleWithDoubleQuotationSentenceTest()
-        {
-            // 1行でダブルクォーテーション終わりのテキスト表現を考える。
-            var input = "this is a \"pen.\"";
-
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
-            List<(int first, int second)> outputPositions = extractor.Extract(input);
-            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
-
-            // Assert
-            outputSentences.Should().HaveCount(1);
-            outputSentences[0].Content.Should().Be("this is a \"pen.\"");
-            // 右引用符がセンテンスの終わりとして検出される。
-            outputPositions.Last().second.Should().Be(input.Length);
-            outputPositions.Last().second.Should().Be(16);
-        }
-
-        [Fact]
-        public void SingleWithQuotationSentenceTest()
-        {
-            // 1行でシングルクォーテーション終わりのテキスト表現を考える。
-            var input = "this is a \'pen.\'";
-
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
-            List<(int first, int second)> outputPositions = extractor.Extract(input);
-            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
-
-            // Assert
-            outputSentences.Should().HaveCount(1);
-            outputSentences[0].Content.Should().Be("this is a \'pen.\'");
-            // 右引用符がセンテンスの終わりとして検出される。
-            outputPositions.Last().second.Should().Be(input.Length);
-            outputPositions.Last().second.Should().Be(16);
-        }
-
-        [Fact]
-        public void SingleWithDoubleQuotatedWordTest()
-        {
-            // 1行でダブルクォーテーションで囲まれた単語のテキスト表現を考える。
-            var input = "this is a \"pen\".";
-
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
-            List<(int first, int second)> outputPositions = extractor.Extract(input);
-            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
-
-            // Assert
-            outputSentences.Should().HaveCount(1);
-            outputSentences[0].Content.Should().Be("this is a \"pen\".");
-            // 右引用符がセンテンスの終わりとして検出される。
-            outputPositions.Last().second.Should().Be(input.Length);
-            outputPositions.Last().second.Should().Be(16);
-        }
-
-        [Fact]
-        public void SingleWithQuotatedWordTest()
-        {
-            // 1行でシングルクォーテーションで囲まれた単語のテキスト表現を考える。
-            var input = "this is a \'pen\'.";
-
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
-            List<(int first, int second)> outputPositions = extractor.Extract(input);
-            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
-
-            // Assert
-            outputSentences.Should().HaveCount(1);
-            outputSentences[0].Content.Should().Be("this is a \'pen\'.");
-            // 右引用符がセンテンスの終わりとして検出される。
-            outputPositions.Last().second.Should().Be(input.Length);
-            outputPositions.Last().second.Should().Be(16);
-        }
-
-        [Fact]
-        public void MultipleWithDoubleQuotationEndSentenceTest()
-        {
-            // 1行でダブルクォーテーションで終わる複数テキストの表現を考える。
-            var input = "\"this is a pen.\" Another one is not a pen.";
-
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
-            List<(int first, int second)> outputPositions = extractor.Extract(input);
-            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
-
-            outputSentences.Should().HaveCount(2);
-            outputSentences[0].Content.Should().Be("\"this is a pen.\"");
-            outputSentences[1].Content.Should().Be(" Another one is not a pen.");
-            outputPositions.Last().second.Should().Be(input.Length);
-        }
-
-        [Fact]
-        public void MultipleWithPartialSplitSentenceTest()
-        {
-            // 1行で部分的に分割された複数テキストの表現を考える。
-            var input = "this is a pen. Another\n" + "one is not a pen.";
-
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
-            List<(int first, int second)> outputPositions = extractor.Extract(input);
-            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
-
-            outputSentences.Should().HaveCount(2);
-            outputSentences[0].Content.Should().Be("this is a pen.");
-            // SentenceExtractorなので改行を変換したりはしない。
-            // Parserでは改行を考慮して正しいセンテンスに変換することもするのであくまでSentenceExtractorの仕様確認。
-            outputSentences[1].Content.Should().Be(" Another\none is not a pen.");
-            outputPositions.Last().second.Should().Be(input.Length);
-        }
-
-        [Fact]
-        public void MultipleWithSplitInEndOfSentenceTest()
-        {
-            // センテンスの終わりで改行された複数テキストの表現を考える。
-            var input = "this is a pen.\n" + "Another one is not a pen.";
-
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
-            List<(int first, int second)> outputPositions = extractor.Extract(input);
-            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
-
-            outputSentences.Should().HaveCount(2);
-            outputSentences[0].Content.Should().Be("this is a pen.");
-            outputSentences[1].Content.Should().Be("\nAnother one is not a pen.");
-            outputPositions.Last().second.Should().Be(input.Length);
-        }
-
-        [Fact]
-        public void MultipleWithPartialSentence()
-        {
-            // センテンスの途中で改行された不十分なテキストの表現を考える。
-            var input = "this is a pen. Another\n";
-
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
-            List<(int first, int second)> outputPositions = extractor.Extract(input);
-            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
-
-            outputSentences.Should().HaveCount(1);
-            outputSentences[0].Content.Should().Be("this is a pen.");
-            // Anotherはセンテンスの終わりが無いのでSentenceExtractorにセンテンスとして認識されない。
-            //outputPositions.Last().second.Should().Be(input.Length);
         }
 
         //[Fact]
