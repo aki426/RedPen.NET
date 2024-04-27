@@ -1,19 +1,24 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
-using System.Text.RegularExpressions;
+using System.Linq;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Tokenizer;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
 
     /// <summary>JapaneseStyleのConfiguration</summary>
-    public record JapaneseStyleConfiguration : ValidatorConfiguration
+    public record JapaneseStyleConfiguration : ValidatorConfiguration, IJodoshiStyleConfigParameter
     {
-        public JapaneseStyleConfiguration(ValidationLevel level) : base(level)
+        public JodoshiStyle JodoshiStyle { get; init; }
+
+        public JapaneseStyleConfiguration(ValidationLevel level, JodoshiStyle jodoshiStyle) : base(level)
         {
+            this.JodoshiStyle = jodoshiStyle;
         }
     }
 
@@ -41,58 +46,106 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             this.Config = config;
         }
 
-        private static readonly Regex DearuPattern = new Regex(@"である|のだが|であった|あるが|あった|だった");
-        private static readonly Regex DesumasuPattern = new Regex(@"ですね|でした|ました|でしたが|でしたので|ですので|ですが|です|ます");
-
-        private int dearuCount = 0;
-        private int desumasuCount = 0;
-
-        private int CountMatch(Sentence sentence, Regex pattern)
+        /// <summary>だ・である調の助動詞のリスト</summary>
+        private static List<string> DaDearuPattern = new List<string>()
         {
-            var content = sentence.Content;
-            var matches = pattern.Matches(content);
-            return matches.Count;
-        }
+            "た", "だ", "だった", "だろう", "であった", "である", "ない", "ぬ"
+        };
 
-        private void DetectPattern(Sentence sentence, Regex pattern)
+        /// <summary>です・ます調の助動詞のリスト</summary>
+        private static List<string> DesuMasuPattern = new List<string>()
         {
-            var matches = pattern.Matches(sentence.Content);
-            foreach (Match match in matches)
-            {
-                //AddLocalizedErrorWithPosition(sentence, match.Index, match.Index + match.Length, match.Value);
-            }
-        }
+            "でした", "でしょう", "です", "ないでしょう", "ないです", "ました", "ます", "ません"
+        };
 
         public void PreValidate(Sentence sentence)
         {
-            // コンテンツとのマッチを数える
-            dearuCount += CountMatch(sentence, DearuPattern);
-            desumasuCount += CountMatch(sentence, DesumasuPattern);
+            // nothing.
         }
 
+        /// <summary>
+        /// 助動詞のTokenのみを取得する。助動詞が連続する場合は、単体のものは捨てて連結したものを1Tokenとして返す。
+        /// </summary>
+        /// <param name="sentence">The sentence.</param>
+        /// <returns>A list of TokenElements.</returns>
+        public static List<TokenElement> GetCompoundJodoshi(Sentence sentence)
+        {
+            // 助動詞が連続する場合は連結したものを1Tokenとして評価する。
+            List<TokenElement> CompoundJodoshi = new List<TokenElement>();
+            List<TokenElement> buffer = new List<TokenElement>();
+            foreach (var token in sentence.Tokens)
+            {
+                if (token.Tags[0] == "助動詞")
+                {
+                    buffer.Add(token);
+                }
+                else
+                {
+                    if (buffer.Any())
+                    {
+                        // 連結した助動詞を1Tokenとして登録。
+                        CompoundJodoshi.Add(new TokenElement(
+                            string.Join("", buffer.Select(t => t.Surface)),
+                            buffer.First().Tags, // Tagsは使わないので先頭のTokenのものを暫定的にセット。
+                            string.Join("", buffer.Select(t => t.Reading)), // Readingも使わないが連結してセット。
+                            buffer.SelectMany(t => t.OffsetMap).ToImmutableList()
+                        ));
+
+                        buffer.Clear();
+                    }
+                }
+            }
+            if (buffer.Any())
+            {
+                // 連結した助動詞を1Tokenとして登録。
+                CompoundJodoshi.Add(new TokenElement(
+                    string.Join("", buffer.Select(t => t.Surface)),
+                    buffer.First().Tags, // Tagsは使わないので先頭のTokenのものを暫定的にセット。
+                    string.Join("", buffer.Select(t => t.Reading)), // Readingも使わないが連結してセット。
+                    buffer.SelectMany(t => t.OffsetMap).ToImmutableList()
+                ));
+            }
+
+            return CompoundJodoshi;
+        }
+
+        /// <summary>
+        /// Validation実行。
+        /// </summary>
+        /// <param name="sentence">The sentence.</param>
+        /// <returns>A list of ValidationErrors.</returns>
         public List<ValidationError> Validate(Sentence sentence)
         {
             List<ValidationError> result = new List<ValidationError>();
 
-            //// validation
-            ///
-            //var forceDearu = GetBoolean("ForceDearu");
+            var jodoshiList = GetCompoundJodoshi(sentence); // 助動詞のみ取得。
+            List<TokenElement> errorJodoshi = new List<TokenElement>();
 
-            //if (dearuCount > desumasuCount || forceDearu)
-            //{
-            //    DetectPattern(sentence, DesumasuPattern);
-            //}
-            //else
-            //{
-            //    DetectPattern(sentence, DearuPattern);
-            //}
+            switch (Config.JodoshiStyle)
+            {
+                case JodoshiStyle.DaDearu:
+                    // だ・である調の場合、です・ます調の助動詞が含まれている場合はエラーとする。
+                    errorJodoshi = jodoshiList.Where(jodoshi => DesuMasuPattern.Contains(jodoshi.Surface)).ToList();
+                    break;
 
-            //// TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            //result.Add(new ValidationError(
-            //    ValidationType.XXX,
-            //    this.Level,
-            //    sentence,
-            //    MessageArgs: new object[] { argsForMessageArg }));
+                case JodoshiStyle.DesuMasu:
+                default:
+                    // です・ます調の場合、だ・である調の助動詞が含まれている場合はエラーとする。
+                    errorJodoshi = jodoshiList.Where(jodoshi => DaDearuPattern.Contains(jodoshi.Surface)).ToList();
+                    break;
+            }
+
+            foreach (var token in errorJodoshi)
+            {
+                result.Add(new ValidationError(
+                    ValidationType.JapaneseStyle,
+                    this.Level,
+                    sentence,
+                    token.OffsetMap[0],
+                    token.OffsetMap[^1],
+                    MessageArgs: new object[] { token.Surface }
+                ));
+            }
 
             return result;
         }

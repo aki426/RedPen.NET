@@ -45,6 +45,21 @@ namespace RedPen.Net.Core.Config
     /// <summary>ValidatorConfigurationの継承クラスがWordListプロパティを持つことを示すインターフェース。</summary>
     public interface IWordListConfigParameter
     {
+        /// <summary>何らかの単語リストを表すConfigurationパラメータ。</summary>
         public List<string> WordList { get; init; }
+    }
+
+    /// <summary>ValidatorConfigurationの継承クラスがJodoshiStyleプロパティを持つことを示すインターフェース。</summary>
+    public interface IJodoshiStyleConfigParameter
+    {
+        /// <summary>日本語の助動詞のスタイルをだ・である調で統一するか、です・ます調で統一するかのフラグ</summary>
+        public JodoshiStyle JodoshiStyle { get; init; }
+    }
+
+    /// <summary>日本語の助動詞のスタイルをだ・である調で統一するか、です・ます調で統一するかのフラグ</summary>
+    public enum JodoshiStyle
+    {
+        DaDearu,
+        DesuMasu
     }
 }
