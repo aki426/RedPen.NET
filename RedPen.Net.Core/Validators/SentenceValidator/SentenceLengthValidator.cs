@@ -6,11 +6,22 @@ using System.Collections.Generic;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
+    // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
+
+    /// <summary>SentenceLengthのConfiguration</summary>
+    public record SentenceLengthConfiguration : ValidatorConfiguration, IMaxLengthConfigParameter
+    {
+        public int MaxLength { get; init; }
+
+        public SentenceLengthConfiguration(ValidationLevel level, int maxLength) : base(level)
+        {
+            MaxLength = maxLength;
+        }
+    }
+
     // MEMO: JAVA版ではpublic final class指定なので、sealed classに変更している。
 
-    /// <summary>
-    /// The sentence length validator.
-    /// </summary>
+    /// <summary>SentenceLengthのValidator</summary>
     public sealed class SentenceLengthValidator : Validator, ISentenceValidatable
     {
         public SentenceLengthConfiguration Config { get; init; }

@@ -8,6 +8,20 @@ using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
+    // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
+
+    /// <summary>SuggestExpressionのConfiguration</summary>
+    public record SuggestExpressionConfiguration : ValidatorConfiguration, IWordMapConfigParameter
+    {
+        public Dictionary<string, string> WordMap { get; init; }
+
+        public SuggestExpressionConfiguration(ValidationLevel level, Dictionary<string, string> wordMap) : base(level)
+        {
+            WordMap = wordMap;
+        }
+    }
+
+    /// <summary>SuggestExpressionのValidator</summary>
     public class SuggestExpressionValidator : Validator, ISentenceValidatable
     {
         /// <summary>Nlog</summary>

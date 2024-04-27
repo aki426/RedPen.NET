@@ -6,6 +6,20 @@ using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
+    // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
+
+    /// <summary>InvalidExpressionのConfiguration</summary>
+    public record InvalidExpressionConfiguration : ValidatorConfiguration, IWordListConfigParameter
+    {
+        public List<string> WordList { get; init; }
+
+        public InvalidExpressionConfiguration(ValidationLevel level, List<string> wordList) : base(level)
+        {
+            WordList = wordList;
+        }
+    }
+
+    /// <summary>InvalidExpressionのValidator</summary>
     public sealed class InvalidExpressionValidator : Validator, ISentenceValidatable // DictionaryValidator
     {
         public InvalidExpressionConfiguration Config { get; init; }

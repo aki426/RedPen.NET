@@ -9,6 +9,19 @@ using RedPen.Net.Core.Tokenizer;
 
 namespace RedPen.Net.Core.Validators.DocumentValidator
 {
+    // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
+
+    /// <summary>JapaneseExpressionVariationのConfiguration</summary>
+    public record JapaneseExpressionVariationConfiguration : ValidatorConfiguration, IWordMapConfigParameter
+    {
+        public Dictionary<string, string> WordMap { get; init; }
+
+        public JapaneseExpressionVariationConfiguration(ValidationLevel level, Dictionary<string, string> wordMap) : base(level)
+        {
+            WordMap = wordMap;
+        }
+    }
+
     /// <summary>日本語の表記ゆれを検出するValidator。</summary>
     public class JapaneseExpressionVariationValidator : Validator, IDocumentValidatable
     {

@@ -3,10 +3,22 @@ using System.Globalization;
 using System.Linq;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Validators.SentenceValidator;
 
 namespace RedPen.Net.Core.Validators.SentecneValidator
 {
+    // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
+
+    /// <summary>CommaNumberのConfiguration</summary>
+    public record CommaNumberConfiguration : ValidatorConfiguration, IMaxNumberConfigParameter
+    {
+        public int MaxNumber { get; init; }
+
+        public CommaNumberConfiguration(ValidationLevel level, int maxNumber) : base(level)
+        {
+            MaxNumber = maxNumber;
+        }
+    }
+
     /// <summary>
     /// センテンス内のコンマの最大数を制限としてValidationを実行するValidator。
     /// </summary>
