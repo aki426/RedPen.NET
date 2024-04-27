@@ -187,7 +187,7 @@
     <value>不正な計数表現 "{0}" が見つかりました。</value>
   </data>
   <data name="JapaneseStyle" xml:space="preserve">
-    <value>不正な助動詞 "{0}" が見つかりました。</value>
+    <value>不正なスタイル "{0}" が見つかりました。</value>
   </data>
   <data name="KatakanaEndHyphen" xml:space="preserve">
     <value>不正なハイフンを含むカタカナ単語 "{0}" が見つかりました。</value>

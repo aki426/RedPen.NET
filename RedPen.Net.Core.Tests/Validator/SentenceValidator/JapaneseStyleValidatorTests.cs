@@ -25,6 +25,44 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [Theory]
         [InlineData("001", "これは山です。これは川だ。", JodoshiStyle.DesuMasu, 1, "だ")]
         [InlineData("002", "これは山です。これは川だ。", JodoshiStyle.DaDearu, 1, "です")]
+        [InlineData("003", "今日はいい天気です。", JodoshiStyle.DesuMasu, 0, "")]
+        [InlineData("004", "今日はいい天気です。", JodoshiStyle.DaDearu, 1, "です")]
+        [InlineData("005", "昨日は雨だったが、持ち直しました。", JodoshiStyle.DesuMasu, 1, "だった")]
+        [InlineData("006", "昨日は雨だったが、持ち直しました。", JodoshiStyle.DaDearu, 1, "ました")]
+        [InlineData("007", "明日もいい天気だといいですね。", JodoshiStyle.DesuMasu, 0, "")]
+        [InlineData("008", "明日もいい天気だといいですね。", JodoshiStyle.DaDearu, 1, "です")]
+        [InlineData("009", "昨日は雨でしたが、持ち直しました。", JodoshiStyle.DesuMasu, 0, "")]
+        [InlineData("010", "昨日は雨でしたが、持ち直しました。", JodoshiStyle.DaDearu, 2, "でした,ました")]
+        [InlineData("011", "明日もいい天気だといいですね。", JodoshiStyle.DesuMasu, 0, "")]
+        [InlineData("012", "明日もいい天気だといいですね。", JodoshiStyle.DaDearu, 1, "です")]
+        [InlineData("013", "今日はいい天気である。", JodoshiStyle.DesuMasu, 1, "である")]
+        [InlineData("014", "今日はいい天気である。", JodoshiStyle.DaDearu, 0, "")]
+        [InlineData("015", "昨日は雨だったが、持ち直した。", JodoshiStyle.DesuMasu, 2, "だった,た")]
+        [InlineData("016", "昨日は雨だったが、持ち直した。", JodoshiStyle.DaDearu, 0, "")]
+        [InlineData("017", "昨日は雨であったが、持ち直した。", JodoshiStyle.DesuMasu, 2, "であった,た")]
+        [InlineData("018", "昨日は雨であったが、持ち直した。", JodoshiStyle.DaDearu, 0, "")]
+        [InlineData("019", "昨日は雨だったのであったが、持ち直した。", JodoshiStyle.DesuMasu, 2, "であった,た")]
+        [InlineData("020", "昨日は雨だったのであったが、持ち直した。", JodoshiStyle.DaDearu, 0, "")]
+        [InlineData("021", "明日もいい天気だといい。", JodoshiStyle.DesuMasu, 1, "いい")]
+        [InlineData("022", "明日もいい天気だといい。", JodoshiStyle.DaDearu, 0, "")]
+        [InlineData("023", "彼の今日のお昼の弁当はのり弁です。", JodoshiStyle.DesuMasu, 0, "")]
+        [InlineData("024", "彼の今日のお昼の弁当はのり弁です。", JodoshiStyle.DaDearu, 1, "です")]
+        [InlineData("025", "それは贅沢である。", JodoshiStyle.DesuMasu, 1, "である")]
+        [InlineData("026", "それは贅沢である。", JodoshiStyle.DaDearu, 0, "")]
+        [InlineData("027", "しかし彼には選択肢が無かったのである。", JodoshiStyle.DesuMasu, 1, "である")]
+        [InlineData("028", "しかし彼には選択肢が無かったのである。", JodoshiStyle.DaDearu, 0, "")]
+        [InlineData("027", "しかし彼には選択肢が無かったのです。", JodoshiStyle.DesuMasu, 0, "")]
+        [InlineData("028", "しかし彼には選択肢が無かったのです。", JodoshiStyle.DaDearu, 1, "です")]
+        [InlineData("029", "明日は良い天気だと思います。", JodoshiStyle.DesuMasu, 0, "")] // MEMO: 「～だと」という表現はです・ます調でも許容すべき。
+        [InlineData("030", "明日は良い天気だと思います。", JodoshiStyle.DaDearu, 1, "ます")] // MEMO: 「～だと」という表現はです・ます調でも許容すべき。
+        [InlineData("031", "明日もいい天気だといい。", JodoshiStyle.DesuMasu, 1, "いい")]
+        [InlineData("032", "明日もいい天気だといい。", JodoshiStyle.DaDearu, 0, "")]
+        [InlineData("033", "明日もいい天気だといいね。", JodoshiStyle.DesuMasu, 1, "いい")]
+        [InlineData("034", "明日もいい天気だといいね。", JodoshiStyle.DaDearu, 0, "")]
+        [InlineData("035", "昨日は雨だったのです。", JodoshiStyle.DesuMasu, 0, "")] // MEMO: 「～だったの」という表現はです・ます調でも許容すべき。
+        [InlineData("036", "昨日は雨だったのです。", JodoshiStyle.DaDearu, 1, "です")]
+        [InlineData("037", "弁当を食べたのです。", JodoshiStyle.DesuMasu, 0, "")] // MEMO: 「～たの」という表現はです・ます調でも許容すべき。
+        [InlineData("038", "弁当を食べたのです。", JodoshiStyle.DaDearu, 1, "です")]
         public void BasicTest(string nouse1, string text, JodoshiStyle jodoshiStyle, int errorCount, string expected)
         {
             var validatorConfiguration = new JapaneseStyleConfiguration(ValidationLevel.ERROR, jodoshiStyle);
@@ -66,17 +104,20 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 
             errors.Should().HaveCount(errorCount);
 
-            var manager = ErrorMessageManager.GetInstance();
-
-            output.WriteLine("");
-            output.WriteLine("★Errors:");
-            foreach (var error in errors)
+            if (errors.Any())
             {
-                output.WriteLine(error.ToString());
-                output.WriteLine(manager.GetErrorMessage(error, CultureInfo.GetCultureInfo("ja-JP")));
-            }
+                var manager = ErrorMessageManager.GetInstance();
 
-            string.Join(",", errors.Select(e => e.MessageArgs[0].ToString())).Should().Be(expected);
+                output.WriteLine("");
+                output.WriteLine("★Errors:");
+                foreach (var error in errors)
+                {
+                    output.WriteLine(error.ToString());
+                    output.WriteLine(manager.GetErrorMessage(error, CultureInfo.GetCultureInfo("ja-JP")));
+                }
+
+                string.Join(",", errors.Select(e => e.MessageArgs[0].ToString())).Should().Be(expected);
+            }
         }
     }
 }
