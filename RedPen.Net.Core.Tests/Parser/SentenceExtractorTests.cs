@@ -30,6 +30,169 @@ namespace RedPen.Net.Core.Tests.Parser
             return output;
         }
 
+        [Theory]
+        // 最もシンプルなケース。1行で1センテンス。
+        [InlineData("001", "this is a pen.", 1, "this is a pen.", "")]
+        // 1行でピリオド終わりのテキスト複数の表現。
+        [InlineData("002", "this is a pen. that is a paper.", 2, "this is a pen.", " that is a paper.")]
+        // 1行でピリオドと疑問符で終わるテキスト複数の表現。
+        [InlineData("003", "is this a pen? that is a paper.", 2, "is this a pen?", " that is a paper.")]
+        // 1行でピリオド終わりが無い複数テキストの表現。
+        [InlineData("004", "this is a pen. that is a paper", 1, "this is a pen.", "")]
+        // 1行でダブルクォーテーション終わりのテキスト表現。
+        [InlineData("004", "this is a \"pen.\"", 1, "this is a \"pen.\"", "")]
+        // 1行でシングルクォーテーション終わりのテキスト表現。
+        [InlineData("005", "this is a \'pen.\'", 1, "this is a \'pen.\'", "")]
+        // 1行でダブルクォーテーションで囲まれた単語のテキスト表現。
+        [InlineData("006", "this is a \"pen\".", 1, "this is a \"pen\".", "")]
+        // 1行でシングルクォーテーションで囲まれた単語のテキスト表現。
+        [InlineData("007", "this is a \'pen\'.", 1, "this is a \'pen\'.", "")]
+        // 1行でダブルクォーテーションで終わる複数テキストの表現。
+        [InlineData("008", "\"this is a pen.\" Another one is not a pen.", 2, "\"this is a pen.\"", " Another one is not a pen.")]
+        // 1行で部分的に分割された複数テキストの表現。
+        [InlineData("009", "this is a pen. Another\n" + "one is not a pen.", 2, "this is a pen.", " Another\none is not a pen.")]
+        // センテンスの終わりで改行された複数テキストの表現を考える。
+        [InlineData("010", "this is a pen.\n" + "Another one is not a pen.", 2, "this is a pen.", "\nAnother one is not a pen.")]
+        // センテンスの途中で改行された不十分なテキストの表現を考える。
+        [InlineData("011", "this is a pen. Another\n", 1, "this is a pen.", "")]
+        // センテンス区切りとしては扱わないピリオド。
+        [InlineData("012", "He is a Dr. candidate.", 1, "He is a Dr. candidate.", "")]
+        // センテンス区切りとしては扱わないピリオド。
+        [InlineData("013", "Is he a Dr. candidate? Yes, he is.", 2, "Is he a Dr. candidate?", " Yes, he is.")]
+        // void
+        [InlineData("014", "", 0, "", "")]
+        // ピリオドのみ
+        [InlineData("015", ".", 1, ".", "")]
+        public void EnglishSentencesTest(string nouse1, string input, int sentenceCount, string extractedFirst, string extractedSecond)
+        {
+            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
+
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
+
+            // Assert
+            outputSentences.Count.Should().Be(sentenceCount);
+
+            if (sentenceCount == 0)
+            {
+                output.WriteLine($"outputSentences has no element.");
+            }
+            // 1つしかセンテンスが抽出されない場合と2つ抽出される場合で分ける。このテストは2センテンスまでなのでそれ以外はエラー。
+            else if (sentenceCount == 1)
+            {
+                output.WriteLine($"outputSentences[0].Content : {outputSentences[0].Content}");
+                outputSentences[0].Content.Should().Be(extractedFirst);
+            }
+            else if (sentenceCount == 2)
+            {
+                output.WriteLine($"outputSentences[0].Content : {outputSentences[0].Content}");
+                output.WriteLine($"outputSentences[1].Content : {outputSentences[1].Content}");
+
+                // 2センテンス抽出できた場合は2つ目のセンテンスの終了位置が入力文字列の長さと一致する前提。
+                // MEMO: これが崩れるパターンを検証したい場合は要注意。
+                outputPositions.Last().second.Should().Be(input.Length);
+
+                outputSentences[0].Content.Should().Be(extractedFirst);
+                outputSentences[1].Content.Should().Be(extractedSecond);
+            }
+            else
+            {
+                Assert.True(false);
+            }
+        }
+
+        [Theory]
+        //
+        [InlineData("001", "これは埼玉ですか？いいえ群馬です。", 2, "これは埼玉ですか？", "いいえ群馬です。")]
+        [InlineData("002", "これは埼玉ですか？ いいえ群馬です。", 2, "これは埼玉ですか？", " いいえ群馬です。")]
+        [InlineData("003", "これは“群馬。”", 1, "これは“群馬。”", "")]
+        [InlineData("004", "これは“群馬。”あれは群馬ではない。", 2, "これは“群馬。”", "あれは群馬ではない。")]
+        public void JapaneseSentenceTest(string nouse1, string input, int sentenceCount, string extractedFirst, string extractedSecond)
+        {
+            // デフォルトのSymbolTableをロード。ja-JPかつzenkakuの設定がロードされる。
+            // これによりセンテンス区切り文字は「。」「？」「！」の3種類が、右クォーテーションとして「’」と「”」が適用される。
+            SentenceExtractor extractor = new SentenceExtractor(new SymbolTable("ja-JP", "", new List<Symbol>()));
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
+
+            // Assert
+            outputSentences.Count.Should().Be(sentenceCount);
+
+            if (sentenceCount == 0)
+            {
+                output.WriteLine($"outputSentences has no element.");
+            }
+            // 1つしかセンテンスが抽出されない場合と2つ抽出される場合で分ける。このテストは2センテンスまでなのでそれ以外はエラー。
+            else if (sentenceCount == 1)
+            {
+                output.WriteLine($"outputSentences[0].Content : {outputSentences[0].Content}");
+                outputSentences[0].Content.Should().Be(extractedFirst);
+            }
+            else if (sentenceCount == 2)
+            {
+                output.WriteLine($"outputSentences[0].Content : {outputSentences[0].Content}");
+                output.WriteLine($"outputSentences[1].Content : {outputSentences[1].Content}");
+
+                // 2センテンス抽出できた場合は2つ目のセンテンスの終了位置が入力文字列の長さと一致する前提。
+                // MEMO: これが崩れるパターンを検証したい場合は要注意。
+                outputPositions.Last().second.Should().Be(input.Length);
+
+                outputSentences[0].Content.Should().Be(extractedFirst);
+                outputSentences[1].Content.Should().Be(extractedSecond);
+            }
+            else
+            {
+                Assert.True(false);
+            }
+        }
+
+        [Theory]
+        [InlineData("001", "それは異なる．たとえば，\n" + "以下のとおりである．", 2, "それは異なる．", "たとえば，\n以下のとおりである．")]
+        [InlineData("002", "それは異なる．たとえば，", 1, "それは異なる．", "")]
+        public void JapaneseZenkaku2SentenceTest(string nouse1, string input, int sentenceCount, string extractedFirst, string extractedSecond)
+        {
+            // デフォルトのSymbolTableをロード。ja-JPかつzenkaku2の設定がロードされる。
+            // zenkaku2の場合、センテンス区切り文字は「．」「？」「！」の3種類が、右クォーテーションはzenkakuと同じ「’」と「”」が適用される。
+            SentenceExtractor extractor = new SentenceExtractor(new SymbolTable("ja-JP", "zenkaku2", new List<Symbol>()));
+            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
+            List<(int first, int second)> outputPositions = extractor.Extract(input);
+            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
+
+            // Assert
+            outputSentences.Count.Should().Be(sentenceCount);
+
+            if (sentenceCount == 0)
+            {
+                output.WriteLine($"outputSentences has no element.");
+            }
+            // 1つしかセンテンスが抽出されない場合と2つ抽出される場合で分ける。このテストは2センテンスまでなのでそれ以外はエラー。
+            else if (sentenceCount == 1)
+            {
+                output.WriteLine($"outputSentences[0].Content : {outputSentences[0].Content}");
+                outputSentences[0].Content.Should().Be(extractedFirst);
+            }
+            else if (sentenceCount == 2)
+            {
+                output.WriteLine($"outputSentences[0].Content : {outputSentences[0].Content}");
+                output.WriteLine($"outputSentences[1].Content : {outputSentences[1].Content}");
+
+                // 2センテンス抽出できた場合は2つ目のセンテンスの終了位置が入力文字列の長さと一致する前提。
+                // MEMO: これが崩れるパターンを検証したい場合は要注意。
+                outputPositions.Last().second.Should().Be(input.Length);
+
+                outputSentences[0].Content.Should().Be(extractedFirst);
+                outputSentences[1].Content.Should().Be(extractedSecond);
+            }
+            else
+            {
+                Assert.True(false);
+            }
+        }
+
+        /// <summary>SentenceExtractorでは改行を考慮してセンテンスを分割することができないことの検証テスト。</summary>
         [Fact]
         public void JapaneseSplitedSentenceTest()
         {
@@ -69,238 +232,5 @@ namespace RedPen.Net.Core.Tests.Parser
             outputSentences[0].Content[3].Should().Be('\n');
             outputSentences[0].Content[6].Should().Be('。');
         }
-
-        [Theory]
-        // 最もシンプルなケース。1行で1センテンス。
-        [InlineData("001", "this is a pen.", 1, "this is a pen.", "")]
-        // 1行でピリオド終わりのテキスト複数の表現。
-        [InlineData("002", "this is a pen. that is a paper.", 2, "this is a pen.", " that is a paper.")]
-        // 1行でピリオドと疑問符で終わるテキスト複数の表現。
-        [InlineData("003", "is this a pen? that is a paper.", 2, "is this a pen?", " that is a paper.")]
-        // 1行でピリオド終わりが無い複数テキストの表現。
-        [InlineData("004", "this is a pen. that is a paper", 1, "this is a pen.", "")]
-        // 1行でダブルクォーテーション終わりのテキスト表現。
-        [InlineData("004", "this is a \"pen.\"", 1, "this is a \"pen.\"", "")]
-        // 1行でシングルクォーテーション終わりのテキスト表現。
-        [InlineData("005", "this is a \'pen.\'", 1, "this is a \'pen.\'", "")]
-        // 1行でダブルクォーテーションで囲まれた単語のテキスト表現。
-        [InlineData("005", "this is a \"pen\".", 1, "this is a \"pen\".", "")]
-        // 1行でシングルクォーテーションで囲まれた単語のテキスト表現。
-        [InlineData("006", "this is a \'pen\'.", 1, "this is a \'pen\'.", "")]
-        // 1行でダブルクォーテーションで終わる複数テキストの表現。
-        [InlineData("007", "\"this is a pen.\" Another one is not a pen.", 2, "\"this is a pen.\"", " Another one is not a pen.")]
-        // 1行で部分的に分割された複数テキストの表現。
-        [InlineData("008", "this is a pen. Another\n" + "one is not a pen.", 2, "this is a pen.", " Another\none is not a pen.")]
-        // センテンスの終わりで改行された複数テキストの表現を考える。
-        [InlineData("009", "this is a pen.\n" + "Another one is not a pen.", 2, "this is a pen.", "\nAnother one is not a pen.")]
-        // センテンスの途中で改行された不十分なテキストの表現を考える。
-        [InlineData("010", "this is a pen. Another\n", 1, "this is a pen.", "")]
-        public void EnglishSentencesTest(string nouse1, string input, int sentenceCount, string extractedFirst, string extractedSecond)
-        {
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
-            var extractor = new SentenceExtractor(new SymbolTable("en-US", "", new List<Symbol>()));
-
-            // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
-            List<(int first, int second)> outputPositions = extractor.Extract(input);
-            List<Sentence> outputSentences = CreateSentences(outputPositions, input);
-
-            // Assert
-            outputSentences.Count.Should().Be(sentenceCount);
-
-            // 1つしかセンテンスが抽出されない場合と2つ抽出される場合で分ける。このテストは2センテンスまでなのでそれ以外はエラー。
-            if (sentenceCount == 1)
-            {
-                output.WriteLine($"outputSentences[0].Content : {outputSentences[0].Content}");
-                outputSentences[0].Content.Should().Be(extractedFirst);
-            }
-            else if (sentenceCount == 2)
-            {
-                output.WriteLine($"outputSentences[0].Content : {outputSentences[0].Content}");
-                output.WriteLine($"outputSentences[1].Content : {outputSentences[1].Content}");
-
-                // 2センテンス抽出できた場合は2つ目のセンテンスの終了位置が入力文字列の長さと一致する前提。
-                // MEMO: これが崩れるパターンを検証したい場合は要注意。
-                outputPositions.Last().second.Should().Be(input.Length);
-
-                outputSentences[0].Content.Should().Be(extractedFirst);
-                outputSentences[1].Content.Should().Be(extractedSecond);
-            }
-            else
-            {
-                Assert.True(false);
-            }
-        }
-
-        //[Fact]
-        //public void testJapaneseSimple()
-        //{
-        //    char[] stopChars = { '。', '？' };
-        //    SentenceExtractor extractor = new SentenceExtractor(stopChars);
-        //    final String input = "これは埼玉ですか？いいえ群馬です。";
-        //    List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //    int lastPosition = extractor.extract(input, outputPositions);
-        //    List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //    assertEquals(2, outputSentences.size());
-        //    assertEquals("これは埼玉ですか？", outputSentences.get(0).getContent());
-        //    assertEquals("いいえ群馬です。", outputSentences.get(1).getContent());
-        //    assertEquals(input.length(), lastPosition);
-        //}
-
-        //        @Test
-        //    void testJapaneseSimpleWithSpace()
-        //        {
-        //            char[] stopChars = { '。', '？' };
-        //            SentenceExtractor extractor = new SentenceExtractor(stopChars);
-        //            final String input = "これは埼玉ですか？ いいえ群馬です。";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(2, outputSentences.size());
-        //            assertEquals("これは埼玉ですか？", outputSentences.get(0).getContent());
-        //            assertEquals(" いいえ群馬です。", outputSentences.get(1).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
-
-        //        @Test
-        //    void testJapaneseSimpleWithEndQuotations()
-        //        {
-        //            char[] stopChars = { '。', '？' };
-        //            char[] rightQuotations = { '’', '”' };
-        //            SentenceExtractor extractor = new SentenceExtractor(stopChars, rightQuotations);
-        //            final String input = "これは“群馬。”";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(1, outputSentences.size());
-        //            assertEquals("これは“群馬。”", outputSentences.get(0).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
-
-        //        @Test
-        //    void testJapaneseMultipleSentencesWithEndQuotations()
-        //        {
-        //            char[] stopChars = { '。', '？' };
-        //            char[] rightQuotations = { '’', '”' };
-        //            SentenceExtractor extractor = new SentenceExtractor(stopChars, rightQuotations);
-        //            final String input = "これは“群馬。”あれは群馬ではない。";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(2, outputSentences.size());
-        //            assertEquals("これは“群馬。”", outputSentences.get(0).getContent());
-        //            assertEquals("あれは群馬ではない。", outputSentences.get(1).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
-
-        //        @Test
-        //    void testJapaneseMultipleSentencesWithPartialSplit()
-        //        {
-        //            char[] stopChars = { '．', '？' };
-        //            char[] rightQuotations = { '”', '’' };
-        //            SentenceExtractor extractor = new SentenceExtractor(stopChars, rightQuotations);
-        //            final String input = "それは異なる．たとえば，\n" +
-        //                    "以下のとおりである．";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(2, outputSentences.size());
-        //            assertEquals("それは異なる．", outputSentences.get(0).getContent());
-        //            assertEquals("たとえば，\n以下のとおりである．", outputSentences.get(1).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
-
-        //        @Test
-        //    void testJapanesSentenceWithEndWithNonFullStop()
-        //        {
-        //            char[] stopChars = { '．' };
-        //            char[] rightQuotations = { '’', '”' };
-        //            SentenceExtractor extractor = new SentenceExtractor(stopChars, rightQuotations);
-        //            final String input = "それは異なる．たとえば，";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(1, outputSentences.size());
-        //            assertEquals("それは異なる．", outputSentences.get(0).getContent());
-        //            assertEquals(7, lastPosition);
-        //        }
-
-        //        @Test
-        //    void testSentenceWithWhiteWordPosition()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            final String input = "He is a Dr. candidate.";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(1, outputSentences.size());
-        //            assertEquals("He is a Dr. candidate.", outputSentences.get(0).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
-
-        //        @Test
-        //    void testMultipleSentencesWithWhiteWordPosition()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor
-        //                    (Configuration.builder().build().getSymbolTable());
-        //            final String input = "Is he a Dr. candidate? Yes, he is.";  // NOTE: white word list contains "Dr."
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(2, outputSentences.size());
-        //            assertEquals("Is he a Dr. candidate?", outputSentences.get(0).getContent());
-        //            assertEquals(" Yes, he is.", outputSentences.get(1).getContent());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
-
-        //        @Test
-        //    void testVoidLine()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            final String input = "";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(0, outputSentences.size());
-        //            assertEquals(0, lastPosition); // NOTE: second sentence start with white space.
-        //        }
-
-        //        @Test
-        //    void testJustPeriodLine()
-        //        {
-        //            SentenceExtractor extractor = new SentenceExtractor(
-        //                    Configuration.builder().build().getSymbolTable());
-        //            final String input = ".";
-        //            List<Pair<Integer, Integer>> outputPositions = new ArrayList<>();
-        //            int lastPosition = extractor.extract(input, outputPositions);
-        //            List<Sentence> outputSentences = createSentences(outputPositions, lastPosition, input);
-        //            assertEquals(1, outputSentences.size());
-        //            assertEquals(input.length(), lastPosition);
-        //        }
-
-        //        @Test
-        //    void testConstructPatternStringWithoutEscape()
-        //        {
-        //            char[] endCharacters = { '.', '?', '!' };
-        //            SentenceExtractor extractor = new SentenceExtractor(endCharacters);
-        //            assertEquals("[\\.\\?\\!][\'\"]?", extractor.constructEndSentencePattern().pattern());
-        //        }
-
-        //        @Test
-        //    void testThrowExceptionGivenVoidList()
-        //        {
-        //            assertThrows(IllegalArgumentException.class, () -> {
-        //            char[] endCharacters = { };
-        //        SentenceExtractor extractor = new SentenceExtractor(endCharacters);
-        //        extractor.constructEndSentencePattern();
-        //        });
-        //    }
-
-        //@Test
-        //    void testThrowExceptionGivenNull() {
-        //        SentenceExtractor extractor = new SentenceExtractor(Configuration.builder().build().getSymbolTable());
-        //extractor.constructEndSentencePattern(); // not a throw exception
-        //    }
     }
 }
