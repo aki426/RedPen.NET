@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Errors;
@@ -20,10 +22,12 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             this.output = output;
         }
 
-        [Fact]
-        public void BasicTest()
+        [Theory]
+        [InlineData("001", "これは山です。これは川だ。", JodoshiStyle.DesuMasu, 1, "だ")]
+        [InlineData("002", "これは山です。これは川だ。", JodoshiStyle.DaDearu, 1, "です")]
+        public void BasicTest(string nouse1, string text, JodoshiStyle jodoshiStyle, int errorCount, string expected)
         {
-            var validatorConfiguration = new JapaneseStyleConfiguration(ValidationLevel.ERROR, JodoshiStyle.DesuMasu);
+            var validatorConfiguration = new JapaneseStyleConfiguration(ValidationLevel.ERROR, jodoshiStyle);
             CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
 
             // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
@@ -39,7 +43,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             Document document = Document.Builder(RedPenTokenizerFactory.CreateTokenizer(documentLang))
                     .AddSection(1)
                     .AddParagraph()
-                    .AddSentence(new Sentence("これは山です。これは川だ。", 1))
+                    .AddSentence(new Sentence(text, 1))
                     .Build(); // TokenizeをBuild時に実行する。
 
             var sentence = document.Sections[0].Paragraphs[0].Sentences[0];
@@ -50,24 +54,29 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
                 output.WriteLine(token.ToString());
             }
 
+            output.WriteLine("");
             output.WriteLine("★複合助動詞Token:");
             foreach (var token in JapaneseStyleValidator.GetCompoundJodoshi(sentence))
             {
                 output.WriteLine(token.ToString());
             }
 
-            output.WriteLine(sentence.ToString());
-
             // Validation
             var errors = validator.Validate(sentence);
 
-            errors.Should().HaveCount(1);
+            errors.Should().HaveCount(errorCount);
 
             var manager = ErrorMessageManager.GetInstance();
 
-            output.WriteLine(errors[0].ToString());
-            output.WriteLine(manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")));
-            errors[0].MessageArgs[0].ToString().Should().Be("だ");
+            output.WriteLine("");
+            output.WriteLine("★Errors:");
+            foreach (var error in errors)
+            {
+                output.WriteLine(error.ToString());
+                output.WriteLine(manager.GetErrorMessage(error, CultureInfo.GetCultureInfo("ja-JP")));
+            }
+
+            string.Join(",", errors.Select(e => e.MessageArgs[0].ToString())).Should().Be(expected);
         }
     }
 }
