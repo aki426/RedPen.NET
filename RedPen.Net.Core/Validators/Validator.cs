@@ -83,9 +83,6 @@ namespace RedPen.Net.Core.Validators
     /// <summary>ValidatorがDocumentを対象にValidateする場合に実装するインターフェース。</summary>
     public interface IDocumentValidatable
     {
-        /// <summary>Validate前の前処理</summary>
-        public void PreValidate(Document document);
-
         /// <summary>Validation処理本体</summary>
         public List<ValidationError> Validate(Document document);
     }
@@ -93,9 +90,6 @@ namespace RedPen.Net.Core.Validators
     /// <summary>ValidatorがSectionを対象にValidateする場合に実装するインターフェース。</summary>
     public interface ISectionValidatable
     {
-        /// <summary>Validate前の前処理</summary>
-        public void PreValidate(Section section);
-
         /// <summary>Validation処理本体</summary>
         public List<ValidationError> Validate(Section section);
     }
@@ -103,9 +97,6 @@ namespace RedPen.Net.Core.Validators
     /// <summary>ValidatorがSentenceを対象にValidateする場合に実装するインターフェース。</summary>
     public interface ISentenceValidatable
     {
-        /// <summary>Validate前の前処理</summary>
-        public void PreValidate(Sentence sentence);
-
         /// <summary>Validation処理本体</summary>
         public List<ValidationError> Validate(Sentence sentence);
     }

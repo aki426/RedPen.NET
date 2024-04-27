@@ -37,11 +37,6 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             this.Config = config;
         }
 
-        public void PreValidate(Sentence sentence)
-        {
-            // nothing.
-        }
-
         public List<ValidationError> Validate(Sentence sentence)
         {
             List<ValidationError> result = new List<ValidationError>();

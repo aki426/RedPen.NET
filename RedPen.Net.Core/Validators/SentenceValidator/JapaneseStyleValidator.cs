@@ -61,11 +61,6 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             "でした", "でしょう", "です", "ないでしょう", "ないです", "ました", "ます", "ません"
         };
 
-        public void PreValidate(Sentence sentence)
-        {
-            // nothing.
-        }
-
         /// <summary>
         /// センテンスの末尾が言い切り表現になっているかどうかを検出する関数。
         /// 「言い切り表現」とは、文末が「動詞＋助詞」の形で終わっており助動詞が現れないパターンを示す。

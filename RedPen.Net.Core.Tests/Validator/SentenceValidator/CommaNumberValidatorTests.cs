@@ -41,7 +41,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             Sentence sentence = new Sentence("is it true, not true, but it should be ture, right, or not right.", 0);
 
             // Validate
-            commaNumberValidator.PreValidate(sentence);
             var errors = commaNumberValidator.Validate(sentence);
 
             // Assertion
@@ -86,7 +85,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             Sentence sentence = new Sentence("is it true.", 0);
 
             // Validate
-            commaNumberValidator.PreValidate(sentence);
             var errors = commaNumberValidator.Validate(sentence);
 
             // Assertion
@@ -97,7 +95,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             sentence = new Sentence("", 0);
 
             // Validate
-            commaNumberValidator.PreValidate(sentence);
             errors = commaNumberValidator.Validate(sentence);
 
             // Assertion
@@ -129,7 +126,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             Sentence sentence = new Sentence("しかし、この仕組みで背中を押した結果、挑戦できない人は、タスクに挑戦するようになりました。", 0);
 
             // Validate
-            commaNumberValidator.PreValidate(sentence);
             var errors = commaNumberValidator.Validate(sentence);
 
             // Assertion
@@ -140,7 +136,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             sentence = new Sentence("今日は、とても、良い天気で、お花見日和だ、と思います。", 0);
 
             // Validate
-            commaNumberValidator.PreValidate(sentence);
             errors = commaNumberValidator.Validate(sentence);
 
             // Assertion

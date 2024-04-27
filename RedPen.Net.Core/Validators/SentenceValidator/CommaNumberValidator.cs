@@ -46,15 +46,6 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
         }
 
         /// <summary>
-        /// PreValidation.
-        /// </summary>
-        /// <param name="sentence">The sentence.</param>
-        public void PreValidate(Sentence sentence)
-        {
-            // nothing.
-        }
-
-        /// <summary>
         /// Validation and out ValidationErrors.
         /// </summary>
         /// <param name="sentence">The sentence.</param>

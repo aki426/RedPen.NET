@@ -103,7 +103,6 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             });
 
             // Validation
-            japaneseExpressionVariationValidator.PreValidate(document);
             List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
@@ -144,7 +143,6 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                     .Build(); // TokenizeをBuild時に実行する。
 
             // Validation
-            japaneseExpressionVariationValidator.PreValidate(document);
             List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
@@ -180,7 +178,6 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                     .Build(); // TokenizeをBuild時に実行する。
 
             // Validation
-            japaneseExpressionVariationValidator.PreValidate(document);
             List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
             // MEMO: Excelはデフォルト辞書に「エクセル」というReadingが登録されていないのでゆらぎと判定されない。
@@ -202,7 +199,6 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                     .Build(); // TokenizeをBuild時に実行する。
 
             // Validation
-            japaneseExpressionVariationValidator.PreValidate(document);
             List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
@@ -224,7 +220,6 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                     .Build(); // TokenizeをBuild時に実行する。
 
             // Validation
-            japaneseExpressionVariationValidator.PreValidate(document);
             List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
@@ -289,7 +284,6 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             });
 
             // Validation
-            japaneseExpressionVariationValidator.PreValidate(document);
             List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。

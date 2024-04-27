@@ -68,7 +68,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 
             var sentence = new Sentence("they like a piece of a cake.", 1);
 
-            validator.PreValidate(sentence);
             var errors = validator.Validate(sentence);
 
             errors.Count.Should().Be(1);

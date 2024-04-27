@@ -66,8 +66,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
                 "this is a very long long long long long long long long long long long long sentence.",
                 0);
 
-            // 6. PreValidate, Validateを実行する。
-            validator.PreValidate(str);
+            // 6. Validateを実行する。
             List<ValidationError> errors = validator.Validate(str);
 
             errors.Count.Should().Be(1);
@@ -95,7 +94,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         {
             Sentence str = new Sentence("this is a sentence.", 0);
 
-            validator.PreValidate(str);
             List<ValidationError> errors = validator.Validate(str);
 
             errors.Count.Should().Be(0);
@@ -109,7 +107,6 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         {
             Sentence str = new Sentence("", 0);
 
-            validator.PreValidate(str);
             List<ValidationError> errors = validator.Validate(str);
 
             errors.Count.Should().Be(0);

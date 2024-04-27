@@ -244,18 +244,6 @@ namespace RedPen.Net.Core
         /// <param name="docErrorsMap">The doc errors map.</param>
         private void RunDocumentValidators(List<Document> documents, Dictionary<Document, List<ValidationError>> docErrorsMap)
         {
-            // run Document PreProcessors to documents
-            foreach (Document document in documents)
-            {
-                foreach (Validator e in validators)
-                {
-                    if (e is IDocumentValidatable)
-                    {
-                        ((IDocumentValidatable)e).PreValidate(document);
-                    }
-                }
-            }
-
             // run Section validator to documents
             foreach (Document document in documents)
             {
@@ -278,21 +266,6 @@ namespace RedPen.Net.Core
         /// <param name="docErrorsMap">The doc errors map.</param>
         private void RunSectionValidators(List<Document> documents, Dictionary<Document, List<ValidationError>> docErrorsMap)
         {
-            // run Section PreProcessors to documents
-            foreach (Document document in documents)
-            {
-                foreach (Section section in document.Sections)
-                {
-                    foreach (Validator e in validators)
-                    {
-                        if (e is ISectionValidatable)
-                        {
-                            ((ISectionValidatable)e).PreValidate(section);
-                        }
-                    }
-                }
-            }
-            // run Section validator to documents
             foreach (Document document in documents)
             {
                 foreach (Section section in document.Sections)
@@ -316,57 +289,6 @@ namespace RedPen.Net.Core
         /// <param name="docErrorsMap">The doc errors map.</param>
         private void RunSentenceValidators(List<Document> documents, Dictionary<Document, List<ValidationError>> docErrorsMap)
         {
-            // run Sentence PreProcessors to documents
-            foreach (Document document in documents)
-            {
-                foreach (Section section in document.Sections)
-                {
-                    // apply Sentence PreProcessors to section
-                    // apply paragraphs
-                    foreach (Paragraph paragraph in section.Paragraphs)
-                    {
-                        foreach (Validator e in validators)
-                        {
-                            foreach (Sentence sentence in paragraph.Sentences)
-                            {
-                                if (e is ISentenceValidatable)
-                                {
-                                    ((ISentenceValidatable)e).PreValidate(sentence);
-                                }
-                            }
-                        }
-                    }
-                    // apply to section header
-                    foreach (Validator e in validators)
-                    {
-                        foreach (Sentence sentence in section.HeaderSentences)
-                        {
-                            if (e is ISentenceValidatable)
-                            {
-                                ((ISentenceValidatable)e).PreValidate(sentence);
-                            }
-                        }
-                    }
-
-                    // apply to lists
-                    foreach (ListBlock listBlock in section.ListBlocks)
-                    {
-                        foreach (ListElement listElement in listBlock.ListElements)
-                        {
-                            foreach (Validator e in validators)
-                            {
-                                foreach (Sentence sentence in listElement.Sentences)
-                                {
-                                    if (e is ISentenceValidatable)
-                                    {
-                                        ((ISentenceValidatable)e).PreValidate(sentence);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             // run Sentence Validators to documents
             foreach (Document document in documents)
             {
