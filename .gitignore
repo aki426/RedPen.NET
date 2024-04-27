@@ -396,3 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/RedPen.Net.Core.Tests/Tokenizer/DATA/neko.txt

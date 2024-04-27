@@ -14,11 +14,15 @@ using System.Collections.Immutable;
 namespace RedPen.Net.Core.Tokenizer
 {
     /// <summary>
-    /// The neologd japanese Tokenizer.
+    /// Lucene.Net.Analysis.Kuromojiをラップした日本語用Tokenizer。
+    /// Neologd辞書はデフォルトでは保持しておらず、使用している辞書はMeCab-IPADIC辞書である。
+    /// TODO: Neologd辞書ロード機能を実装するか、名前を変更することを検討する。
     /// </summary>
     public class NeologdJapaneseTokenizer : IRedPenTokenizer
     {
         private JapaneseTokenizer tokenizer;
+
+        // TODO: JapaneseTokenizerの生成コストが気になる。Singleton化して生成コストを削減することを検討する。
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NeologdJapaneseTokenizer"/> class.
@@ -67,8 +71,6 @@ namespace RedPen.Net.Core.Tokenizer
             List<TokenElement> tokens = new List<TokenElement>();
             try
             {
-                // TODO: 現状、Tokenに原文の位置を渡せていないので、
-                // TokenizeしたSurfaceの文字数をカウントしてSentence.GetOffsetから位置情報を取得してTokenに渡す。
                 foreach (TokenElement token in KuromojiNeologd(sentence))
                 {
                     tokens.Add(token);
@@ -144,7 +146,7 @@ namespace RedPen.Net.Core.Tokenizer
                     //src.LineNumber,
                     //offsetAttr.StartOffset,
                     readAttr.GetReading(),
-                    // surfaceに対応するOffsetMapをSentenceから取得する。
+                    // surfaceに対応するOffsetMapをSentenceから取得する。TokenElementは正確に原文の出現位置を持つ。
                     Enumerable.Range(currentOffset, surface.Length).Select(i => src.ConvertToLineOffset(i)).ToImmutableList()
                 ));
 

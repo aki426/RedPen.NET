@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
@@ -149,8 +148,14 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             string.Join(",", jodoshiChunk).Should().Be(jodoshi);
         }
 
+        /// <summary>
+        /// 体言止めの検出ロジックを検証するテスト。
+        /// </summary>
+        /// <param name="nouse1">The nouse1.</param>
+        /// <param name="nouser2">The nouser2.</param>
+        /// <param name="text">The text.</param>
+        /// <param name="taigendomeFlag">If true, taigendome flag.</param>
         [Theory]
-        // 断定
         [InlineData(1, 1, "吾輩は猫だ。", false)]
         [InlineData(1, 2, "吾輩は猫。", true)]
         [InlineData(1, 3, "吾輩は猫", true)]
@@ -186,6 +191,62 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             }
 
             isTaigendome.Should().Be(taigendomeFlag);
+        }
+
+        [Theory(DisplayName = "Tokenize結果を目視確認するだけのテスト")]
+        // デフォルト辞書はMeCab-IPADIC辞書なので「りんごジュース」が「りん|ご|ジュース」に分割される。
+        [InlineData("001", "りんごジュースを飲んだ。", "りん|ご|ジュース|を|飲ん|だ|。")]
+        [InlineData("002", "体言止めのりんご。", "体言|止め|の|りんご|。")]
+        [InlineData("003", "きゃりーぱみゅぱみゅもゲスの極み乙女。もモーニング娘。も問題なく分割できます。",
+            "きゃ|り|ー|ぱみゅぱみゅも|ゲス|の|極み|乙女|。|も|モーニング|娘|。|も|問題|なく|分割|でき|ます|。")]
+        public void DisplayTokens(string nouse1, string text, string expected)
+        {
+            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
+
+            // Token目視。
+            foreach (var token in tokens)
+            {
+                output.WriteLine(token.ToString());
+            }
+
+            tokens.Select(t => t.Surface).Should().BeEquivalentTo(expected.Split('|'));
+        }
+
+        [Fact(Skip = "動作速度の確認のためのものなので回帰テストには含めない。")]
+        public void Tokenize吾輩は猫であるTest()
+        {
+            // MEMO: このテストケースはLucene.NETのKuromoji.NETの速度検証のためのテストケースである。
+            // 他のTokenizerとの比較値は『2019年末版 形態素解析器の比較』
+            // https://qiita.com/hi-asano/items/aaf406db875f1c81530e
+            // を参照のこと。条件を合わせるために『言語処理100本ノック』
+            // https://www.cl.ecei.tohoku.ac.jp/nlp100/
+            // からDLできる夏目漱石『吾輩は猫である』のテキストデータで、空行を除くと9210行、約31万8千字の分量である。
+            // 著作権切れのデータではあるが、リポジトリにはPUSHしていないので動作確認前にDLすること。
+            // このテストをCPU : Ryzen 5 8600G, MEM : 32GB環境で実行したところ、処理時間は毎回約700ms程度であった。
+            // これは動作環境に依存すると思われるが、参考値として記載しておく。
+            // 元のQiita記事の実行環境がどのようなものであったかは不明であるが、
+            // MeCabには劣るがJUMANやSudachiより1オーダー高速でありエンドユーザの実行環境でもストレス無く利用できるお思われる。
+
+            string currentDirectory = Directory.GetCurrentDirectory();
+            var filePath = Path.Combine(currentDirectory, "Tokenizer", "DATA", "neko.txt");
+            var fileContents = File.ReadAllText(filePath);
+
+            var sw = new Stopwatch();
+            sw.Start();
+
+            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(fileContents, 1));
+
+            sw.Stop();
+
+            // Token目視。
+            foreach (var token in tokens)
+            {
+                output.WriteLine(token.ToString());
+            }
+
+            output.WriteLine(sw.Elapsed.Milliseconds.ToString());
         }
     }
 }
