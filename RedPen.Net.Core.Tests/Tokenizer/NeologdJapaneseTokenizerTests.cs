@@ -199,6 +199,9 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("002", "体言止めのりんご。", "体言|止め|の|りんご|。")]
         [InlineData("003", "きゃりーぱみゅぱみゅもゲスの極み乙女。もモーニング娘。も問題なく分割できます。",
             "きゃ|り|ー|ぱみゅぱみゅも|ゲス|の|極み|乙女|。|も|モーニング|娘|。|も|問題|なく|分割|でき|ます|。")]
+        [InlineData("004", "それは不謹慎。", "それ|は|不謹慎|。")]
+        [InlineData("005", "それは不謹慎だ。", "それ|は|不謹慎|だ|。")]
+        [InlineData("006", "体言止め。", "体言|止め|。")]
         public void DisplayTokens(string nouse1, string text, string expected)
         {
             NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
