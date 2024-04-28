@@ -4,19 +4,19 @@
 
 ## 概要
 
-日本語の文章校正を行うためのC#アプリケーションから[RedPen](https://qiita.com/Yarakashi_Kikohshi/items/47135dded31879dfaf0e)を利用することを基本的な動機としています。
-最終的には本家[RedPen](https://qiita.com/Yarakashi_Kikohshi/items/47135dded31879dfaf0e)の全機能を移植することを目標としていますが、次の独自方針を持っています。
+基本的な開発動機として、日本語の文章校正を行うためのC#アプリケーションから[RedPen](https://qiita.com/Yarakashi_Kikohshi/items/47135dded31879dfaf0e)を利用することを目的としています。
+最終的には本家[RedPen](https://qiita.com/Yarakashi_Kikohshi/items/47135dded31879dfaf0e)の全機能をサポートすることを目標としていますが、次の独自方針を持っています。
 
 * 優先事項
   * 「日本語」の「プレーンテキスト」のValidator再実装を優先。
   * 他のC#アプリケーションのバックエンドとして運用したいため、本家のredpen-coreプロジェクトの実装を優先。
-  * です・ます調とだ・である調の統一など実際の文章校正ニーズに対応するための既存Validatorの機能改善を優先。
-  * 体言止めの検出など実際の文章校正ニーズに対応するためのValidatorの新規追加を優先。
-  * 設定ファイルのJsonフォーマット化を優先。
-* 劣後事項
-  * 多種多様なフォーマットのParseとC# Parserライブラリの利用。
-  * 英語など日本語以外の言語のみに対応するValidatorの再実装。
+  * です・ます調とだ・である調の統一など実際の文章校正ニーズに対応するため、既存Validatorの機能改善を優先。
+  * 体言止めの検出など実際の文章校正ニーズに対応するため、Validatorの新規追加を優先。
+  * 設定ファイルをJsonフォーマット化し、OFFオプションを用意するなど実際の運用時に修正が少なく済むことを優先。
+* 劣後事項（もしくは、構想）
+  * MarkdownやAsciidocなど多種多様なフォーマットのParse、C# Parserライブラリの利用。
   * 本家のredpen-cliやredpen-serverなど単体動作のためのインターフェースに相当するプロジェクトの再実装。
+  * 英語など日本語以外の言語のみに対応するValidatorの再実装。
   * Javascriptで記述されたValidatorのアドオン機能。
 
 ## システム情報
@@ -51,11 +51,21 @@
 
 上記パッケージの依存パッケージも利用しています。
 
-## Validator Configuration
+## 基本的な使い方
+
+※作成中※
+
+## 動作設定
+
+### Json形式のConfigurationファイル
+
+※作成中※
+
+### Validator Configuration
 
 当面優先して実装予定のValidatorとそのConfigurationです。
 
-### 全言語に適用可能なValidator Configuration
+#### 全言語に適用可能なValidator Configuration
 
 | Done |         Name          |  Target  |                          Description                           |            Property            |
 | ---- | --------------------- | -------- | -------------------------------------------------------------- | ------------------------------ |
@@ -70,7 +80,7 @@
 | v    | SuggestExpression     | Sentence | 不正な表現に対する推奨表現の提案                               | DictFile, WordMap              |
 |      | SymbolWithSpace       | Sentence | シンボル前後のスペースの有無を検出                             | ※Symbolsブロックで定義         |
 
-### 日本語（Lang = ja-JP）にのみ適用可能なValidator Configuration
+#### 日本語（Lang = ja-JP）にのみ適用可能なValidator Configuration
 
 | Done |               Name               |  Target  |                            Description                             |          Property           |
 | ---- | -------------------------------- | -------- | ------------------------------------------------------------------ | --------------------------- |
@@ -90,7 +100,7 @@
 |      | SpaceBetweenAlphabeticalWord     | Sentence | アルファベット単語前後の空白を検出                                 | NoSpace                     |
 | v    | Taigendome                       | Sentence | 体言止めを検出                                                     |                             |
 
-### Validator Configuration Property
+#### Validator Configuration Property
 
 各ValidatorのConfigurationはJsonファイルで適切なプロパティを指定する必要があります。
 プロパティごとの定義と意味は次の一覧表のとおりです。
@@ -111,7 +121,7 @@
 | WordMap   | <string, string>のobject | 辞書定義です。                                           |
 | WordList  | stringのarray            | 文字列リストです。                                       |
 
-#### 補足説明
+##### 補足説明
 
 * Name
   * すべてのValidator Configurationで必須のプロパティです。
@@ -129,7 +139,9 @@
 * WordList
   * Validatorによって意味は変わりますが、大体の場合Invalidな表現のリストです。
 
-## RedPen.Net特有の用語
+## RedPen.Net特有の情報
+
+### 用語
 
 クラス名、Enum名などは以下の用語に準拠しています。
 
