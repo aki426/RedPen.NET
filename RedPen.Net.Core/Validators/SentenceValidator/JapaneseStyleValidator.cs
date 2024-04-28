@@ -52,7 +52,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <summary>だ・である調の助動詞のリスト</summary>
         private static List<string> DaDearuPattern = new List<string>()
         {
-            "た", "だ", "だった", "だろう", "であった", "である", "ない", "ぬ"
+            "た", "だ", "だった", "だろ", "だろう", "であった", "である", "であろう", "ない", "ぬ"
         };
 
         /// <summary>です・ます調の助動詞のリスト</summary>
@@ -117,8 +117,9 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     {
                         // MEMO: 助動詞「だ」の後に助詞「と」が続く場合は、助動詞「だと」とみなして1Tokenとして登録する。
                         // 「だと」という表現はです・ます調でも不自然ではない表現として使われるため。
-                        if (buffer.Count == 1
-                            && buffer.First().Surface == "だ"
+                        // 例）「今日は雨だと思います。」
+                        if (buffer.Any()
+                            && buffer.Last().Surface == "だ"
                             && token.Surface == "と"
                             && token.Tags[0] == "助詞")
                         {
@@ -127,8 +128,21 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
                         // MEMO: 助動詞「た」の後に「の」が続く場合は、助動詞「たの」「だったの」とみなして1Tokenとして登録する。
                         // 「だと」という表現はです・ます調でも不自然ではない表現として使われるため。
+                        // 例）「今日は雨だったのです。」
                         if (buffer.Any()
                             && buffer.Last().Surface == "た"
+                            && token.Surface == "の"
+                            && token.Tags[0] == "名詞" && token.Tags[1] == "非自立"
+                            )
+                        {
+                            buffer.Add(token);
+                        }
+
+                        // MEMO: 助動詞「ない」の後に「の」が続く場合は、助動詞「ないの」とみなして1Tokenとして登録する。
+                        // 「ないの」という表現はです・ます調でも不自然ではない表現として使われるため。
+                        // 例）「今日は雨は降らないのです。」
+                        if (buffer.Any()
+                            && buffer.Last().Surface == "ない"
                             && token.Surface == "の"
                             && token.Tags[0] == "名詞" && token.Tags[1] == "非自立"
                             )
