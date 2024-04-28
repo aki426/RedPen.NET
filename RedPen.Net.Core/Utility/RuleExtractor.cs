@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Text.RegularExpressions;
 using RedPen.Net.Core.Tokenizer;
 using RedPen.Net.Core.Validators;
@@ -13,26 +15,29 @@ namespace RedPen.Net.Core.Utility
         /// <summary>
         /// Create a rule from input sentence.
         /// </summary>
-        /// <param name="line">line input rule</param>
+        /// <param name="line">ルール表記文字列は「Surface:タグ,タグ,タグ,...」という形式。</param>
         /// <returns>An ExpressionRule.</returns>
         public static ExpressionRule Run(string line)
         {
             string[] expressionSegments = Split(line);
-            ExpressionRule rule = new ExpressionRule();
+            // ExpressionRule rule = new ExpressionRule();
+            List<TokenElement> tokens = new List<TokenElement>();
+
             foreach (string segment in expressionSegments)
             {
                 string[] wordSegments = segment.Split(':');
                 string surface = wordSegments[0];
-                string tagStr = "";
-                if (wordSegments.Length > 1)
-                {
-                    tagStr = wordSegments[1];
-                }
+                string tagStr = wordSegments.Length > 1 ? wordSegments[1] : "";
 
                 // ExpressionRuleのTokenElementは特殊なので位置指定が実際の出現位置と結びついていない。
-                rule.Add(new TokenElement(surface, tagStr.Split(',').ToList(), 0, 0));
+                tokens.Add(new TokenElement(surface, tagStr.Split(',').ToList(), 0, 0));
+                //rule.Add(new TokenElement(surface, tagStr.Split(',').ToList(), 0, 0));
             }
-            return rule;
+
+            return new ExpressionRule()
+            {
+                Tokens = tokens.ToImmutableList()
+            };
         }
 
         /// <summary>

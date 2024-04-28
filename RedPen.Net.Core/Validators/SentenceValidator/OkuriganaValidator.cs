@@ -3,6 +3,7 @@ using System.Globalization;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Tokenizer;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
@@ -28,6 +29,29 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <summary></summary>
         public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
 
+        //private static readonly HashSet<string> InvalidOkurigana;
+        //private static readonly HashSet<ExpressionRule> InvalidOkuriganaTokens;
+
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="OkuriganaValidator"/> class.
+        ///// </summary>
+        //static OkuriganaValidator()
+        //{
+        //    InvalidOkuriganaTokens = new HashSet<ExpressionRule>();
+        //    InvalidOkuriganaTokens.Add(new ExpressionRule().AddElement(new TokenElement("合さ", new List<string> { "動詞", "自立" }, 0)));
+        //    InvalidOkuriganaTokens.Add(new ExpressionRule().AddElement(new TokenElement("合し", new List<string> { "動詞", "自立" }, 0)));
+        //    InvalidOkuriganaTokens.Add(new ExpressionRule().AddElement(new TokenElement("合す", new List<string> { "動詞", "自立" }, 0)));
+        //    InvalidOkuriganaTokens.Add(new ExpressionRule().AddElement(new TokenElement("合せ", new List<string> { "動詞", "自立" }, 0)));
+
+        //    // ... (その他のExpressionRuleの初期化は省略)
+
+        //    InvalidOkurigana = new HashSet<string>();
+        //    InvalidOkurigana.Add("恐し");
+        //    InvalidOkurigana.Add("短か");
+        //    InvalidOkurigana.Add("著るしい");
+        //    // ... (その他のInvalidOkuriganaの初期化は省略)
+        //}
+
         // TODO: コンストラクタの引数定義は共通にすること。
         public OkuriganaValidator(
             CultureInfo documentLangForTest,
@@ -46,6 +70,22 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             List<ValidationError> result = new List<ValidationError>();
 
             // validation
+            //foreach (var value in InvalidOkurigana)
+            //{
+            //    int startPosition = sentence.Content.IndexOf(value);
+            //    if (startPosition != -1)
+            //    {
+            //        AddLocalizedErrorWithPosition(sentence, startPosition, startPosition + value.Length, value);
+            //    }
+            //}
+
+            //foreach (var rule in InvalidOkuriganaTokens)
+            //{
+            //    if (rule.Match(sentence.Tokens))
+            //    {
+            //        AddLocalizedError(sentence, rule.ToString());
+            //    }
+            //}
 
             // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
             result.Add(new ValidationError(
