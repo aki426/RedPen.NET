@@ -154,8 +154,8 @@
   * Validatorの名前です。ValidationNameに対して接尾辞「Validator」を付けたものです。
   * 例として「SentenceLength」に対する「SentenceLengthValidator」がValidatorNameに該当します。
 * ValidatorConfigurationName
-  * Validator1つに対するConfigurationの名前です。ValidationNameに対して接尾辞「Configuration」を付けたものです。
-  * 例として「SentenceLength」に対する「SentenceLengthConfiguration」がValidatorConfigurationNameに該当します。
+  * Validator1つに対するConfigurationの名前です。ValidationNameに対して接尾辞「ValidatorConfiguration」を付けたものです。
+  * 例として「SentenceLength」に対する「SentenceLengthValidatorConfiguration」がValidatorConfigurationNameに該当します。
 
 ## License
 
