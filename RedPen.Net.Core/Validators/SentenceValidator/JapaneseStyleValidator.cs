@@ -33,7 +33,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <summary></summary>
         public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
 
-        // TODO: コンストラクタの引数定義は共通にすること。
+        // MEMO: コンストラクタの引数定義は共通にすること。
         public JapaneseStyleValidator(
             CultureInfo documentLangForTest,
             SymbolTable symbolTable,
