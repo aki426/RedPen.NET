@@ -88,7 +88,7 @@
 |      | LongKanjiChain                   | Sentence | 最大文字長を超える漢字の連続を検出                                 | Maxlength                   |
 |      | Okurigana                        | Sentence | 不正な送りがなを検出                                               |                             |
 |      | SpaceBetweenAlphabeticalWord     | Sentence | アルファベット単語前後の空白を検出                                 | NoSpace                     |
-|      | Taigendome                       | Sentence | 体言止めを検出                                                     |                             |
+| v    | Taigendome                       | Sentence | 体言止めを検出                                                     |                             |
 
 ### Validator Configuration Property
 
