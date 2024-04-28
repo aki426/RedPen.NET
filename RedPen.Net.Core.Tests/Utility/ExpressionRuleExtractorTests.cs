@@ -70,7 +70,7 @@ namespace RedPen.Net.Core.Tests.Utility
                 output.WriteLine(token.ToString());
             }
 
-            expressionRule.MatchSurface(tokens).Should().BeTrue();
+            expressionRule.MatchSurface(tokens).isMatch.Should().BeTrue();
         }
     }
 }

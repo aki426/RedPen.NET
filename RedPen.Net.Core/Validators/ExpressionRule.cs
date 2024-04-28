@@ -23,18 +23,18 @@ namespace RedPen.Net.Core.Validators
         /// </summary>
         /// <param name="tokens">TokenElementのリスト</param>
         /// <returns>引数tokensが空だった場合はTrue。そのほかの場合は、ExpressionA bool.</returns>
-        public bool MatchSurface(List<TokenElement> tokens)
+        public (bool isMatch, List<TokenElement> tokens) MatchSurface(List<TokenElement> tokens)
         {
             if (this.Tokens.Count == 0)
             {
                 // MEMO: 集合論的に考えてthis.Tokensが空集合だった場合はTrueが返るべき。
-                return true;
+                return (true, new List<TokenElement>());
             }
 
             if (tokens.Count == 0)
             {
                 // マッチ先のトークンリストが空だった場合はthis.Tokensとマッチしようが無いのでFalseが返るべき。
-                return false;
+                return (false, new List<TokenElement>());
             }
 
             // 前提として、tokensが実際の文章で、this.Tokensより長いと考える。
@@ -47,19 +47,22 @@ namespace RedPen.Net.Core.Validators
             // で部分的に一致するのでTrueを返す。
 
             bool isMatch = false;
+            List<TokenElement> matchedTokens = new List<TokenElement>();
             for (int i = 0; i <= tokens.Count - this.Tokens.Count; i++)
             {
-                isMatch = tokens.Skip(i).Take(this.Tokens.Count).Select(t => t.Surface).SequenceEqual(
+                IEnumerable<TokenElement> currentTokenSequence = tokens.Skip(i).Take(this.Tokens.Count);
+                isMatch = currentTokenSequence.Select(t => t.Surface).SequenceEqual(
                     this.Tokens.Select(t => t.Surface)
                 );
 
                 if (isMatch)
                 {
+                    matchedTokens = currentTokenSequence.ToList();
                     break;
                 }
             }
 
-            return isMatch;
+            return (isMatch, matchedTokens);
         }
     }
 }
