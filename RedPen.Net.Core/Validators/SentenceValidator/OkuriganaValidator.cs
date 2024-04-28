@@ -41,6 +41,10 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// </summary>
         static OkuriganaValidator()
         {
+            // TODO: Tokenに分割した表現パターンはTagsを見ていないので厳密性に欠ける。
+            // 一方、Kuromoji+ipadicのTokenizeはそこまで精度が高くないので、Tagsも考慮したマッチングで
+            // 期待通りに不正な送り仮名を検出できるかは不明。
+
             InvalidOkuriganaTokens = new List<ExpressionRule>
             {
                 ExpressionRuleExtractor.Run("合さ:動詞,自立"),
@@ -169,6 +173,8 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 ExpressionRuleExtractor.Run("危く:形容詞,自立"),
                 ExpressionRuleExtractor.Run("危かっ:形容詞,自立"),
                 ExpressionRuleExtractor.Run("危い:形容詞,自立"),
+                ExpressionRuleExtractor.Run("危:名詞,一般 + い:名詞,一般"), // Kuromoji + ipadicの辞書の場合このTokenizeが起きる。
+                // ExpressionRuleExtractor.Run("危:名詞,一般 + い:動詞,自立"), // Kuromoji + ipadicの辞書の場合このTokenizeが起きる。
                 ExpressionRuleExtractor.Run("危けれ:形容詞,自立"),
                 ExpressionRuleExtractor.Run("逸さ:動詞,自立"),
                 ExpressionRuleExtractor.Run("逸し:動詞,自立"),
@@ -271,13 +277,6 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     ));
                 }
             }
-
-            // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            result.Add(new ValidationError(
-                ValidationType.Okurigana,
-                this.Level,
-                sentence,
-                MessageArgs: new object[] { "some result" }));
 
             return result;
         }
