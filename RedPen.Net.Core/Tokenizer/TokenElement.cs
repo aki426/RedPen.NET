@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using J2N.Numerics;
 using RedPen.Net.Core.Parser;
 
 namespace RedPen.Net.Core.Tokenizer
@@ -93,6 +95,54 @@ namespace RedPen.Net.Core.Tokenizer
         {
             string tags = string.Join(", ", this.Tags.Select(i => $"\"{i}\""));
             return $"TokenElement {{ Surface = \"{this.Surface}\", Reading = \"{this.Reading}\", LineNumber = {this.LineNumber}, Offset = {this.Offset} , Tags = [ {tags} ]}}";
+        }
+
+        /// <summary>
+        /// 2つのTokenElementのTagの内容がマッチするかを判定する。
+        /// MEMO: タグ長が不一致の場合は、短い方の長さ分で一致したらTrue、片方が「*」だった場合はそのタグは一致したとみなす。
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>2つのTokenElementが意味的にマッチするならTrue、不一致ならFalse</returns>
+        public bool MatchTags(TokenElement other)
+        {
+            // どちらかが空集合の場合はマッチしているとみなす。
+            if (this.Tags.Count == 0 || other.Tags.Count == 0)
+            {
+                return true;
+            }
+
+            // 完全一致ならTrueを返す。
+            if (this.Tags.SequenceEqual(other.Tags))
+            {
+                return true;
+            }
+
+            // どちらかのタグ長が足りない場合、それは以降「*」と同じ扱いでマッチしているとみなす。
+            // よってどちらか短いほうの長さまえ走査して不一致が見つからなければ一致としてよい。
+            int minLen = Math.Min(this.Tags.Count, other.Tags.Count);
+
+            for (int i = 0; i < minLen; i++)
+            {
+                // TODO: タグがstring.Emptyの場合、それは「*」にすべきか要検討。現在はstring.Emptyはstring.Emptyとして完全一致しなければならないルール。
+
+                if (this.Tags[i] == "*" || other.Tags[i] == "*")
+                {
+                    // どちらかのタグが*の場合、それはマッチしているとみなす。
+                    continue;
+                }
+                else if (this.Tags[i] == other.Tags[i])
+                {
+                    // タグが一致する場合はもちろんマッチしているとみなす。
+                    continue;
+                }
+                else
+                {
+                    // マッチしていない場合はfalseを返す。
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
