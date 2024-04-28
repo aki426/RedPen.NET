@@ -5,4 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("DocumentationHeader", "ClassDocumentationHeader:The class must have a documentation header.", Justification = "<保留中>", Scope = "type", Target = "~T:RedPen.Net.Core.Tests.Utility.RuleExtractorTests")]
+[assembly: SuppressMessage("DocumentationHeader", "ClassDocumentationHeader:The class must have a documentation header.", Justification = "<保留中>", Scope = "type", Target = "~T:RedPen.Net.Core.Tests.Utility.ExpressionRuleExtractorTests")]

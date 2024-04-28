@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Tokenizer;
@@ -10,59 +9,51 @@ using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Utility
 {
-    public class RuleExtractorTests
+    public class ExpressionRuleExtractorTests
     {
         private ITestOutputHelper output;
 
-        public RuleExtractorTests(ITestOutputHelper output)
+        public ExpressionRuleExtractorTests(ITestOutputHelper output)
         {
             this.output = output;
         }
 
-        /// <summary>
-        /// Splits the test.
-        /// </summary>
+        /// <summary>Splits the test.</summary>
         [Fact]
         public void SplitTest()
         {
-            string[] segments = RuleExtractor.Split("This:n + is:v");
+            string[] segments = ExpressionRuleExtractor.Split("This:n + is:v");
             segments.Length.Should().Be(2);
             segments[0].Should().Be("This:n");
             segments[1].Should().Be("is:v");
         }
 
-        /// <summary>
-        /// Splits the without spaces test.
-        /// </summary>
+        /// <summary>Splits the without spaces test.</summary>
         [Fact]
         public void SplitWithoutSpacesTest()
 
         {
-            string[] segments = RuleExtractor.Split("This:n+is:v");
+            string[] segments = ExpressionRuleExtractor.Split("This:n+is:v");
             segments.Length.Should().Be(2);
             segments[0].Should().Be("This:n");
             segments[1].Should().Be("is:v");
         }
 
-        /// <summary>
-        /// Splits the without before spaces test.
-        /// </summary>
+        /// <summary>Splits the without before spaces test.</summary>
         [Fact]
         public void SplitWithoutBeforeSpacesTest()
         {
-            string[] segments = RuleExtractor.Split("This:n +is:v");
+            string[] segments = ExpressionRuleExtractor.Split("This:n +is:v");
             segments.Length.Should().Be(2);
             segments[0].Should().Be("This:n");
             segments[1].Should().Be("is:v");
         }
 
-        /// <summary>
-        /// ルール表現文字列から抽出したルールのマッチングテスト。
-        /// </summary>
+        /// <summary>ルール表現文字列から抽出したルールのマッチングテスト。</summary>
         [Fact]
         public void RunTest()
         {
-            ExpressionRule expressionRule = RuleExtractor.Run("This:n + is:v");
+            ExpressionRule expressionRule = ExpressionRuleExtractor.Run("This:n + is:v");
             expressionRule.ToSurface().Should().Be("Thisis");
 
             foreach (TokenElement token in expressionRule.Tokens)

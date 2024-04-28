@@ -80,7 +80,7 @@
     <Compile Include="Utility\CollectionExtensionsTests.cs" />
     <Compile Include="Utility\DictionaryLoaderTests.cs" />
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
-    <Compile Include="Utility\RuleExtractorTests.cs" />
+    <Compile Include="Utility\ExpressionRuleExtractorTests.cs" />
     <Compile Include="Utility\StringUtilsTests.cs" />
     <Compile Include="Validator\BaseValidatorTest.cs" />
     <Compile Include="Validator\DocumentValidator\JapaneseExpressionVariationValidatorTest.cs" />

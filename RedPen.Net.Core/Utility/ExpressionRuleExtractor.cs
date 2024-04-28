@@ -10,7 +10,7 @@ namespace RedPen.Net.Core.Utility
     /// <summary>
     /// RedPenのルール表記文字列からルールを抽出するクラス。
     /// </summary>
-    public static class RuleExtractor
+    public static class ExpressionRuleExtractor
     {
         /// <summary>
         /// Create a rule from input sentence.
@@ -20,7 +20,6 @@ namespace RedPen.Net.Core.Utility
         public static ExpressionRule Run(string line)
         {
             string[] expressionSegments = Split(line);
-            // ExpressionRule rule = new ExpressionRule();
             List<TokenElement> tokens = new List<TokenElement>();
 
             foreach (string segment in expressionSegments)
@@ -29,9 +28,8 @@ namespace RedPen.Net.Core.Utility
                 string surface = wordSegments[0];
                 string tagStr = wordSegments.Length > 1 ? wordSegments[1] : "";
 
-                // ExpressionRuleのTokenElementは特殊なので位置指定が実際の出現位置と結びついていない。
+                // MEMO: ExpressionRuleのTokenElementは特殊なので位置指定が実際の出現位置と結びついていない。
                 tokens.Add(new TokenElement(surface, tagStr.Split(',').ToList(), 0, 0));
-                //rule.Add(new TokenElement(surface, tagStr.Split(',').ToList(), 0, 0));
             }
 
             return new ExpressionRule()
