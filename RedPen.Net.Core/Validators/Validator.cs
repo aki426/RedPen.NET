@@ -122,7 +122,7 @@ namespace RedPen.Net.Core.Validators
     //    private static Logger log = LogManager.GetCurrentClassLogger();
 
     //    // TODO: 専用のValidatorConfigurationを別途定義する。
-
+    //    /// <summary>ValidatorConfiguration</summary>
     //    public XXXConfiguration Config { get; init; }
 
     //    // TODO: サポート対象言語がANYではない場合overrideで再定義する。
@@ -140,11 +140,6 @@ namespace RedPen.Net.Core.Validators
     //            symbolTable)
     //    {
     //        this.Config = config;
-    //    }
-
-    //    public void PreValidate(Sentence sentence)
-    //    {
-    //        // nothing.
     //    }
 
     //    public List<ValidationError> Validate(Sentence sentence)
