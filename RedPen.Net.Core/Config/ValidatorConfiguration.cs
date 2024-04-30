@@ -49,6 +49,14 @@ namespace RedPen.Net.Core.Config
         public List<string> WordList { get; init; }
     }
 
+    /// <summary>ValidatorConfigurationの継承クラスがWordSetプロパティを持つことを示すインターフェース。</summary>
+    public interface IWordSetConfigParameter
+    {
+        /// <summary>何らかの単語セットを表すConfigurationパラメータ。
+        /// MEMO: 単語セットに単語が含まれるかどうか、を判定するValidationの場合に用いる。</summary>
+        public HashSet<string> WordSet { get; init; }
+    }
+
     /// <summary>ValidatorConfigurationの継承クラスがJodoshiStyleプロパティを持つことを示すインターフェース。</summary>
     public interface IJodoshiStyleConfigParameter
     {

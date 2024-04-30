@@ -88,6 +88,7 @@
     <Compile Include="Validator\SentenceValidator\HankakuKanaValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\InvalidExpressionValidatorTest.cs" />
     <Compile Include="Validator\SentenceValidator\JapaneseStyleValidatorTests.cs" />
+    <Compile Include="Validator\SentenceValidator\KatakanaEndHyphenTests.cs" />
     <Compile Include="Validator\SentenceValidator\OkuriganaValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\SentenceLengthValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\SuggestExpressionValidatorTests.cs" />

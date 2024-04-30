@@ -116,6 +116,7 @@ namespace RedPen.Net.Core.Validators
     //}
 
     //// TODO: Validation対象に応じて、IDocumentValidatable, ISectionValidatable, ISentenceValidatableを実装する。
+    ///// <summary>XXXのValidator</summary>
     //public class XXXValidator : Validator, ISentenceValidatable
     //{
     //    /// <summary>Nlog</summary>
