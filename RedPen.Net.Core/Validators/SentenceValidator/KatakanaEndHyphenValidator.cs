@@ -55,7 +55,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     {
         public HashSet<string> WordSet { get; init; }
 
-        public KatakanaEndHyphenConfiguration(HashSet<string> wordSet)
+        public KatakanaEndHyphenConfiguration(ValidationLevel level, HashSet<string> wordSet) : base(level)
         {
             this.WordSet = wordSet;
         }
@@ -93,8 +93,8 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         // b) その言葉が2音以下の場合には、語尾に長音符号を付ける。 例：カー（car)、カバー（cover）
         // について、長音符号を付けない語の長さのスレショルドとして2を設定する。
 
-        /// <summary>デフォルトのハイフンの有無ルールを適用するカタカナ語の長さ基準値</summary>
-        private static readonly int DEFAULT_END_HYPHEN_THRESHOLD_WORD_LENGTH = 2;
+        /// <summary>デフォルトのハイフンの有無ルールを適用するカタカナ語の音の長さ（＝長音符号を除いた文字数）基準値</summary>
+        private static readonly int DEFAULT_END_HYPHEN_THRESHOLD_WORD_LENGTH = 3;
 
         /// <summary>カタカナ誤の長音記号</summary>
         private static readonly char KATAKANA_HYPHEN_CHAR = 'ー';
