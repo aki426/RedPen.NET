@@ -74,6 +74,7 @@ namespace RedPen.Net.Core.Config
     /// <summary>ValidatorConfigurationの継承クラスがNumberStyleプロパティを持つことを示すインターフェース。</summary>
     public interface INumberStyleConfigParameter
     {
+        /// <summary>日本語の計数表現のスタイルを表すConfigurationパラメータ。</summary>
         public NumberStyle NumberStyle { get; init; }
     }
 
@@ -84,5 +85,12 @@ namespace RedPen.Net.Core.Config
         ZenkakuOnly, // 全角数字の数字表現「１つ」のみを許容するモード
         KansujiOnly, // 漢数字の数字表現「一つ」のみを許容するモード
         HiraganaOnly // ひらがなの数字表現「ひとつ」のみを許容するモード
+    }
+
+    /// <summary>ValidatorConfigurationの継承クラスがNoSpaceプロパティを持つことを示すインターフェース。</summary>
+    public interface INoSpaceConfigParameter
+    {
+        /// <summary>スペースを許容しないかどうかを表すConfigurationパラメータ。Trueのときスペースを許容しない。</summary>
+        public bool NoSpace { get; init; }
     }
 }
