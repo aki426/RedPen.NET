@@ -1,16 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     /// <summary>DoubledJoshiのConfiguration</summary>
-    public record DoubledJoshiConfiguration : ValidatorConfiguration
+    public record DoubledJoshiConfiguration : ValidatorConfiguration, IMinIntervalConfigParameter, IWordSetConfigParameter
     {
-        public DoubledJoshiConfiguration(ValidationLevel level) : base(level)
+        public int MinInterval { get; init; }
+
+        public HashSet<string> WordSet { get; init; }
+
+        public DoubledJoshiConfiguration(
+            ValidationLevel level,
+            int minInterval,
+            HashSet<string> wordSet) : base(level)
         {
+            this.MinInterval = minInterval;
+            this.WordSet = wordSet;
         }
     }
 
@@ -43,13 +55,60 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             List<ValidationError> result = new List<ValidationError>();
 
             // validation
+            Dictionary<string, List<TokenElement>> joshiCache = new Dictionary<string, List<TokenElement>>();
+            foreach (TokenElement token in sentence.Tokens)
+            {
+                if (token.Tags[0] == "助詞" &&
+                    !Config.WordSet.Contains(token.Surface))
+                {
+                    if (!joshiCache.ContainsKey(token.Surface))
+                    {
+                        joshiCache[token.Surface] = new List<TokenElement>();
+                    }
 
-            // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            result.Add(new ValidationError(
-                ValidationType.DoubledJoshi,
-                this.Level,
-                sentence,
-                MessageArgs: new object[] { argsForMessageArg }));
+                    joshiCache[token.Surface].Add(token);
+                }
+            }
+
+            // create errors
+            foreach (string joshi in joshiCache.Keys)
+            {
+                // 助詞の出現回数が1以下の場合はDoubledではないのでスキップ。
+                if (joshiCache[joshi].Count < 2)
+                {
+                    continue;
+                }
+
+                // 現在問題にしている助詞について、2つの出現箇所の距離を計測して基準値以下であればエラーとする。
+                // 2つ目の要素から初めて末尾までたどる。
+                TokenElement prev = joshiCache[joshi][0];
+                foreach (TokenElement token in joshiCache[joshi].Skip(1))
+                {
+                    // 2つの助詞のIndex距離を計算する。
+                    int prevIndex = sentence.Tokens.IndexOf(prev);
+                    int currIndex = sentence.Tokens.IndexOf(token);
+
+                    prev = token;
+
+                    // 存在しないはずはないが念のため。
+                    if (prevIndex == -1 || currIndex == -1)
+                    {
+                        continue;
+                    }
+
+                    // インターバル以下の距離で出現した場合はエラー。
+                    if (Math.Abs(currIndex - prevIndex) <= Config.MinInterval)
+                    {
+                        result.Add(new ValidationError(
+                            ValidationType.DoubledJoshi,
+                            this.Level,
+                            sentence,
+                            token.OffsetMap[0],
+                            token.OffsetMap[^1],
+                            MessageArgs: new object[] { token.Surface }));
+                    }
+                }
+            }
 
             return result;
         }

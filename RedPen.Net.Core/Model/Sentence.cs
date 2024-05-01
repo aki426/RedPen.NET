@@ -157,17 +157,15 @@ namespace RedPen.Net.Core.Model
             return this.OffsetMap[index];
         }
 
-        ///// <summary>
-        ///// Get the position of the supplied offset (ie: the position in the source text) in this sentence's normalized content
-        ///// </summary>
-        ///// <param name="offset">the position in the source text</param>
-        ///// <returns>the position in the setence's content</returns>
-        //public int GetOffsetPosition(LineOffset offset)
-        //{
-        //    int position = this.OffsetMap.IndexOf(offset); // 発見されなかった場合は-1が返る。
-        //    // TODO: 発見されなかった場合に0を返すのは正しいか？
-        //    return position < 0 ? 0 : position;
-        //}
+        /// <summary>
+        /// LineOffsetからSentence.ContentのIndexを逆引きする関数。
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <returns>見つからなかった場合は-1</returns>
+        public int ConvertToIndex(LineOffset offset)
+        {
+            return this.OffsetMap.IndexOf(offset); // 発見されなかった場合は-1が返る。
+        }
 
         ///// <summary>
         ///// Get size of offset mapping table (the size should be same as the content length).

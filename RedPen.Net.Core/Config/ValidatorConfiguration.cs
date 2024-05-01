@@ -105,4 +105,9 @@ namespace RedPen.Net.Core.Config
     {
         public string SkipBefore { get; init; }
     }
+
+    public interface IMinIntervalConfigParameter
+    {
+        public int MinInterval { get; init; }
+    }
 }
