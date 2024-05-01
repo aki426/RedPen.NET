@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RedPen.Net.Core.Parser
+namespace RedPen.Net.Core.Model
 {
     /// <summary>原文テキストにおける行番号とオフセット位置を表す。
     /// 原文テキストにおけるある文字の位置を、1始まりの行Indexと0始まるの列Indexで表現したもの、という解釈も成り立つ。</summary>
@@ -20,8 +20,8 @@ namespace RedPen.Net.Core.Parser
         /// <param name="offset">The offset.</param>
         public LineOffset(int lineNum, int offset)
         {
-            this.LineNum = lineNum;
-            this.Offset = offset;
+            LineNum = lineNum;
+            Offset = offset;
         }
 
         /// <summary>
@@ -36,12 +36,12 @@ namespace RedPen.Net.Core.Parser
                 return 1;
             }
 
-            if (this.LineNum != other.LineNum)
+            if (LineNum != other.LineNum)
             {
-                return this.LineNum - other.LineNum;
+                return LineNum - other.LineNum;
             }
 
-            return this.Offset - other.Offset;
+            return Offset - other.Offset;
         }
 
         /// <summary>

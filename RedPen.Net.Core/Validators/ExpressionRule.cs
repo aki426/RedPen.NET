@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using RedPen.Net.Core.Tokenizer;
+using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators
 {

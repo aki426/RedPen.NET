@@ -5,7 +5,6 @@ using System.Text;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Parser;
 using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator

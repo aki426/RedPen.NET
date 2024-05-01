@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using J2N.Numerics;
-using RedPen.Net.Core.Parser;
 
-namespace RedPen.Net.Core.Tokenizer
+namespace RedPen.Net.Core.Model
 {
     /// <summary>
     /// ImmutableなTokenElementを表現するクラス。
@@ -27,10 +25,10 @@ namespace RedPen.Net.Core.Tokenizer
         // MEMO: 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
 
         /// <summary>the line of the token's first character.</summary>
-        public int LineNumber => this.OffsetMap.First().LineNum;
+        public int LineNumber => OffsetMap.First().LineNum;
 
         /// <summary>the position of the first character in this token.</summary>
-        public int Offset => this.OffsetMap.First().Offset;
+        public int Offset => OffsetMap.First().Offset;
 
         /// <summary>
         /// SurfaceとTagsの1つ目の文字列を取って人が目視可能な文字列表現を取得する関数。
@@ -38,13 +36,13 @@ namespace RedPen.Net.Core.Tokenizer
         /// <returns>A string.</returns>
         public string GetSurfaceAndTagString()
         {
-            if (this.Tags.Any())
+            if (Tags.Any())
             {
-                return $"{this.Surface}({this.Tags[0]})";
+                return $"{Surface}({Tags[0]})";
             }
             else
             {
-                return $"{this.Surface}(unknown)";
+                return $"{Surface}(unknown)";
             }
         }
 
@@ -58,10 +56,10 @@ namespace RedPen.Net.Core.Tokenizer
         /// <param name="offsetMap">The offset map.</param>
         public TokenElement(string surface, ImmutableList<string> tags, string reading, ImmutableList<LineOffset> offsetMap)
         {
-            this.Surface = surface;
-            this.Tags = tags;
-            this.Reading = reading;
-            this.OffsetMap = offsetMap;
+            Surface = surface;
+            Tags = tags;
+            Reading = reading;
+            OffsetMap = offsetMap;
         }
 
         /// <summary>
@@ -93,8 +91,8 @@ namespace RedPen.Net.Core.Tokenizer
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            string tags = string.Join(", ", this.Tags.Select(i => $"\"{i}\""));
-            return $"TokenElement {{ Surface = \"{this.Surface}\", Reading = \"{this.Reading}\", LineNumber = {this.LineNumber}, Offset = {this.Offset} , Tags = [ {tags} ]}}";
+            var tags = string.Join(", ", Tags.Select(i => $"\"{i}\""));
+            return $"TokenElement {{ Surface = \"{Surface}\", Reading = \"{Reading}\", LineNumber = {LineNumber}, Offset = {Offset} , Tags = [ {tags} ]}}";
         }
 
         /// <summary>
@@ -106,31 +104,31 @@ namespace RedPen.Net.Core.Tokenizer
         public bool MatchTags(TokenElement other)
         {
             // どちらかが空集合の場合はマッチしているとみなす。
-            if (this.Tags.Count == 0 || other.Tags.Count == 0)
+            if (Tags.Count == 0 || other.Tags.Count == 0)
             {
                 return true;
             }
 
             // 完全一致ならTrueを返す。
-            if (this.Tags.SequenceEqual(other.Tags))
+            if (Tags.SequenceEqual(other.Tags))
             {
                 return true;
             }
 
             // どちらかのタグ長が足りない場合、それは以降「*」と同じ扱いでマッチしているとみなす。
             // よってどちらか短いほうの長さまえ走査して不一致が見つからなければ一致としてよい。
-            int minLen = Math.Min(this.Tags.Count, other.Tags.Count);
+            var minLen = Math.Min(Tags.Count, other.Tags.Count);
 
-            for (int i = 0; i < minLen; i++)
+            for (var i = 0; i < minLen; i++)
             {
                 // TODO: タグがstring.Emptyの場合、それは「*」にすべきか要検討。現在はstring.Emptyはstring.Emptyとして完全一致しなければならないルール。
 
-                if (this.Tags[i] == "*" || other.Tags[i] == "*")
+                if (Tags[i] == "*" || other.Tags[i] == "*")
                 {
                     // どちらかのタグが*の場合、それはマッチしているとみなす。
                     continue;
                 }
-                else if (this.Tags[i] == other.Tags[i])
+                else if (Tags[i] == other.Tags[i])
                 {
                     // タグが一致する場合はもちろんマッチしているとみなす。
                     continue;

@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
-using RedPen.Net.Core.Tokenizer;
+using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Validators;
 
 namespace RedPen.Net.Core.Utility

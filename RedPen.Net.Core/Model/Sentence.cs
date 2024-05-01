@@ -1,6 +1,4 @@
 ﻿using NLog;
-using RedPen.Net.Core.Parser;
-using RedPen.Net.Core.Tokenizer;
 using System.Collections.Generic;
 using System.Linq;
 

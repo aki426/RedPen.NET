@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
-using RedPen.Net.Core.Parser;
+using RedPen.Net.Core.Model;
 using Xunit;
 using Xunit.Abstractions;
 

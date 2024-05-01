@@ -5,7 +5,6 @@ using System.Linq;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Tokenizer;
 
 namespace RedPen.Net.Core.Validators.DocumentValidator
 {

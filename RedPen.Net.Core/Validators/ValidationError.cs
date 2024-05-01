@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Parser;
 
 namespace RedPen.Net.Core.Validators
 {
