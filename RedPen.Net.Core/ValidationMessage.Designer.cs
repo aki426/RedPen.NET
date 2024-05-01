@@ -520,7 +520,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Space not exists around the alphabetical word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   Space not allowed to exist around the alphabetical word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SpaceBetweenAlphabeticalWord_Forbidden {
             get {

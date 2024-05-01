@@ -10,13 +10,23 @@ using RedPen.Net.Core.Utility;
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     /// <summary>SpaceBetweenAlphabeticalWordのConfiguration</summary>
-    public record SpaceBetweenAlphabeticalWordConfiguration : ValidatorConfiguration, INoSpaceConfigParameter
+    public record SpaceBetweenAlphabeticalWordConfiguration : ValidatorConfiguration, INoSpaceConfigParameter, ISkipAfterConfigParameter, ISkipBeforeConfigParameter
     {
         public bool NoSpace { get; init; }
 
-        public SpaceBetweenAlphabeticalWordConfiguration(ValidationLevel level, bool noSpace) : base(level)
+        public string SkipAfter { get; init; }
+
+        public string SkipBefore { get; init; }
+
+        public SpaceBetweenAlphabeticalWordConfiguration(
+            ValidationLevel level,
+            bool NoSpace = false,
+            string SkipAfter = "",
+            string SkipBefore = "") : base(level)
         {
-            this.NoSpace = noSpace;
+            this.NoSpace = NoSpace;
+            this.SkipAfter = SkipAfter;
+            this.SkipBefore = SkipBefore;
         }
     }
 
@@ -55,56 +65,52 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             leftParenthesis = symbolTable.SymbolTypeDictionary[SymbolType.LEFT_PARENTHESIS].Value;
             rightParenthesis = symbolTable.SymbolTypeDictionary[SymbolType.RIGHT_PARENTHESIS].Value;
             comma = symbolTable.SymbolTypeDictionary[SymbolType.COMMA].Value;
-
-            pat = new Regex($"{shard}\\s+({word})\\s+{shard}");
         }
-
-        private readonly string shard = @"[^A-Za-z0-9 !@#$%^&*()_+=\[\]\\{}|=<>,.{};':"",./<>?（）［］｛｝-]";
-        private readonly string word = @"[A-Za-z0-9 !@#$%^&*()_+=\[\]\\{}|=<>,.{};':"",./<>?（）｛｝［］-]+";
-
-        private readonly Regex pat; // = new Regex($"{shard}\\s+({word})\\s+{shard}");
-
-        //public SpaceBetweenAlphabeticalWordValidator() : base("forbidden", false, // Spaces are enforced (false) or forbidden (true)
-        //                                                     "skip_before", "",
-        //                                                     "skip_after", "")
-        //{
-        //}
 
         /// <summary>
         /// 2文字を確認し、前の文字が標準ラテン文字ではなく、かつSkipBeforeに指定された文字ではなく、かつ左カッコ、右カッコ、カンマではなく、
         /// かつ後の文字が標準ラテン文字であり、ユニコードレターである場合にtrueを返す関数。
         /// </summary>
-        /// <param name="prevCharacter">The prev character.</param>
-        /// <param name="character">The character.</param>
+        /// <param name="first">The prev character.</param>
+        /// <param name="second">The next character.</param>
         /// <returns>A bool.</returns>
-        private bool notHasWhiteSpaceBeforeLeftParenthesis(char prevCharacter, char character)
+        private bool NeedSpaceAsFirst(char first, char second)
         {
-            return !StringUtils.IsBasicLatin(prevCharacter)
-                   //&& getString("skip_before").IndexOf(prevCharacter) == -1
-                   && prevCharacter != leftParenthesis
-                   && prevCharacter != rightParenthesis
-                   && prevCharacter != comma
-                   && StringUtils.IsBasicLatin(character)
-                   && char.IsLetter(character);
+            return !StringUtils.IsBasicLatin(first)
+                   && Config.SkipAfter.IndexOf(first) == -1 // 特定文字の直後であればスペースをスキップして良い。
+                   && first != leftParenthesis
+                   && first != rightParenthesis
+                   && first != comma
+                   && StringUtils.IsBasicLatin(second)
+                   && char.IsLetter(second);
         }
 
         /// <summary>
         /// 2文字を確認し、前の文字が標準ラテン文字であり、ユニコードレターであり、
         /// 後の文字が標準ラテン文字ではなく、かつSkipAfterに指定された文字ではなく、かつ左カッコ、右カッコ、カンマではない場合にtrueを返す関数。
         /// </summary>
-        /// <param name="prevCharacter">The prev character.</param>
-        /// <param name="character">The character.</param>
+        /// <param name="first">The prev character.</param>
+        /// <param name="second">The next character.</param>
         /// <returns>A bool.</returns>
-        private bool notHasWhiteSpaceAfterRightParenthesis(char prevCharacter, char character)
+        private bool NeedSpaceAsSecond(char first, char second)
         {
-            return !StringUtils.IsBasicLatin(character)
-                   //&& getString("skip_after").IndexOf(character) == -1
-                   && character != rightParenthesis
-                   && character != leftParenthesis
-                   && character != comma
-                   && StringUtils.IsBasicLatin(prevCharacter)
-                   && char.IsLetter(prevCharacter);
+            return !StringUtils.IsBasicLatin(second)
+                   && Config.SkipBefore.IndexOf(second) == -1 // 特定文字の直前であればスペースをスキップして良い。
+                   && second != rightParenthesis
+                   && second != leftParenthesis
+                   && second != comma
+                   && StringUtils.IsBasicLatin(first)
+                   && char.IsLetter(first);
         }
+
+        // 半角英語表現をキャプチャするための正規表現。
+        // 半角スペース以外で開始、終了し、内部で半角スペースを含んでもよいものとする。
+        // つまり「きょうは Pepsi cola を飲みたい。」のような表現で「Pepsi cola」全体をキャプチャしたい。
+
+        /// <summary>半角スペース以外の英字数字記号以外で始まり、かつ内部に半角スペース意外を含み、
+        /// 末尾が半角スペース以外の英二数字記号以外で終わる、全体が半角の表現</summary>
+        private static readonly Regex spaceWithinAlphabeticalExpression =
+            new Regex(@"[!-~]+( +[!-~]+)*");
 
         public List<ValidationError> Validate(Sentence sentence)
         {
@@ -114,21 +120,30 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             if (Config.NoSpace)
             {
                 // アルファベット単語の前後にスペースを許容しない場合。
-                var m = pat.Matches(sentence.Content);
+                var m = spaceWithinAlphabeticalExpression.Matches(sentence.Content);
                 foreach (Match match in m)
                 {
-                    string word = match.Groups[1].Value;
-                    if (!word.Contains(" "))
+                    string word = match.Value;
+                    int start = match.Index;
+                    int end = match.Index + match.Length - 1;
+
+                    if ((start == 0 || sentence.Content[start - 1] != ' ')
+                        && (end == sentence.Content.Length - 1 || sentence.Content[end + 1] != ' '))
+                    {
+                        // 英語表現の前後にスペースが無い、または無くてもよいケースはエラーとしない。
+                        // nothing.
+                    }
+                    else
                     {
                         result.Add(new ValidationError(
                             ValidationType.SpaceBetweenAlphabeticalWord,
                             this.Level,
                             sentence,
-                            sentence.ConvertToLineOffset(match.Groups[1].Index),
-                            sentence.ConvertToLineOffset(match.Groups[1].Index + match.Groups[1].Length - 1),
+                            sentence.ConvertToLineOffset(match.Index),
+                            sentence.ConvertToLineOffset(match.Index + match.Length - 1),
                             MessageArgs: new object[] { word },
                             MessageKey: "Forbidden"
-                            ));
+                        ));
                     }
                 }
             }
@@ -140,8 +155,9 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 int idx = 0;
                 foreach (char character in sentence.Content.ToCharArray())
                 {
-                    if (notHasWhiteSpaceBeforeLeftParenthesis(prevCharacter, character))
+                    if (NeedSpaceAsFirst(prevCharacter, character))
                     {
+                        // 1文字目がスペースであるべき場合、エラーとして報告する。
                         result.Add(new ValidationError(
                             ValidationType.SpaceBetweenAlphabeticalWord,
                             this.Level,
@@ -152,8 +168,9 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                             MessageKey: "Before"
                             ));
                     }
-                    else if (notHasWhiteSpaceAfterRightParenthesis(prevCharacter, character))
+                    else if (NeedSpaceAsSecond(prevCharacter, character))
                     {
+                        // 2文字目がスペースであるべき場合、エラーとして報告する。
                         result.Add(new ValidationError(
                             ValidationType.SpaceBetweenAlphabeticalWord,
                             this.Level,

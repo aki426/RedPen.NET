@@ -93,4 +93,16 @@ namespace RedPen.Net.Core.Config
         /// <summary>スペースを許容しないかどうかを表すConfigurationパラメータ。Trueのときスペースを許容しない。</summary>
         public bool NoSpace { get; init; }
     }
+
+    /// <summary>ValidatorConfigurationの継承クラスがSkipAfterプロパティを持つことを示すインターフェース。</summary>
+    public interface ISkipAfterConfigParameter
+    {
+        public string SkipAfter { get; init; }
+    }
+
+    /// <summary>ValidatorConfigurationの継承クラスがSkipBeforeプロパティを持つことを示すインターフェース。</summary>
+    public interface ISkipBeforeConfigParameter
+    {
+        public string SkipBefore { get; init; }
+    }
 }

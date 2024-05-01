@@ -206,7 +206,7 @@
     <value>Space not present after an alphabetical word.</value>
   </data>
   <data name="SpaceBetweenAlphabeticalWord_Forbidden" xml:space="preserve">
-    <value>Space not exists around the alphabetical word "{0}".</value>
+    <value>Space not allowed to exist around the alphabetical word "{0}".</value>
   </data>
   <data name="SymbolWithSpace_Before" xml:space="preserve">
     <value>Need whitespace before symbol "{0}".</value>

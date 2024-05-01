@@ -92,6 +92,7 @@
     <Compile Include="Validator\SentenceValidator\KatakanaEndHyphenTests.cs" />
     <Compile Include="Validator\SentenceValidator\OkuriganaValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\SentenceLengthValidatorTests.cs" />
+    <Compile Include="Validator\SentenceValidator\SpaceBetweenAlphabeticalWordTests.cs" />
     <Compile Include="Validator\SentenceValidator\SuggestExpressionValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\TaigendomeValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\ValidatorTestsUtility.cs" />

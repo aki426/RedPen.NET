@@ -262,13 +262,13 @@
     <value>文頭にスペースがありません。</value>
   </data>
   <data name="SpaceBetweenAlphabeticalWord_After" xml:space="preserve">
-    <value>アルファベット単語 "{0}" の後にスペースが必要です。</value>
+    <value>半角アルファベット表現 "{0}" の後にスペースが必要です。</value>
   </data>
   <data name="SpaceBetweenAlphabeticalWord_Before" xml:space="preserve">
-    <value>アルファベット単語 "{0}" の前にスペースが必要です。</value>
+    <value>半角アルファベット表現 "{0}" の前にスペースが必要です。</value>
   </data>
   <data name="SpaceBetweenAlphabeticalWord_Forbidden" xml:space="preserve">
-    <value>アルファベット単語 "{0}" の周囲にスペースが必要です。</value>
+    <value>半角アルファベット表現 "{0}" の周囲に不正なスペースが見つかりました。</value>
   </data>
   <data name="Spelling" xml:space="preserve">
     <value>スペルミスの可能性のある単語 "{0}" が見つかりました。</value>
