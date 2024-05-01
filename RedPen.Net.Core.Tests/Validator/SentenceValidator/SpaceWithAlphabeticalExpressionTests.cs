@@ -7,11 +7,11 @@ using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 {
-    public class SpaceBetweenAlphabeticalWordTests
+    public class SpaceWithAlphabeticalExpressionTests
     {
         private ITestOutputHelper output;
 
-        public SpaceBetweenAlphabeticalWordTests(ITestOutputHelper output)
+        public SpaceWithAlphabeticalExpressionTests(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -30,13 +30,13 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
 
             // ValidatorConfiguration
-            var validatorConfiguration = new SpaceBetweenAlphabeticalWordConfiguration(ValidationLevel.ERROR, false, "", "");
+            var validatorConfiguration = new SpaceWithAlphabeticalExpressionConfiguration(ValidationLevel.ERROR, false, "", "");
 
             // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
             SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
 
             // Validator
-            var validator = new SpaceBetweenAlphabeticalWordValidator(
+            var validator = new SpaceWithAlphabeticalExpressionValidator(
                 documentLang,
                 symbolTable,
                 validatorConfiguration);
@@ -81,8 +81,8 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [InlineData("022", "きょうは,Coke を飲みたい。", 1, ",Coke")]
         // 半角記号は英語表現の一部とみなされる。
         [InlineData("023", "きょうは, Coke を飲みたい。", 1, ", Coke")]
-        [InlineData("024", "きょうは（Coke）を飲みたい。", 0, "")]
-        [InlineData("025", "きょうは（Coke ）を飲みたい。", 1, "Coke")]
+        [InlineData("024", "きょうは(Coke)を飲みたい。", 0, "")]
+        [InlineData("025", "きょうは(Coke )を飲みたい。", 0, "")] // TODO: ()に隣接するスペースは許容されるべきか？
         [InlineData("026", "きょうは、Cokeを飲みたい。", 0, "")]
         [InlineData("027", "きょうは、Coke を飲みたい。", 1, "Coke")]
         // 複数
@@ -93,16 +93,16 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
 
             // ValidatorConfiguration
-            var validatorConfiguration = new SpaceBetweenAlphabeticalWordConfiguration(
+            var validatorConfiguration = new SpaceWithAlphabeticalExpressionConfiguration(
                 ValidationLevel.ERROR,
-                NoSpace: true
+                Forbidden: true
             );
 
             // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
             SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
 
             // Validator
-            var validator = new SpaceBetweenAlphabeticalWordValidator(
+            var validator = new SpaceWithAlphabeticalExpressionValidator(
                 documentLang,
                 symbolTable,
                 validatorConfiguration);
@@ -134,9 +134,9 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
 
             // ValidatorConfiguration
-            var validatorConfiguration = new SpaceBetweenAlphabeticalWordConfiguration(
+            var validatorConfiguration = new SpaceWithAlphabeticalExpressionConfiguration(
                 ValidationLevel.ERROR,
-                NoSpace: false,
+                Forbidden: false,
                 SkipBefore: "」",
                 SkipAfter: "「・"
             );
@@ -145,7 +145,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
 
             // Validator
-            var validator = new SpaceBetweenAlphabeticalWordValidator(
+            var validator = new SpaceWithAlphabeticalExpressionValidator(
                 documentLang,
                 symbolTable,
                 validatorConfiguration);

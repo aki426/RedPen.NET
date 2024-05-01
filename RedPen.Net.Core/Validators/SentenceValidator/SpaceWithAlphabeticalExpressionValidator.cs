@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using J2N;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -10,34 +9,34 @@ using RedPen.Net.Core.Utility;
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     /// <summary>SpaceBetweenAlphabeticalWordのConfiguration</summary>
-    public record SpaceBetweenAlphabeticalWordConfiguration : ValidatorConfiguration, INoSpaceConfigParameter, ISkipAfterConfigParameter, ISkipBeforeConfigParameter
+    public record SpaceWithAlphabeticalExpressionConfiguration : ValidatorConfiguration, IForbiddenConfigParameter, ISkipAfterConfigParameter, ISkipBeforeConfigParameter
     {
-        public bool NoSpace { get; init; }
+        public bool Forbidden { get; init; }
 
         public string SkipAfter { get; init; }
 
         public string SkipBefore { get; init; }
 
-        public SpaceBetweenAlphabeticalWordConfiguration(
+        public SpaceWithAlphabeticalExpressionConfiguration(
             ValidationLevel level,
-            bool NoSpace = false,
+            bool Forbidden = false,
             string SkipAfter = "",
             string SkipBefore = "") : base(level)
         {
-            this.NoSpace = NoSpace;
+            this.Forbidden = Forbidden;
             this.SkipAfter = SkipAfter;
             this.SkipBefore = SkipBefore;
         }
     }
 
     /// <summary>SpaceBetweenAlphabeticalWordのValidator</summary>
-    public class SpaceBetweenAlphabeticalWordValidator : Validator, ISentenceValidatable
+    public class SpaceWithAlphabeticalExpressionValidator : Validator, ISentenceValidatable
     {
         /// <summary>Nlog</summary>
         private static Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>ValidatorConfiguration</summary>
-        public SpaceBetweenAlphabeticalWordConfiguration Config { get; init; }
+        public SpaceWithAlphabeticalExpressionConfiguration Config { get; init; }
 
         /// <summary></summary>
         public override List<string> SupportedLanguages => new List<string>() { "ja-JP" }; // JAVA版では"zh-CHS"も対象言語。
@@ -50,10 +49,10 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
         private char comma = ',';
 
-        public SpaceBetweenAlphabeticalWordValidator(
+        public SpaceWithAlphabeticalExpressionValidator(
             CultureInfo documentLangForTest,
             SymbolTable symbolTable,
-            SpaceBetweenAlphabeticalWordConfiguration config) :
+            SpaceWithAlphabeticalExpressionConfiguration config) :
             base(
                 config.Level,
                 documentLangForTest,
@@ -117,7 +116,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             List<ValidationError> result = new List<ValidationError>();
 
             // validation
-            if (Config.NoSpace)
+            if (Config.Forbidden)
             {
                 // アルファベット単語の前後にスペースを許容しない場合。
                 var m = spaceWithinAlphabeticalExpression.Matches(sentence.Content);
@@ -136,7 +135,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     else
                     {
                         result.Add(new ValidationError(
-                            ValidationType.SpaceBetweenAlphabeticalWord,
+                            ValidationType.SpaceWithAlphabeticalExpression,
                             this.Level,
                             sentence,
                             sentence.ConvertToLineOffset(match.Index),
@@ -159,7 +158,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     {
                         // 1文字目がスペースであるべき場合、エラーとして報告する。
                         result.Add(new ValidationError(
-                            ValidationType.SpaceBetweenAlphabeticalWord,
+                            ValidationType.SpaceWithAlphabeticalExpression,
                             this.Level,
                             sentence,
                             sentence.ConvertToLineOffset(idx),
@@ -172,7 +171,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     {
                         // 2文字目がスペースであるべき場合、エラーとして報告する。
                         result.Add(new ValidationError(
-                            ValidationType.SpaceBetweenAlphabeticalWord,
+                            ValidationType.SpaceWithAlphabeticalExpression,
                             this.Level,
                             sentence,
                             sentence.ConvertToLineOffset(idx),

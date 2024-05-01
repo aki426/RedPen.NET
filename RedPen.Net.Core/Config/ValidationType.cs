@@ -62,7 +62,7 @@ namespace RedPen.Net.Core.Config
         SectionLevel,
         SentenceLength,
         SpaceBeginningOfSentence,
-        SpaceBetweenAlphabeticalWord,
+        SpaceWithAlphabeticalExpression,
         Spelling,
         StartWithCapitalLetter,
         SuccessiveSentence,

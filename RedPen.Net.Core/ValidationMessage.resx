@@ -199,13 +199,13 @@
   <data name="Quotation_LeftExist" xml:space="preserve">
     <value>Left quotation mark is missing.</value>
   </data>
-  <data name="SpaceBetweenAlphabeticalWord_Before" xml:space="preserve">
+  <data name="SpaceWithAlphabeticalExpression_Before" xml:space="preserve">
     <value>Space not present before an alphabetical word.</value>
   </data>
-  <data name="SpaceBetweenAlphabeticalWord_After" xml:space="preserve">
+  <data name="SpaceWithAlphabeticalExpression_After" xml:space="preserve">
     <value>Space not present after an alphabetical word.</value>
   </data>
-  <data name="SpaceBetweenAlphabeticalWord_Forbidden" xml:space="preserve">
+  <data name="SpaceWithAlphabeticalExpression_Forbidden" xml:space="preserve">
     <value>Space not allowed to exist around the alphabetical word "{0}".</value>
   </data>
   <data name="SymbolWithSpace_Before" xml:space="preserve">

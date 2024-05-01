@@ -82,23 +82,23 @@
 
 #### 日本語（Lang = ja-JP）にのみ適用可能なValidator Configuration
 
-| Done |               Name               |  Target  |                               Description                                |          Property           |
-| ---- | -------------------------------- | -------- | ------------------------------------------------------------------------ | --------------------------- |
-|      | DoubledConjunctiveParticleGa     | Sentence | センテンス内の接続助詞「が」の2回以上の使用を検出                        |                             |
-|      | DoubledJoshi                     | Sentence | センテンス内の同一助詞の重複使用を検出                                   |                             |
-|      | DoubleNegative                   | Sentence | 二重否定表現を検出                                                       |                             |
-| v    | HankakuKana                      | Sentence | 半角カナ文字を検出                                                       |                             |
-|      | JapaneseAmbiguousNounConjunction | Sentence | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）を検出             |                             |
-| v    | JapaneseExpressionVariation      | Document | 日本語の表記ゆれを検出                                                   | DictFile, WordMap           |
-|      | JapaneseJoyoKanji                | Sentence | 常用漢字以外の漢字を検出                                                 |                             |
-| v    | JapaneseNumberExpression         | Sentence | 計数表現スタイルの一貫性の破れを検出                                     | NumberStyle                 |
-| v    | JapaneseStyle                    | Sentence | ですます調とである調の混在を検出                                         | JodoshiStyle                |
-| v    | KatakanaEndHyphen                | Sentence | JIS Z8301:2008 - G.6.2.2 b - G.3基準のカタカナ単語の語尾のハイフンを検出 | WordSet                     |
-|      | KatakanaSpellCheck               | Sentence | カタカナ単語の表記ゆれを検出                                             | DictFile, MinRatio, MinFreq |
-|      | LongKanjiChain                   | Sentence | 最大文字長を超える漢字の連続を検出                                       | Maxlength                   |
-| v    | Okurigana                        | Sentence | 不正な送りがなを検出                                                     |                             |
-|      | SpaceBetweenAlphabeticalWord     | Sentence | アルファベット単語前後の空白を検出                                       | NoSpace                     |
-| v    | Taigendome                       | Sentence | 体言止めを検出                                                           |                             |
+| Done |               Name               |  Target  |                               Description                                |             Property             |
+| ---- | -------------------------------- | -------- | ------------------------------------------------------------------------ | -------------------------------- |
+|      | DoubledConjunctiveParticleGa     | Sentence | センテンス内の接続助詞「が」の2回以上の使用を検出                        |                                  |
+|      | DoubledJoshi                     | Sentence | センテンス内の同一助詞の重複使用を検出                                   |                                  |
+|      | DoubleNegative                   | Sentence | 二重否定表現を検出                                                       |                                  |
+| v    | HankakuKana                      | Sentence | 半角カナ文字を検出                                                       |                                  |
+|      | JapaneseAmbiguousNounConjunction | Sentence | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）を検出             |                                  |
+| v    | JapaneseExpressionVariation      | Document | 日本語の表記ゆれを検出                                                   | DictFile, WordMap                |
+|      | JapaneseJoyoKanji                | Sentence | 常用漢字以外の漢字を検出                                                 |                                  |
+| v    | JapaneseNumberExpression         | Sentence | 計数表現スタイルの一貫性の破れを検出                                     | NumberStyle                      |
+| v    | JapaneseStyle                    | Sentence | ですます調とである調の混在を検出                                         | JodoshiStyle                     |
+| v    | KatakanaEndHyphen                | Sentence | JIS Z8301:2008 - G.6.2.2 b - G.3基準のカタカナ単語の語尾のハイフンを検出 | WordSet                          |
+|      | KatakanaSpellCheck               | Sentence | カタカナ単語の表記ゆれを検出                                             | DictFile, MinRatio, MinFreq      |
+|      | LongKanjiChain                   | Sentence | 最大文字長を超える漢字の連続を検出                                       | Maxlength                        |
+| v    | Okurigana                        | Sentence | 不正な送りがなを検出                                                     |                                  |
+| v    | SpaceWithAlphabeticalExpression  | Sentence | アルファベット単語前後の空白を検出                                       | Forbidden, SkipBefore, SkipAfter |
+| v    | Taigendome                       | Sentence | 体言止めを検出                                                           |                                  |
 
 #### Validator Configuration Property
 

@@ -504,27 +504,27 @@ namespace RedPen.Net.Core {
         /// <summary>
         ///   Space not present after an alphabetical word. に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string SpaceBetweenAlphabeticalWord_After {
+        public static string SpaceWithAlphabeticalExpression_After {
             get {
-                return ResourceManager.GetString("SpaceBetweenAlphabeticalWord_After", resourceCulture);
+                return ResourceManager.GetString("SpaceWithAlphabeticalExpression_After", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Space not present before an alphabetical word. に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string SpaceBetweenAlphabeticalWord_Before {
+        public static string SpaceWithAlphabeticalExpression_Before {
             get {
-                return ResourceManager.GetString("SpaceBetweenAlphabeticalWord_Before", resourceCulture);
+                return ResourceManager.GetString("SpaceWithAlphabeticalExpression_Before", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Space not allowed to exist around the alphabetical word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string SpaceBetweenAlphabeticalWord_Forbidden {
+        public static string SpaceWithAlphabeticalExpression_Forbidden {
             get {
-                return ResourceManager.GetString("SpaceBetweenAlphabeticalWord_Forbidden", resourceCulture);
+                return ResourceManager.GetString("SpaceWithAlphabeticalExpression_Forbidden", resourceCulture);
             }
         }
         

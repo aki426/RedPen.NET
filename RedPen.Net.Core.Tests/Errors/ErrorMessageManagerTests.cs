@@ -20,10 +20,10 @@ namespace RedPen.Net.Core.Tests.Errors
                     .Should().Be("文の長さ（30）が最大値（20）を超えています。");
 
             manager.GetErrorMessage(
-                ValidationType.SpaceBetweenAlphabeticalWord, "After",
+                ValidationType.SpaceWithAlphabeticalExpression, "After",
                 CultureInfo.GetCultureInfo("ja-JP"),
                 new object[] { "hogehoge" })
-                    .Should().Be("アルファベット単語 \"hogehoge\" の後にスペースが必要です。");
+                    .Should().Be("半角アルファベット表現 \"hogehoge\" の後にスペースが必要です。");
         }
     }
 }

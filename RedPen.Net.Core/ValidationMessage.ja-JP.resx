@@ -261,13 +261,13 @@
   <data name="SpaceBeginningOfSentence" xml:space="preserve">
     <value>文頭にスペースがありません。</value>
   </data>
-  <data name="SpaceBetweenAlphabeticalWord_After" xml:space="preserve">
+  <data name="SpaceWithAlphabeticalExpression_After" xml:space="preserve">
     <value>半角アルファベット表現 "{0}" の後にスペースが必要です。</value>
   </data>
-  <data name="SpaceBetweenAlphabeticalWord_Before" xml:space="preserve">
+  <data name="SpaceWithAlphabeticalExpression_Before" xml:space="preserve">
     <value>半角アルファベット表現 "{0}" の前にスペースが必要です。</value>
   </data>
-  <data name="SpaceBetweenAlphabeticalWord_Forbidden" xml:space="preserve">
+  <data name="SpaceWithAlphabeticalExpression_Forbidden" xml:space="preserve">
     <value>半角アルファベット表現 "{0}" の周囲に不正なスペースが見つかりました。</value>
   </data>
   <data name="Spelling" xml:space="preserve">

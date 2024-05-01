@@ -87,11 +87,11 @@ namespace RedPen.Net.Core.Config
         HiraganaOnly // ひらがなの数字表現「ひとつ」のみを許容するモード
     }
 
-    /// <summary>ValidatorConfigurationの継承クラスがNoSpaceプロパティを持つことを示すインターフェース。</summary>
-    public interface INoSpaceConfigParameter
+    /// <summary>ValidatorConfigurationの継承クラスがForbiddenプロパティを持つことを示すインターフェース。</summary>
+    public interface IForbiddenConfigParameter
     {
         /// <summary>スペースを許容しないかどうかを表すConfigurationパラメータ。Trueのときスペースを許容しない。</summary>
-        public bool NoSpace { get; init; }
+        public bool Forbidden { get; init; }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがSkipAfterプロパティを持つことを示すインターフェース。</summary>
