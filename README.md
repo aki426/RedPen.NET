@@ -85,7 +85,7 @@
 | Done |               Name               |  Target  |                               Description                                |             Property             |
 | ---- | -------------------------------- | -------- | ------------------------------------------------------------------------ | -------------------------------- |
 |      | DoubledConjunctiveParticleGa     | Sentence | センテンス内の接続助詞「が」の2回以上の使用を検出                        |                                  |
-|      | DoubledJoshi                     | Sentence | センテンス内の同一助詞の重複使用を検出                                   |                                  |
+| v    | DoubledJoshi                     | Sentence | センテンス内の同一助詞の重複使用を検出                                   | MinInterval, WordSet             |
 |      | DoubleNegative                   | Sentence | 二重否定表現を検出                                                       |                                  |
 | v    | HankakuKana                      | Sentence | 半角カナ文字を検出                                                       |                                  |
 |      | JapaneseAmbiguousNounConjunction | Sentence | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）を検出             |                                  |
