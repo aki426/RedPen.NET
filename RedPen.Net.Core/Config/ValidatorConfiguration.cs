@@ -70,4 +70,19 @@ namespace RedPen.Net.Core.Config
         DaDearu, // だ・である調へ統一
         DesuMasu // です・ます調へ統一
     }
+
+    /// <summary>ValidatorConfigurationの継承クラスがNumberStyleプロパティを持つことを示すインターフェース。</summary>
+    public interface INumberStyleConfigParameter
+    {
+        public NumberStyle NumberStyle { get; init; }
+    }
+
+    /// <summary>計数表現のスタイルを表す列挙型</summary>
+    public enum NumberStyle
+    {
+        HankakuOnly, // 半角数字の数字表現「1つ」のみを許容するモード
+        ZenkakuOnly, // 全角数字の数字表現「１つ」のみを許容するモード
+        KansujiOnly, // 漢数字の数字表現「一つ」のみを許容するモード
+        HiraganaOnly // ひらがなの数字表現「ひとつ」のみを許容するモード
+    }
 }

@@ -91,12 +91,12 @@
 |      | JapaneseAmbiguousNounConjunction | Sentence | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）を検出             |                             |
 | v    | JapaneseExpressionVariation      | Document | 日本語の表記ゆれを検出                                                   | DictFile, WordMap           |
 |      | JapaneseJoyoKanji                | Sentence | 常用漢字以外の漢字を検出                                                 |                             |
-|      | JapaneseNumberExpression         | Sentence | 計数表現スタイルの一貫性の破れを検出                                     | NumberStyle                 |
+| v    | JapaneseNumberExpression         | Sentence | 計数表現スタイルの一貫性の破れを検出                                     | NumberStyle                 |
 | v    | JapaneseStyle                    | Sentence | ですます調とである調の混在を検出                                         | JodoshiStyle                |
 | v    | KatakanaEndHyphen                | Sentence | JIS Z8301:2008 - G.6.2.2 b - G.3基準のカタカナ単語の語尾のハイフンを検出 | WordSet                     |
 |      | KatakanaSpellCheck               | Sentence | カタカナ単語の表記ゆれを検出                                             | DictFile, MinRatio, MinFreq |
 |      | LongKanjiChain                   | Sentence | 最大文字長を超える漢字の連続を検出                                       | Maxlength                   |
-|  v    | Okurigana                        | Sentence | 不正な送りがなを検出                                                     |                             |
+| v    | Okurigana                        | Sentence | 不正な送りがなを検出                                                     |                             |
 |      | SpaceBetweenAlphabeticalWord     | Sentence | アルファベット単語前後の空白を検出                                       | NoSpace                     |
 | v    | Taigendome                       | Sentence | 体言止めを検出                                                           |                             |
 
