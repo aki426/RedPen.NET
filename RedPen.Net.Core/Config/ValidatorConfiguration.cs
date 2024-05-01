@@ -67,7 +67,7 @@ namespace RedPen.Net.Core.Config
     /// <summary>日本語の助動詞のスタイルをだ・である調で統一するか、です・ます調で統一するかのフラグ</summary>
     public enum JodoshiStyle
     {
-        DaDearu,
-        DesuMasu
+        DaDearu, // だ・である調へ統一
+        DesuMasu // です・ます調へ統一
     }
 }
