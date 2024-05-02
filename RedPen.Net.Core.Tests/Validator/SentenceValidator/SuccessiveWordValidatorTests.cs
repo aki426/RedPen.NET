@@ -53,6 +53,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [InlineData("003", "彼のの色鉛筆と私の筆箱。", 1, "の")]
         [InlineData("004", "彼の色鉛筆と私の筆箱。", 0, "")]
         [InlineData("005", "トレイントレイン走っていく、トレイントレインどこまでも。", 2, "トレイン,トレイン")]
+        [InlineData("006", "全部で1,000,000円です。", 0, "")]
         public void BasicJapaneseTest(string nouse1, string text, int errorCount, string expected)
         {
             // Document

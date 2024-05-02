@@ -108,7 +108,8 @@ namespace RedPen.Net.Core.Tokenizer
         {
             char ch = content[index];
             return WRAPPED_DELIMITERS.IndexOf(ch) != -1
-                && ((index > 0 && content[index - 1] == ' ') || (index < content.Length - 1 && content[index + 1] == ' '));
+                && ((index > 0 && content[index - 1] == ' ')
+                    || (index < content.Length - 1 && content[index + 1] == ' '));
         }
 
         /// <summary>
