@@ -71,7 +71,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         public void SimpleValidatoinOperationTest()
         {
             // DefaultResourceの読み込み。
-            List<string> invalidWords = new List<string>();
+            HashSet<string> invalidWords = new HashSet<string>();
             string v = DefaultResources.ResourceManager.GetString($"InvalidExpression_ja");
             foreach (string line in v.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
             {

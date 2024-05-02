@@ -155,10 +155,10 @@ namespace RedPen.Net.Core.Config
                     JsonSerializer.Serialize(writer, wordMapConf.WordMap, wordMapConf.WordMap.GetType(), options);
                 }
 
-                if (conf is IWordListConfigParameter wordListConf)
+                if (conf is IWordSetConfigParameter wordListConf)
                 {
-                    writer.WritePropertyName("WordList");
-                    JsonSerializer.Serialize(writer, wordListConf.WordList, wordListConf.WordList.GetType(), options);
+                    writer.WritePropertyName("WordSet");
+                    JsonSerializer.Serialize(writer, wordListConf.WordSet, wordListConf.WordSet.GetType(), options);
                 }
 
                 if (conf is IMaxNumberConfigParameter maxNumberConf)

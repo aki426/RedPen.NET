@@ -70,8 +70,8 @@
 | Done |         Name          |  Target  |                          Description                           |            Property            |
 | ---- | --------------------- | -------- | -------------------------------------------------------------- | ------------------------------ |
 | v    | CommaNumber           | Sentence | センテンス内の最大回数を超えるコンマの使用を検出               | MaxNumber                      |
-|      | DoubledWord           | Sentence | センテンス内の同一表現の重複使用を検出                         | DictFile, WordList             |
-| v    | InvalidExpression     | Sentence | 不正な表現を検出                                               | DictFile, WordList             |
+|      | DoubledWord           | Sentence | センテンス内の同一表現の重複使用を検出                         | DictFile, WordSet              |
+| v    | InvalidExpression     | Sentence | 不正な表現を検出                                               | DictFile, WordSet              |
 |      | InvalidSymbol         | Sentence | 不正なシンボルを検出                                           | ※Symbolsブロックで定義         |
 |      | ParenthesizedSentence | Sentence | 不正な括弧を検出                                               | MaxLength, MaxNumber, MaxLevel |
 | v    | SentenceLength        | Sentence | 最大文字長を超えるセンテンスを検出                             | MaxLength                      |
@@ -105,21 +105,21 @@
 各ValidatorのConfigurationはJsonファイルで適切なプロパティを指定する必要があります。
 プロパティごとの定義と意味は次の一覧表のとおりです。
 
-| Property  |           Type           |                       Description                        |
-| --------- | ------------------------ | -------------------------------------------------------- |
-| Name      | string                   | ※すべてのValidator Configurationで必須のプロパティです。 |
-| Level     | string                   | ※すべてのValidator Configurationで必須のプロパティです。 |
-| MaxLength | number                   | 最大長をintで表現したものです。大体の場合、文字数です。  |
-| MaxNumber | number                   | 最大数をintで表現したものです。                          |
-| MaxLevel  | number                   | 最大レベルをintで表現したものです。                      |
-| MinLength | number                   | 最小長をintで表現したものです。大体の場合、文字数です。  |
-| MinRatio  | number                   | 最小割合を浮動小数点数で表現したものです。               |
-| MinFreq   | number                   | 最小頻度を浮動小数点数で表現したものです。               |
-| Distance  | number                   | 「距離」を浮動小数点数で表現したものです。               |
-| NoSpace   | true / false             | trueの場合、スペースを許容しなくなります。               |
-| DictFile  | string                   | 辞書定義ファイルです。                                   |
-| WordMap   | <string, string>のobject | 辞書定義です。                                           |
-| WordList  | stringのarray            | 文字列リストです。                                       |
+| Property  |           Type           |                            Description                            |
+| --------- | ------------------------ | ----------------------------------------------------------------- |
+| Name      | string                   | ※すべてのValidator Configurationで必須のプロパティです。          |
+| Level     | string                   | ※すべてのValidator Configurationで必須のプロパティです。          |
+| MaxLength | number                   | 最大長をintで表現したものです。大体の場合、文字数です。           |
+| MaxNumber | number                   | 最大数をintで表現したものです。                                   |
+| MaxLevel  | number                   | 最大レベルをintで表現したものです。                               |
+| MinLength | number                   | 最小長をintで表現したものです。大体の場合、文字数です。           |
+| MinRatio  | number                   | 最小割合を浮動小数点数で表現したものです。                        |
+| MinFreq   | number                   | 最小頻度を浮動小数点数で表現したものです。                        |
+| Distance  | number                   | 「距離」を浮動小数点数で表現したものです。                        |
+| NoSpace   | true / false             | trueの場合、スペースを許容しなくなります。                        |
+| DictFile  | string                   | 辞書定義ファイルです。                                            |
+| WordMap   | <string, string>のobject | 辞書定義です。                                                    |
+| WordSet   | stringのarray            | 文字列リストです。処理速度のため内部実装はHashSetを用いています。 |
 
 ##### 補足説明
 

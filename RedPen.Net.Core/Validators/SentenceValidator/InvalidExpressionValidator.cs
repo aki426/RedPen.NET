@@ -9,13 +9,13 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
 
     /// <summary>InvalidExpressionのConfiguration</summary>
-    public record InvalidExpressionConfiguration : ValidatorConfiguration, IWordListConfigParameter
+    public record InvalidExpressionConfiguration : ValidatorConfiguration, IWordSetConfigParameter
     {
-        public List<string> WordList { get; init; }
+        public HashSet<string> WordSet { get; init; }
 
-        public InvalidExpressionConfiguration(ValidationLevel level, List<string> wordList) : base(level)
+        public InvalidExpressionConfiguration(ValidationLevel level, HashSet<string> wordSet) : base(level)
         {
-            WordList = wordList;
+            WordSet = wordSet;
         }
     }
 
@@ -41,8 +41,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         {
             List<ValidationError> result = new List<ValidationError>();
 
-            //foreach (string value in StreamDictionary())
-            foreach (string invalidWord in Config.WordList)
+            foreach (string invalidWord in Config.WordSet)
             {
                 // Invalidな表現を1つのセンテンス内から複数探索する。
                 int offset = 0;
