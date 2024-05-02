@@ -1,101 +1,42 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Tokenizer
 {
     public class WhiteSpaceTokenizerTests
     {
-        [Fact()]
-        public void TokenizeTest()
+        private ITestOutputHelper output;
+
+        public WhiteSpaceTokenizerTests(ITestOutputHelper output)
         {
-            IRedPenTokenizer tokenizer = new WhiteSpaceTokenizer();
-            List<TokenElement> results = tokenizer.Tokenize(new Sentence("this is a\u00A0pen", 1));
-
-            results.Count.Should().Be(4);
-
-            results[0].Surface.Should().Be("this");
-            results[0].Tags.Count.Should().Be(0);
-
-            results[1].Surface.Should().Be("is");
-            results[1].Tags.Count.Should().Be(0);
-
-            results[2].Surface.Should().Be("a");
-            results[2].Tags.Count.Should().Be(0);
-
-            results[3].Surface.Should().Be("pen");
-            results[3].Tags.Count.Should().Be(0);
+            this.output = output;
         }
 
-        [Fact]
-        public void TokenizeSentenceWithNoSpaceBracketTest()
+        [Theory]
+        [InlineData("001", "this is a\u00A0pen", "this|is|a|pen")]
+        [InlineData("002", "distributed(cluster) systems are good", "distributed|(|cluster|)|systems|are|good")]
+        [InlineData("003", "I am an engineer.", "I|am|an|engineer|.")]
+        [InlineData("004", "I'm an engineer", "I'm|an|engineer")]
+        [InlineData("005", "Amount is $123,456,789.45", "Amount|is|$123,456,789|.|45")]
+        public void BasicTest(string nouse1, string text, string expected)
         {
             IRedPenTokenizer tokenizer = new WhiteSpaceTokenizer();
-            List<TokenElement> results = tokenizer.Tokenize(new Sentence("distributed(cluster) systems are good", 1));
+            List<TokenElement> results = tokenizer.Tokenize(new Sentence(text, 1));
 
-            results.Count.Should().Be(7);
+            foreach (var item in results)
+            {
+                output.WriteLine(item.ToString());
+            }
 
-            results[0].Surface.Should().Be("distributed");
-            results[0].Tags.Count.Should().Be(0);
-
-            results[1].Surface.Should().Be("(");
-            results[1].Tags.Count.Should().Be(0);
-
-            results[2].Surface.Should().Be("cluster");
-            results[2].Tags.Count.Should().Be(0);
-
-            results[3].Surface.Should().Be(")");
-            results[3].Tags.Count.Should().Be(0);
-
-            results[4].Surface.Should().Be("systems");
-            results[4].Tags.Count.Should().Be(0);
-
-            results[5].Surface.Should().Be("are");
-            results[5].Tags.Count.Should().Be(0);
-
-            results[6].Surface.Should().Be("good");
-            results[6].Tags.Count.Should().Be(0);
+            string.Join("|", results.ConvertAll(x => x.Surface)).Should().Be(expected);
         }
 
-        [Fact]
-        public void TokenizeSentenceEndsWithPeriodTest()
-        {
-            IRedPenTokenizer tokenizer = new WhiteSpaceTokenizer();
-            List<TokenElement> results = tokenizer.Tokenize(new Sentence("I am an engineer.", 1));
-
-            results.Count.Should().Be(5);
-
-            results[0].Surface.Should().Be("I");
-            results[0].Tags.Count.Should().Be(0);
-
-            results[1].Surface.Should().Be("am");
-            results[1].Tags.Count.Should().Be(0);
-
-            results[2].Surface.Should().Be("an");
-            results[2].Tags.Count.Should().Be(0);
-
-            results[3].Surface.Should().Be("engineer");
-            results[3].Tags.Count.Should().Be(0);
-
-            results[4].Surface.Should().Be(".");
-            results[4].Tags.Count.Should().Be(0);
-        }
-
-        [Fact]
-        public void TokenizeSentenceWithContractionTest()
-        {
-            IRedPenTokenizer tokenizer = new WhiteSpaceTokenizer();
-            List<TokenElement> results = tokenizer.Tokenize(new Sentence("I'm an engineer", 1));
-
-            results.Count.Should().Be(3);
-            results[0].Surface.Should().Be("I'm");
-            results[0].Tags.Count.Should().Be(0);
-            results[1].Surface.Should().Be("an");
-            results[1].Tags.Count.Should().Be(0);
-            results[2].Surface.Should().Be("engineer");
-            results[2].Tags.Count.Should().Be(0);
-        }
+        //
+        //[InlineData("006", )]
     }
 }
