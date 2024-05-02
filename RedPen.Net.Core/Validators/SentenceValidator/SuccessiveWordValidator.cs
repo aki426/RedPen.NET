@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
+using System.Text.RegularExpressions;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -42,15 +41,37 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             List<ValidationError> result = new List<ValidationError>();
 
             // validation
-
-            // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            result.Add(new ValidationError(
-                ValidationType.SuccessiveWord,
-                this.Level,
-                sentence,
-                MessageArgs: new object[] { argsForMessageArg }));
+            string prevSurface = "";
+            foreach (TokenElement token in sentence.Tokens)
+            {
+                string currentSurface = token.Surface.ToLower();
+                if (currentSurface.Length > 0
+                    && prevSurface == currentSurface
+                    && !IsPartOfNumber(sentence, token))
+                {
+                    result.Add(new ValidationError(
+                        ValidationType.SuccessiveWord,
+                        this.Level,
+                        sentence,
+                        token.OffsetMap[0],
+                        token.OffsetMap[^1],
+                        MessageArgs: new object[] { token.Surface }));
+                }
+                prevSurface = currentSurface;
+            }
 
             return result;
+        }
+
+        /// <summary>
+        /// あるTokenの先頭文字前後3文字分が数字の一部に該当する表現かどうかを検証する関数。
+        /// </summary>
+        /// <param name="sentence">The sentence.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>A bool.</returns>
+        private bool IsPartOfNumber(Sentence sentence, TokenElement token)
+        {
+            return Regex.IsMatch(sentence.Content.Substring(sentence.ConvertToIndex(token.OffsetMap[0]), 3), "\\d.\\d");
         }
     }
 }
