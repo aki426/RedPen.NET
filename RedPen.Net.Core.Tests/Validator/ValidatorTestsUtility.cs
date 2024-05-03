@@ -12,7 +12,7 @@ using Xunit;
 using Xunit.Abstractions;
 using System.Collections.Generic;
 
-namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
+namespace RedPen.Net.Core.Tests.Validator
 {
     public static class ValidatorTestsUtility
     {

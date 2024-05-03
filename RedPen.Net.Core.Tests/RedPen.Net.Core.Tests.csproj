@@ -97,7 +97,7 @@
     <Compile Include="Validator\SentenceValidator\SuccessiveWordValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\SuggestExpressionValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\TaigendomeValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\ValidatorTestsUtility.cs" />
+    <Compile Include="Validator\ValidatorTestsUtility.cs" />
     <Compile Include="Validator\ValidatorFactoryTests.cs" />
     <Compile Include="Validator\ValidatorTests.cs" />
   </ItemGroup>
