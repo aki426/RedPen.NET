@@ -75,12 +75,12 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <returns>A bool.</returns>
         private bool NeedSpaceAsFirst(char first, char second)
         {
-            return !StringUtils.IsBasicLatin(first)
+            return !UnicodeUtility.IsBasicLatin(first)
                    && Config.SkipAfter.IndexOf(first) == -1 // 特定文字の直後であればスペースをスキップして良い。
                    && first != leftParenthesis
                    && first != rightParenthesis
                    && first != comma
-                   && StringUtils.IsBasicLatin(second)
+                   && UnicodeUtility.IsBasicLatin(second)
                    && char.IsLetter(second);
         }
 
@@ -93,12 +93,12 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <returns>A bool.</returns>
         private bool NeedSpaceAsSecond(char first, char second)
         {
-            return !StringUtils.IsBasicLatin(second)
+            return !UnicodeUtility.IsBasicLatin(second)
                    && Config.SkipBefore.IndexOf(second) == -1 // 特定文字の直前であればスペースをスキップして良い。
                    && second != rightParenthesis
                    && second != leftParenthesis
                    && second != comma
-                   && StringUtils.IsBasicLatin(first)
+                   && UnicodeUtility.IsBasicLatin(first)
                    && char.IsLetter(first);
         }
 

@@ -55,46 +55,46 @@ namespace RedPen.Net.Core.Tests.Utility
         [Fact()]
         public void IsHiraganaTest()
         {
-            StringUtils.IsHiragana('あ').Should().BeTrue();
-            StringUtils.IsHiragana('ア').Should().BeFalse();
-            StringUtils.IsHiragana('亜').Should().BeFalse();
-            StringUtils.IsHiragana('a').Should().BeFalse();
+            UnicodeUtility.IsHiragana('あ').Should().BeTrue();
+            UnicodeUtility.IsHiragana('ア').Should().BeFalse();
+            UnicodeUtility.IsHiragana('亜').Should().BeFalse();
+            UnicodeUtility.IsHiragana('a').Should().BeFalse();
         }
 
         [Fact()]
         public void IsKatakanaTest()
         {
-            StringUtils.IsKatakana('あ').Should().BeFalse();
-            StringUtils.IsKatakana('ア').Should().BeTrue();
-            StringUtils.IsKatakana('亜').Should().BeFalse();
-            StringUtils.IsKatakana('a').Should().BeFalse();
+            UnicodeUtility.IsKatakana('あ').Should().BeFalse();
+            UnicodeUtility.IsKatakana('ア').Should().BeTrue();
+            UnicodeUtility.IsKatakana('亜').Should().BeFalse();
+            UnicodeUtility.IsKatakana('a').Should().BeFalse();
         }
 
         [Fact()]
         public void IsCJKTest()
         {
-            StringUtils.IsCJK('あ').Should().BeFalse();
-            StringUtils.IsCJK('ア').Should().BeFalse();
-            StringUtils.IsCJK('亜').Should().BeTrue();
-            StringUtils.IsCJK('a').Should().BeFalse();
+            UnicodeUtility.IsCJK('あ').Should().BeFalse();
+            UnicodeUtility.IsCJK('ア').Should().BeFalse();
+            UnicodeUtility.IsCJK('亜').Should().BeTrue();
+            UnicodeUtility.IsCJK('a').Should().BeFalse();
         }
 
         [Fact()]
         public void IsProbablyJapaneseTest()
         {
-            StringUtils.IsProbablyJapanese('あ').Should().BeTrue();
-            StringUtils.IsProbablyJapanese('ア').Should().BeTrue();
-            StringUtils.IsProbablyJapanese('亜').Should().BeTrue();
-            StringUtils.IsProbablyJapanese('a').Should().BeFalse();
+            UnicodeUtility.IsProbablyJapanese('あ').Should().BeTrue();
+            UnicodeUtility.IsProbablyJapanese('ア').Should().BeTrue();
+            UnicodeUtility.IsProbablyJapanese('亜').Should().BeTrue();
+            UnicodeUtility.IsProbablyJapanese('a').Should().BeFalse();
         }
 
         [Fact()]
         public void IsBasicLatinTest()
         {
-            StringUtils.IsBasicLatin('あ').Should().BeFalse();
-            StringUtils.IsBasicLatin('ア').Should().BeFalse();
-            StringUtils.IsBasicLatin('亜').Should().BeFalse();
-            StringUtils.IsBasicLatin('a').Should().BeTrue();
+            UnicodeUtility.IsBasicLatin('あ').Should().BeFalse();
+            UnicodeUtility.IsBasicLatin('ア').Should().BeFalse();
+            UnicodeUtility.IsBasicLatin('亜').Should().BeFalse();
+            UnicodeUtility.IsBasicLatin('a').Should().BeTrue();
         }
     }
 }

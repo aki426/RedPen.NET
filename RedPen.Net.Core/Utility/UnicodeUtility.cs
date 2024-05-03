@@ -3,7 +3,7 @@
 namespace RedPen.Net.Core.Utility
 {
     /// <summary>Unicode文字種判定ユーティリティクラス。</summary>
-    public static class StringUtils
+    public static class UnicodeUtility
     {
         /// <summary>JAVAのUnicodeBlockを模擬したユーティリティクラス。</summary>
         private class UnicodeBlock

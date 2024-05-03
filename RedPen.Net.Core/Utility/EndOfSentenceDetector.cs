@@ -99,12 +99,12 @@ namespace RedPen.Net.Core.Utility
 
         private bool IsNonAlphabetEndOfSentenceWithPartialSentence(string str, int position, int matchPosition)
         {
-            return (matchPosition == -1 && (!StringUtils.IsBasicLatin(str[position])));
+            return (matchPosition == -1 && (!UnicodeUtility.IsBasicLatin(str[position])));
         }
 
         private bool IsNonAlphabetWithoutSucessiveEnd(string str, int nextPosition, int matchPosition)
         {
-            return matchPosition > -1 && (!StringUtils.IsBasicLatin(str[matchPosition]))
+            return matchPosition > -1 && (!UnicodeUtility.IsBasicLatin(str[matchPosition]))
                     && matchPosition != nextPosition;
         }
 
@@ -230,7 +230,7 @@ namespace RedPen.Net.Core.Utility
             {
                 // BasicLatinに該当し、デリミタの最後の文字の次の文字が空白か改行の場合、デリミタの最後の位置のIndexが答え。
                 // MEMO: 改行コードは\nを改行として扱っている。
-                if ((StringUtils.IsBasicLatin(str[value.startPosition])
+                if ((UnicodeUtility.IsBasicLatin(str[value.startPosition])
                     && (' ' == str[value.endPosition] || '\n' == str[value.endPosition])))
                 {
                     return value.endPosition - 1;

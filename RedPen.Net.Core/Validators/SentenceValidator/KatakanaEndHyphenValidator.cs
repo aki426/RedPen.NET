@@ -119,7 +119,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 char c = sentence.Content[i];
 
                 // カタカナ文字を収集
-                if (StringUtils.IsKatakana(c) && c != KATAKANA_MIDDLE_DOT_CHAR)
+                if (UnicodeUtility.IsKatakana(c) && c != KATAKANA_MIDDLE_DOT_CHAR)
                 {
                     katakana.Append(c);
                     positionBuffer.Add(sentence.ConvertToLineOffset(i));
