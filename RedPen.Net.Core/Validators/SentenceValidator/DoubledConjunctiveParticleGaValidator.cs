@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -13,6 +14,13 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         {
         }
     }
+
+    // DoubledConjunctiveParticleGaValidator checks if an input Japanese sentence has
+    // multiple conjunctive particles, "ga".
+    //
+    // Note: This validator is a port from textlint-rule-no-doubled-conjunctive-particle-ga written by takahashim
+    // <https://github.com/textlint-ja/textlint-rule-no-doubled-conjunctive-particle-ga>
+    // Note: this validator works only for Japanese texts.
 
     /// <summary>DoubledConjunctiveParticleGaのValidator</summary>
     public class DoubledConjunctiveParticleGaValidator : Validator, ISentenceValidatable
@@ -38,18 +46,33 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             this.Config = config;
         }
 
+        /// <summary>
+        /// 一文に二回以上、接続助詞の「が」が出現するとエラーを出力します。
+        /// </summary>
+        /// <param name="sentence">The sentence.</param>
+        /// <returns>A list of ValidationErrors.</returns>
         public List<ValidationError> Validate(Sentence sentence)
         {
             List<ValidationError> result = new List<ValidationError>();
 
             // validation
+            var gaList = sentence.Tokens.Where(t =>
+                2 <= t.Tags.Count
+                && t.Surface == "が"
+                && t.Tags[0] == "助詞"
+                && t.Tags[1] == "接続助詞");
 
-            // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            result.Add(new ValidationError(
-                ValidationType.DoubledConjunctiveParticleGa,
-                this.Level,
-                sentence,
-                MessageArgs: new object[] { argsForMessageArg }));
+            if (gaList.Count() > 1)
+            {
+                // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
+                result.Add(new ValidationError(
+                    ValidationType.DoubledConjunctiveParticleGa,
+                    this.Level,
+                    sentence,
+                    gaList.First().OffsetMap[0],
+                    gaList.First().OffsetMap[^1],
+                    MessageArgs: new object[] { gaList.First().Surface }));
+            }
 
             return result;
         }

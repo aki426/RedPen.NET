@@ -47,7 +47,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
                 symbolTable,
                 validatorConfiguration);
 
-            ValidatorTestsUtility.CommonSentenceErrorPatternTest(
+            ValidatorTestsUtility.CommonSentenceWithPlainTextParseErrorPatternTest(
                 validator,
                 text,
                 documentLang,
