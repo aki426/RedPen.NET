@@ -1,11 +1,11 @@
 # RedPen.NET
 
-[RedPen](https://qiita.com/Yarakashi_Kikohshi/items/47135dded31879dfaf0e)のC#再実装です。
+[RedPen](https://github.com/redpen-cc/redpen)のC#再実装です。
 
 ## 概要
 
-基本的な開発動機として、日本語の文章校正を行うためのC#アプリケーションから[RedPen](https://qiita.com/Yarakashi_Kikohshi/items/47135dded31879dfaf0e)を利用することを目的としています。
-最終的には本家[RedPen](https://qiita.com/Yarakashi_Kikohshi/items/47135dded31879dfaf0e)の全機能をサポートすることを目標としていますが、次の独自方針を持っています。
+基本的な開発動機として、日本語の文章校正を行うためのC#アプリケーションから[RedPen](https://github.com/redpen-cc/redpen)を利用することを目的としています。
+最終的には本家[RedPen](https://github.com/redpen-cc/redpen)の全機能をサポートすることを目標としていますが、次の独自方針を持っています。
 
 * 優先事項
   * 「日本語」の「プレーンテキスト」のValidator再実装を優先。
@@ -24,7 +24,7 @@
 ### ソリューション構成
 
 * RedPen.NET.Core
-  * 本家[RedPen](https://qiita.com/Yarakashi_Kikohshi/items/47135dded31879dfaf0e)の[redpen-core](https://github.com/redpen-cc/redpen/tree/master/redpen-core)ライブラリに相当します。
+  * 本家[RedPen](https://github.com/redpen-cc/redpen)の[redpen-core](https://github.com/redpen-cc/redpen/tree/master/redpen-core)ライブラリに相当します。
   * .NET Standard 2.0、C# 10を採用しています。これは.Net Frameworkアプリケーションからの利用を想定しているためです。
   * Immutableで参照透過なFunctionalスタイルで再実装しており、クラス構成が変更されています。
   * リソース管理をJAVA版のプロパティテキストファイル方式からResXManagerによるリソース管理方式へ変更しています。
@@ -40,10 +40,8 @@
   * lucene.net.analysis.kuromoji (4.8.0-beta00016)
   * System.Collections.Immutable
   * PolySharp
-  * IsExternalInit
-  * ToString.Fody
   * Nlog
-  * Microsoft.Bcl.HashCode
+  * ※その他はソリューションのNuGetパッケージマネージャやNOTICE.mdを確認してください。
 * RedPen.Net.Core.Tests
   * xunit
   * xunit.runner.visualstudio
