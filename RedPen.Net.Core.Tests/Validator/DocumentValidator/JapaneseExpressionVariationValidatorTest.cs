@@ -6,6 +6,7 @@ using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Parser;
 using RedPen.Net.Core.Tests.Parser;
 using RedPen.Net.Core.Validators;
 using RedPen.Net.Core.Validators.DocumentValidator;
@@ -18,29 +19,27 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
     /// <summary>
     /// The japanese expression variation validator test.
     /// </summary>
-    public class JapaneseExpressionVariationValidatorTest : BaseValidatorTest
+    public class JapaneseExpressionVariationValidatorTest
     {
         private readonly ITestOutputHelper output;
 
         private CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
 
-        private Dictionary<string, string> expressionVariationMap;
+        private JapaneseExpressionVariationConfiguration validatorConfiguration;
 
-        private JapaneseExpressionVariationConfiguration japaneseExpressionVariationConfiguration;
-
-        private JapaneseExpressionVariationValidator japaneseExpressionVariationValidator;
+        private JapaneseExpressionVariationValidator validator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JapaneseExpressionVariationValidatorTest"/> class.
         /// </summary>
         /// <param name="output">The output.</param>
-        public JapaneseExpressionVariationValidatorTest(ITestOutputHelper output) : base("JapaneseExpressionVariation")
+        public JapaneseExpressionVariationValidatorTest(ITestOutputHelper output)
         {
             this.output = output;
 
             // MEMO: ゆらぎ表現のマップ、ValidatorConfigurationの設定、JapaneseExpressionVariationValidatorの生成までは、
             // 各テストケースで共通なので、コンストラクタで実行してしまってよい。
-            // Documentの違いはPreValidateとValidateで対応可能。
+            // Documentの違いはValidateで対応可能。
 
             // DefaultResourceの読み込み。
             Dictionary<string, string> expressionVariationMap = new Dictionary<string, string>();
@@ -60,50 +59,65 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             }
 
             // ValidatorConfigurationの生成。
-            japaneseExpressionVariationConfiguration =
+            validatorConfiguration =
                 new JapaneseExpressionVariationConfiguration(ValidationLevel.ERROR, expressionVariationMap);
 
             // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
             SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
 
             // Validatorの生成。
-            japaneseExpressionVariationValidator = new JapaneseExpressionVariationValidator(
+            validator = new JapaneseExpressionVariationValidator(
                 documentLang,
                 symbolTable,
-                japaneseExpressionVariationConfiguration);
+                validatorConfiguration);
         }
 
         [Fact]
         public void BasicOperationTest()
         {
             // ValidatorConfiguration内設定値の確認。
-            foreach (var item in japaneseExpressionVariationConfiguration.WordMap)
+            foreach (var item in validatorConfiguration.WordMap)
             {
                 output.WriteLine($"{item.Key} => {item.Value}");
             }
 
-            // Document
-            Document document = Document.Builder(
-                RedPenTokenizerFactory.CreateTokenizer(documentLang))
-                    .AddSection(1)
-                    .AddParagraph()
-                    .AddSentence(new Sentence("之は山です。これは川です。これはヴェトナムの地図です。", 1))
-                    .AddSentence(new Sentence("之も之も海です。", 2))
-                    .AddSentence(new Sentence("ヴェトナム大使館にはベトナム人の大使とベトナム人の職員が常駐しています。", 3))
-                    .Build(); // TokenizeをBuild時に実行する。
+            // PlainTextParseにより原文をParseする。複数センテンスの場合これでセンテンス分割ができる。
+            string text = @"之は山です。これは川です。これはヴェトナムの地図です。
+之も之も海です。
+ヴェトナム大使館にはベトナム人の大使とベトナム人の職員が常駐しています。
+";
+            Document document = null;
+            // Lang設定以外はデフォルト。
+            Configuration configuration = Configuration.Builder()
+                .SetLang(documentLang.Name)
+                .Build();
 
-            document.Sections[0].Paragraphs[0].Sentences[0].Tokens.ForEach(token =>
+            // Parse
+            try
             {
-                output.WriteLine(token.ToString());
-            });
+                document = new PlainTextParser().Parse(
+                    text,
+                    new SentenceExtractor(configuration.SymbolTable),
+                    RedPenTokenizerFactory.CreateTokenizer(configuration.CultureInfo));
+            }
+            catch (Exception e)
+            {
+                Assert.True(false, "Exception not expected.");
+            }
 
-            document.Sections[0].Paragraphs[0].Sentences.ForEach(sentence =>
+            // 全センテンスのTokenを目視確認。
+            foreach (var sentence in document.GetAllSentences())
             {
-                output.WriteLine(sentence.Content);
-            });
+                output.WriteLine("★全Token:");
+                foreach (var token in sentence.Tokens)
+                {
+                    output.WriteLine(token.ToString());
+                }
+                output.WriteLine("");
+            }
 
             // Validation
-            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
+            List<ValidationError> errors = validator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
             errors.Count().Should().Be(6);
@@ -143,7 +157,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                     .Build(); // TokenizeをBuild時に実行する。
 
             // Validation
-            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
+            List<ValidationError> errors = validator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
             errors.Count().Should().Be(2);
@@ -178,7 +192,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                     .Build(); // TokenizeをBuild時に実行する。
 
             // Validation
-            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
+            List<ValidationError> errors = validator.Validate(document);
 
             // MEMO: Excelはデフォルト辞書に「エクセル」というReadingが登録されていないのでゆらぎと判定されない。
             errors.Count().Should().Be(0);
@@ -199,7 +213,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                     .Build(); // TokenizeをBuild時に実行する。
 
             // Validation
-            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
+            List<ValidationError> errors = validator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
             // TODO: 現状、デフォルト辞書のReadingが本文中に現れない場合はエラーにはならない。
@@ -220,7 +234,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
                     .Build(); // TokenizeをBuild時に実行する。
 
             // Validation
-            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
+            List<ValidationError> errors = validator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
             errors.Count().Should().Be(2);
@@ -284,7 +298,7 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             });
 
             // Validation
-            List<ValidationError> errors = japaneseExpressionVariationValidator.Validate(document);
+            List<ValidationError> errors = validator.Validate(document);
 
             // TODO: 数をカウントしただけではテストしたことにならないので、エラーの内容をテストできるようにする。
             //errors.Count().Should().Be(3);
