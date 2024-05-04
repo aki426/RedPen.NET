@@ -68,7 +68,7 @@
 | Done |         Name          |  Target  |                          Description                           |            Property            |
 | ---- | --------------------- | -------- | -------------------------------------------------------------- | ------------------------------ |
 | v    | CommaNumber           | Sentence | センテンス内の最大回数を超えるコンマの使用を検出               | MaxNumber                      |
-|      | DoubledWord           | Sentence | センテンス内の同一表現の重複使用を検出                         | DictFile, WordSet              |
+| v    | DoubledWord           | Sentence | センテンス内の同一表現の重複使用を検出                         | DictFile, WordSet, MinLength   |
 | v    | InvalidExpression     | Sentence | 不正な表現を検出                                               | DictFile, WordSet              |
 |      | InvalidSymbol         | Sentence | 不正なシンボルを検出                                           | ※Symbolsブロックで定義         |
 |      | ParenthesizedSentence | Sentence | 不正な括弧を検出                                               | MaxLength, MaxNumber, MaxLevel |

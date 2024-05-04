@@ -31,6 +31,13 @@ namespace RedPen.Net.Core.Config
         public int MaxLength { get; init; }
     }
 
+    /// <summary>ValidatorConfigurationの継承クラスがMinLengthプロパティを持つことを示すインターフェース。</summary>
+    public interface IMinLengthConfigParameter
+    {
+        /// <summary>何らかの最小数を表すConfigurationパラメータ。</summary>
+        public int MinLength { get; init; }
+    }
+
     /// <summary>ValidatorConfigurationの継承クラスがMaxNumberプロパティを持つことを示すインターフェース。</summary>
     public interface IMaxNumberConfigParameter
     {
