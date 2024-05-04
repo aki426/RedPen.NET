@@ -15,7 +15,7 @@ namespace RedPen.Net.Core.Tokenizer
     {
         private static readonly List<Regex> DENYLIST_TOKEN_PATTERNS = new List<Regex>()
         {
-            new Regex(@"^[-+#$€£¥]?\d+(\.\d+)?[%€¥¢₽]?$")
+            // new Regex(@"^[-+#$€£¥]?\d+(\.\d+)?[%€¥¢₽]?$")
         };
 
         private static readonly string DELIMITERS = " \u00A0\t\n\r?!,:;.()\u2014\"";
@@ -28,6 +28,24 @@ namespace RedPen.Net.Core.Tokenizer
         {
         }
 
+        // MEMO: WhiteSpaceTokenizerはJAVA版ではDENYLIST_TOKEN_PATTERNSに数字を含む正規表現が登録されている。
+        // これによってTokenから数字を含む表現が落ちる。
+        // WhiteSpaceTokenizerTestsのテストケースでは次のTokenizeが確認できる。
+        // "Amount is $123,456,789.45" => "Amount|is|,|,|."
+        // 一方、日本語のTokenizerを用いると数字を含む表現は落ちない。
+        // NeologdJapaneseTokenizerTestsのテストケースでは次のTokenizeが確認できる。
+        // "総額は$123,456,789.45" => "総額|は|$|123|,|456|,|789|.|45"
+        // このように英語と日本語でTokenizeの挙動が異なる。
+        // これはTokenに対して適用するValidator特にSuccessiveWordValidatorTestsで
+        // "Amount is $123,456,789.45"というセンテンスに対して","が連続して出現する単語として検出されてしまう原因である。
+        // そこで一旦DENYLIST_TOKEN_PATTERNSからnew Regex(@"^[-+#$€£¥]?\d+(\.\d+)?[%€¥¢₽]?$")をコメントアウトして
+        // 英語文でも数字表現がTokenとして現れるように修正した。
+
+        /// <summary>
+        /// Tokenize.
+        /// </summary>
+        /// <param name="sentence">The sentence.</param>
+        /// <returns>A list of TokenElements.</returns>
         public List<TokenElement> Tokenize(Sentence sentence)
         {
             List<TokenElement> tokens = new List<TokenElement>();

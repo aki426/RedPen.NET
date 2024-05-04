@@ -22,8 +22,8 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("002", "distributed(cluster) systems are good", "distributed|(|cluster|)|systems|are|good")]
         [InlineData("003", "I am an engineer.", "I|am|an|engineer|.")]
         [InlineData("004", "I'm an engineer", "I'm|an|engineer")]
-        [InlineData("005", "Amount is $123,456,789.45", "Amount|is|,|,|.")]
-        [InlineData("005", "123", "123")]
+        [InlineData("005", "Amount is $123,456,789.45", "Amount|is|$123|,|456|,|789|.|45")]
+        [InlineData("006", "123", "123")]
         public void BasicTest(string nouse1, string text, string expected)
         {
             IRedPenTokenizer tokenizer = new WhiteSpaceTokenizer();

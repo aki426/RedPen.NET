@@ -202,6 +202,8 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("004", "それは不謹慎。", "それ|は|不謹慎|。")]
         [InlineData("005", "それは不謹慎だ。", "それ|は|不謹慎|だ|。")]
         [InlineData("006", "体言止め。", "体言|止め|。")]
+        [InlineData("007", "総額は$123,456,789.45", "総額|は|$|123|,|456|,|789|.|45")]
+        [InlineData("008", "123", "123")]
         public void DisplayTokens(string nouse1, string text, string expected)
         {
             NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
