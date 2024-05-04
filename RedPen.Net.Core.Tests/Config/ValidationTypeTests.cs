@@ -57,8 +57,12 @@ namespace RedPen.Net.Core.Tests.Config
             // TODO: UnexpandedAcronymを実装後は次のテストはNullが返らず失敗するようになるので、
             // その際は書き換えるかこのテスト自体不要とするか要検討。
             ValidationType nothingType = ValidationType.UnexpandedAcronym;
-            nothingType.TypeOfConfigurationClass().Should().BeNull();
-            nothingType.TypeOfValidatorClass().Should().BeNull();
+
+            Action act = () => nothingType.TypeOfConfigurationClass();
+            act.Should().Throw<InvalidOperationException>();
+
+            act = () => nothingType.TypeOfValidatorClass();
+            act.Should().Throw<InvalidOperationException>();
         }
     }
 }

@@ -127,6 +127,9 @@ namespace RedPen.Net.Core.Config
         // 対応するクラスが存在しない場合はクラスが実装されていないことを意味します。
         // 逆に実装済みであることのチェッカーとして利用できます。
 
+        // MEMO: 型に関連する返り値はNullableではなく、型そのものとする。
+        // これは対応するクラス定義が存在しないということは実装時のエラーなのでコンパイル時までに解消すべきであるため。
+
         /// <summary>Validatorクラスを実装した具象クラスのTypeリスト</summary>
         public static ImmutableList<Type> ValidatorTypes => Assembly.GetExecutingAssembly().GetTypes()
             .Where(i => typeof(Validator).IsAssignableFrom(i) && !i.IsAbstract).ToImmutableList();
@@ -135,9 +138,9 @@ namespace RedPen.Net.Core.Config
         /// ValidationTypeに対応するValidatorクラスのTypeを取得する。
         /// </summary>
         /// <param name="param"></param>
-        /// <returns>対応するクラスが存在しない場合はNull</returns>
-        public static Type? TypeOfValidatorClass(this ValidationType param) =>
-            ValidatorTypes.Where(i => i.Name == param.ValidatorName()).FirstOrDefault();
+        /// <returns>対応するクラスが存在しない場合はExceptionをスローする。</returns>
+        public static Type TypeOfValidatorClass(this ValidationType param) =>
+            ValidatorTypes.Where(i => i.Name == param.ValidatorName()).First();
 
         /// <summary>ValidatorConfigurationクラスを実装した具象クラスのTypeリスト</summary>
         public static ImmutableList<Type> ConfigurationTypes =>
@@ -148,8 +151,8 @@ namespace RedPen.Net.Core.Config
         /// ValidationTypeに対応するValidatorConfigurationクラスのTypeを取得する。
         /// </summary>
         /// <param name="param"></param>
-        /// <returns>対応するクラスが存在しない場合はNull</returns>
-        public static Type? TypeOfConfigurationClass(this ValidationType param) =>
-            ConfigurationTypes.Where(i => i.Name == param.ConfigurationName()).FirstOrDefault();
+        /// <returns>対応するクラスが存在しない場合はExceptionをスローする。</returns>
+        public static Type TypeOfConfigurationClass(this ValidationType param) =>
+            ConfigurationTypes.Where(i => i.Name == param.ConfigurationName()).First();
     }
 }
