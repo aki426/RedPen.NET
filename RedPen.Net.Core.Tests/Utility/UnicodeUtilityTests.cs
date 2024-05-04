@@ -8,11 +8,11 @@ using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Utility
 {
-    public class StringUtilsTests
+    public class UnicodeUtilityTests
     {
         private readonly ITestOutputHelper output;
 
-        public StringUtilsTests(ITestOutputHelper output)
+        public UnicodeUtilityTests(ITestOutputHelper output)
         {
             this.output = output;
         }

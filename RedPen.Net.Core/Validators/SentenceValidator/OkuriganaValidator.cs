@@ -263,17 +263,22 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             // Tokenのリストを使ったマッチング。
             foreach (ExpressionRule rule in InvalidOkuriganaTokens)
             {
-                (bool isMatch, List<TokenElement> tokens) value = rule.MatchSurface(sentence.Tokens);
+                (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
+                    rule.MatchSurfaces(sentence.Tokens);
+
                 if (value.isMatch)
                 {
-                    result.Add(new ValidationError(
-                        ValidationType.Okurigana,
-                        this.Level,
-                        sentence,
-                        value.tokens.First().OffsetMap[0],
-                        value.tokens.Last().OffsetMap[^1],
-                        MessageArgs: new object[] { rule.ToSurface() }
-                    ));
+                    foreach (var tokens in value.tokens)
+                    {
+                        result.Add(new ValidationError(
+                            ValidationType.Okurigana,
+                            this.Level,
+                            sentence,
+                            tokens.First().OffsetMap[0],
+                            tokens.Last().OffsetMap[^1],
+                            MessageArgs: new object[] { rule.ToSurface() }
+                        ));
+                    }
                 }
             }
 
