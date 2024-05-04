@@ -47,4 +47,55 @@
     <Folder Include="Validators\SectionValidator\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\DefaultResources\CapitalLetterExceptionList\CapitalCaseExceptionList.en.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\DoubledWord\DoubledWordSkiplist.en.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\DoubledWord\DoubledWordSkiplist.ja.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\DoubleNegative\DoubleNegativeExpression.en.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\DoubleNegative\DoubleNegativeExpression.ja.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\DoubleNegative\DoubleNegativeWord.en.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\DoubleNegative\DoubleNegativeWord.ja.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\InvalidExpression\InvalidExpression.en.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\InvalidExpression\InvalidExpression.ja.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\InvalidWord\InvalidWord.en.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\InvalidWord\InvalidWord.ja.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\JapaneseSpellingVariation\SpellingVariation.ja.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\Katakana\KatakanaSpellcheck.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\Spellchecker\Spellchecker.en.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\WeakExpressions\WeakExpressions.en.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DefaultResources\WordFrequency\WordFrequency.en.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

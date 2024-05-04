@@ -131,6 +131,12 @@ namespace RedPen.Net.Core.Validators
     //    public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
 
     //    // TODO: コンストラクタの引数定義は共通にすること。
+    ///// <summary>
+    ///// Initializes a new instance of the <see cref="XXXValidator"/> class.
+    ///// </summary>
+    ///// <param name="documentLangForTest">The document lang for test.</param>
+    ///// <param name="symbolTable">The symbol table.</param>
+    ///// <param name="config">The config.</param>
     //    public XXXValidator(
     //        CultureInfo documentLangForTest,
     //        SymbolTable symbolTable,

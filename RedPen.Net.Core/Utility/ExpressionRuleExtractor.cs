@@ -15,7 +15,7 @@ namespace RedPen.Net.Core.Utility
         /// <summary>
         /// Create a rule from input sentence.
         /// </summary>
-        /// <param name="line">ルール表記文字列は「Surface:タグ,タグ,タグ,... + Surface:タグ,タグ,... + ...」という形式。</param>
+        /// <param name="line">ルール表記文字列は「Surface:タグ,タグ,タグ,...:Reading + Surface:タグ,...:Reading + ...」という形式。</param>
         /// <returns>An ExpressionRule.</returns>
         public static ExpressionRule Run(string line)
         {
@@ -25,11 +25,12 @@ namespace RedPen.Net.Core.Utility
             foreach (string segment in expressionSegments)
             {
                 string[] wordSegments = segment.Split(':');
-                string surface = wordSegments[0].Trim();
+                string surface = wordSegments[0].Trim().ToLower();
                 string tagStr = wordSegments.Length > 1 ? wordSegments[1] : "";
+                string readingStr = wordSegments.Length > 2 ? wordSegments[2].Trim() : "";
 
                 // MEMO: ExpressionRuleのTokenElementは特殊なので位置指定が実際の出現位置と結びついていない。
-                tokens.Add(new TokenElement(surface, tagStr.Split(',').Select(t => t.Trim()).ToList(), 0, 0));
+                tokens.Add(new TokenElement(surface, tagStr.Split(',').Select(t => t.Trim()).ToList(), 0, 0, readingStr));
             }
 
             return new ExpressionRule()
