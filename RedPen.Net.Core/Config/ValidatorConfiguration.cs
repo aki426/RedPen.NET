@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace RedPen.Net.Core.Config
 {
-    // MEMO: 個別のValidatorConfigurationクラスの実装方法は既存のクラスを参照してください。
+    // MEMO: 個別のValidatorConfigurationクラスの実装方法はValidator.csまたは既存のクラスを参照してください。
 
     /// <summary>
     /// RedPenConfigファイル内のValidatorの設定1つ分に相当するConfigurationを表現するための基底クラス。
@@ -21,6 +21,8 @@ namespace RedPen.Net.Core.Config
         [JsonIgnore]
         public ValidationType Type => ValidationTypeExtend.ConvertFrom(ValidationName);
     }
+
+    // MEMO: 以下、個別のValidatorConfigurationクラスのプロパティ定義のためのInterface
 
     /// <summary>ValidatorConfigurationの継承クラスがMaxLengthプロパティを持つことを示すインターフェース。</summary>
     public interface IMaxLengthConfigParameter

@@ -104,7 +104,7 @@ namespace RedPen.Net.Core.Config
 
                 // ConvertFromは対応するValidationTypeが存在しない場合は例外が発生する。
                 ValidationType validationType = ValidationTypeExtend.ConvertFrom(typeName);
-                Type? type = validationType.TypeOfConfigurationClass();
+                Type? type = validationType.GetTypeAsConfigurationClass();
                 if (type == null)
                 {
                     throw new JsonException($"No such a ValidationType as {typeName}");

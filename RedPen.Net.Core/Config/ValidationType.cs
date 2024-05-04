@@ -139,7 +139,7 @@ namespace RedPen.Net.Core.Config
         /// </summary>
         /// <param name="param"></param>
         /// <returns>対応するクラスが存在しない場合はExceptionをスローする。</returns>
-        public static Type TypeOfValidatorClass(this ValidationType param) =>
+        public static Type GetTypeAsValidatorClass(this ValidationType param) =>
             ValidatorTypes.Where(i => i.Name == param.ValidatorName()).First();
 
         /// <summary>ValidatorConfigurationクラスを実装した具象クラスのTypeリスト</summary>
@@ -152,7 +152,29 @@ namespace RedPen.Net.Core.Config
         /// </summary>
         /// <param name="param"></param>
         /// <returns>対応するクラスが存在しない場合はExceptionをスローする。</returns>
-        public static Type TypeOfConfigurationClass(this ValidationType param) =>
+        public static Type GetTypeAsConfigurationClass(this ValidationType param) =>
             ConfigurationTypes.Where(i => i.Name == param.ConfigurationName()).First();
+
+        /// <summary>
+        /// 当該ValidationTypeに対応するValidatorの具象クラスかどうかを判定する関数。
+        /// </summary>
+        /// <param name="param">The param.</param>
+        /// <param name="validator">The validator.</param>
+        /// <returns>A bool.</returns>
+        public static bool EqualsAsValidator(this ValidationType param, Validator validator)
+        {
+            return param.GetTypeAsValidatorClass().IsAssignableFrom(validator.GetType());
+        }
+
+        /// <summary>
+        /// 当該ValidationTypeに対応するValidatorConfigurationの具象クラスかどうかを判定する関数。
+        /// </summary>
+        /// <param name="param">The param.</param>
+        /// <param name="validatorConfiguration">The validator.</param>
+        /// <returns>A bool.</returns>
+        public static bool EqualsAsValidator(this ValidationType param, ValidatorConfiguration validatorConfiguration)
+        {
+            return param.GetTypeAsConfigurationClass().IsAssignableFrom(validatorConfiguration.GetType());
+        }
     }
 }

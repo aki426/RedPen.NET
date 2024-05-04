@@ -74,7 +74,7 @@ namespace RedPen.Net.Core.Tests.Validator
             var args = new object[] { cultureInfo, symbolTable, validatorConfiguration };
 
             object v = Activator.CreateInstance(
-                validatorConfiguration.Type.TypeOfValidatorClass(),
+                validatorConfiguration.Type.GetTypeAsValidatorClass(),
                 BindingFlags.CreateInstance,
                 null,
                 args,
