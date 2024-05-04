@@ -27,7 +27,7 @@ namespace RedPen.Net.Core.Validators
         /// Singletonインスタンスを取得する。
         /// </summary>
         /// <returns>A ValidatorFactory.</returns>
-        public ValidatorFactory GetIndexBinder()
+        public static ValidatorFactory GetInstance()
         {
             if (instance == null)
             {

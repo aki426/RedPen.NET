@@ -104,5 +104,30 @@ namespace RedPen.Net.Core.Tests.Validator
 
             return null;
         }
+
+        /// <summary>
+        /// ValidatorFactoryを用いてValidationTypeから対応するValidatorインスタンスを取得するテスト。
+        /// </summary>
+        [Fact]
+        public void ValidatorFactoryGetValidatorTest()
+        {
+            ValidatorFactory factory = ValidatorFactory.GetInstance();
+
+            var cultureInfo = CultureInfo.GetCultureInfo("ja-JP");
+            ValidationType.SentenceLength.ToString().Should().Be("SentenceLength");
+
+            var config = new SentenceLengthConfiguration(ValidationLevel.ERROR, 120);
+            config.ValidationName.Should().Be("SentenceLength");
+
+            // MEMO: ValidatorFactory.GetValidatorはActivatorを用いてValidatorインスタンスを生成する。
+            Validators.Validator validator = factory.GetValidator(
+                cultureInfo,
+                new SymbolTable(cultureInfo, "", new List<Symbol>()),
+                config);
+
+            validator.ValidationName.Should().Be("SentenceLength");
+            (validator is SentenceLengthValidator).Should().BeTrue();
+            (validator is ISentenceValidatable).Should().BeTrue();
+        }
     }
 }
