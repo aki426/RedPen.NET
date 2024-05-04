@@ -115,6 +115,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [Theory]
         [InlineData("001", "こんにちは、そしてこんにちは！", 100, 1, "こんにちは")] // 日本語の場合MinLengthは内部で無視され1になる。
         [InlineData("002", "それは真実であり，それが正しい。", 3, 1, "それ")]
+        [InlineData("003", "青は藍より出でて藍より青し。", 3, 2, "藍,より")] // 青と青しは名詞と形容詞でTokenのSurfaceが異なるためエラーにならない点に注意。
         public void JapaneseBasicTest(string nouse1, string text, int minLength, int errorCount, string expected)
         {
             // Document
