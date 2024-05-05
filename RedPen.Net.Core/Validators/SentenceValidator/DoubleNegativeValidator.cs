@@ -35,7 +35,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
         private List<ExpressionRule> invalidExpressions;
         private HashSet<string> negativeWords;
-        private bool matchAsReading = false;
+        private bool isJapaneseMatchAsReading = false;
 
         // TODO: コンストラクタの引数定義は共通にすること。
 
@@ -60,22 +60,18 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             // TODO: Configurableにした方が良いかどうかはユースケース考えて検討する。
             if (documentLangForTest.Name == "ja-JP")
             {
-                invalidExpressions = DefaultResources.DoubleNegativeExpression_ja
-                    .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(line => ExpressionRuleExtractor.Run(line)).ToList();
+                invalidExpressions = ExpressionRuleExtractor.LoadExpressionRules(DefaultResources.DoubleNegativeExpression_ja);
 
                 negativeWords = new HashSet<string>(DefaultResources.DoubleNegativeWord_ja
                     .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(line => line.Trim().ToLower()));
 
                 // MEMO: 日本語の場合は漢字／ひらがな表記のゆれがあるので、Readingでのマッチングを行う。
-                matchAsReading = true;
+                isJapaneseMatchAsReading = true;
             }
             else
             {
-                invalidExpressions = DefaultResources.DoubleNegativeExpression_en
-                    .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(line => ExpressionRuleExtractor.Run(line)).ToList();
+                invalidExpressions = ExpressionRuleExtractor.LoadExpressionRules(DefaultResources.DoubleNegativeExpression_en);
 
                 negativeWords = new HashSet<string>(DefaultResources.DoubleNegativeWord_en
                     .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
@@ -96,8 +92,14 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             foreach (ExpressionRule rule in invalidExpressions)
             {
                 // 設定によってReadingでマッチするかSurfaceでマッチするかを切り替える。
-                var (isMatch, matchedPhrases) = matchAsReading ?
-                    rule.MatchReadings(sentence.Tokens) : rule.MatchSurfaces(sentence.Tokens);
+                var (isMatch, matchedPhrases) = isJapaneseMatchAsReading ?
+                    rule.MatchReadings(sentence.Tokens.Where(t =>
+                        // MEMO: 日本語の場合、「、」や半角全角スペースは無視してマッチングする。
+                        // Token列にムダな記号が入ることでマッチングが外れることがあるため。
+                        t.Surface != SymbolTable.GetValueOrFallbackToDefault(SymbolType.COMMA).ToString()
+                        && t.Surface != " "
+                        && t.Surface != "　").ToList())
+                    : rule.MatchSurfaces(sentence.Tokens);
 
                 if (isMatch)
                 {

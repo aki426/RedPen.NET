@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,6 +13,20 @@ namespace RedPen.Net.Core.Utility
     /// </summary>
     public static class ExpressionRuleExtractor
     {
+        /// <summary>
+        /// RuleExpressionを定義された複数行テキストからExpressionRuleのリストを読み込む。
+        /// MEMO: 冒頭に#記号があるばあいはコメントとして無視される。
+        /// </summary>
+        /// <param name="ruleDefinition">テキストファイルの中身などの複数行テキスト</param>
+        /// <returns>A list of ExpressionRules.</returns>
+        public static List<ExpressionRule> LoadExpressionRules(string ruleDefinition)
+        {
+            return ruleDefinition.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(line => line.Trim())
+                .Where(line => line != "" && line.Trim()[0] != '#')
+                .Select(line => Run(line)).ToList();
+        }
+
         /// <summary>
         /// Create a rule from input sentence.
         /// </summary>
