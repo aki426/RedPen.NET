@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using FluentAssertions;
+using Lucene.Net.Util;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Tokenizer;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -67,7 +70,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             TokenElement actual = new TokenElement("surface of word", new List<string>() { "tag", "list" }, 1, 42, "reading");
 
             output.WriteLine(actual.ToString());
-            actual.ToString().Should().Be("TokenElement { Surface = \"surface of word\", Reading = \"reading\", LineNumber = 1, Offset = 42 , Tags = [ \"tag\", \"list\" ]}");
+            actual.ToString().Should().Be("TokenElement { Surface = \"surface of word\", Reading = \"reading\", Tags = [ \"tag\", \"list\" ], OffsetMap = (L1,42)-(L1,43)-(L1,44)-(L1,45)-(L1,46)-(L1,47)-(L1,48)-(L1,49)-(L1,50)-(L1,51)-(L1,52)-(L1,53)-(L1,54)-(L1,55)-(L1,56)}");
         }
 
         [Theory]
@@ -86,6 +89,32 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             TokenElement token2 = new TokenElement("word2", tags2 == "" ? new List<string>() : tags2.Split(',').ToList(), 1, 0, "reading");
 
             token1.MatchTags(token2).Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("001", "弊社の経営方針の説明を受けた。", "弊社|の|経営方針|の|説明|を|受け|た|。")]
+        [InlineData("002", "長い言葉恐怖症", "長い|言葉恐怖症")]
+        public void ConcatNounsTest(string nouse1, string text, string expected)
+        {
+            var jaTokenizer = RedPenTokenizerFactory.CreateTokenizer(CultureInfo.GetCultureInfo("ja-JP"));
+            List<TokenElement> tokens = jaTokenizer.Tokenize(new Sentence(text, 1));
+
+            output.WriteLine("★Original:");
+            foreach (var token in tokens)
+            {
+                output.WriteLine(token.ToString());
+            }
+            output.WriteLine("");
+
+            var concatedNouns = TokenElement.ConvertToConcatedNouns(tokens);
+
+            output.WriteLine("★Original:");
+            foreach (var token in concatedNouns)
+            {
+                output.WriteLine(token.ToString());
+            }
+
+            string.Join("|", concatedNouns.Select(t => t.Surface)).Should().Be(expected);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -7,10 +8,13 @@ using RedPen.Net.Core.Model;
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     /// <summary>JapaneseAmbiguousNounConjunctionのConfiguration</summary>
-    public record JapaneseAmbiguousNounConjunctionConfiguration : ValidatorConfiguration
+    public record JapaneseAmbiguousNounConjunctionConfiguration : ValidatorConfiguration, IWordSetConfigParameter
     {
-        public JapaneseAmbiguousNounConjunctionConfiguration(ValidationLevel level) : base(level)
+        public HashSet<string> WordSet { get; init; }
+
+        public JapaneseAmbiguousNounConjunctionConfiguration(ValidationLevel level, HashSet<string> wordSet) : base(level)
         {
+            this.WordSet = wordSet;
         }
     }
 
@@ -50,13 +54,74 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             List<ValidationError> result = new List<ValidationError>();
 
             // validation
+            int stackSize = 0;
+            var surfaces = new List<TokenElement>();
+            foreach (TokenElement tokenElement in sentence.Tokens)
+            {
+                var tags = tokenElement.Tags;
+                switch (stackSize)
+                {
+                    case 0:
+                        if (tags[0].Equals("名詞"))
+                        {
+                            surfaces.Add(tokenElement);
+                            stackSize = 1;
+                        }
+                        break;
+
+                    case 1:
+                        if (tags[0].Equals("助詞") && tokenElement.Surface.Equals("の"))
+                        {
+                            surfaces.Add(tokenElement);
+                            stackSize = 2;
+                        }
+                        break;
+
+                    case 2:
+                        if (tags[0].Equals("名詞"))
+                        {
+                            surfaces.Add(tokenElement);
+                        }
+                        else
+                        {
+                            if (tags[0].Equals("助詞") && tokenElement.Surface.Equals("の"))
+                            {
+                                surfaces.Add(tokenElement);
+                                stackSize = 3;
+                            }
+                            else
+                            {
+                                surfaces.Clear();
+                                stackSize = 0;
+                            }
+                        }
+                        break;
+
+                    case 3:
+                        if (tags[0].Equals("名詞"))
+                        {
+                            surfaces.Add(tokenElement);
+                        }
+                        else
+                        {
+                            var surface = string.Join("", surfaces.Select(t => t.Surface));
+                            if (!Config.WordSet.Contains(surface))
+                            {
+                                result.Add(new ValidationError(
+                                    ValidationType.JapaneseAmbiguousNounConjunction,
+                                    this.Level,
+                                    sentence,
+                                    surfaces.First().OffsetMap[0],
+                                    surfaces.Last().OffsetMap[^1],
+                                    MessageArgs: new object[] { surface }));
+                            }
+                            stackSize = 0;
+                        }
+                        break;
+                }
+            }
 
             // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            result.Add(new ValidationError(
-                ValidationType.JapaneseAmbiguousNounConjunction,
-                this.Level,
-                sentence,
-                MessageArgs: new object[] { argsForMessageArg }));
 
             return result;
         }

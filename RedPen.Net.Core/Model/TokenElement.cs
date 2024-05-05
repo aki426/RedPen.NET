@@ -92,7 +92,7 @@ namespace RedPen.Net.Core.Model
         public override string ToString()
         {
             var tags = string.Join(", ", Tags.Select(i => $"\"{i}\""));
-            return $"TokenElement {{ Surface = \"{Surface}\", Reading = \"{Reading}\", LineNumber = {LineNumber}, Offset = {Offset} , Tags = [ {tags} ]}}";
+            return $"TokenElement {{ Surface = \"{Surface}\", Reading = \"{Reading}\", Tags = [ {tags} ], OffsetMap = {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
         }
 
         /// <summary>
@@ -141,6 +141,69 @@ namespace RedPen.Net.Core.Model
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// 一連のTokenリスト中の隣接する名詞を連結して1つのTokenにまとめたリストを返す。
+        /// MEMO: 結果のTokenリストのSurfaceを連結すると元の文章＝元のTokenリストのSurfaceを連結したものとなる。
+        /// ただし、区切り位置は異なる。
+        /// </summary>
+        /// <param name="tokens">The tokens.</param>
+        /// <returns>A list of TokenElements.</returns>
+        public static List<TokenElement> ConvertToConcatedNouns(List<TokenElement> tokens)
+        {
+            List<TokenElement> result = new List<TokenElement>();
+
+            // 連続する名詞をStackに入れて連結して結果リストに入れる。
+            List<TokenElement> nounStack = new List<TokenElement>();
+
+            foreach (var token in tokens)
+            {
+                if (token.Tags[0] == "名詞")
+                {
+                    nounStack.Add(token);
+                }
+                else
+                {
+                    if (nounStack.Count == 1)
+                    {
+                        result.Add(nounStack[0]);
+                        // スタックをクリアして次の名詞連結を開始。
+                        nounStack.Clear();
+                    }
+                    else if (nounStack.Count > 1)
+                    {
+                        result.Add(new TokenElement(
+                            string.Join("", nounStack.Select(t => t.Surface)),
+                            new List<string> { "名詞", "一般", "*", "*" }.ToImmutableList(),
+                            string.Join("", nounStack.Select(t => t.Reading)),
+                            nounStack.SelectMany(t => t.OffsetMap).ToImmutableList()
+                        ));
+                        // スタックをクリアして次の名詞連結を開始。
+                        nounStack.Clear();
+                    }
+
+                    // 現在のトークンを追加。
+                    result.Add(token);
+                }
+            }
+
+            // 体言止めの場合を考慮して、最後のスタックを処理する。
+            if (nounStack.Count == 1)
+            {
+                result.Add(nounStack[0]);
+            }
+            else if (nounStack.Count > 1)
+            {
+                result.Add(new TokenElement(
+                    string.Join("", nounStack.Select(t => t.Surface)),
+                    new List<string> { "名詞", "一般", "*", "*" }.ToImmutableList(),
+                    string.Join("", nounStack.Select(t => t.Reading)),
+                    nounStack.SelectMany(t => t.OffsetMap).ToImmutableList()
+                ));
+            }
+
+            return result;
         }
     }
 }
