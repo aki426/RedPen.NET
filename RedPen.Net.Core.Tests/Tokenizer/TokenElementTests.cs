@@ -83,6 +83,8 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("007", "", "a,b,c", true)] // taga1の方は空のTagsを生成することを期待する。
         [InlineData("008", "a,b,*,d", "a,b,c", true)]
         [InlineData("009", "a,b,*,d", "a,b,c,*", true)]
+        [InlineData("010", "a,b,,d", "a,b,c,d", true)]
+        [InlineData("011", "a,b,,d", "a,b,c", true)] // 空文字のタグは「*」として扱う
         public void MatchTagsTest(string nouse1, string tags1, string tags2, bool expected)
         {
             TokenElement token1 = new TokenElement("word1", tags1 == "" ? new List<string>() : tags1.Split(',').ToList(), 1, 0, "reading");

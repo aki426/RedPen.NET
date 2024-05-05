@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
@@ -49,79 +51,38 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             this.Config = config;
         }
 
+        /// <summary>あいまいな名詞接続のパターン「格助詞の "の" + 名詞連続 + 各助詞の "の"」のExpressionRule。</summary>
+        private static ExpressionRule nounConjunction =
+            ExpressionRuleExtractor.Run("*:名詞 + の:助詞 + *:名詞 + の:助詞 + *:名詞");
+
         public List<ValidationError> Validate(Sentence sentence)
         {
             List<ValidationError> result = new List<ValidationError>();
 
-            // validation
-            int stackSize = 0;
-            var surfaces = new List<TokenElement>();
-            foreach (TokenElement tokenElement in sentence.Tokens)
+            // 名詞の連続を連結済みのTokenElementリストに変換して、ExpressionRuleにマッチさせる。
+            // これにより名詞連続をバラバラのTokenではなく1つの名詞Tokenとして扱うことでRuleにマッチ可能にする。
+            (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
+                nounConjunction.MatchSurfacesAndTags(
+                    TokenElement.ConvertToConcatedNouns(sentence.Tokens));
+
+            if (value.isMatch)
             {
-                var tags = tokenElement.Tags;
-                switch (stackSize)
+                foreach (ImmutableList<TokenElement> matchedTokens in value.tokens)
                 {
-                    case 0:
-                        if (tags[0].Equals("名詞"))
-                        {
-                            surfaces.Add(tokenElement);
-                            stackSize = 1;
-                        }
-                        break;
-
-                    case 1:
-                        if (tags[0].Equals("助詞") && tokenElement.Surface.Equals("の"))
-                        {
-                            surfaces.Add(tokenElement);
-                            stackSize = 2;
-                        }
-                        break;
-
-                    case 2:
-                        if (tags[0].Equals("名詞"))
-                        {
-                            surfaces.Add(tokenElement);
-                        }
-                        else
-                        {
-                            if (tags[0].Equals("助詞") && tokenElement.Surface.Equals("の"))
-                            {
-                                surfaces.Add(tokenElement);
-                                stackSize = 3;
-                            }
-                            else
-                            {
-                                surfaces.Clear();
-                                stackSize = 0;
-                            }
-                        }
-                        break;
-
-                    case 3:
-                        if (tags[0].Equals("名詞"))
-                        {
-                            surfaces.Add(tokenElement);
-                        }
-                        else
-                        {
-                            var surface = string.Join("", surfaces.Select(t => t.Surface));
-                            if (!Config.WordSet.Contains(surface))
-                            {
-                                result.Add(new ValidationError(
-                                    ValidationType.JapaneseAmbiguousNounConjunction,
-                                    this.Level,
-                                    sentence,
-                                    surfaces.First().OffsetMap[0],
-                                    surfaces.Last().OffsetMap[^1],
-                                    MessageArgs: new object[] { surface }));
-                            }
-                            stackSize = 0;
-                        }
-                        break;
+                    var surface = string.Join("", matchedTokens.Select(t => t.Surface));
+                    // Ignoreリストに入っていない表現であればエラーとして出力する。
+                    if (!Config.WordSet.Contains(surface))
+                    {
+                        result.Add(new ValidationError(
+                            ValidationType.JapaneseAmbiguousNounConjunction,
+                            this.Level,
+                            sentence,
+                            matchedTokens.First().OffsetMap[0],
+                            matchedTokens.Last().OffsetMap[^1],
+                            MessageArgs: new object[] { surface }));
+                    }
                 }
             }
-
-            // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
 
             return result;
         }

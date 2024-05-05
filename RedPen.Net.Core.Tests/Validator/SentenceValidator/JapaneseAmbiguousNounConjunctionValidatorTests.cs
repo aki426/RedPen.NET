@@ -21,6 +21,8 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [InlineData("001", "弊社の経営方針の説明を受けた。。", "", 1, "弊社の経営方針の説明")]
         [InlineData("002", "弊社の経営方針についての説明を受けた。", "", 0, "")]
         [InlineData("003", "不思議の国のアリスは面白い。", "不思議の国のアリス", 0, "")]
+        [InlineData("004", "東京都の山手線の沿線のビルの屋根の看板を飛び越えていく。", "", 4,
+            "東京都の山手線の沿線,山手線の沿線のビル,沿線のビルの屋根,ビルの屋根の看板")]
         public void JapaneseBasicTest(string nouse1, string text, string ignoreCases, int errorCount, string expected)
         {
             // Document

@@ -116,16 +116,20 @@ namespace RedPen.Net.Core.Model
             }
 
             // どちらかのタグ長が足りない場合、それは以降「*」と同じ扱いでマッチしているとみなす。
-            // よってどちらか短いほうの長さまえ走査して不一致が見つからなければ一致としてよい。
+            // よってどちらか短いほうの長さまで走査して不一致が見つからなければ一致としてよい。
             var minLen = Math.Min(Tags.Count, other.Tags.Count);
 
             for (var i = 0; i < minLen; i++)
             {
-                // TODO: タグがstring.Emptyの場合、それは「*」にすべきか要検討。現在はstring.Emptyはstring.Emptyとして完全一致しなければならないルール。
-
                 if (Tags[i] == "*" || other.Tags[i] == "*")
                 {
                     // どちらかのタグが*の場合、それはマッチしているとみなす。
+                    continue;
+                }
+                else if (Tags[i] == string.Empty || other.Tags[i] == string.Empty)
+                {
+                    // MEMO: タグがstring.Emptyの場合、それは「*」と同じ扱いとする。
+                    // どちらかのタグが空文字列の場合、それはマッチしているとみなす。
                     continue;
                 }
                 else if (Tags[i] == other.Tags[i])
