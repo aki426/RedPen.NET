@@ -92,6 +92,7 @@
     <Compile Include="Validator\SentenceValidator\HankakuKanaValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\InvalidExpressionValidatorTest.cs" />
     <Compile Include="Validator\SentenceValidator\JapaneseAmbiguousNounConjunctionValidatorTests.cs" />
+    <Compile Include="Validator\SentenceValidator\JapaneseJoyoKanjiValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\JapaneseNumberExpressionValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\JapaneseStyleValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\KatakanaEndHyphenTests.cs" />

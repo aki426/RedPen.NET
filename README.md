@@ -86,7 +86,7 @@
 | v    | DoubledJoshi                     | Sentence | センテンス内の同一助詞の重複使用を検出                                   | MinInterval, WordSet             |
 | v    | DoubleNegative                   | Sentence | 二重否定表現を検出                                                       |                                  |
 | v    | HankakuKana                      | Sentence | 半角カナ文字を検出                                                       |                                  |
-|      | JapaneseAmbiguousNounConjunction | Sentence | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）を検出             |                                  |
+| v    | JapaneseAmbiguousNounConjunction | Sentence | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）を検出             |                                  |
 | v    | JapaneseExpressionVariation      | Document | 日本語の表記ゆれを検出                                                   | DictFile, WordMap                |
 |      | JapaneseJoyoKanji                | Sentence | 常用漢字以外の漢字を検出                                                 |                                  |
 | v    | JapaneseNumberExpression         | Sentence | 計数表現スタイルの一貫性の破れを検出                                     | NumberStyle                      |
