@@ -119,4 +119,14 @@ namespace RedPen.Net.Core.Config
     {
         public int MinInterval { get; init; }
     }
+
+    public interface IMinRatioConfigParameter
+    {
+        public float MinRatio { get; init; }
+    }
+
+    public interface IMinFreqConfigParameter
+    {
+        public int MinFreq { get; init; }
+    }
 }

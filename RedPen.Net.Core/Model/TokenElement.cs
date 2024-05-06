@@ -97,7 +97,8 @@ namespace RedPen.Net.Core.Model
         }
 
         /// <summary>
-        /// カタカナ語かどうかを判定する関数。1文字でも非カタカナ文字があればFalseを返す。
+        /// カタカナ語＝すべてカタカナで構成されたSurfaceかどうかを判定する関数。
+        /// 1文字でも非カタカナ文字があればFalseを返す。
         /// MEMO: 記号を含む場合はFalseを返すので注意。
         /// </summary>
         /// <returns>A bool.</returns>
@@ -112,6 +113,24 @@ namespace RedPen.Net.Core.Model
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// カタカナ文字を1文字でも含むかどうかを判定する関数。
+        /// 1文字でもカタカナ文字があればTrueを返す。
+        /// </summary>
+        /// <returns>A bool.</returns>
+        public bool HasKatakana()
+        {
+            foreach (var c in Surface)
+            {
+                if (UnicodeUtility.IsKatakana(c))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

@@ -204,6 +204,12 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("006", "体言止め。", "体言|止め|。")]
         [InlineData("007", "総額は$123,456,789.45", "総額|は|$|123|,|456|,|789|.|45")]
         [InlineData("008", "123", "123")]
+        [InlineData("009", "ジュースはジューサーで作りますが、パン・アメリカ総合研究所はアメリカパンを作る会社です。",
+            "ジュース|は|ジューサー|で|作り|ます|が|、|パン|・|アメリカ|総合|研究所|は|アメリカ|パン|を|作る|会社|です|。")]
+        // MEMO: Kuromoji + IPADIC辞書の場合はカタカナ表現をカタカナのみで分割するが、SudachiやNeologdの場合分割単位が異なる点に注意。
+        // MEMO: 別の日本語Tokenizerを用いる場合は、KatakanaSpellCheckなどカタカナ表現のみでTokenを形成することを前提とするValidatorのロジックも再検討する必要がある。
+        [InlineData("010", "カタカナ表現はプラスチック樹脂やシス卿やジュース製造機のように1単語であっても分割します。",
+            "カタカナ|表現|は|プラスチック|樹脂|や|シス|卿|や|ジュース|製造|機|の|よう|に|1|単語|で|あっ|て|も|分割|し|ます|。")]
         public void DisplayTokens(string nouse1, string text, string expected)
         {
             NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
