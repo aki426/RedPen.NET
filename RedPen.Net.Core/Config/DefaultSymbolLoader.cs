@@ -154,7 +154,7 @@ namespace RedPen.Net.Core.Config
                 new Symbol(SymbolType.RIGHT_PARENTHESIS, '）', ")"),
                 new Symbol(SymbolType.ASTERISK, '＊', ""), // not add "*" to invalidChars for markdown format
                 new Symbol(SymbolType.COMMA, '、', ",，"),
-                new Symbol(SymbolType.FULL_STOP, '。', "．"),
+                new Symbol(SymbolType.FULL_STOP, '。', ".．"),
                 new Symbol(SymbolType.PLUS_SIGN, '＋', ""),
                 new Symbol(SymbolType.HYPHEN_SIGN, 'ー', ""),
                 new Symbol(SymbolType.SLASH, '／', ""),
@@ -192,7 +192,7 @@ namespace RedPen.Net.Core.Config
 
             // JapaneseZenkaku2Symbolsは、JapaneseSymbolsを一部変更したもの。
             var jaZen2Builder = JapaneseSymbols.ToBuilder();
-            jaZen2Builder[SymbolType.FULL_STOP] = new Symbol(SymbolType.FULL_STOP, '．', "。");
+            jaZen2Builder[SymbolType.FULL_STOP] = new Symbol(SymbolType.FULL_STOP, '．', ".。");
             jaZen2Builder[SymbolType.COMMA] = new Symbol(SymbolType.COMMA, '，', ",");
             JapaneseZenkaku2Symbols = jaZen2Builder.ToImmutable();
 

@@ -51,16 +51,53 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         {
             List<ValidationError> result = new List<ValidationError>();
 
-            // validation
+            // 全SymbolについてSentence内にInvalidCharsが含まれていないか検証する。
+            foreach (Symbol symbol in SymbolTable.SymbolTypeDictionary.Values)
+            {
+                foreach (char invalidChar in symbol.InvalidChars)
+                {
+                    int charPosition = sentence.Content.IndexOf(invalidChar);
 
-            // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            result.Add(new ValidationError(
-                ValidationType.InvalidSymbol,
-                this.Level,
-                sentence,
-                MessageArgs: new object[] { argsForMessageArg }));
+                    while (charPosition != -1)
+                    {
+                        if (invalidChar != '.' || !IsDigitPeriod(charPosition, sentence.Content))
+                        {
+                            result.Add(new ValidationError(
+                                ValidationType.InvalidSymbol,
+                                this.Level,
+                                sentence,
+                                sentence.ConvertToLineOffset(charPosition),
+                                sentence.ConvertToLineOffset(charPosition),
+                                MessageArgs: new object[] { invalidChar }));
+                        }
+
+                        charPosition = sentence.Content.IndexOf(invalidChar, charPosition + 1);
+                    }
+                }
+            }
 
             return result;
+        }
+
+        // NOTE: Even when selecting Japanese or Chinese style period such as '。', '．', the Ascii period
+        // is used in floating numbers (Ex. Ubuntu v1.04 or 200.00).
+
+        /// <summary>
+        /// ある文字列中のIndex箇所に出現したピリオド記号が数値表現中のピリオドかどうかを判定する。
+        /// </summary>
+        /// <param name="periodIndex">The period index.</param>
+        /// <param name="str">The str.</param>
+        /// <returns>数値表現中のピリオドであればTrueを返す。それ以外の場合はFalse。</returns>
+        private bool IsDigitPeriod(int periodIndex, string str)
+        {
+            // 先頭または末尾の場合は数値表現中のピリオドではないのでFalse。
+            if (periodIndex == 0 || periodIndex == str.Length - 1)
+            {
+                return false;
+            }
+
+            // ピリオドの前後が数字である場合のみTrue。
+            return char.IsDigit(str[periodIndex - 1]) && char.IsDigit(str[periodIndex + 1]);
         }
     }
 }
