@@ -88,7 +88,7 @@
 | v    | HankakuKana                      | Sentence | 半角カナ文字を検出                                                       |                                  |
 | v    | JapaneseAmbiguousNounConjunction | Sentence | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）を検出             |                                  |
 | v    | JapaneseExpressionVariation      | Document | 日本語の表記ゆれを検出                                                   | DictFile, WordMap                |
-|      | JapaneseJoyoKanji                | Sentence | 常用漢字以外の漢字を検出                                                 |                                  |
+| v    | JapaneseJoyoKanji                | Sentence | 常用漢字以外の漢字を検出                                                 | WordSet                          |
 | v    | JapaneseNumberExpression         | Sentence | 計数表現スタイルの一貫性の破れを検出                                     | NumberStyle                      |
 | v    | JapaneseStyle                    | Sentence | ですます調とである調の混在を検出                                         | JodoshiStyle                     |
 | v    | KatakanaEndHyphen                | Sentence | JIS Z8301:2008 - G.6.2.2 b - G.3基準のカタカナ単語の語尾のハイフンを検出 | WordSet                          |
