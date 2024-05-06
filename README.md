@@ -92,7 +92,7 @@
 | v    | JapaneseNumberExpression         | Sentence | 計数表現スタイルの一貫性の破れを検出                                     | NumberStyle                                    |
 | v    | JapaneseStyle                    | Sentence | ですます調とである調の混在を検出                                         | JodoshiStyle                                   |
 | v    | KatakanaEndHyphen                | Sentence | JIS Z8301:2008 - G.6.2.2 b - G.3基準のカタカナ単語の語尾のハイフンを検出 | WordSet                                        |
-| v    | KatakanaSpellCheck               | Sentence | カタカナ単語の表記ゆれを検出                                             | DictFile, MinRatio, MinFreq, EnableDefaultDict |
+| v    | KatakanaSpellCheck               | Document | カタカナ単語の表記ゆれを検出                                             | DictFile, MinRatio, MinFreq, EnableDefaultDict |
 |      | LongKanjiChain                   | Sentence | 最大文字長を超える漢字の連続を検出                                       | Maxlength                                      |
 | v    | Okurigana                        | Sentence | 不正な送りがなを検出                                                     |                                                |
 | v    | SpaceWithAlphabeticalExpression  | Sentence | アルファベット単語前後の空白を検出                                       | Forbidden, SkipBefore, SkipAfter               |
