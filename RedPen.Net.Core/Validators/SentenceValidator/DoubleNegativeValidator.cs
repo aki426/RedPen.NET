@@ -61,10 +61,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             if (documentLangForTest.Name == "ja-JP")
             {
                 invalidExpressions = ExpressionRuleExtractor.LoadExpressionRules(DefaultResources.DoubleNegativeExpression_ja);
-
-                negativeWords = new HashSet<string>(DefaultResources.DoubleNegativeWord_ja
-                    .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(line => line.Trim().ToLower()));
+                negativeWords = ResourceFileLoader.LoadWordSet(DefaultResources.DoubleNegativeWord_ja);
 
                 // MEMO: 日本語の場合は漢字／ひらがな表記のゆれがあるので、Readingでのマッチングを行う。
                 isJapaneseMatchAsReading = true;
@@ -72,10 +69,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             else
             {
                 invalidExpressions = ExpressionRuleExtractor.LoadExpressionRules(DefaultResources.DoubleNegativeExpression_en);
-
-                negativeWords = new HashSet<string>(DefaultResources.DoubleNegativeWord_en
-                    .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(line => line.Trim().ToLower()));
+                negativeWords = ResourceFileLoader.LoadWordSet(DefaultResources.DoubleNegativeWord_en);
             }
         }
 

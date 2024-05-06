@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Model
 {
@@ -93,6 +94,24 @@ namespace RedPen.Net.Core.Model
         {
             var tags = string.Join(", ", Tags.Select(i => $"\"{i}\""));
             return $"TokenElement {{ Surface = \"{Surface}\", Reading = \"{Reading}\", Tags = [ {tags} ], OffsetMap = {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
+        }
+
+        /// <summary>
+        /// カタカナ語かどうかを判定する関数。1文字でも非カタカナ文字があればFalseを返す。
+        /// MEMO: 記号を含む場合はFalseを返すので注意。
+        /// </summary>
+        /// <returns>A bool.</returns>
+        public bool IsKatakanaWord()
+        {
+            foreach (var c in Surface)
+            {
+                if (!UnicodeUtility.IsKatakana(c))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
