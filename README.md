@@ -80,44 +80,45 @@
 
 #### 日本語（Lang = ja-JP）にのみ適用可能なValidator Configuration
 
-| Done |               Name               |  Target  |                               Description                                |             Property             |
-| ---- | -------------------------------- | -------- | ------------------------------------------------------------------------ | -------------------------------- |
-| v    | DoubledConjunctiveParticleGa     | Sentence | センテンス内の接続助詞「が」の2回以上の使用を検出                        |                                  |
-| v    | DoubledJoshi                     | Sentence | センテンス内の同一助詞の重複使用を検出                                   | MinInterval, WordSet             |
-| v    | DoubleNegative                   | Sentence | 二重否定表現を検出                                                       |                                  |
-| v    | HankakuKana                      | Sentence | 半角カナ文字を検出                                                       |                                  |
-| v    | JapaneseAmbiguousNounConjunction | Sentence | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）を検出             |                                  |
-| v    | JapaneseExpressionVariation      | Document | 日本語の表記ゆれを検出                                                   | DictFile, WordMap                |
-| v    | JapaneseJoyoKanji                | Sentence | 常用漢字以外の漢字を検出                                                 | WordSet                          |
-| v    | JapaneseNumberExpression         | Sentence | 計数表現スタイルの一貫性の破れを検出                                     | NumberStyle                      |
-| v    | JapaneseStyle                    | Sentence | ですます調とである調の混在を検出                                         | JodoshiStyle                     |
-| v    | KatakanaEndHyphen                | Sentence | JIS Z8301:2008 - G.6.2.2 b - G.3基準のカタカナ単語の語尾のハイフンを検出 | WordSet                          |
-|      | KatakanaSpellCheck               | Sentence | カタカナ単語の表記ゆれを検出                                             | DictFile, MinRatio, MinFreq      |
-|      | LongKanjiChain                   | Sentence | 最大文字長を超える漢字の連続を検出                                       | Maxlength                        |
-| v    | Okurigana                        | Sentence | 不正な送りがなを検出                                                     |                                  |
-| v    | SpaceWithAlphabeticalExpression  | Sentence | アルファベット単語前後の空白を検出                                       | Forbidden, SkipBefore, SkipAfter |
-| v    | Taigendome                       | Sentence | 体言止めを検出                                                           |                                  |
+| Done |               Name               |  Target  |                               Description                                |                    Property                    |
+| ---- | -------------------------------- | -------- | ------------------------------------------------------------------------ | ---------------------------------------------- |
+| v    | DoubledConjunctiveParticleGa     | Sentence | センテンス内の接続助詞「が」の2回以上の使用を検出                        |                                                |
+| v    | DoubledJoshi                     | Sentence | センテンス内の同一助詞の重複使用を検出                                   | MinInterval, WordSet                           |
+| v    | DoubleNegative                   | Sentence | 二重否定表現を検出                                                       |                                                |
+| v    | HankakuKana                      | Sentence | 半角カナ文字を検出                                                       |                                                |
+| v    | JapaneseAmbiguousNounConjunction | Sentence | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）を検出             |                                                |
+| v    | JapaneseExpressionVariation      | Document | 日本語の表記ゆれを検出                                                   | DictFile, WordMap                              |
+| v    | JapaneseJoyoKanji                | Sentence | 常用漢字以外の漢字を検出                                                 | WordSet                                        |
+| v    | JapaneseNumberExpression         | Sentence | 計数表現スタイルの一貫性の破れを検出                                     | NumberStyle                                    |
+| v    | JapaneseStyle                    | Sentence | ですます調とである調の混在を検出                                         | JodoshiStyle                                   |
+| v    | KatakanaEndHyphen                | Sentence | JIS Z8301:2008 - G.6.2.2 b - G.3基準のカタカナ単語の語尾のハイフンを検出 | WordSet                                        |
+| v    | KatakanaSpellCheck               | Sentence | カタカナ単語の表記ゆれを検出                                             | DictFile, MinRatio, MinFreq, EnableDefaultDict |
+|      | LongKanjiChain                   | Sentence | 最大文字長を超える漢字の連続を検出                                       | Maxlength                                      |
+| v    | Okurigana                        | Sentence | 不正な送りがなを検出                                                     |                                                |
+| v    | SpaceWithAlphabeticalExpression  | Sentence | アルファベット単語前後の空白を検出                                       | Forbidden, SkipBefore, SkipAfter               |
+| v    | Taigendome                       | Sentence | 体言止めを検出                                                           |                                                |
 
 #### Validator Configuration Property
 
 各ValidatorのConfigurationはJsonファイルで適切なプロパティを指定する必要があります。
 プロパティごとの定義と意味は次の一覧表のとおりです。
 
-| Property  |           Type           |                            Description                            |
-| --------- | ------------------------ | ----------------------------------------------------------------- |
-| Name      | string                   | ※すべてのValidator Configurationで必須のプロパティです。          |
-| Level     | string                   | ※すべてのValidator Configurationで必須のプロパティです。          |
-| MaxLength | number                   | 最大長をintで表現したものです。大体の場合、文字数です。           |
-| MaxNumber | number                   | 最大数をintで表現したものです。                                   |
-| MaxLevel  | number                   | 最大レベルをintで表現したものです。                               |
-| MinLength | number                   | 最小長をintで表現したものです。大体の場合、文字数です。           |
-| MinRatio  | number                   | 最小割合を浮動小数点数で表現したものです。                        |
-| MinFreq   | number                   | 最小頻度を浮動小数点数で表現したものです。                        |
-| Distance  | number                   | 「距離」を浮動小数点数で表現したものです。                        |
-| NoSpace   | true / false             | trueの場合、スペースを許容しなくなります。                        |
-| DictFile  | string                   | 辞書定義ファイルです。                                            |
-| WordMap   | <string, string>のobject | 辞書定義です。                                                    |
-| WordSet   | stringのarray            | 文字列リストです。処理速度のため内部実装はHashSetを用いています。 |
+|     Property      |           Type           |                             Description                              |
+| ----------------- | ------------------------ | -------------------------------------------------------------------- |
+| Name              | string                   | ※すべてのValidator Configurationで必須のプロパティです。             |
+| Level             | string                   | ※すべてのValidator Configurationで必須のプロパティです。             |
+| MaxLength         | number                   | 最大長をintで表現したものです。大体の場合、文字数です。              |
+| MaxNumber         | number                   | 最大数をintで表現したものです。                                      |
+| MaxLevel          | number                   | 最大レベルをintで表現したものです。                                  |
+| MinLength         | number                   | 最小長をintで表現したものです。大体の場合、文字数です。              |
+| MinRatio          | number                   | 最小割合を浮動小数点数で表現したものです。                           |
+| MinFreq           | number                   | 最小頻度をintで表現したものです。                                    |
+| Distance          | number                   | 「距離」を浮動小数点数で表現したものです。                           |
+| NoSpace           | true / false             | trueの場合、スペースを許容しなくなります。                           |
+| DictFile          | string                   | 辞書定義ファイルです。                                               |
+| WordSet           | stringのarray            | 文字列リストです。処理速度のため内部実装はHashSetを用いています。    |
+| WordMap           | <string, string>のobject | 辞書定義です。                                                       |
+| EnableDefaultDict | true / false             | RedPen.NETの標準辞書がある場合、それを使用する／しないを制御します。 |
 
 ##### 補足説明
 
@@ -131,11 +132,14 @@
   * OFFを指定した場合は当該Validatorは実行されません。
 * DictFile
   * 実行環境におけるファイルへのパスを指定します。
-  * ファイルのフォーマットは、WordListをプロパティに持つ場合は1行1文字列のリスト、WordMapをプロパティに持つ場合は1行につき2つの文字列をタブ区切りで記載したDictionaryとなります。
+  * ファイルのフォーマットは、WordSetをプロパティに持つ場合は1行1文字列のリスト、WordMapをプロパティに持つ場合は1行につき2つの文字列をタブ区切りで記載したDictionaryとなります。
+* WordSet
+  * Validationによって意味は変わりますが、大体の場合許容する表現のリストとして機能します。詳細は各Validationの解説やソースコードを参照してください。
 * WordMap
   * JsonのオブジェクトとしてKeyに「検出したい表現」を、Valueに「提案したい表現」を記述します。表記上は誤→正の順番になります。
-* WordList
-  * Validatorによって意味は変わりますが、大体の場合Invalidな表現のリストです。
+* EnableDefaultDict
+  * RedPen.NETの標準辞書がある場合、それを使用するかしないかのフラグです。
+  * WordMapやWordSetをプロパティとして持つValidationにおいて、WordMapやWordSetに標準辞書のデータを追加する／しない、という挙動になります。
 
 ## RedPen.Net特有の情報
 

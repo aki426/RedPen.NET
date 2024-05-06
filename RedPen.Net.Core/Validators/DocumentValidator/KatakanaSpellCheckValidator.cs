@@ -11,17 +11,22 @@ using RedPen.Net.Core.Utility;
 namespace RedPen.Net.Core.Validators.DocumentValidator
 {
     /// <summary>KatakanaSpellCheckのConfiguration</summary>
-    public record KatakanaSpellCheckConfiguration : ValidatorConfiguration, IMinRatioConfigParameter, IMinFreqConfigParameter, IWordSetConfigParameter
+    public record KatakanaSpellCheckConfiguration
+        : ValidatorConfiguration,
+        IMinRatioConfigParameter, IMinFreqConfigParameter, IWordSetConfigParameter,
+        IEnableDefaultDictConfigParameter
     {
         public double MinRatio { get; init; }
         public int MinFreq { get; init; }
         public HashSet<string> WordSet { get; init; }
+        public bool EnableDefaultDict { get; init; }
 
-        public KatakanaSpellCheckConfiguration(ValidationLevel level, double minRatio, int minFreq, HashSet<string> wordSet) : base(level)
+        public KatakanaSpellCheckConfiguration(ValidationLevel level, double minRatio, int minFreq, HashSet<string> wordSet, bool enableDefaultDict) : base(level)
         {
-            MinRatio = minRatio;
-            MinFreq = minFreq;
-            WordSet = wordSet;
+            this.MinRatio = minRatio;
+            this.MinFreq = minFreq;
+            this.WordSet = wordSet;
+            this.EnableDefaultDict = enableDefaultDict;
         }
     }
 
@@ -124,7 +129,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 // デフォルトリソースのカタカナ語辞書に存在する場合
                 // Configで指定されたカタカナ語セット内に存在する場合
                 // 既存のカタカナ語出現頻度がしきい値以上の場合（＝たくさん出現しているものはエラーではないと考える）
-                if (katakanaWordDict.Contains(katakana)
+                if ((Config.EnableDefaultDict && katakanaWordDict.Contains(katakana))
                     || Config.WordSet.Contains(katakana)
                     || katakanaLists[katakana].Count > Config.MinFreq)
                 {

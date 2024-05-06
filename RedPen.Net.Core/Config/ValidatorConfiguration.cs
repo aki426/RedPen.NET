@@ -129,4 +129,9 @@ namespace RedPen.Net.Core.Config
     {
         public int MinFreq { get; init; }
     }
+
+    public interface IEnableDefaultDictConfigParameter
+    {
+        public bool EnableDefaultDict { get; init; }
+    }
 }
