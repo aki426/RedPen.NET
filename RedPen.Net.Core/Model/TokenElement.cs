@@ -247,5 +247,62 @@ namespace RedPen.Net.Core.Model
 
             return result;
         }
+
+        /// <summary>
+        /// 一連のTokenリスト中の隣接する複数のカタカナ語を連結して1つのTokenにまとめたもののみのリストを返す。
+        /// MEMO: カタカナ語1語のTokenは結果に含まれない。また、隣接する複数のカタカナ語を部分的に連結したものも含まれない。
+        /// </summary>
+        /// <param name="tokens">The tokens.</param>
+        /// <returns>連結されたカタカナ語のみのリスト。</returns>
+        public static List<TokenElement> GetConcatedKatakanaWords(List<TokenElement> tokens)
+        {
+            List<TokenElement> result = new List<TokenElement>();
+
+            // 連続する名詞をStackに入れて連結して結果リストに入れる。
+            List<TokenElement> katakanaStack = new List<TokenElement>();
+
+            foreach (var token in tokens)
+            {
+                if (token.IsKatakanaWord())
+                {
+                    katakanaStack.Add(token);
+                }
+                else
+                {
+                    // カタカナ語ではない＝連続カタカナ語の区切りに到達した場合。
+                    if (katakanaStack.Count == 1)
+                    {
+                        // スタックをクリアして次のカタカナ語連結を開始。
+                        katakanaStack.Clear();
+                    }
+                    else if (katakanaStack.Count > 1)
+                    {
+                        result.Add(new TokenElement(
+                            string.Join("", katakanaStack.Select(t => t.Surface)),
+                            // 連結したカタカナ語は名詞、一般固定で良いはず。
+                            // TODO: Kuromozji + IPA辞書以外のTokenizerの場合、動詞として扱うカタカナ語もあるかもしれないので注意。
+                            new List<string> { "名詞", "一般", "*", "*" }.ToImmutableList(),
+                            string.Join("", katakanaStack.Select(t => t.Reading)),
+                            katakanaStack.SelectMany(t => t.OffsetMap).ToImmutableList()
+                        ));
+                        // スタックをクリアして次の名詞連結を開始。
+                        katakanaStack.Clear();
+                    }
+                }
+            }
+
+            // 体言止めの場合を考慮して、最後のスタックを処理する。
+            if (katakanaStack.Count > 1)
+            {
+                result.Add(new TokenElement(
+                    string.Join("", katakanaStack.Select(t => t.Surface)),
+                    new List<string> { "名詞", "一般", "*", "*" }.ToImmutableList(),
+                    string.Join("", katakanaStack.Select(t => t.Reading)),
+                    katakanaStack.SelectMany(t => t.OffsetMap).ToImmutableList()
+                ));
+            }
+
+            return result;
+        }
     }
 }

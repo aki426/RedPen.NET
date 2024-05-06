@@ -95,7 +95,13 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 new Dictionary<string, List<(TokenElement token, Sentence sentence)>>();
             foreach (var sentence in document.GetAllSentences())
             {
-                foreach (var token in sentence.Tokens.Where(t => t.IsKatakanaWord()))
+                // カタカナ語は途中で分割されていることがあるので、隣接したものは連結して1つのカタカナ語のTokenとして扱う。
+                List<TokenElement> katakanaTokens = TokenElement.GetConcatedKatakanaWords(sentence.Tokens);
+                // 元のTokensからカタカナ語のみ抽出して加える。
+                // これにより、カタカナ語のTokenと、隣接する連続したカタカナ語を連結したTokenが両方リストに含まれる。
+                katakanaTokens.AddRange(sentence.Tokens.Where(t => t.IsKatakanaWord()));
+
+                foreach (var token in katakanaTokens)
                 {
                     if (!katakanaLists.ContainsKey(token.Surface))
                     {
