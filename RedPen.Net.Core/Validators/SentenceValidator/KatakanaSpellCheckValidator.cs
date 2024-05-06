@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
+using Lucene.Net.Util;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -36,7 +38,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     // カタカナ語の長さがしきい値より小さい場合、類似性を検出しません。
 
     /// <summary>KatakanaSpellCheckのValidator</summary>
-    public class KatakanaSpellCheckValidator : Validator, ISentenceValidatable
+    public class KatakanaSpellCheckValidator : Validator, ISentenceValidatable, IDocumentValidatable
     {
         /// <summary>Nlog</summary>
         private static Logger log = LogManager.GetCurrentClassLogger();
@@ -59,7 +61,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <summary>
         /// Katakana word dic with line number.
         /// </summary>
-        private Dictionary<string, int> dic = new Dictionary<string, int>();
+        private Dictionary<string, int> wordPositionMap = new Dictionary<string, int>();
 
         // TODO: コンストラクタの引数定義は共通にすること。
         /// <summary>
@@ -162,30 +164,93 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 return;
             }
 
-            if (dic.ContainsKey(katakana)
-                || katakanaWordDict.Contains(katakana)
+            // 以下の条件に合致した場合はスキップ。
+            // デフォルトリソースのカタカナ語辞書に存在する場合
+            // Configで指定されたカタカナ語セット内に存在する場合
+            // 既存のカタカナ語出現辞書に存在する場合
+            // 既存のカタカナ語出現頻度がしきい値以上の場合
+            if (katakanaWordDict.Contains(katakana)
                 || Config.WordSet.Contains(katakana)
+                || wordPositionMap.ContainsKey(katakana)
                 || (katakanaWordFrequencies.ContainsKey(katakana) && katakanaWordFrequencies[katakana] > Config.MinFreq))
             {
                 return;
             }
 
-            int minLsDistance = (int)Math.Round(katakana.Length * Config.MinRatio);
-
+            // Levenshtein距離を計算し、しきい値以下の場合はエラーとして出力（かけ離れ過ぎていないカタカナ語の表記ゆれを検出する工夫）
+            int lsDistThreshold = (int)Math.Round(katakana.Length * Config.MinRatio);
             bool found = false;
-            foreach (string key in dic.Keys)
+            foreach (string key in wordPositionMap.Keys)
             {
-                if (LevenshteinDistanceUtility.GetDistance(key, katakana) <= minLsDistance)
+                if (LevenshteinDistanceUtility.GetDistance(key, katakana) <= lsDistThreshold)
                 {
                     found = true;
                     //addLocalizedError(sentence, katakana, key, dic[key].ToString());
                 }
             }
 
+            // すでに見つかった場合は既存辞書に追加する。
             if (!found)
             {
-                dic[katakana] = sentence.LineNumber;
+                wordPositionMap[katakana] = sentence.LineNumber;
             }
+        }
+
+        public List<ValidationError> Validate(Document document)
+        {
+            List<ValidationError> errors = new List<ValidationError>();
+
+            // すべてのTokenをさらって、カタカナ語を抽出しSurfaceでDictionary化する。
+            Dictionary<string, List<TokenElement>> katakanaLists = new Dictionary<string, List<TokenElement>>();
+            foreach (TokenElement token in document.GetAllSentences().SelectMany(s => s.Tokens).Where(t => t.IsKatakanaWord()))
+            {
+                if (!katakanaLists.ContainsKey(token.Surface))
+                {
+                    katakanaLists[token.Surface] = new List<TokenElement>();
+                }
+                katakanaLists[token.Surface].Add(token);
+            }
+
+            // 出現したカタカナ語についてLevenshtein距離を計算し、類似するものをエラーとして出力する。
+            foreach (string katakana in katakanaLists.Keys)
+            {
+                if (katakana.Length <= maxIgnoreLength)
+                {
+                    // 閾値以下だった場合はチェックをスキップ
+                    continue;
+                }
+
+                // 以下の条件に合致した場合はスキップ。
+                // デフォルトリソースのカタカナ語辞書に存在する場合
+                // Configで指定されたカタカナ語セット内に存在する場合
+                // 既存のカタカナ語出現頻度がしきい値以上の場合（＝たくさん出現しているものはエラーではないと考える）
+                if (katakanaWordDict.Contains(katakana)
+                    || Config.WordSet.Contains(katakana)
+                    || katakanaLists[katakana].Count > Config.MinFreq)
+                {
+                    continue;
+                }
+            }
+
+            // Levenshtein距離を計算し、しきい値以下の場合はエラーとして出力（かけ離れ過ぎていないカタカナ語の表記ゆれを検出する工夫）
+            int lsDistThreshold = (int)Math.Round(katakana.Length * Config.MinRatio);
+            bool found = false;
+            foreach (string key in wordPositionMap.Keys)
+            {
+                if (LevenshteinDistanceUtility.GetDistance(key, katakana) <= lsDistThreshold)
+                {
+                    found = true;
+                    //addLocalizedError(sentence, katakana, key, dic[key].ToString());
+                }
+            }
+
+            // すでに見つかった場合は既存辞書に追加する。
+            if (!found)
+            {
+                wordPositionMap[katakana] = sentence.LineNumber;
+            }
+
+            return errors;
         }
     }
 }
