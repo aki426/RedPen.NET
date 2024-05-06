@@ -149,6 +149,11 @@ namespace RedPen.Net.Core.Validators
     //        this.Config = config;
     //    }
 
+    ///// <summary>
+    ///// Validate.
+    ///// </summary>
+    ///// <param name="sentence">The sentence.</param>
+    ///// <returns>A list of ValidationErrors.</returns>
     //    public List<ValidationError> Validate(Sentence sentence)
     //    {
     //        List<ValidationError> result = new List<ValidationError>();
