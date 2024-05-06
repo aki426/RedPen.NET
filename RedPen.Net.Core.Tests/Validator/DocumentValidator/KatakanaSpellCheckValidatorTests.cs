@@ -4,11 +4,11 @@ using System.Globalization;
 using System.Linq;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Utility;
-using RedPen.Net.Core.Validators.SentenceValidator;
+using RedPen.Net.Core.Validators.DocumentValidator;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
+namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
 {
     public class KatakanaSpellCheckValidatorTests
     {
