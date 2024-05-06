@@ -33,7 +33,7 @@ namespace RedPen.Net.Core.Utility
         private static int DELETION_COST;
         private static int SUBSTITUTION_COST;
 
-        static LevenshteinDistance()
+        static LevenshteinDistanceUtility()
         {
             INSERTION_COST = DEFAULT_INSERTION_COST;
             DELETION_COST = DEFAULT_DELETION_COST;
@@ -43,7 +43,7 @@ namespace RedPen.Net.Core.Utility
         /// <summary>
         /// Default Constructor.
         /// </summary>
-        private LevenshteinDistance()
+        private LevenshteinDistanceUtility()
         {
         }
 

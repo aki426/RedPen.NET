@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using Lucene.Net.Util;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -14,11 +13,11 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     /// <summary>KatakanaSpellCheckのConfiguration</summary>
     public record KatakanaSpellCheckConfiguration : ValidatorConfiguration, IMinRatioConfigParameter, IMinFreqConfigParameter, IWordSetConfigParameter
     {
-        public float MinRatio { get; init; }
+        public double MinRatio { get; init; }
         public int MinFreq { get; init; }
         public HashSet<string> WordSet { get; init; }
 
-        public KatakanaSpellCheckConfiguration(ValidationLevel level, float minRatio, int minFreq, HashSet<string> wordSet) : base(level)
+        public KatakanaSpellCheckConfiguration(ValidationLevel level, double minRatio, int minFreq, HashSet<string> wordSet) : base(level)
         {
             this.MinRatio = minRatio;
             this.MinFreq = minFreq;
@@ -196,19 +195,28 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             }
         }
 
+        /// <summary>
+        /// Validate Document
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <returns>A list of ValidationErrors.</returns>
         public List<ValidationError> Validate(Document document)
         {
             List<ValidationError> errors = new List<ValidationError>();
 
             // すべてのTokenをさらって、カタカナ語を抽出しSurfaceでDictionary化する。
-            Dictionary<string, List<TokenElement>> katakanaLists = new Dictionary<string, List<TokenElement>>();
-            foreach (TokenElement token in document.GetAllSentences().SelectMany(s => s.Tokens).Where(t => t.IsKatakanaWord()))
+            Dictionary<string, List<(TokenElement token, Sentence sentence)>> katakanaLists =
+                new Dictionary<string, List<(TokenElement token, Sentence sentence)>>();
+            foreach (Sentence sentence in document.GetAllSentences())
             {
-                if (!katakanaLists.ContainsKey(token.Surface))
+                foreach (TokenElement token in sentence.Tokens.Where(t => t.IsKatakanaWord()))
                 {
-                    katakanaLists[token.Surface] = new List<TokenElement>();
+                    if (!katakanaLists.ContainsKey(token.Surface))
+                    {
+                        katakanaLists[token.Surface] = new List<(TokenElement token, Sentence sentence)>();
+                    }
+                    katakanaLists[token.Surface].Add((token, sentence));
                 }
-                katakanaLists[token.Surface].Add(token);
             }
 
             // 出現したカタカナ語についてLevenshtein距離を計算し、類似するものをエラーとして出力する。
@@ -230,24 +238,31 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 {
                     continue;
                 }
-            }
 
-            // Levenshtein距離を計算し、しきい値以下の場合はエラーとして出力（かけ離れ過ぎていないカタカナ語の表記ゆれを検出する工夫）
-            int lsDistThreshold = (int)Math.Round(katakana.Length * Config.MinRatio);
-            bool found = false;
-            foreach (string key in wordPositionMap.Keys)
-            {
-                if (LevenshteinDistanceUtility.GetDistance(key, katakana) <= lsDistThreshold)
+                // Levenshtein距離を計算し、しきい値以下の場合はエラーとして出力（かけ離れ過ぎていないカタカナ語の表記ゆれを検出する工夫）
+                int lsDistThreshold = (int)Math.Round(katakana.Length * Config.MinRatio);
+                bool found = false;
+                // 現在対象としているカタカナ語同士でチェックしても意味が無いので抜く。
+                foreach (string other in katakanaLists.Keys.Where(s => s != katakana))
                 {
-                    found = true;
-                    //addLocalizedError(sentence, katakana, key, dic[key].ToString());
-                }
-            }
+                    if (LevenshteinDistanceUtility.GetDistance(other, katakana) <= lsDistThreshold)
+                    {
+                        // otherの先頭文字位置を出現位置としてリストアップして文字列化しておく。
+                        string positionsText = string.Join(", ", katakanaLists[other].Select(i => i.token.OffsetMap[0].ConvertToShortText()));
 
-            // すでに見つかった場合は既存辞書に追加する。
-            if (!found)
-            {
-                wordPositionMap[katakana] = sentence.LineNumber;
+                        foreach ((TokenElement token, Sentence sentence) tokenAndSentence in katakanaLists[katakana])
+                        {
+                            // MessageArgsは、該当カタカナ語、表記ゆれ相手、表記ゆれ相手の出現位置、の3つ。
+                            errors.Add(new ValidationError(
+                                ValidationType.KatakanaSpellCheck,
+                                this.Level,
+                                tokenAndSentence.sentence,
+                                tokenAndSentence.token.OffsetMap[0],
+                                tokenAndSentence.token.OffsetMap[1],
+                                MessageArgs: new object[] { katakana, other, positionsText }));
+                        }
+                    }
+                }
             }
 
             return errors;

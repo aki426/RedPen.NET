@@ -122,7 +122,7 @@ namespace RedPen.Net.Core.Config
 
     public interface IMinRatioConfigParameter
     {
-        public float MinRatio { get; init; }
+        public double MinRatio { get; init; }
     }
 
     public interface IMinFreqConfigParameter

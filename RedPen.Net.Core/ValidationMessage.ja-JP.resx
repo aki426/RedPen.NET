@@ -193,7 +193,7 @@
     <value>不正なハイフンを含むカタカナ単語 "{0}" が見つかりました。</value>
   </data>
   <data name="KatakanaSpellCheck" xml:space="preserve">
-    <value>カタカナ単語 "{0}" に類似する単語 "{1}" が {2} 行目で見つかりました。</value>
+    <value>カタカナ単語 "{0}" は "{1}"（出現位置：{2}）の揺らぎ表現と考えられます。</value>
   </data>
   <data name="ListLevel" xml:space="preserve">
     <value>リストのレベルが深すぎます。</value>
