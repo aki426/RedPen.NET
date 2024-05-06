@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -7,10 +8,15 @@ using RedPen.Net.Core.Model;
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     /// <summary>LongKanjiChainのConfiguration</summary>
-    public record LongKanjiChainConfiguration : ValidatorConfiguration
+    public record LongKanjiChainConfiguration : ValidatorConfiguration, IMaxLengthConfigParameter, IWordSetConfigParameter
     {
-        public LongKanjiChainConfiguration(ValidationLevel level) : base(level)
+        public int MaxLength { get; init; }
+        public HashSet<string> WordSet { get; init; }
+
+        public LongKanjiChainConfiguration(ValidationLevel level, int maxLength, HashSet<string> wordSet) : base(level)
         {
+            this.MaxLength = maxLength;
+            this.WordSet = wordSet;
         }
     }
 
@@ -23,8 +29,14 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <summary>ValidatorConfiguration</summary>
         public LongKanjiChainConfiguration Config { get; init; }
 
-        /// <summary></summary>
+        /// <summary>日本語のみ許容</summary>
         public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
+
+        /// <summary>漢字の範囲を表す正規表現文字列と出現回数%d</summary>
+        // private static readonly string shard = "[\\u4e00-\\u9faf]{%d,}";
+
+        /// <summary>漢字の連続を表す正規表現</summary>
+        private Regex pat;
 
         // TODO: コンストラクタの引数定義は共通にすること。
         /// <summary>
@@ -43,6 +55,9 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 symbolTable)
         {
             this.Config = config;
+
+            // 出現回数を考慮した正規表現を生成。
+            pat = new Regex($"[\\u4e00-\\u9faf]{{{Config.MaxLength + 1},}}");
         }
 
         /// <summary>
@@ -55,13 +70,22 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             List<ValidationError> result = new List<ValidationError>();
 
             // validation
+            MatchCollection matches = pat.Matches(sentence.Content);
 
-            // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            result.Add(new ValidationError(
-                ValidationType.LongKanjiChain,
-                this.Level,
-                sentence,
-                MessageArgs: new object[] { argsForMessageArg }));
+            foreach (Match match in matches)
+            {
+                string word = match.Value;
+                if (!Config.WordSet.Contains(word))
+                {
+                    result.Add(new ValidationError(
+                        ValidationType.LongKanjiChain,
+                        this.Level,
+                        sentence,
+                        sentence.ConvertToLineOffset(match.Index),
+                        sentence.ConvertToLineOffset(match.Index + match.Length - 1),
+                        MessageArgs: new object[] { word, word.Length }));
+                }
+            }
 
             return result;
         }
