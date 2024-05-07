@@ -2,7 +2,9 @@
 
 Do Not Translate or Localize.
 
-RedPen.NET, a document checker is based and/or uses the following libraries & programs
+RedPen.NET, a document checker is based and/or uses the following libraries & programs.
+
+RedPen.NET is a C# application created anew by improving upon and building from the source code of the redpen-cc/redpen.
 
 ## redpen-cc/redpen
 
@@ -213,3 +215,4 @@ MIT
 MIT
 
 <https://licenses.nuget.org/MIT>
+
