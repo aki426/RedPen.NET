@@ -87,6 +87,9 @@
     <None Update="Resources\DefaultResources\Katakana\KatakanaSpellcheck.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\DefaultResources\Katakana\KatakanaSpellcheckcOptimized.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\DefaultResources\Spellchecker\Spellchecker.en.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
