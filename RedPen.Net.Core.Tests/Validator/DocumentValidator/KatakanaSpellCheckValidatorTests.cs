@@ -34,6 +34,9 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         [InlineData("008", "あのミニマムサポートとこのミニマムサポータはWordSetに片方が該当するためエラーは1つ。", 0.3, 5, "ミニマムサポート", true, 1, "ミニマムサポータ")]
         // デフォルト辞書を使用しないオプションにすればすべてのカタカナ語はValidation対象となる。
         [InlineData("009", "ハロー、ハロ。\nあのインデクスとこのインデックス", 0.3, 5, "", false, 2, "インデクス,インデックス")]
+        [InlineData("010", "仮面ライダーはKuromojiで固有名詞としてToken化されるので仮面ライターと表記ゆれ判定されない。", 0.3, 5, "", false, 0, "")]
+        [InlineData("011", "32インチディスプレイは分割されたTokenと連結されたTokenという自分自身同士で表記ゆれ判定されてしまう。\nディスプレーを設置する。",
+            0.3, 5, "", false, 3, "インチディスプレイ,ディスプレイ,ディスプレー")]
         public void BasicTest(string nouse1, string text, double minRatio, int minFreq, string skipWords, bool enableDefaultDict, int errorCount, string expected)
         {
             // Document
