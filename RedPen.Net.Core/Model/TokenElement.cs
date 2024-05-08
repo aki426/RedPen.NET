@@ -249,6 +249,72 @@ namespace RedPen.Net.Core.Model
         }
 
         /// <summary>
+        /// KuromojiによるToken分割は、カタカナとそれ以外文字を含む固有名詞を1つのTokenに分割するため、さらにそれを再分割する。
+        /// 例）「仮面ライダー」は固有名詞として1Tokenに分割され、「仮面」と「ライダー」には分割されない。
+        /// これを「仮面」と「ライダー」に分割したTokenにする。
+        /// 一方、仮面とライダーに対応するRedingを「カメンライダー」から抽出することは困難なので、混乱を避けるために分割後は空文字列とする。
+        /// MEMO: Readingを必要とするロジックではこの関数を使わないこと。
+        /// </summary>
+        /// <param name="tokens">The tokens.</param>
+        /// <returns>カタカナ文字を含むTokenは分割された結果のリスト。分割されたTokenのReadingはSurfaceと対応しないことに注意。</returns>
+        public static List<TokenElement> ParseKatakanaToken(List<TokenElement> tokens)
+        {
+            List<TokenElement> result = new List<TokenElement>();
+
+            foreach (var token in tokens)
+            {
+                // カタカナを含むがすべてがカタカナではないTokenを判定する。
+                if (token.HasKatakana() && !token.IsKatakanaWord())
+                {
+                    List<(char c, LineOffset lo)> cache = new List<(char c, LineOffset lo)>();
+
+                    for (int i = 0; i < token.Surface.Length; i++)
+                    {
+                        if (cache.Any())
+                        {
+                            // 文字種が異なる場合はそこが区切り。
+                            if (UnicodeUtility.IsKatakana(cache.Last().c) != UnicodeUtility.IsKatakana(token.Surface[i]))
+                            {
+                                // Readingを分割することは困難なので空文字列とする。
+                                result.Add(new TokenElement(
+                                    string.Join("", cache.Select(i => i.c)),
+                                    token.Tags,
+                                    "",
+                                    cache.Select(i => i.lo).ToImmutableList()));
+
+                                cache.Clear();
+                            }
+
+                            cache.Add((token.Surface[i], token.OffsetMap[i]));
+                        }
+                        else
+                        {
+                            cache.Add((token.Surface[i], token.OffsetMap[i]));
+                        }
+                    }
+
+                    // 最後に残ったキャッシュを追加。
+                    if (cache.Any())
+                    {
+                        // Readingを分割することは困難なので空文字列とする。
+                        result.Add(new TokenElement(
+                            string.Join("", cache.Select(i => i.c)),
+                            token.Tags,
+                            "",
+                            cache.Select(i => i.lo).ToImmutableList()));
+                    }
+                }
+                else
+                {
+                    // カタカナ文字を含まないか、すべてカタカナ文字のTokenはそのまま追加する。
+                    result.Add(token);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// 一連のTokenリスト中の隣接する複数のカタカナ語を連結して1つのTokenにまとめたもののみのリストを返す。
         /// MEMO: カタカナ語1語のTokenは結果に含まれない。また、隣接する複数のカタカナ語を部分的に連結したものも含まれない。
         /// </summary>

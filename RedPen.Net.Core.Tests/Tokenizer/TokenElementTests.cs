@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using FluentAssertions;
-using Lucene.Net.Util;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 using Xunit;
@@ -117,6 +117,82 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             }
 
             string.Join("|", concatedNouns.Select(t => t.Surface)).Should().Be(expected);
+        }
+
+        [Fact]
+        public void ParseKatakanaTokenTest()
+        {
+            var jaTokenizer = RedPenTokenizerFactory.CreateTokenizer(CultureInfo.GetCultureInfo("ja-JP"));
+            List<TokenElement> tokens = jaTokenizer.Tokenize(new Sentence("ここに仮面ライダー参上。", 1));
+
+            output.WriteLine("★Original:");
+            foreach (var token in tokens)
+            {
+                output.WriteLine(token.ToString());
+            }
+            output.WriteLine("");
+
+            // 元々のTokenは固有名詞「仮面ライダー」で分割されている。
+            string.Join("|", tokens.Select(t => t.Surface)).Should().Be("ここ|に|仮面ライダー|参上|。");
+
+            // Tokenをカタカナ文字かそれ以外でさらに分割する。
+            var katakanaParsedTokens = TokenElement.ParseKatakanaToken(tokens);
+
+            output.WriteLine("★Parse Katakana:");
+            foreach (var token in katakanaParsedTokens)
+            {
+                output.WriteLine(token.ToString());
+            }
+            output.WriteLine("");
+
+            // 「仮面」と「ライダー」で分割されている。
+            string.Join("|", katakanaParsedTokens.Select(t => t.Surface)).Should().Be("ここ|に|仮面|ライダー|参上|。");
+
+            // OffsetMapは元のTokenのOffsetMapを引き継ぐ。
+            tokens.SelectMany(i => i.OffsetMap).SequenceEqual(katakanaParsedTokens.SelectMany(i => i.OffsetMap)).Should().BeTrue();
+            tokens[2].OffsetMap.SequenceEqual(new List<LineOffset> {
+                katakanaParsedTokens[2].OffsetMap[0],
+                katakanaParsedTokens[2].OffsetMap[1],
+                katakanaParsedTokens[3].OffsetMap[0],
+                katakanaParsedTokens[3].OffsetMap[1],
+                katakanaParsedTokens[3].OffsetMap[2],
+                katakanaParsedTokens[3].OffsetMap[3]
+            }).Should().BeTrue();
+
+            string.Join("-", katakanaParsedTokens[2].OffsetMap.Select(i => i.ConvertToShortText())).Should().Be("(L1,3)-(L1,4)");
+            string.Join("-", katakanaParsedTokens[3].OffsetMap.Select(i => i.ConvertToShortText())).Should().Be("(L1,5)-(L1,6)-(L1,7)-(L1,8)");
+
+            var complexToken = new TokenElement("解離性ミリオンアーサー第２シーズン", new List<string> { "tag" }.ToImmutableList(), "reading",
+                ImmutableList.Create(
+                    new LineOffset(1, 0), // 解
+                    new LineOffset(1, 1),
+                    new LineOffset(1, 2),
+                    new LineOffset(1, 3), // ミ
+                    new LineOffset(1, 4),
+                    new LineOffset(1, 5),
+                    new LineOffset(1, 6),
+                    new LineOffset(1, 7), // ア
+                    new LineOffset(1, 8),
+                    new LineOffset(1, 9),
+                    new LineOffset(1, 10),
+                    new LineOffset(1, 11), // 第
+                    new LineOffset(1, 12),
+                    new LineOffset(1, 13), // シ
+                    new LineOffset(1, 14),
+                    new LineOffset(1, 15),
+                    new LineOffset(1, 16)
+                ));
+
+            var complexTokenList = TokenElement.ParseKatakanaToken(new List<TokenElement>() { complexToken });
+
+            output.WriteLine("★Parse Katakana:");
+            foreach (var token in complexTokenList)
+            {
+                output.WriteLine(token.ToString());
+            }
+
+            complexTokenList.Count.Should().Be(4);
+            string.Join("|", complexTokenList.Select(t => t.Surface)).Should().Be("解離性|ミリオンアーサー|第２|シーズン");
         }
     }
 }
