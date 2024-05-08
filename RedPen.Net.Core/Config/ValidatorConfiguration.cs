@@ -44,6 +44,12 @@ namespace RedPen.Net.Core.Config
         public int MaxNumber { get; init; }
     }
 
+    /// <summary>ValidatorConfigurationの継承クラスがMaxLevelプロパティを持つことを示すインターフェース。</summary>
+    public interface IMaxLevelConfigParameter
+    {
+        public int MaxLevel { get; init; }
+    }
+
     /// <summary>ValidatorConfigurationの継承クラスがWordMapプロパティを持つことを示すインターフェース。</summary>
     public interface IWordMapConfigParameter
     {
