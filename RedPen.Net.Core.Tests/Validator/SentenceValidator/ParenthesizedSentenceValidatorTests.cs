@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Validators.SentenceValidator;
-using Xunit.Abstractions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 {
