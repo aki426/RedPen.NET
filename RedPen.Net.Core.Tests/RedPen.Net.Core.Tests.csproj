@@ -81,6 +81,7 @@
     <Compile Include="Utility\DictionaryLoaderTests.cs" />
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
     <Compile Include="Utility\ExpressionRuleExtractorTests.cs" />
+    <Compile Include="Utility\LevenshteinDistanceUtilityTests.cs" />
     <Compile Include="Utility\UnicodeUtilityTests.cs" />
     <Compile Include="Validator\DocumentValidator\JapaneseExpressionVariationValidatorTest.cs" />
     <Compile Include="Validator\ExpressionRuleTests.cs" />
