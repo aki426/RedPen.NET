@@ -242,13 +242,13 @@
     <value>Number {0} has a delimiter in the wrong position.</value>
   </data>
   <data name="ParenthesizedSentence_NestingLevelTooDeep" xml:space="preserve">
-    <value>Parenthesized sentences are nested too deeply.</value>
+    <value>Parenthesized sentences are nested {0} level which exceeds the maximum of  {1}.</value>
   </data>
   <data name="ParenthesizedSentence_SubsentenceTooLong" xml:space="preserve">
-    <value>Parenthesized sentence is too long.</value>
+    <value>Parenthesized sentence length {0} exceeds the maximum of {1}.</value>
   </data>
   <data name="ParenthesizedSentence_SubsentenceTooFrequent" xml:space="preserve">
-    <value>Too many parenthesized sentences.</value>
+    <value>Too many parenthesized sentences {0} exceeds the maximum of {1}.</value>
   </data>
   <data name="Hyphenation_HyphenatedInDictionary" xml:space="preserve">
     <value>This phrase "{0}" should be hyphenated. ie: "{0}"</value>
@@ -294,5 +294,8 @@
   </data>
   <data name="Taigendome" xml:space="preserve">
     <value>Found noun "{0}" at end of sentence.</value>
+  </data>
+  <data name="ParenthesizedSentence_MismatchedParentheses" xml:space="preserve">
+    <value>Found an invalid mismatched parentheses "{0}".</value>
   </data>
 </root>

@@ -220,13 +220,13 @@
     <value>不正なパラグラフ開始部分 "{0}" が見つかりました。</value>
   </data>
   <data name="ParenthesizedSentence_NestingLevelTooDeep" xml:space="preserve">
-    <value>括弧のネストが深すぎます。</value>
+    <value>括弧のネストレベル（{0}）が最大値（{1}）を超えています。</value>
   </data>
   <data name="ParenthesizedSentence_SubsentenceTooFrequent" xml:space="preserve">
-    <value>括弧の使い過ぎです。</value>
+    <value>1文中の括弧の数（{0}）が最大値（{1}）を超えています。</value>
   </data>
   <data name="ParenthesizedSentence_SubsentenceTooLong" xml:space="preserve">
-    <value>括弧内の文が長すぎます。</value>
+    <value>括弧内の文の長さ（{0}文字）が最大値（{1}文字）を超えています。</value>
   </data>
   <data name="Quotation_DoubleLeft" xml:space="preserve">
     <value>左クォートが連続して使われています。</value>
@@ -314,5 +314,8 @@
   </data>
   <data name="Taigendome" xml:space="preserve">
     <value>体言止め "{0}" が見つかりました。</value>
+  </data>
+  <data name="ParenthesizedSentence_MismatchedParentheses" xml:space="preserve">
+    <value>左右の括弧の対応が取れていない不正な括弧 "{0}" が見つかりました。</value>
   </data>
 </root>

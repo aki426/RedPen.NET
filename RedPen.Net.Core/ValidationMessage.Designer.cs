@@ -376,7 +376,16 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Parenthesized sentences are nested too deeply. に類似しているローカライズされた文字列を検索します。
+        ///   Found an invalid mismatched parentheses &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ParenthesizedSentence_MismatchedParentheses {
+            get {
+                return ResourceManager.GetString("ParenthesizedSentence_MismatchedParentheses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Parenthesized sentences are nested {0} level which exceeds the maximum of  {1}. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string ParenthesizedSentence_NestingLevelTooDeep {
             get {
@@ -385,7 +394,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Too many parenthesized sentences. に類似しているローカライズされた文字列を検索します。
+        ///   Too many parenthesized sentences {0} exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string ParenthesizedSentence_SubsentenceTooFrequent {
             get {
@@ -394,7 +403,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Parenthesized sentence is too long. に類似しているローカライズされた文字列を検索します。
+        ///   Parenthesized sentence length {0} exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string ParenthesizedSentence_SubsentenceTooLong {
             get {
