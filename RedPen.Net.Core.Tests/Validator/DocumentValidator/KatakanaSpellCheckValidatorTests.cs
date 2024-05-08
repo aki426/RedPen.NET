@@ -35,9 +35,13 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         [InlineData("008", "あのミニマムサポートとこのミニマムサポータはWordSetに片方が該当するためエラーは1つ。", 0.3, 5, "ミニマムサポート", true, 1, "ミニマムサポータ")]
         // デフォルト辞書を使用しないオプションにすればすべてのカタカナ語はValidation対象となる。
         [InlineData("009", "ハロー、ハロ。\nあのインデクスとこのインデックス", 0.3, 5, "", false, 2, "インデクス,インデックス")]
-        [InlineData("010", "仮面ライダーはKuromojiで固有名詞としてToken化されるので仮面ライターと表記ゆれ判定されない。", 0.3, 5, "", false, 0, "")]
-        [InlineData("011", "32インチディスプレイは分割されたTokenと連結されたTokenという自分自身同士で表記ゆれ判定されてしまう。\nディスプレーを設置する。",
-            0.3, 5, "", false, 3, "インチディスプレイ,ディスプレイ,ディスプレー")]
+        // 「仮面ライダー」は固有名詞として1Tokenで分割されるが、さらにカタカナ語として分割する処理を入れているのでライダーとライターが表記ゆれ判定される。
+        [InlineData("010", "仮面ライダーはKuromojiで固有名詞としてToken化されるがカタカナ語分割するので仮面ライターと表記ゆれ判定される。",
+            0.3, 5, "", false, 2, "ライダー,ライター")]
+        // 「インチ」「ディスプレイ」の連結である「インチディスプレイ」は自身を構成する「ディスプレイ」と表記ゆれ判定されてしまう。
+        // これを避けるためにLevenStein距離で判定された後に、OffsetMapをOverlap関数で判定し出現位置が同じだった場合はエラーとして扱わないロジックを入れている。
+        [InlineData("011", "32インチディスプレイは分割されたTokenと連結されたTokenという自分自身同士で表記ゆれ判定しないように、OffsetMapで位置を共有するTokenは判定から除外している。\nディスプレーを設置する。",
+            0.3, 5, "", false, 2, "ディスプレイ,ディスプレー")]
         public void BasicTest(string nouse1, string text, double minRatio, int minFreq, string skipWords, bool enableDefaultDict, int errorCount, string expected)
         {
             // Document

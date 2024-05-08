@@ -97,6 +97,25 @@ namespace RedPen.Net.Core.Model
         }
 
         /// <summary>
+        /// 相手のTokenと一部でも位置が重なっているかどうかを判定する関数。
+        /// MEMO: 完全一致ではないことに注意せよ。
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>A bool.</returns>
+        public bool Overlap(TokenElement other)
+        {
+            foreach (LineOffset offset in this.OffsetMap)
+            {
+                if (other.OffsetMap.Contains(offset))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// カタカナ語＝すべてカタカナで構成されたSurfaceかどうかを判定する関数。
         /// 1文字でも非カタカナ文字があればFalseを返す。
         /// MEMO: 記号を含む場合はFalseを返すので注意。

@@ -107,11 +107,16 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 new Dictionary<string, List<(TokenElement token, Sentence sentence)>>();
             foreach (var sentence in document.GetAllSentences())
             {
+                // 固有名詞としてカタナナ交じりのSurfaceでToken分割されることがあるので、さらにカタカナ語部分を分割する。
+                // MEMO: 現状の仕様では分割したTokenからはReading情報が欠落するので注意。
+                var parsedTokens = TokenElement.ParseKatakanaToken(sentence.Tokens);
+
                 // カタカナ語は途中で分割されていることがあるので、隣接したものは連結して1つのカタカナ語のTokenとして扱う。
-                List<TokenElement> katakanaTokens = TokenElement.GetConcatedKatakanaWords(sentence.Tokens);
+                List<TokenElement> katakanaTokens = TokenElement.GetConcatedKatakanaWords(parsedTokens);
+
                 // 元のTokensからカタカナ語のみ抽出して加える。
                 // これにより、カタカナ語のTokenと、隣接する連続したカタカナ語を連結したTokenが両方リストに含まれる。
-                katakanaTokens.AddRange(sentence.Tokens.Where(t => t.IsKatakanaWord()));
+                katakanaTokens.AddRange(parsedTokens.Where(t => t.IsKatakanaWord()));
 
                 foreach (var token in katakanaTokens)
                 {
@@ -157,14 +162,23 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
 
                         foreach (var tokenAndSentence in katakanaLists[katakana])
                         {
-                            // MessageArgsは、該当カタカナ語、表記ゆれ相手、表記ゆれ相手の出現位置、の3つ。
-                            errors.Add(new ValidationError(
-                                ValidationType.KatakanaSpellCheck,
-                                Level,
-                                tokenAndSentence.sentence,
-                                tokenAndSentence.token.OffsetMap[0],
-                                tokenAndSentence.token.OffsetMap[1],
-                                MessageArgs: new object[] { katakana, other, positionsText }));
+                            // 今エラーだと考えているカタカナ語について、相手の出現位置が1つでも一致した場合は、
+                            // 部分文字列同士で一致したと判定してしまっていることになるので、その場合はエラーにしない。
+                            if (katakanaLists[other].Any(i => i.token.Overlap(tokenAndSentence.token)))
+                            {
+                                // nothing
+                            }
+                            else
+                            {
+                                // MessageArgsは、該当カタカナ語、表記ゆれ相手、表記ゆれ相手の出現位置、の3つ。
+                                errors.Add(new ValidationError(
+                                    ValidationType.KatakanaSpellCheck,
+                                    Level,
+                                    tokenAndSentence.sentence,
+                                    tokenAndSentence.token.OffsetMap[0],
+                                    tokenAndSentence.token.OffsetMap[1],
+                                    MessageArgs: new object[] { katakana, other, positionsText }));
+                            }
                         }
                     }
                 }
