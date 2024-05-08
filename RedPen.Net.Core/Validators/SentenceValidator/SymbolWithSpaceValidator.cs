@@ -14,20 +14,14 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         }
     }
 
-    // TODO: Validation対象に応じて、IDocumentValidatable, ISectionValidatable, ISentenceValidatableを実装する。
     /// <summary>SymbolWithSpaceのValidator</summary>
     public class SymbolWithSpaceValidator : Validator, ISentenceValidatable
     {
         /// <summary>Nlog</summary>
         private static Logger log = LogManager.GetCurrentClassLogger();
 
-        // TODO: 専用のValidatorConfigurationを別途定義する。
         /// <summary>ValidatorConfiguration</summary>
         public SymbolWithSpaceConfiguration Config { get; init; }
-
-        // TODO: サポート対象言語がANYではない場合overrideで再定義する。
-        /// <summary></summary>
-        public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
 
         // TODO: コンストラクタの引数定義は共通にすること。
         /// <summary>
@@ -58,13 +52,49 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             List<ValidationError> result = new List<ValidationError>();
 
             // validation
+            foreach (SymbolType symbolType in SymbolTable.SymbolTypeDictionary.Keys)
+            {
+                //validateSymbol(sentence, symbolType);
+                string sentenceStr = sentence.Content;
+                Symbol symbol = SymbolTable.SymbolTypeDictionary[symbolType];
 
-            // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            result.Add(new ValidationError(
-                ValidationType.SymbolWithSpace,
-                this.Level,
-                sentence,
-                MessageArgs: new object[] { argsForMessageArg }));
+                if (!symbol.NeedBeforeSpace && !symbol.NeedAfterSpace)
+                {
+                    continue;
+                }
+
+                char target = symbol.Value;
+                int position = sentenceStr.IndexOf(target);
+                if (position != -1)
+                {
+                    string key = "";
+
+                    if (position > 0 && symbol.NeedBeforeSpace && !char.IsWhiteSpace(sentenceStr[position - 1]))
+                    {
+                        key = "Before";
+                    }
+
+                    // MEMO: SymbolWithSpaceのMessageKeyはBefore, After, BeforeAfterのいずれかなのでこの並び順を維持すること。
+
+                    if (position < sentenceStr.Length - 1 && symbol.NeedAfterSpace && char.IsLetterOrDigit(sentenceStr[position + 1]))
+                    {
+                        key += "After";
+                    }
+
+                    if (key != string.Empty)
+                    {
+                        result.Add(new ValidationError(
+                            ValidationType.SymbolWithSpace,
+                            this.Level,
+                            sentence,
+                            sentence.ConvertToLineOffset(position),
+                            sentence.ConvertToLineOffset(position),
+                            MessageArgs: new object[] { sentenceStr[position] },
+                            MessageKey: key
+                        ));
+                    }
+                }
+            }
 
             return result;
         }
