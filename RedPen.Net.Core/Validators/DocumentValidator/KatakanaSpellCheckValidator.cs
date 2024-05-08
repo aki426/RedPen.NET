@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -60,6 +59,9 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// </summary>
         private static HashSet<string> katakanaWordDict = null; // new HashSet<string>();
 
+        /// <summary>LevenshteinDistanceUtility</summary>
+        private LevenshteinDistanceUtility levenshteinDistance;
+
         // TODO: コンストラクタの引数定義は共通にすること。
         /// <summary>
         /// Initializes a new instance of the <see cref="KatakanaSpellCheckValidator"/> class.
@@ -84,6 +86,11 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
             {
                 katakanaWordDict = ResourceFileLoader.LoadWordSet(DefaultResources.KatakanaSpellcheck);
             }
+
+            // LevenshteinDistanceUtilityとメモ化キャッシュの初期化
+            // MEMO: LevenStein距離の計算は、挿入、削除、置換のコストが全て1とする。
+            // これによって計算結果は2つの文字列を入れ替えても同じになる。
+            levenshteinDistance = new LevenshteinDistanceUtility();
         }
 
         /// <summary>
@@ -142,7 +149,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 // 現在対象としているカタカナ語同士でチェックしても意味が無いので抜く。
                 foreach (var other in katakanaLists.Keys.Where(s => s != katakana))
                 {
-                    if (LevenshteinDistanceUtility.GetDistance(other, katakana) <= lsDistThreshold)
+                    // MEMO: Levenshtein距離計算コストをスキップするためメモ化関数を用いる。
+                    if (levenshteinDistance.GetDistanceMemoize(other, katakana) <= lsDistThreshold)
                     {
                         // otherの先頭文字位置を出現位置としてリストアップして文字列化しておく。
                         var positionsText = string.Join(", ", katakanaLists[other].Select(i => i.token.OffsetMap[0].ConvertToShortText()));

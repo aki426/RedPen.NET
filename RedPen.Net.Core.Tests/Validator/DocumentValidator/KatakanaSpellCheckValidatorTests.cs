@@ -72,12 +72,13 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
         [Fact]
         public void LevenshteinDistanceTest()
         {
+            LevenshteinDistanceUtility utility = new LevenshteinDistanceUtility();
             string katakana = "インデクス";
             string other = "インデックス";
 
             output.WriteLine($"Distance threshold: {(int)Math.Round(katakana.Length * 0.3)} from {katakana}");
             output.WriteLine($"Distance threshold: {(int)Math.Round(other.Length * 0.3)} from {other}");
-            output.WriteLine("LevenshteinDistance: " + LevenshteinDistanceUtility.GetDistance(other, katakana));
+            output.WriteLine("LevenshteinDistance: " + utility.GetDistance(other, katakana));
         }
     }
 }
