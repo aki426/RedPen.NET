@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Utility;
 using RedPen.Net.Core.Validators.DocumentValidator;
@@ -79,6 +80,8 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             output.WriteLine($"Distance threshold: {(int)Math.Round(katakana.Length * 0.3)} from {katakana}");
             output.WriteLine($"Distance threshold: {(int)Math.Round(other.Length * 0.3)} from {other}");
             output.WriteLine("LevenshteinDistance: " + utility.GetDistance(other, katakana));
+
+            utility.GetDistance(other, katakana).Should().Be(utility.GetDistanceMemoize(other, katakana));
         }
     }
 }
