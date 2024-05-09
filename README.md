@@ -73,7 +73,7 @@
 | v    | InvalidSymbol         | Sentence | 不正なシンボルを検出                                           | ※Symbolsブロックで定義         |
 | v    | ParenthesizedSentence | Sentence | 不正な括弧を検出                                               | MaxLength, MaxNumber, MaxLevel |
 | v    | SentenceLength        | Sentence | 最大文字長を超えるセンテンスを検出                             | MaxLength                      |
-|      | SuccessiveSentence    | Sentence | 最小文字長以上かつ編集距離閾値以下の類似文の二回連続使用を検出 | Distance, MinLength            |
+| v    | SuccessiveSentence    | Sentence | 最小文字長以上かつ編集距離閾値以下の類似文の二回連続使用を検出 | Distance, MinLength            |
 | v    | SuccessiveWord        | Sentence | 同一の単語の連続使用を検出                                     |                                |
 | v    | SuggestExpression     | Sentence | 不正な表現に対する推奨表現の提案                               | DictFile, WordMap              |
 | v    | SymbolWithSpace       | Sentence | シンボル前後のスペースの有無を検出                             | ※Symbolsブロックで定義         |
