@@ -140,4 +140,9 @@ namespace RedPen.Net.Core.Config
     {
         public bool EnableDefaultDict { get; init; }
     }
+
+    public interface IMaxDistanceConfigParameter
+    {
+        public int MaxDistance { get; init; }
+    }
 }

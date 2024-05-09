@@ -1,4 +1,5 @@
-﻿using RedPen.Net.Core.Parser;
+﻿using Lucene.Net.Util;
+using RedPen.Net.Core.Parser;
 using RedPen.Net.Core.Tokenizer;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,12 +48,37 @@ namespace RedPen.Net.Core.Model
             List<Sentence> sentences = new List<Sentence>();
             foreach (Section section in this.Sections)
             {
-                // ParagraphsからSentenceを抽出する。
-                sentences.AddRange(section.Paragraphs.SelectMany(i => i.Sentences));
-                // TODO: 先にParagraphからSentenceを抽出しているのはなぜ？　順番は関係ない？
+                // TODO: 暫定的にHeaderSentence -> Paragraph -> ListBlockの順でSentenceを取得するが、
+                // PlainTextParser以外のParserを使用した場合にもこの順番で良いか検証する必要がある。。
                 sentences.AddRange(section.HeaderSentences);
-                // ListBlocksからSentenceを抽出する。
+                sentences.AddRange(section.Paragraphs.SelectMany(i => i.Sentences));
                 sentences.AddRange(section.ListBlocks.SelectMany(i => i.ListElements.SelectMany(j => j.Sentences)));
+            }
+
+            return sentences;
+        }
+
+        // TODO: Sectionに対してはSubsectionsがあるので再帰的にSentenceを取得する必要がある。
+
+        /// <summary>
+        /// Sectionのリストから、Sectionの内容とさらにそのSubsectionsの内容を再帰的に取得する関数。
+        /// </summary>
+        /// <param name="sections">The sections.</param>
+        /// <returns>A list of Sentences.</returns>
+        public List<Sentence> GetAllSentencesRecursive(List<Section> sections)
+        {
+            // 全SectionからSentenceを抽出する。
+            List<Sentence> sentences = new List<Sentence>();
+            foreach (Section section in sections)
+            {
+                // TODO: 暫定的にHeaderSentence -> Paragraph -> ListBlockの順でSentenceを取得するが、
+                // PlainTextParser以外のParserを使用した場合にもこの順番で良いか検証する必要がある。。
+                sentences.AddRange(section.HeaderSentences);
+                sentences.AddRange(section.Paragraphs.SelectMany(i => i.Sentences));
+                sentences.AddRange(section.ListBlocks.SelectMany(i => i.ListElements.SelectMany(j => j.Sentences)));
+
+                // 再帰的にSubsectionからもSentenceを取得する。
+                sentences.AddRange(GetAllSentencesRecursive(section.Subsections));
             }
 
             return sentences;

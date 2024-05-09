@@ -84,6 +84,7 @@
     <Compile Include="Utility\LevenshteinDistanceUtilityTests.cs" />
     <Compile Include="Utility\UnicodeUtilityTests.cs" />
     <Compile Include="Validator\DocumentValidator\JapaneseExpressionVariationValidatorTest.cs" />
+    <Compile Include="Validator\DocumentValidator\SuccessiveSentenceValidatorTests.cs" />
     <Compile Include="Validator\ExpressionRuleTests.cs" />
     <Compile Include="Validator\SentenceValidator\CommaNumberValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\DoubledConjunctiveParticleGaValidatorTests.cs" />

@@ -182,6 +182,7 @@ namespace RedPen.Net.Core.Tests.Validator
             // 目視確認。
             foreach (var sentence in document.GetAllSentences())
             {
+                output.WriteLine($"[{sentence.Content}]");
                 output.WriteLine("★全Token:");
                 foreach (var token in sentence.Tokens)
                 {
@@ -211,7 +212,16 @@ namespace RedPen.Net.Core.Tests.Validator
                     output.WriteLine(manager.GetErrorMessage(error, CultureInfo.GetCultureInfo("ja-JP")));
                 }
 
-                string.Join(",", errors.Select(e => e.MessageArgs[0].ToString())).Should().Be(expected);
+                // デリミタ間違えるので「,」でも「|」でもどちらでもよいようにした。
+                var commaSeparated = string.Join(",", errors.Select(e => e.MessageArgs[0].ToString()));
+                if (commaSeparated == expected)
+                {
+                    string.Join(",", errors.Select(e => e.MessageArgs[0].ToString())).Should().Be(expected);
+                }
+                else
+                {
+                    string.Join("|", errors.Select(e => e.MessageArgs[0].ToString())).Should().Be(expected);
+                }
             }
         }
     }
