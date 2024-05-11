@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators
 {
-    /// <summary>トークン分割された文のSurfaceレベルでの表現パターン。</summary>
+    /// <summary>トークン列によって表現された表現ルール。</summary>
     public record ExpressionRule
     {
         /// <summary>Tokenのリスト。</summary>
@@ -63,19 +62,9 @@ namespace RedPen.Net.Core.Validators
                 bool isMatch = true;
                 for (int j = 0; j < this.Tokens.Count; j++)
                 {
-                    // MEMO: Surfaceにもワイルドカードがある場合は無条件マッチとする。
-                    if (this.Tokens[j].Surface == "*")
+                    isMatch = this.Tokens[j].MatchSurface(currentTokenSequence[j]);
+                    if (!isMatch)
                     {
-                        continue;
-                    }
-                    else if (this.Tokens[j].Surface == currentTokenSequence[j].Surface.ToLower())
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        // マッチしないTokenがあればFalseで抜ける。
-                        isMatch = false;
                         break;
                     }
                 }
@@ -121,20 +110,9 @@ namespace RedPen.Net.Core.Validators
                 bool isMatch = true;
                 for (int j = 0; j < this.Tokens.Count; j++)
                 {
-                    // MEMO: Surfaceにもワイルドカードがある場合は無条件マッチとし、Tagsのマッチを確認する。
-                    if (this.Tokens[j].Surface == "*" && this.Tokens[j].MatchTags(currentTokenSequence[j]))
+                    isMatch = this.Tokens[j].MatchSurface(currentTokenSequence[j]) && this.Tokens[j].MatchTags(currentTokenSequence[j]);
+                    if (!isMatch)
                     {
-                        continue;
-                    }
-                    else if (this.Tokens[j].Surface == currentTokenSequence[j].Surface.ToLower()
-                        && this.Tokens[j].MatchTags(currentTokenSequence[j]))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        // マッチしないTokenがあればFalseで抜ける。
-                        isMatch = false;
                         break;
                     }
                 }
@@ -189,19 +167,9 @@ namespace RedPen.Net.Core.Validators
                 bool isMatch = true;
                 for (int j = 0; j < this.Tokens.Count; j++)
                 {
-                    // MEMO:Readingにもワイルドカードがある場合は無条件マッチとする。
-                    if (this.Tokens[j].Reading == "*")
+                    isMatch = this.Tokens[j].MatchReading(currentTokenSequence[j]);
+                    if (!isMatch)
                     {
-                        continue;
-                    }
-                    else if (this.Tokens[j].Reading == currentTokenSequence[j].Reading.ToLower())
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        // マッチしないTokenがあればFalseで抜ける。
-                        isMatch = false;
                         break;
                     }
                 }
