@@ -83,6 +83,10 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     // initial
                     prev = curr;
                 }
+                else if (prev.Content.Trim() == "" || curr.Content.Trim() == "")
+                {
+                    // nothing.
+                }
                 else
                 {
                     // pre check

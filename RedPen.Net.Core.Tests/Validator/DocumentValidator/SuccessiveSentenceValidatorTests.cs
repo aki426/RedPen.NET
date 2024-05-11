@@ -10,6 +10,7 @@ using Xunit.Abstractions;
 using Xunit;
 using RedPen.Net.Core.Utility;
 using FluentAssertions;
+using Lucene.Net.Search;
 
 namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
 {
@@ -65,6 +66,43 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
             LevenshteinDistanceUtility utility = new LevenshteinDistanceUtility();
 
             utility.GetDistance("This is a pen.", " This is a pen.").Should().Be(1);
+        }
+
+        [Theory]
+        [InlineData("001", "これはペンです。これはペンです。", 3, 5, 1, "これはペンです。")]
+        [InlineData("002", "これはペンです。これはシャープペンシルです。", 3, 5, 0, "")]
+        [InlineData("003", "これはペンです。これはシャープペンシルです。", 10, 5, 1, "これはペンです。")]
+        [InlineData("004", "これはペンです。これは筆です。", 3, 5, 1, "これはペンです。")]
+        [InlineData("005", "ワッフル。ワッフル。", 3, 10, 0, "")]
+        [InlineData("006", "ワッフル。ワッフル。", 3, 3, 1, "ワッフル。")]
+        public void JapaneseBasicTest(string nouse1, string text, int maxDistance, int minLength, int errorCount, string expected)
+        {
+            // Document
+            CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
+
+            // ValidatorConfiguration
+            var validatorConfiguration = new SuccessiveSentenceConfiguration(
+                ValidationLevel.ERROR,
+                maxDistance,
+                minLength
+            );
+
+            // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
+            SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
+
+            // Validator
+            var validator = new SuccessiveSentenceValidator(
+                documentLang,
+                symbolTable,
+                validatorConfiguration);
+
+            ValidatorTestsUtility.CommonDocumentWithPlainTextParseErrorPatternTest(
+                validator,
+                text,
+                documentLang,
+                errorCount,
+                expected,
+                output);
         }
     }
 }
