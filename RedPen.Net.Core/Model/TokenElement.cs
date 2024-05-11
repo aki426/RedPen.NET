@@ -97,6 +97,15 @@ namespace RedPen.Net.Core.Model
         }
 
         /// <summary>
+        /// ExpressionRuleに変換可能なToken表現形式文字列を取得する。
+        /// </summary>
+        /// <returns>A string.</returns>
+        public string FormatToExpressionRuleStyle()
+        {
+            return $"{Surface}:{string.Join(",", Tags)}:{Reading}";
+        }
+
+        /// <summary>
         /// 相手のTokenと一部でも位置が重なっているかどうかを判定する関数。
         /// MEMO: 完全一致ではないことに注意せよ。
         /// </summary>
@@ -150,6 +159,54 @@ namespace RedPen.Net.Core.Model
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Surfaceがマッチするかどうか＝ExpressionRuleとしてマッチするかどうかを判定する関数。
+        /// MEMO: 完全一致ではないことに注意。
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>A bool.</returns>
+        public bool MatchSurface(TokenElement other)
+        {
+            if (this.Surface == "*" || other.Surface == "*")
+            {
+                return true;
+            }
+            else if (this.Surface == string.Empty || other.Surface == string.Empty)
+            {
+                // Surfaceにおいても空文字列はワイルドカードとして扱う。
+                return true;
+            }
+            else if (this.Surface == other.Surface)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool MatchReading(TokenElement other)
+        {
+            if (this.Reading == "*" || other.Reading == "*")
+            {
+                return true;
+            }
+            else if (this.Reading == string.Empty || other.Reading == string.Empty)
+            {
+                // Readingにおいても空文字列はワイルドカードとして扱う。
+                return true;
+            }
+            else if (this.Reading == other.Reading)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
