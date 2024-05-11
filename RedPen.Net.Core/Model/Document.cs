@@ -65,7 +65,7 @@ namespace RedPen.Net.Core.Model
         /// </summary>
         /// <param name="sections">The sections.</param>
         /// <returns>A list of Sentences.</returns>
-        public List<Sentence> GetAllSentencesRecursive(List<Section> sections)
+        public static List<Sentence> GetAllSentencesRecursive(List<Section> sections)
         {
             // 全SectionからSentenceを抽出する。
             List<Sentence> sentences = new List<Sentence>();
@@ -79,6 +79,41 @@ namespace RedPen.Net.Core.Model
 
                 // 再帰的にSubsectionからもSentenceを取得する。
                 sentences.AddRange(GetAllSentencesRecursive(section.Subsections));
+            }
+
+            return sentences;
+        }
+
+        /// <summary>
+        /// センテンスのリストを、ドキュメント構造上のまとまりごとに抽出する。
+        /// MEMO: HeaderSentence、Paragraph、ListElement内のSentenceリストを出現順に取得することを意図している。
+        /// </summary>
+        /// <returns>A list of List.</returns>
+        public List<List<Sentence>> GetAllSentencesByDocumentStructure()
+        {
+            return GetSentencesByStructureRecursive(this.Sections);
+        }
+
+        /// <summary>
+        /// センテンスのリストを、ドキュメント構造上のまとまりごとに再帰で抽出する。
+        /// MEMO: HeaderSentence、Paragraph、ListElement内のSentenceリストを出現順に取得することを意図している。
+        /// </summary>
+        /// <param name="sections"></param>
+        /// <returns></returns>
+        public static List<List<Sentence>> GetSentencesByStructureRecursive(List<Section> sections)
+        {
+            List<List<Sentence>> sentences = new List<List<Sentence>>();
+            foreach (Section section in sections)
+            {
+                // ヘッダーは複数センテンスを持つ。
+                sentences.Add(section.HeaderSentences);
+                // パラグラフ1つにつき複数センテンスを持つ。
+                sentences.AddRange(section.Paragraphs.Select(i => i.Sentences).ToList());
+                // リストブロック1:リストエレメント多:センテンス多、という構造。
+                sentences.AddRange(section.ListBlocks.SelectMany(block => block.ListElements.Select(ele => ele.Sentences)));
+
+                // サブセクションに再帰。
+                sentences.AddRange(GetSentencesByStructureRecursive(section.Subsections));
             }
 
             return sentences;

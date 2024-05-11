@@ -32,7 +32,11 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         // もう1つは（）や「」に対応して文を区切るSentenceExtractorを実装する方法。
         // 今回はParagraph単位で左右の括弧の対応関係を取る方法を採用する。
         [InlineData("008", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人）による創作です。", 20, 2, 2, 0, "")]
-        [InlineData("009", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人()です。）による創作です。", 8, 1, 1, 3, "15,2,2")]
+        [InlineData("009", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人）による創作です", 20, 2, 2, 0, "")]
+        [InlineData("010", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人）による創作です。有名な童話ですよ。", 20, 2, 2, 0, "")]
+        [InlineData("011", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人()です。）による創作です。", 8, 1, 1, 3, "15,2,2")]
+        [InlineData("012", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人()です。）による創作です", 8, 1, 1, 3, "15,2,2")]
+        [InlineData("013", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人()です。）による創作です。有名な童話ですよ。", 8, 1, 1, 3, "15,2,2")]
         public void BasicTest(string nouse1, string text, int maxLength, int maxNumber, int maxLevel, int errorCount, string expected)
         {
             // Document
@@ -50,7 +54,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
                 symbolTable,
                 validatorConfiguration);
 
-            ValidatorTestsUtility.CommonSentenceWithPlainTextParseErrorPatternTest(
+            ValidatorTestsUtility.CommonDocumentWithPlainTextParseErrorPatternTest(
                 validator,
                 text,
                 documentLang,

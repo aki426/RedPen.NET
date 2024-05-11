@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Lucene.Net.Util;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -30,7 +31,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
     // TODO: Validation対象に応じて、IDocumentValidatable, ISectionValidatable, ISentenceValidatableを実装する。
     /// <summary>ParenthesizedSentenceのValidator</summary>
-    public class ParenthesizedSentenceValidator : Validator, ISentenceValidatable
+    public class ParenthesizedSentenceValidator : Validator, IDocumentValidatable
     {
         /// <summary>Nlog</summary>
         private static Logger log = LogManager.GetCurrentClassLogger();
@@ -72,76 +73,109 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         private static readonly char R_PAREN_FULLWIDTH = '）';
 
         /// <summary>
-        /// 括弧に関するValidationを実行します。次のケースに対応しています。
-        /// １．左右の括弧の対応関係が正しいかどうか。（左カッコが無いのに右カッコがある、もしくは右カッコで閉じられていない左カッコがある。）
-        /// ２．括弧内の文章の文字数が規定値を超えていないかどうか。（「これ（～～～長すぎる文～～～）はあれと異なります。」などという長い括弧は不正。）
-        /// ３．一文内に存在してもよい括弧の数が規定値を超えていないかどうか。（「あ（）、い（）、う（）です」などという括弧の多用は不正。）
-        /// ４．括弧のネストレベルが規定値を超えていないかどうか。（「（（（（））））」などという括弧の使い方は不正。）
+        /// ドキュメント構造上ひとまとまりと判定されるSentenceのリスト全体に対して、Validationを実行する。
         /// </summary>
-        /// <param name="sentence">The sentence.</param>
+        /// <param name="sentences">The sentences.</param>
         /// <returns>A list of ValidationErrors.</returns>
-        public List<ValidationError> Validate(Sentence sentence)
+        public static List<ValidationError> ValidateSentencesByStructure(
+            List<Sentence> sentences,
+            ParenthesizedSentenceConfiguration config,
+            SymbolTable symbolTable
+            )
         {
             List<ValidationError> result = new List<ValidationError>();
 
+            // MEMO: 空のリストが渡された場合は何もしない。
+            if (sentences.Count == 0)
+            {
+                return result;
+            }
+
+            // 文の区切りとみなす文字を定義する。
+            char[] periods = new char[]{
+                // MEMO: 日本語では「。」「？」「！」の3種類が該当。
+                symbolTable.GetValueOrFallbackToDefault(SymbolType.FULL_STOP),
+                symbolTable.GetValueOrFallbackToDefault(SymbolType.QUESTION_MARK),
+                symbolTable.GetValueOrFallbackToDefault(SymbolType.EXCLAMATION_MARK)
+            };
+
+            // 文章構造単位で必要な情報を付加しつつ1文字単位で分解する。
+            List<(char c, int indexInSentence, int indexInStructure, Sentence sentence, LineOffset lineOffset)> charStack =
+                    new List<(char c, int indexInSentence, int indexInStructure, Sentence sentence, LineOffset lineOffset)>();
+            int sentenceStartPosCounter = 0;
+            foreach (Sentence sentence in sentences)
+            {
+                if (sentence.Content.Length == 0)
+                {
+                    // 空のセンテンスはスキップする。
+                    continue;
+                }
+
+                charStack.AddRange(
+                    sentence.Content.ToCharArray().Select((c, index) =>
+                        (c, index, sentenceStartPosCounter + index, sentence, sentence.ConvertToLineOffset(index)))
+                );
+                sentenceStartPosCounter += sentence.Content.Length;
+            }
+
             // validation
-            List<(char paren, int offset)> parenLevel = new List<(char paren, int offset)>();
+            List<(char c, int indexInSentence, int indexInStructure, Sentence sentence, LineOffset lineOffset)> parenLevel =
+                new List<(char c, int indexInSentence, int indexInStructure, Sentence sentence, LineOffset lineOffset)>();
+
             int subsentenceCount = 0;
 
-            for (int i = 0; i < sentence.Content.Length; i++)
+            foreach (var currentChar in charStack)
             {
-                char c = sentence.Content[i];
-
-                if (c == L_PAREN || c == L_PAREN_FULLWIDTH)
+                if (currentChar.c == L_PAREN || currentChar.c == L_PAREN_FULLWIDTH)
                 {
                     // 左カッコ開始
-                    parenLevel.Add((c, i));
+                    parenLevel.Add(currentChar);
 
-                    if (parenLevel.Count > Config.MaxLevel)
+                    if (parenLevel.Count > config.MaxLevel)
                     {
                         // 括弧のネストレベルが規定値を超えた。
                         result.Add(new ValidationError(
                             ValidationType.ParenthesizedSentence,
-                            this.Level,
-                            sentence,
-                            sentence.ConvertToLineOffset(i),
-                            sentence.ConvertToLineOffset(i),
-                            MessageArgs: new object[] { parenLevel.Count, Config.MaxLevel },
+                            config.Level,
+                            currentChar.sentence,
+                            currentChar.lineOffset,
+                            currentChar.lineOffset,
+                            MessageArgs: new object[] { parenLevel.Count, config.MaxLevel },
                             MessageKey: "NestingLevelTooDeep"
                         ));
                         // Validationロジックは破綻しないので処理続行。
                     }
                 }
-                else if (c == R_PAREN || c == R_PAREN_FULLWIDTH)
+                else if (currentChar.c == R_PAREN || currentChar.c == R_PAREN_FULLWIDTH)
                 {
-                    char lParen = c == R_PAREN ? L_PAREN : L_PAREN_FULLWIDTH;
+                    char lParen = currentChar.c == R_PAREN ? L_PAREN : L_PAREN_FULLWIDTH;
 
                     if (parenLevel.Count == 0)
                     {
                         // 対応する左カッコが存在しないのに右カッコが出現した。
                         result.Add(new ValidationError(
                             ValidationType.ParenthesizedSentence,
-                            this.Level,
-                            sentence,
-                            sentence.ConvertToLineOffset(i),
-                            sentence.ConvertToLineOffset(i),
-                            MessageArgs: new object[] { c.ToString() },
+                            config.Level,
+                            currentChar.sentence,
+                            currentChar.lineOffset,
+                            currentChar.lineOffset,
+                            MessageArgs: new object[] { currentChar.c.ToString() },
                             MessageKey: "MismatchedParentheses"
                         ));
 
                         // Validationロジックは破綻するのでReturnする。
                         return result;
                     }
-                    else if (parenLevel.Last().paren != lParen)
+                    else if (parenLevel.Last().c != lParen)
                     {
                         // 対応する左カッコの文字種が右カッコと一致しない。
                         result.Add(new ValidationError(
                             ValidationType.ParenthesizedSentence,
-                            this.Level,
-                            sentence,
-                            sentence.ConvertToLineOffset(i),
-                            sentence.ConvertToLineOffset(i),
-                            MessageArgs: new object[] { c.ToString() },
+                            config.Level,
+                            currentChar.sentence,
+                            currentChar.lineOffset,
+                            currentChar.lineOffset,
+                            MessageArgs: new object[] { currentChar.c.ToString() },
                             MessageKey: "MismatchedParentheses"
                         ));
 
@@ -151,18 +185,19 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     else
                     {
                         // 対応する正しい左カッコが存在し、右カッコが出現して閉じるケース。
-                        var subSentenceLength = i - parenLevel.Last().offset - 1;
+                        // NOTE: センテンスをまたぐ場合があるので、構造上の文字数カウントで判定する。
+                        var subSentenceLength = currentChar.indexInStructure - parenLevel.Last().indexInStructure - 1;
 
-                        if (subSentenceLength > Config.MaxLength)
+                        if (subSentenceLength > config.MaxLength)
                         {
                             // 括弧内センテンスの文字数が規定値を超えた。
                             result.Add(new ValidationError(
                                 ValidationType.ParenthesizedSentence,
-                                this.Level,
-                                sentence,
-                                sentence.ConvertToLineOffset(parenLevel.Last().offset),
-                                sentence.ConvertToLineOffset(i),
-                                MessageArgs: new object[] { subSentenceLength, Config.MaxLength },
+                                config.Level,
+                                currentChar.sentence,
+                                parenLevel.Last().lineOffset,
+                                currentChar.lineOffset,
+                                MessageArgs: new object[] { subSentenceLength, config.MaxLength },
                                 MessageKey: "SubsentenceTooLong"));
                         }
 
@@ -175,34 +210,80 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         }
                     }
                 }
+                else if (periods.Contains(currentChar.c) && parenLevel.Count == 0)
+                {
+                    // 文の区切りに到達したとみなせる場合、かつ括弧が閉じ切っていた場合（ゼロレベルに戻った状態）のとき、
+                    // その文の中に存在する括弧の数が規定値を超えていた場合エラーとする。
+
+                    if (subsentenceCount > config.MaxNumber)
+                    {
+                        result.Add(new ValidationError(
+                            ValidationType.ParenthesizedSentence,
+                            config.Level,
+                            currentChar.sentence,
+                            currentChar.sentence.OffsetMap[0],
+                            currentChar.sentence.OffsetMap[^1],
+                            MessageArgs: new object[] { subsentenceCount, config.MaxNumber },
+                            MessageKey: "SubsentenceTooFrequent"));
+                    }
+
+                    // カッコの数カウンターは1つの文を抜けたのでゼロに戻しておく。
+                    subsentenceCount = 0;
+                }
             }
 
             if (parenLevel.Count > 0)
             {
-                // 対応する右カッコで閉じられていない右カッコが存在する。
-                result.Add(new ValidationError(
-                    ValidationType.ParenthesizedSentence,
-                    this.Level,
-                    sentence,
-                    sentence.ConvertToLineOffset(parenLevel.Last().offset),
-                    sentence.ConvertToLineOffset(parenLevel.Last().offset),
-                    MessageArgs: new object[] { parenLevel.Last().paren.ToString() },
-                    MessageKey: "MismatchedParentheses"
-                ));
+                // 対応する右カッコで閉じられていない左カッコが存在する。
+                foreach (var lparen in parenLevel)
+                {
+                    result.Add(new ValidationError(
+                        ValidationType.ParenthesizedSentence,
+                        config.Level,
+                        lparen.sentence,
+                        lparen.lineOffset,
+                        lparen.lineOffset,
+                        MessageArgs: new object[] { lparen.c.ToString() },
+                        MessageKey: "MismatchedParentheses"
+                    ));
+                }
+            }
+            else
+            {
+                // ドキュメント構造の最後でピリオド類文字が現れなかった場合に括弧の使いすぎエラーを出す。
+                if (subsentenceCount != 0 && subsentenceCount > config.MaxNumber)
+                {
+                    result.Add(new ValidationError(
+                        ValidationType.ParenthesizedSentence,
+                        config.Level,
+                        sentences.Last(),
+                        sentences.Last().OffsetMap[0],
+                        sentences.Last().OffsetMap[^1],
+                        MessageArgs: new object[] { subsentenceCount, config.MaxNumber },
+                        MessageKey: "SubsentenceTooFrequent"));
+                }
             }
 
-            if (subsentenceCount > Config.MaxNumber)
+            return result;
+        }
+
+        /// <summary>
+        /// 括弧に関するValidationを実行します。次のケースに対応しています。
+        /// １．左右の括弧の対応関係が正しいかどうか。（左カッコが無いのに右カッコがある、もしくは右カッコで閉じられていない左カッコがある。）
+        /// ２．括弧内の文章の文字数が規定値を超えていないかどうか。（「これ（～～～長すぎる文～～～）はあれと異なります。」などという長い括弧は不正。）
+        /// ３．一文内に存在してもよい括弧の数が規定値を超えていないかどうか。（「あ（）、い（）、う（）です」などという括弧の多用は不正。）
+        /// ４．括弧のネストレベルが規定値を超えていないかどうか。（「（（（（））））」などという括弧の使い方は不正。）
+        /// NOTE: Sentence単位でのValidationは文の区切り方によって括弧の対応関係が破綻する可能性があるため、Documentを受け取り、Paragraph単位でValidationを実行します。
+        /// </summary>
+        /// <param name="document">The Document.</param>
+        /// <returns>A list of ValidationErrors.</returns>
+        public List<ValidationError> Validate(Document document)
+        {
+            List<ValidationError> result = new List<ValidationError>();
+
+            foreach (List<Sentence> sentences in document.GetAllSentencesByDocumentStructure())
             {
-                // 平の文章から1レベル括弧で囲まれた文章の数が規定値を超えた。
-                result.Add(new ValidationError(
-                    ValidationType.ParenthesizedSentence,
-                    this.Level,
-                    sentence,
-                    sentence.ConvertToLineOffset(0),
-                    sentence.ConvertToLineOffset(sentence.Content.Length - 1),
-                    MessageArgs: new object[] { subsentenceCount, Config.MaxNumber },
-                    MessageKey: "SubsentenceTooFrequent"
-                ));
+                result.AddRange(ValidateSentencesByStructure(sentences, Config, SymbolTable));
             }
 
             return result;
