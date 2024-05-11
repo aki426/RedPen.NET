@@ -100,10 +100,7 @@ namespace RedPen.Net.Core.Model
         /// ExpressionRuleに変換可能なToken表現形式文字列を取得する。
         /// </summary>
         /// <returns>A string.</returns>
-        public string FormatToExpressionRuleStyle()
-        {
-            return $"{Surface}:{string.Join(",", Tags)}:{Reading}";
-        }
+        public string FormatToExpressionRuleStyle() => $"{Surface}:{string.Join(",", Tags)}:{Reading}";
 
         /// <summary>
         /// 相手のTokenと一部でも位置が重なっているかどうかを判定する関数。
@@ -111,18 +108,7 @@ namespace RedPen.Net.Core.Model
         /// </summary>
         /// <param name="other">The other.</param>
         /// <returns>A bool.</returns>
-        public bool Overlap(TokenElement other)
-        {
-            foreach (LineOffset offset in this.OffsetMap)
-            {
-                if (other.OffsetMap.Contains(offset))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        public bool Overlap(TokenElement other) => OffsetMap.Any(i => other.OffsetMap.Contains(i));
 
         /// <summary>
         /// カタカナ語＝すべてカタカナで構成されたSurfaceかどうかを判定する関数。
@@ -130,36 +116,14 @@ namespace RedPen.Net.Core.Model
         /// MEMO: 記号を含む場合はFalseを返すので注意。
         /// </summary>
         /// <returns>A bool.</returns>
-        public bool IsKatakanaWord()
-        {
-            foreach (var c in Surface)
-            {
-                if (!UnicodeUtility.IsKatakana(c))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        public bool IsKatakanaWord() => Surface.All(UnicodeUtility.IsKatakana);
 
         /// <summary>
         /// カタカナ文字を1文字でも含むかどうかを判定する関数。
         /// 1文字でもカタカナ文字があればTrueを返す。
         /// </summary>
         /// <returns>A bool.</returns>
-        public bool HasKatakana()
-        {
-            foreach (var c in Surface)
-            {
-                if (UnicodeUtility.IsKatakana(c))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        public bool HasKatakana() => Surface.Any(c => UnicodeUtility.IsKatakana(c));
 
         /// <summary>
         /// Surfaceがマッチするかどうか＝ExpressionRuleとしてマッチするかどうかを判定する関数。
