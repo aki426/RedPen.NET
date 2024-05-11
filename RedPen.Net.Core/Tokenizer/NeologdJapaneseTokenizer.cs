@@ -1,15 +1,11 @@
-﻿using Lucene.Net.Analysis.Ja;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
+using Lucene.Net.Analysis.Ja;
 using Lucene.Net.Analysis.Ja.TokenAttributes;
 using Lucene.Net.Analysis.TokenAttributes;
 using RedPen.Net.Core.Model;
-using System.Collections.Generic;
-using System.IO;
-using System;
-
-using System.Collections.Generic;
-
-using System.Linq;
-using System.Collections.Immutable;
 
 namespace RedPen.Net.Core.Tokenizer
 {
@@ -37,30 +33,6 @@ namespace RedPen.Net.Core.Tokenizer
                 JapaneseTokenizerMode.NORMAL);
         }
 
-        ///// <summary>
-        ///// Tokenizes the.
-        ///// </summary>
-        ///// <param name="sentence">The sentence.</param>
-        ///// <returns>A list of TokenElements.</returns>
-        //public List<TokenElement> Tokenize(string sentence)
-        //{
-        //    List<TokenElement> tokens = new List<TokenElement>();
-        //    try
-        //    {
-        //        foreach (TokenElement token in KuromojiNeologd(sentence))
-        //        {
-        //            tokens.Add(token);
-        //        }
-        //    }
-        //    catch (IOException e)
-        //    {
-        //        // TODO: StackTraceを出力するように変更。
-        //        throw;
-        //    }
-
-        //    return tokens;
-        //}
-
         /// <summary>
         /// Tokenize a sentence.
         /// </summary>
@@ -84,39 +56,6 @@ namespace RedPen.Net.Core.Tokenizer
 
             return tokens;
         }
-
-        ///// <summary>
-        ///// Kuromojis the neologd.
-        ///// </summary>
-        ///// <param name="src">The src.</param>
-        ///// <returns>A list of TokenElements.</returns>
-        //private List<TokenElement> KuromojiNeologd(string src)
-        //{
-        //    tokenizer.SetReader(new StringReader(src));
-        //    List<TokenElement> tokens = new List<TokenElement>();
-        //    IBaseFormAttribute baseAttr = tokenizer.AddAttribute<IBaseFormAttribute>();
-        //    ICharTermAttribute charAttr = tokenizer.AddAttribute<ICharTermAttribute>();
-        //    IPartOfSpeechAttribute posAttr = tokenizer.AddAttribute<IPartOfSpeechAttribute>();
-        //    IReadingAttribute readAttr = tokenizer.AddAttribute<IReadingAttribute>();
-        //    IOffsetAttribute offsetAttr = tokenizer.AddAttribute<IOffsetAttribute>();
-        //    IInflectionAttribute inflectionAttr = tokenizer.AddAttribute<IInflectionAttribute>();
-
-        //    tokenizer.Reset();
-        //    while (tokenizer.IncrementToken())
-        //    {
-        //        string surface = charAttr.ToString();
-        //        tokens.Add(new TokenElement(surface,
-        //                GetTagList(posAttr, inflectionAttr),
-        //                0,
-        //                offsetAttr.StartOffset,
-        //                readAttr.GetReading()
-
-        //        ));
-        //    }
-        //    tokenizer.Dispose();
-
-        //    return tokens;
-        //}
 
         /// <summary>
         /// Kuromojis the neologd.
