@@ -93,7 +93,10 @@ namespace RedPen.Net.Core.Tests.Validator
                 (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
                     expressionRule.MatchSurfaces(sentence.Tokens);
 
-                matchedTokensList.AddRange(value.tokens);
+                if (value.isMatch)
+                {
+                    matchedTokensList.AddRange(value.tokens);
+                }
             }
 
             matchedTokensList.Count.Should().Be(matchCount);
