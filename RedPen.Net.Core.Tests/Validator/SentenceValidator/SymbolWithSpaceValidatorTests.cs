@@ -56,5 +56,8 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
                 expected,
                 output);
         }
+
+        // TODO: 日本語のテストケースを追加する。
+        // 特にスペースを禁止する仕様を追加する。
     }
 }
