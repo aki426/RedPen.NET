@@ -9,13 +9,13 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
     // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
 
     /// <summary>CommaNumberのConfiguration</summary>
-    public record CommaNumberConfiguration : ValidatorConfiguration, IMaxNumberConfigParameter
+    public record CommaNumberConfiguration : ValidatorConfiguration, IMaxCountConfigParameter
     {
-        public int MaxNumber { get; init; }
+        public int MaxCount { get; init; }
 
-        public CommaNumberConfiguration(ValidationLevel level, int maxNumber) : base(level)
+        public CommaNumberConfiguration(ValidationLevel level, int maxCount) : base(level)
         {
-            MaxNumber = maxNumber;
+            MaxCount = maxCount;
         }
     }
 
@@ -58,7 +58,7 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
                 .Where(c => c == this.SymbolTable.GetValueOrFallbackToDefault(SymbolType.COMMA))
                 .Count();
 
-            if (Config.MaxNumber < commaCount)
+            if (Config.MaxCount < commaCount)
             {
                 // コンマの数が最大数を超えている場合はエラーとする。
                 result.Add(
@@ -67,7 +67,7 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
                         this.Level,
                         sentence,
                         // メッセージ引数は実際のコンマの数、最大数の順番で格納する。
-                        MessageArgs: new object[] { commaCount, Config.MaxNumber }));
+                        MessageArgs: new object[] { commaCount, Config.MaxCount }));
             }
 
             return result;
