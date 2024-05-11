@@ -65,18 +65,18 @@
 
 #### 全言語に適用可能なValidator Configuration
 
-| Done |         Name          |  Target  |                          Description                           |            Property            |
-| ---- | --------------------- | -------- | -------------------------------------------------------------- | ------------------------------ |
-| v    | CommaNumber           | Sentence | センテンス内の最大回数を超えるコンマの使用を検出               | MaxNumber                      |
-| v    | DoubledWord           | Sentence | センテンス内の同一表現の重複使用を検出                         | DictFile, WordSet, MinLength   |
-| v    | InvalidExpression     | Sentence | 不正な表現を検出                                               | DictFile, WordSet              |
-| v    | InvalidSymbol         | Sentence | 不正なシンボルを検出                                           | ※Symbolsブロックで定義         |
-| v    | ParenthesizedSentence | Sentence | 不正な括弧を検出                                               | MaxLength, MaxNumber, MaxLevel |
-| v    | SentenceLength        | Sentence | 最大文字長を超えるセンテンスを検出                             | MaxLength                      |
-| v    | SuccessiveSentence    | Sentence | 最小文字長以上かつ編集距離閾値以下の類似文の二回連続使用を検出 | Distance, MinLength            |
-| v    | SuccessiveWord        | Sentence | 同一の単語の連続使用を検出                                     |                                |
-| v    | SuggestExpression     | Sentence | 不正な表現に対する推奨表現の提案                               | DictFile, WordMap              |
-| v    | SymbolWithSpace       | Sentence | シンボル前後のスペースの有無を検出                             | ※Symbolsブロックで定義         |
+| Done |        Name        |  Target  |                          Description                           |           Property            |
+| ---- | ------------------ | -------- | -------------------------------------------------------------- | ----------------------------- |
+| v    | CommaNumber        | Sentence | センテンス内の最大回数を超えるコンマの使用を検出               | MaxCount                      |
+| v    | DoubledWord        | Sentence | センテンス内の同一表現の重複使用を検出                         | DictFile, WordSet, MinLength  |
+| v    | InvalidExpression  | Sentence | 不正な表現を検出                                               | DictFile, WordSet             |
+| v    | InvalidSymbol      | Sentence | 不正なシンボルを検出                                           | ※Symbolsブロックで定義        |
+| v    | InvalidParenthesis | Sentence | 不正な括弧を検出                                               | MaxLength, MaxCount, MaxLevel |
+| v    | SentenceLength     | Sentence | 最大文字長を超えるセンテンスを検出                             | MaxLength                     |
+| v    | SuccessiveSentence | Sentence | 最小文字長以上かつ編集距離閾値以下の類似文の二回連続使用を検出 | Distance, MinLength           |
+| v    | SuccessiveWord     | Sentence | 同一の単語の連続使用を検出                                     |                               |
+| v    | SuggestExpression  | Sentence | 不正な表現に対する推奨表現の提案                               | DictFile, WordMap             |
+| v    | SymbolWithSpace    | Sentence | シンボル前後のスペースの有無を検出                             | ※Symbolsブロックで定義        |
 
 #### 日本語（Lang = ja-JP）にのみ適用可能なValidator Configuration
 
@@ -103,22 +103,39 @@
 各ValidatorのConfigurationはJsonファイルで適切なプロパティを指定する必要があります。
 プロパティごとの定義と意味は次の一覧表のとおりです。
 
-|     Property      |           Type           |                             Description                              |
-| ----------------- | ------------------------ | -------------------------------------------------------------------- |
-| Name              | string                   | ※すべてのValidator Configurationで必須のプロパティです。             |
-| Level             | string                   | ※すべてのValidator Configurationで必須のプロパティです。             |
-| MaxLength         | number                   | 最大長をintで表現したものです。大体の場合、文字数です。              |
-| MaxNumber         | number                   | 最大数をintで表現したものです。                                      |
-| MaxLevel          | number                   | 最大レベルをintで表現したものです。                                  |
-| MinLength         | number                   | 最小長をintで表現したものです。大体の場合、文字数です。              |
-| MinRatio          | number                   | 最小割合を浮動小数点数で表現したものです。                           |
-| MinFreq           | number                   | 最小頻度をintで表現したものです。                                    |
-| Distance          | number                   | 「距離」を浮動小数点数で表現したものです。                           |
-| NoSpace           | true / false             | trueの場合、スペースを許容しなくなります。                           |
-| DictFile          | string                   | 辞書定義ファイルです。                                               |
-| WordSet           | stringのarray            | 文字列リストです。処理速度のため内部実装はHashSetを用いています。    |
-| WordMap           | <string, string>のobject | 辞書定義です。                                                       |
-| EnableDefaultDict | true / false             | RedPen.NETの標準辞書がある場合、それを使用する／しないを制御します。 |
+| Property |  Type  |                                          Description                                           |
+| -------- | ------ | ---------------------------------------------------------------------------------------------- |
+| Name     | string | ※すべてのValidator Configurationで必須のプロパティです。                                       |
+| Level    | string | ※すべてのValidator Configurationで必須のプロパティです。                                       |
+| DictFile | string | 辞書定義ファイルです。※WordSetまたはWordMapプロパティがあるValidator Configurationで有効です。 |
+
+|        Property         |           Type           |                                           Description                                            |
+| ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------ |
+| DecimalDelimiterIsComma |                          |                                                                                                  |
+| DeviationFactor         |                          |                                                                                                  |
+| Distance                | number                   | 「距離」を浮動小数点数で表現したものです。                                                       |
+| EnableDefaultDict       | true / false             | RedPen.NETの標準辞書がある場合、それを使用する／しないを制御します。                             |
+| Forbidden               | true / false             | Validation条件を反転させて適用可能なものについて、true / falseで反転する／しないを制御できます。 |
+| IgnoreYear              |                          |                                                                                                  |
+| JodoshiStyle            |                          |                                                                                                  |
+| LeadingWordLimit        |                          |                                                                                                  |
+| MaxCount                |                          |                                                                                                  |
+| MaxLength               | number                   | 最大長をintで表現したものです。大体の場合、文字数です。                                          |
+| MaxLevel                | number                   | 最大レベルをintで表現したものです。                                                              |
+| MaxSentenceCount        | number                   | センテンスの個数の最大値をintで表現したものです。                                                |
+| MinFreq                 | number                   | 最小頻度をintで表現したものです。                                                                |
+| MinInterval             |                          |                                                                                                  |
+| MinLength               | number                   | 最小長をintで表現したものです。大体の場合、文字数です。                                          |
+| MinLevel                |                          |                                                                                                  |
+| MinRatio                | number                   | 最小割合を浮動小数点数で表現したものです。                                                       |
+| NoSpace                 | true / false             | trueの場合、スペースを許容しなくなります。                                                       |
+| NumberStyle             |                          |                                                                                                  |
+| PercentThreshold        |                          |                                                                                                  |
+| SkipAfter               |                          |                                                                                                  |
+| SkipBefore              |                          |                                                                                                  |
+| StartWith               |                          |                                                                                                  |
+| WordMap                 | <string, string>のobject | 辞書定義です。                                                                                   |
+| WordSet                 | stringのarray            | 文字列リストです。処理速度のため内部実装はHashSetを用いています。                                |
 
 ##### 補足説明
 
@@ -132,14 +149,38 @@
   * OFFを指定した場合は当該Validatorは実行されません。
 * DictFile
   * 実行環境におけるファイルへのパスを指定します。
+  * WordSetまたはWordMapの定義をJsonファイルに直接記入するのではなく、別ファイルで渡したい場合に使用します。
   * ファイルのフォーマットは、WordSetをプロパティに持つ場合は1行1文字列のリスト、WordMapをプロパティに持つ場合は1行につき2つの文字列をタブ区切りで記載したDictionaryとなります。
-* WordSet
-  * Validationによって意味は変わりますが、大体の場合許容する表現のリストとして機能します。詳細は各Validationの解説やソースコードを参照してください。
-* WordMap
-  * JsonのオブジェクトとしてKeyに「検出したい表現」を、Valueに「提案したい表現」を記述します。表記上は誤→正の順番になります。
+* DecimalDelimiterIsComma
+* DeviationFactor
+* Distance
 * EnableDefaultDict
   * RedPen.NETの標準辞書がある場合、それを使用するかしないかのフラグです。
   * WordMapやWordSetをプロパティとして持つValidationにおいて、WordMapやWordSetに標準辞書のデータを追加する／しない、という挙動になります。
+* Forbidden
+* IgnoreYear
+* JodoshiStyle
+* LeadingWordLimit
+* MaxCount
+* MaxLength
+* MaxLevel
+* MaxSentenceCount
+* MinFreq
+* MinInterval
+* MinLevel
+* MinRatio
+* NumberStyle
+* PercentThreshold
+* SkipAfter
+* SkipBefore
+* StartWith
+* WordMap
+  * JsonのオブジェクトとしてKeyに「検出したい表現」を、Valueに「提案したい表現」を記述します。表記上は誤→正の順番になります。
+* WordSet
+  * Validationによって意味は変わりますが、大体の場合許容する表現のリストとして機能します。詳細は各Validationの解説やソースコードを参照してください。
+
+プロパティ名にMax/Minが付いている者については「Max～」は「その値を含み、その値以下の条件ではエラーにならない」、逆に「Min～」は「その値を含み、その値以上の条件ではエラーにならない」という意味です。
+「Max～」「Min～」プロパティを指定する際は「エラーとして検出したくない値とその範囲」を指定するイメージを持つと値を決めやすいです。
 
 ## RedPen.Net特有の情報
 

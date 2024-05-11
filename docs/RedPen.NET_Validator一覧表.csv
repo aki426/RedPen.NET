@@ -1,5 +1,5 @@
 ﻿No.,Done,Name,Target,Lang,Description,Property,redpen.cc参照元,textlint参照元
-1,v,CommaCount,Sentence,ANY,センテンス内でMaxCountを超える回数コンマが使用されていた場合エラーとなります。,MaxNumber -> MaxCount,CommaNumber,-
+1,v,CommaCount,Sentence,ANY,センテンス内でMaxCountを超える回数コンマが使用されていた場合エラーとなります。,MaxCount,CommaNumber,-
 2,,Contraction,Sentence,en-US,省略表現（例：「can't」など）を検出します。,,※同名のValidatorをBaseにしています,-
 3,v,DoubledConjunctiveParticleGa,Sentence,ja-JP,センテンス内で接続助詞「が」が2回以上使用されていた場合エラーとなります。（例：「Aですが、Bですが、Cです。」といった文が検出対象となります）,,※同名のValidatorをBaseにしています,https://github.com/textlint-ja/textlint-rule-no-doubled-conjunctive-particle-ga
 4,v,DoubledJoshi,Sentence,ja-JP,センテンス内の同一助詞の重複使用を検出します。使用箇所同士の距離が指定された文字数（MinInterval）を下回る場合エラーとなります。WordSetで指定された表現は検出対象から除外します。（例：「一人でで行く」といった文が検出対象となります）,"MinInterval, WordSet",※同名のValidatorをBaseにしています,https://github.com/textlint-ja/textlint-rule-no-doubled-joshi
@@ -42,10 +42,10 @@
 41,v,LongKanjiChain,Sentence,ja-JP,MaxLengthを超える文字数の漢字の連続を検出します。WordSetで指定された表現は検出対象から除外します。,"Maxlength, WordSet",※同名のValidatorをBaseにしています,-
 42,,NumberFormat,Sentence,en-US,"数値表現が一般的な記法に従っていない場合にエラーとなります。DecimalDelimiterIsCommaがtrueの場合数値のデリミタを「.」から「,」（ヨーロッパ方式）に変更してValidationを実行します。IgnoreYearがTrueの場合4桁の数値を無視してValidationを実行します。","DecimalDelimiterIsComma, IgnoreYear",※同名のValidatorをBaseにしています,-
 43,v,Okurigana,Sentence,ja-JP,不正な送りがなを検出します。,,※同名のValidatorをBaseにしています,-
-44,,ParagraphCount,Section,ANY,セクション内にMaxCountを超える個数のパラグラフが存在する場合エラーとなります。,MaxNumber -> MaxCount,ParagraphNumber,-
+44,,ParagraphCount,Section,ANY,セクション内にMaxCountを超える個数のパラグラフが存在する場合エラーとなります。,MaxCount,ParagraphNumber,-
 45,,ParagraphStartWith,Section,ANY,パラグラフの開始部分がStartWithで指定された規約に従っていない場合エラーとなります。,StartWith,※同名のValidatorをBaseにしています,-
-46,v,ParenthesizedSentence,Sentence,ANY,不正な括弧を検出します。括弧内の文字数がMaxLengthを超える場合、センテンス内の括弧の個数がMaxCountを超える場合、括弧のネストレベルがMaxLevelを超える場合、左右の括弧の数が等しくない場合にエラーとなります。,"MaxLength, MaxNumber -> MaxCount, MaxLevel",※同名のValidatorをBaseにしています,-
-47,,SectionLength,Section,ANY,セクション内でMaxCountを超える個数の単語が使用されていた場合エラーとなります。,MaxNumber -> MaxCount,※同名のValidatorをBaseにしています,-
+46,v,InvalidParenthesis,Document,ANY,不正な括弧を検出します。括弧内の文字数がMaxLengthを超える場合、センテンス内の括弧の個数がMaxCountを超える場合、括弧のネストレベルがMaxLevelを超える場合、左右の括弧の数が等しくない場合にエラーとなります。,"MaxLength, MaxCount, MaxLevel",ParenthesizedSentence,-
+47,,SectionLength,Section,ANY,セクション内でMaxCountを超える個数の単語が使用されていた場合エラーとなります。,MaxCount,※同名のValidatorをBaseにしています,-
 48,,SectionLevel,Section,ANY,MaxLevelを超える深すぎるレベルのセクションを検出します。,MaxLevel,※同名のValidatorをBaseにしています,-
 49,v,SentenceLength,Sentence,ANY,MaxLenghtを超える文字長のセンテンスを検出します。,MaxLength,※同名のValidatorをBaseにしています,-
 50,,SpaceBeginningOfSentence,Sentence,ANY,センテンス間に半角スペースが存在するかを検出します。Forbiddenがtrueの場合空白を許可しない設定となり、センテンス間に半角スペースが存在する場合にエラーとなります。SkipBeforeに文字列を指定した場合、その文字のいずれかの前にスペースが無くてもエラーになりません。同様に、SkipAfterに指定された文字のいずれかの後にスペースが無くてもエラーになりません。,"Forbidden, SkipBefore, SkipAfter",※同名のValidatorをBaseにしています,-
@@ -60,5 +60,5 @@
 59,,UnexpandedAcronym,Document,en-US,省略形の単語（例：ABC）に対応する正式表記（例：Axx Bxx Cxx）がドキュメント中に存在しない場合エラーとなります。MaxLengthを超える文字長の省略形単語についてのみエラーを検出します。,MinLength -> MaxLength,※同名のValidatorをBaseにしています,-
 60,-,VoidSection,Sentence,ja-JP,,,※同名のValidatorをBaseにしています,-
 61,,WeakExpression,Sentence,en-US,WeakExpressionと呼ばれる表現を検出します。,,※同名のValidatorをBaseにしています,-
-62,,WordFrequency,Document,en-US,ドキュメント中の単語の出現頻度が一般的に妥当とされる出現頻度と比べ異なる場合エラーとなります。DeviationFactorは一般的な出現頻度の何倍まで許容するかを表す係数です。なお、ドキュメントの単語数がMaxWordCountを超えなかった場合はValidationを行いません。,"DeviationFactor, MaxWordCount",※同名のValidatorをBaseにしています,-
-63,,WordCount,Sentence,en-US,センテンス内でMaxCountを超える個数の単語が使用されていた場合エラーとなります。,MaxNumber -> MaxCount,WordNumber,-
+62,,WordFrequency,Document,en-US,ドキュメント中の単語の出現頻度が一般的に妥当とされる出現頻度と比べ異なる場合エラーとなります。DeviationFactorは一般的な出現頻度の何倍まで許容するかを表す係数です。なお、ドキュメントの単語数がMaxCountを超えなかった場合はValidationを行いません。,"DeviationFactor, MaxCount",※同名のValidatorをBaseにしています,-
+63,,WordCount,Sentence,en-US,センテンス内でMaxCountを超える個数の単語が使用されていた場合エラーとなります。,MaxCount,WordNumber,-
