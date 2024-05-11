@@ -26,6 +26,12 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [InlineData("005", "ピーターラビット（野兎(父はパイになった））はビアトリクス・ポッター（英国人）による創作です。", 20, 2, 2, 1, "）")]
         [InlineData("006", "ピーターラビット（野兎）父はパイになった)）はビアトリクス・ポッター（英国人）による創作です。", 20, 2, 2, 1, ")")]
         [InlineData("007", "ピーターラビット（野兎(父はパイになった)）はビアトリクス・ポッター（英国人による創作です。", 20, 2, 2, 1, "（")]
+        // 括弧内に句読点がある場合
+        // NOTE: Sentence単位でのValidationだと左右括弧の対応関係は括弧中の文の区切りで切れてしまうため正しく検出できない。
+        // 対応方針として2つあり、1つはParagraph単位で左右の括弧の対応関係を取る方法。
+        // もう1つは（）や「」に対応して文を区切るSentenceExtractorを実装する方法。
+        // 今回はParagraph単位で左右の括弧の対応関係を取る方法を採用する。
+        [InlineData("008", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人）による創作です。", 20, 2, 2, 0, "")]
         public void BasicTest(string nouse1, string text, int maxLength, int maxNumber, int maxLevel, int errorCount, string expected)
         {
             // Document
