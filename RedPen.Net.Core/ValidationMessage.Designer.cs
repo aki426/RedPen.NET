@@ -196,6 +196,42 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
+        ///   Found an invalid mismatched parentheses &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string InvalidParenthesis_MismatchedParentheses {
+            get {
+                return ResourceManager.GetString("InvalidParenthesis_MismatchedParentheses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Parenthesized sentences are nested {0} level which exceeds the maximum of  {1}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string InvalidParenthesis_NestingLevelTooDeep {
+            get {
+                return ResourceManager.GetString("InvalidParenthesis_NestingLevelTooDeep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Too many parenthesized sentences {0} exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string InvalidParenthesis_SubsentenceTooFrequent {
+            get {
+                return ResourceManager.GetString("InvalidParenthesis_SubsentenceTooFrequent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Parenthesized sentence length {0} exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string InvalidParenthesis_SubsentenceTooLong {
+            get {
+                return ResourceManager.GetString("InvalidParenthesis_SubsentenceTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Found invalid symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string InvalidSymbol {
@@ -372,42 +408,6 @@ namespace RedPen.Net.Core {
         public static string ParagraphStartWith {
             get {
                 return ResourceManager.GetString("ParagraphStartWith", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Found an invalid mismatched parentheses &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string ParenthesizedSentence_MismatchedParentheses {
-            get {
-                return ResourceManager.GetString("ParenthesizedSentence_MismatchedParentheses", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Parenthesized sentences are nested {0} level which exceeds the maximum of  {1}. に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string ParenthesizedSentence_NestingLevelTooDeep {
-            get {
-                return ResourceManager.GetString("ParenthesizedSentence_NestingLevelTooDeep", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Too many parenthesized sentences {0} exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string ParenthesizedSentence_SubsentenceTooFrequent {
-            get {
-                return ResourceManager.GetString("ParenthesizedSentence_SubsentenceTooFrequent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Parenthesized sentence length {0} exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string ParenthesizedSentence_SubsentenceTooLong {
-            get {
-                return ResourceManager.GetString("ParenthesizedSentence_SubsentenceTooLong", resourceCulture);
             }
         }
         

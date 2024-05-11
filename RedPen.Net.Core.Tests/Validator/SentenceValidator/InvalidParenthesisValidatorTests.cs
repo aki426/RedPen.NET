@@ -7,11 +7,11 @@ using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 {
-    public class ParenthesizedSentenceValidatorTests
+    public class InvalidParenthesisValidatorTests
     {
         private ITestOutputHelper output;
 
-        public ParenthesizedSentenceValidatorTests(ITestOutputHelper output)
+        public InvalidParenthesisValidatorTests(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -46,13 +46,13 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
 
             // ValidatorConfiguration
-            var validatorConfiguration = new ParenthesizedSentenceConfiguration(ValidationLevel.ERROR, maxLength, maxNumber, maxLevel);
+            var validatorConfiguration = new InvalidParenthesisConfiguration(ValidationLevel.ERROR, maxLength, maxNumber, maxLevel);
 
             // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
             SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
 
             // Validator
-            var validator = new ParenthesizedSentenceValidator(
+            var validator = new InvalidParenthesisValidator(
                 documentLang,
                 symbolTable,
                 validatorConfiguration);

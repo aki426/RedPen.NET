@@ -55,7 +55,7 @@ namespace RedPen.Net.Core.Config
         Okurigana,
         ParagraphNumber,
         ParagraphStartWith,
-        ParenthesizedSentence,
+        InvalidParenthesis,
         Quotation,
         RedundantExpression,
         SectionLength,

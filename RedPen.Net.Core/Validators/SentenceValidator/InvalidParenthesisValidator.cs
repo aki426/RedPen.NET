@@ -7,8 +7,8 @@ using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
-    /// <summary>ParenthesizedSentenceのConfiguration</summary>
-    public record ParenthesizedSentenceConfiguration : ValidatorConfiguration,
+    /// <summary>InvalidParenthesisのConfiguration</summary>
+    public record InvalidParenthesisConfiguration : ValidatorConfiguration,
         IMaxLengthConfigParameter, IMaxCountConfigParameter, IMaxLevelConfigParameter
     {
         /// <summary>括弧内に存在してもよい単語数の上限</summary>
@@ -20,7 +20,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <summary>一文に存在してよい括弧のネスト数</summary>
         public int MaxLevel { get; init; }
 
-        public ParenthesizedSentenceConfiguration(ValidationLevel level, int maxLength, int maxCount, int maxLevel) : base(level)
+        public InvalidParenthesisConfiguration(ValidationLevel level, int maxLength, int maxCount, int maxLevel) : base(level)
         {
             this.MaxLength = maxLength;
             this.MaxCount = maxCount;
@@ -29,26 +29,26 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     }
 
     // TODO: Validation対象に応じて、IDocumentValidatable, ISectionValidatable, ISentenceValidatableを実装する。
-    /// <summary>ParenthesizedSentenceのValidator</summary>
-    public class ParenthesizedSentenceValidator : Validator, IDocumentValidatable
+    /// <summary>InvalidParenthesisのValidator</summary>
+    public class InvalidParenthesisValidator : Validator, IDocumentValidatable
     {
         /// <summary>Nlog</summary>
         private static Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>ValidatorConfiguration</summary>
-        public ParenthesizedSentenceConfiguration Config { get; init; }
+        public InvalidParenthesisConfiguration Config { get; init; }
 
         // TODO: コンストラクタの引数定義は共通にすること。
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParenthesizedSentenceValidator"/> class.
+        /// Initializes a new instance of the <see cref="InvalidParenthesisValidator"/> class.
         /// </summary>
         /// <param name="documentLangForTest">The document lang for test.</param>
         /// <param name="symbolTable">The symbol table.</param>
         /// <param name="config">The config.</param>
-        public ParenthesizedSentenceValidator(
+        public InvalidParenthesisValidator(
             CultureInfo documentLangForTest,
             SymbolTable symbolTable,
-            ParenthesizedSentenceConfiguration config) :
+            InvalidParenthesisConfiguration config) :
             base(
                 config.Level,
                 documentLangForTest,
@@ -78,7 +78,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <returns>A list of ValidationErrors.</returns>
         public static List<ValidationError> ValidateSentencesByStructure(
             List<Sentence> sentences,
-            ParenthesizedSentenceConfiguration config,
+            InvalidParenthesisConfiguration config,
             SymbolTable symbolTable
             )
         {
@@ -134,7 +134,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     {
                         // 括弧のネストレベルが規定値を超えた。
                         result.Add(new ValidationError(
-                            ValidationType.ParenthesizedSentence,
+                            ValidationType.InvalidParenthesis,
                             config.Level,
                             currentChar.sentence,
                             currentChar.lineOffset,
@@ -153,7 +153,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     {
                         // 対応する左カッコが存在しないのに右カッコが出現した。
                         result.Add(new ValidationError(
-                            ValidationType.ParenthesizedSentence,
+                            ValidationType.InvalidParenthesis,
                             config.Level,
                             currentChar.sentence,
                             currentChar.lineOffset,
@@ -169,7 +169,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     {
                         // 対応する左カッコの文字種が右カッコと一致しない。
                         result.Add(new ValidationError(
-                            ValidationType.ParenthesizedSentence,
+                            ValidationType.InvalidParenthesis,
                             config.Level,
                             currentChar.sentence,
                             currentChar.lineOffset,
@@ -191,7 +191,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         {
                             // 括弧内センテンスの文字数が規定値を超えた。
                             result.Add(new ValidationError(
-                                ValidationType.ParenthesizedSentence,
+                                ValidationType.InvalidParenthesis,
                                 config.Level,
                                 currentChar.sentence,
                                 parenLevel.Last().lineOffset,
@@ -217,7 +217,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     if (subsentenceCount > config.MaxCount)
                     {
                         result.Add(new ValidationError(
-                            ValidationType.ParenthesizedSentence,
+                            ValidationType.InvalidParenthesis,
                             config.Level,
                             currentChar.sentence,
                             currentChar.sentence.OffsetMap[0],
@@ -237,7 +237,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 foreach (var lparen in parenLevel)
                 {
                     result.Add(new ValidationError(
-                        ValidationType.ParenthesizedSentence,
+                        ValidationType.InvalidParenthesis,
                         config.Level,
                         lparen.sentence,
                         lparen.lineOffset,
@@ -253,7 +253,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 if (subsentenceCount != 0 && subsentenceCount > config.MaxCount)
                 {
                     result.Add(new ValidationError(
-                        ValidationType.ParenthesizedSentence,
+                        ValidationType.InvalidParenthesis,
                         config.Level,
                         sentences.Last(),
                         sentences.Last().OffsetMap[0],
