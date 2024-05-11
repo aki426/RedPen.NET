@@ -37,6 +37,9 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [InlineData("011", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人()です。）による創作です。", 8, 1, 1, 3, "15,2,2")]
         [InlineData("012", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人()です。）による創作です", 8, 1, 1, 3, "15,2,2")]
         [InlineData("013", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人()です。）による創作です。有名な童話ですよ。", 8, 1, 1, 3, "15,2,2")]
+        // 複数パラグラフ。
+        [InlineData("013", "ピーターラビット（野兎です。父はパイになりました）はビアトリクス・ポッター（英国人()です。）による創作です。有名な童話ですよ。\n\n兎を擬人化（人とみなすこと）する文化は世界共通(ex.鳥獣戯画)ですね。",
+            8, 1, 1, 4, "15,2,2,2")]
         public void BasicTest(string nouse1, string text, int maxLength, int maxNumber, int maxLevel, int errorCount, string expected)
         {
             // Document
