@@ -22,7 +22,7 @@
 21,,JapaneseDroppingRa,Sentence,ja-JP,ら抜き表現を検出します。,,-,https://github.com/textlint-ja/textlint-rule-no-dropping-the-ra
 22,v,JapaneseExpressionVariation,Document,ja-JP,読みが同じでかつ表記が異なる単語を、表記ゆれの可能性がある表現として検出します。表記ゆれと考えられる表現同士で出現回数をカウントし、より少ない方を表記ゆれと判定します。出現回数が同じ場合は双方が表記ゆれの可能性があると判定します。WordMapはある単語の読みを定義した辞書として使用されます（例：map -> マップ、と定義すると「まっぷ」「マップ」に対する表記ゆれとして「map」を検出することができます。読みは全角カタカナで定義してください）。,WordMap,※同名のValidatorをBaseにしています,-
 23,,JapaneseFiller,Sentence,ja-JP,「ええと」「あの」「まあ」などのフィラー（つなぎ表現）を検出します。,,-,https://github.com/textlint-ja/textlint-rule-no-filler
-24,,JapaneseFormalKanjiUsage,Sentence,ja-JP,『内閣訓令第1号　公⽤⽂における漢字使⽤等について』<https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/sanko/koyobun/pdf/kunrei.pdf>のルールに従っていない漢字の使用を検出します。,,-,-
+24,,JapaneseOfficialDocumentsKanjiUsage,Sentence,ja-JP,『内閣訓令第1号　公⽤⽂における漢字使⽤等について』<https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/sanko/koyobun/pdf/kunrei.pdf>のルールに従っていない漢字の使用を検出します。,,-,-
 25,,JapaneseGeneralNovelStyle,Sentence,ja-JP,日本語の小説における一般的な作法に従わない表現を検出します。,,-,https://github.com/io-monad/textlint-rule-general-novel-style-ja
 26,,JapaneseInappropriateWord,Sentence,ja-JP,一般的に不適切とされる表現を検出します。,,-,https://github.com/textlint-ja/textlint-rule-ja-no-inappropriate-words
 27,,JapaneseInvalidSa,Sentence,ja-JP,サ抜き、サ入れ表現の誤用を検出します。,,-,https://github.com/textlint-ja/textlint-rule-no-insert-dropping-sa
