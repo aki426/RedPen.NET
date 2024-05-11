@@ -142,7 +142,7 @@ namespace RedPen.Net.Core.Model
                 // Surfaceにおいても空文字列はワイルドカードとして扱う。
                 return true;
             }
-            else if (this.Surface == other.Surface)
+            else if (this.Surface.ToLower() == other.Surface.ToLower())
             {
                 return true;
             }
@@ -163,7 +163,7 @@ namespace RedPen.Net.Core.Model
                 // Readingにおいても空文字列はワイルドカードとして扱う。
                 return true;
             }
-            else if (this.Reading == other.Reading)
+            else if (this.Reading.ToLower() == other.Reading.ToLower())
             {
                 return true;
             }
