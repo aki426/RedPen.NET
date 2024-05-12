@@ -308,7 +308,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             else if (!isMatch && expected == "")
             {
                 // マッチせず、マッチが想定されていない。
-                output.WriteLine("想定通りマッチしませんでした。");
+                output.WriteLine("何もマッチしませんでした。想定内です。");
             }
             else
             {
@@ -433,7 +433,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             else if (!isMatch && expected == "")
             {
                 // マッチせず、マッチが想定されていない。
-                output.WriteLine("想定通りマッチしませんでした。");
+                output.WriteLine("何もマッチしませんでした。想定内です。");
             }
             else
             {
@@ -476,7 +476,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             else if (!isMatch && expected == "")
             {
                 // マッチせず、マッチが想定されていない。
-                output.WriteLine("想定通りマッチしませんでした。");
+                output.WriteLine("何もマッチしませんでした。想定内です。");
             }
             else
             {
@@ -525,7 +525,211 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             else if (!isMatch && expected == "")
             {
                 // マッチせず、マッチが想定されていない。
-                output.WriteLine("想定通りマッチしませんでした。");
+                output.WriteLine("何もマッチしませんでした。想定内です。");
+            }
+            else
+            {
+                output.WriteLine("想定外です。マッチしませんでした。");
+                true.Should().BeFalse();
+            }
+        }
+
+        [Theory(DisplayName = "公用文における漢字使用等について1-(2)-オ")]
+        [InlineData("001", "おって連絡します", "*:接続詞:*", "")]
+        [InlineData("002", "おって、連絡します", "*:接続詞:*", "")]
+        [InlineData("003", "追って連絡します", "*:接続詞:*", "追って")]
+        [InlineData("004", "追って、連絡します", "*:接続詞:*", "追って")]
+        [InlineData("005", "鳥かつ哺乳類です。", "*:接続詞:*", "かつ")]
+        [InlineData("006", "鳥、かつ哺乳類です。", "*:接続詞:*", "かつ")]
+        [InlineData("007", "鳥且つ哺乳類です。", "*:接続詞:*", "")]
+        [InlineData("008", "鳥、且つ哺乳類です。", "*:接続詞:*", "")]
+        [InlineData("009", "したがって賛成です。", "*:接続詞:*", "したがって")]
+        [InlineData("010", "したがって、賛成です。", "*:接続詞:*", "したがって")]
+        [InlineData("011", "従って賛成です。", "*:接続詞:*", "従って")]
+        [InlineData("012", "従って、賛成です。", "*:接続詞:*", "従って")]
+        [InlineData("013", "ただし条件があります。", "*:接続詞:*", "ただし")]
+        [InlineData("014", "ただし、条件があります。", "*:接続詞:*", "ただし")]
+        [InlineData("015", "但し条件があります。", "*:接続詞:*", "但し")]
+        [InlineData("016", "但し、条件があります。", "*:接続詞:*", "但し")]
+        [InlineData("017", "ついては提案があります。", "*:接続詞:*", "ついては")]
+        [InlineData("018", "ついては、提案があります。", "*:接続詞:*", "ついては")]
+        [InlineData("019", "付いては提案があります。", "*:接続詞:*", "")]
+        [InlineData("020", "付いては、提案があります。", "*:接続詞:*", "")]
+        [InlineData("021", "ところが反対されました。", "*:接続詞:*", "ところが")]
+        [InlineData("022", "ところが、反対されました。", "*:接続詞:*", "ところが")]
+        [InlineData("023", "所が反対されました。", "*:接続詞:*", "")]
+        [InlineData("024", "所が、反対されました。", "*:接続詞:*", "")]
+        [InlineData("025", "ところでどうですか。", "*:接続詞:*", "ところで")]
+        [InlineData("026", "ところで、どうですか。", "*:接続詞:*", "ところで")]
+        [InlineData("027", "所でどうですか。", "*:接続詞:*", "")]
+        [InlineData("028", "所で、どうですか。", "*:接続詞:*", "")]
+        [InlineData("029", "また反対意見については、", "*:接続詞:*", "また")]
+        [InlineData("030", "また、反対意見については、", "*:接続詞:*", "また")]
+        [InlineData("031", "又反対意見については、", "*:接続詞:*", "又")]
+        [InlineData("032", "又、反対意見については、", "*:接続詞:*", "又")]
+        [InlineData("033", "復反対意見については、", "*:接続詞:*", "")]
+        [InlineData("034", "復、反対意見については、", "*:接続詞:*", "")]
+        [InlineData("035", "ゆえに賛成です。", "*:接続詞:*", "ゆえに")]
+        [InlineData("036", "ゆえに、賛成です。", "*:接続詞:*", "ゆえに")]
+        [InlineData("037", "故に賛成です。", "*:接続詞:*", "故に")]
+        [InlineData("038", "故に、賛成です。", "*:接続詞:*", "故に")]
+        [InlineData("039", "賛成および反対意見は、", "*:接続詞:*", "および")]
+        [InlineData("040", "賛成及び反対意見は、", "*:接続詞:*", "及び")]
+        [InlineData("041", "賛成ならびに反対意見は、", "*:接続詞:*", "ならびに")]
+        [InlineData("042", "賛成並びに反対意見は、", "*:接続詞:*", "並びに")]
+        [InlineData("043", "賛成または反対の方は、", "*:接続詞:*", "または")]
+        [InlineData("044", "賛成又は反対の方は、", "*:接続詞:*", "又は")]
+        [InlineData("045", "賛成復は反対の方は、", "*:接続詞:*", "")]
+        [InlineData("046", "賛成もしくは反対の方は、", "*:接続詞:*", "もしくは")]
+        [InlineData("047", "賛成若しくは反対の方は、", "*:接続詞:*", "若しくは")]
+        public void ConjunctionMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
+        {
+            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
+
+            // Token目視。
+            tokens.ForEach(t => output.WriteLine(t.FormatToExpressionRuleStyle()));
+
+            var (isMatch, tokens1) =
+                ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
+
+            if (isMatch)
+            {
+                var matched = string.Join("|", tokens1.Select(lis => lis.First()).Select(t => t.Surface));
+                output.WriteLine("");
+                output.WriteLine($"★ {matched} にマッチしました。");
+                matched.Should().Be(expected);
+            }
+            else if (!isMatch && expected == "")
+            {
+                // マッチせず、マッチが想定されていない。
+                output.WriteLine("何もマッチしませんでした。想定内です。");
+            }
+            else
+            {
+                output.WriteLine("想定外です。マッチしませんでした。");
+                true.Should().BeFalse();
+            }
+        }
+
+        [Theory(DisplayName = "公用文における漢字使用等について1-(2)-カ")]
+        [InlineData("001", "現地には，行かない。", "*:助動詞,特殊・ナイ:ナイ", "ない")]
+        [InlineData("002", "現地には，行か無い。", "*:助動詞,形容詞・イ段:ナイ", "無い")]
+        [InlineData("003", "それ以外に方法がないようだ。", "*:名詞,非自立,助動詞語幹:ヨウ", "よう")]
+        [InlineData("004", "それ以外に方法がない様だ。", "*:名詞,非自立,助動詞語幹:ヨウ", "様")]
+        [InlineData("005", "二十歳ぐらいの人", "*:助詞,副助詞:グライ", "ぐらい")]
+        [InlineData("006", "二十歳位の人", "*:名詞,接尾:イ", "位")]
+        [InlineData("007", "調査しただけである。", "*:助詞,副助詞:ダケ", "だけ")]
+        [InlineData("008", "三日ほど経過した。", "*:名詞,接尾,助数詞:ニチ + *:助詞,副助詞:ホド", "日")]
+        [InlineData("009", "三日程経過した。", "*:名詞,一般:ニッテイ", "日程")]
+        public void JodoshiJoshiMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
+        {
+            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
+
+            // Token目視。
+            tokens.ForEach(t => output.WriteLine(t.FormatToExpressionRuleStyle()));
+
+            var (isMatch, tokens1) =
+                ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
+
+            if (isMatch)
+            {
+                var matched = string.Join("|", tokens1.Select(lis => lis.First()).Select(t => t.Surface));
+                output.WriteLine("");
+                output.WriteLine($"★ {matched} にマッチしました。");
+                matched.Should().Be(expected);
+            }
+            else if (!isMatch && expected == "")
+            {
+                // マッチせず、マッチが想定されていない。
+                output.WriteLine("何もマッチしませんでした。想定内です。");
+            }
+            else
+            {
+                output.WriteLine("想定外です。マッチしませんでした。");
+                true.Should().BeFalse();
+            }
+        }
+
+        [Theory(DisplayName = "公用文における漢字使用等について1-(2)-キ")]
+        [InlineData("001", "その点に問題がある。", "*:動詞,自立:アル", "ある")]
+        [InlineData("002", "その点に問題が有る。", "*:動詞,自立:アル", "有る")]
+        [InlineData("003", "その点に問題が在る。", "*:動詞,自立:アル", "在る")]
+        [InlineData("004", "ここに関係者がいる。", "*:動詞,自立:イル", "いる")]
+        [InlineData("005", "ここに関係者が居る。", "*:動詞,自立:イル", "居る")]
+        [InlineData("006", "許可しないことがある。", "*:動詞,自立:アル", "ある")]
+        [InlineData("007", "許可しないことが有る。", "*:動詞,自立:アル", "有る")]
+        [InlineData("008", "だれでも利用ができる。", "*:動詞,自立:デキル", "できる")]
+        [InlineData("009", "だれでも利用が出来る。", "*:動詞,自立:デキル", "出来る")]
+        [InlineData("010", "次のとおりである。", "*:名詞:トオリ", "とおり")]
+        [InlineData("011", "次の通りである。", "*:名詞:トオリ", "通り")]
+        [InlineData("012", "事故のときは連絡する。", "*:名詞,非自立:トキ", "とき")]
+        [InlineData("013", "事故の時は連絡する。", "*:名詞,非自立:トキ", "時")]
+        [InlineData("014", "現在のところ差し支えない。", "*:名詞,非自立:トコロ", "ところ")]
+        [InlineData("015", "現在の所差し支えない。", "*:名詞,非自立:トコロ", "所")]
+        [InlineData("016", "説明するとともに意見を聞く。", "*:助詞,格助詞:トトモニ", "とともに")]
+        [InlineData("017", "説明すると共に意見を聞く。", "*:助詞,格助詞:トトモニ", "と共に")]
+        [InlineData("018", "欠点がない。", "*:形容詞,自立:ナイ", "ない")]
+        [InlineData("019", "欠点が無い。", "*:形容詞,自立:ナイ", "無い")]
+        [InlineData("020", "合計すると１万円になる。", "*:動詞,自立:ナル", "なる")]
+        [InlineData("021", "合計すると１万円に成る。", "*:動詞,自立:ナル", "成る")]
+        [InlineData("022", "そのほか、特別の場合を除くほか、除かない。", "*:助動詞,特殊・ナイ:ナイ", "ない")]
+        [InlineData("023", "そのほか、特別の場合を除くほか、除か無い。", "*:助動詞,形容詞・イ段:ナイ", "無い")]
+        [InlineData("024", "正しいものと認める。", "*:名詞,非自立:モノ", "もの")]
+        [InlineData("025", "正しい物と認める。", "*:名詞,非自立:モノ", "物")]
+        [InlineData("026", "一部の反対のゆえにはかどらない。", "*:名詞,非自立:ユエ", "ゆえ")]
+        [InlineData("027", "一部の反対の故にはかどらない。", "*:名詞,非自立:ユエ", "故")]
+        [InlineData("028", "賛成するわけにはいかない。", "*:名詞,非自立:ワケ", "わけ")]
+        [InlineData("029", "賛成する訳にはいかない。", "*:名詞,非自立:ワケ", "訳")]
+        [InlineData("030", "間違いかもしれない。", "*:動詞,自立:シレ", "しれ")]
+        [InlineData("031", "間違いかも知れない。", "*:動詞,自立:シレ", "知れ")]
+        [InlineData("032", "図書を貸してあげる。", "*:動詞,非自立:アゲル", "あげる")]
+        [InlineData("033", "図書を貸して上げる。", "*:動詞,非自立:アゲル", "上げる")]
+        [InlineData("034", "負担が増えていく。", "*:動詞,非自立:イク", "いく")]
+        [InlineData("035", "負担が増えて行く。", "*:動詞,非自立:イク", "行く")]
+        [InlineData("036", "報告していただく。", "*:動詞,自立:イタダク", "いただく")]
+        [InlineData("037", "報告して頂く。", "*:動詞,自立:イタダク", "頂く")]
+        [InlineData("038", "報告していただきます。", "*:動詞,非自立:イタダキ", "いただき")]
+        [InlineData("039", "報告して頂きます。", "*:動詞,非自立:イタダキ", "頂き")]
+        [InlineData("040", "通知しておく。", "*:動詞,非自立:オク", "おく")]
+        [InlineData("041", "通知して置く。", "*:動詞,自立:オク", "置く")]
+        [InlineData("042", "問題点を話してください。", "*:動詞,非自立:クダサイ", "ください")]
+        [InlineData("043", "問題点を話して下さい。", "*:動詞,非自立:クダサイ", "下さい")]
+        [InlineData("044", "寒くなってくる。", "*:動詞,非自立:クル", "くる")]
+        [InlineData("045", "寒くなって来る。", "*:動詞,非自立:クル", "来る")]
+        [InlineData("046", "書いてしまう。", "*:動詞,非自立:シマウ", "しまう")]
+        [InlineData("047", "書いて仕舞う。", "*:動詞,自立:シマウ", "仕舞う")]
+        [InlineData("048", "見てみる。", "*:動詞,非自立:ミル", "みる")]
+        [InlineData("049", "見て見る。", "*:動詞,自立:ミル", "見る")]
+        [InlineData("050", "連絡してよい。", "*:形容詞,非自立:ヨイ", "よい")]
+        [InlineData("051", "連絡して良い。", "*:形容詞,非自立:ヨイ", "良い")]
+        [InlineData("052", "調査だけにすぎない。", "*:動詞,自立:スギ", "すぎ")]
+        [InlineData("053", "調査だけに過ぎない。", "*:動詞,自立:スギ", "過ぎ")]
+        [InlineData("054", "これについて考慮する。", "*:助詞,格助詞:ニツイテ", "について")]
+        [InlineData("055", "これに付いて考慮する。", "*:動詞,自立:ツイ", "付い")]
+        public void OkuriganaMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
+        {
+            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
+
+            // Token目視。
+            tokens.ForEach(t => output.WriteLine(t.FormatToExpressionRuleStyle()));
+
+            var (isMatch, tokens1) =
+                ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
+
+            if (isMatch)
+            {
+                var matched = string.Join("|", tokens1.Select(lis => lis.First()).Select(t => t.Surface));
+                output.WriteLine("");
+                output.WriteLine($"★ {matched} にマッチしました。");
+                matched.Should().Be(expected);
+            }
+            else if (!isMatch && expected == "")
+            {
+                // マッチせず、マッチが想定されていない。
+                output.WriteLine("何もマッチしませんでした。想定内です。");
             }
             else
             {
