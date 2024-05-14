@@ -11,11 +11,11 @@ using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Tokenizer
 {
-    public class NeologdJapaneseTokenizerTests
+    public class KuromojiTokenizerTests
     {
         private ITestOutputHelper output;
 
-        public NeologdJapaneseTokenizerTests(ITestOutputHelper output)
+        public KuromojiTokenizerTests(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -23,10 +23,10 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         /// <summary>
         /// Tokenizes the test.
         /// </summary>
-        [Fact(DisplayName = "Kuromoji＋Neologdの基本的なTokenizeテスト")]
+        [Fact(DisplayName = "Lucene.Net標準のKuromoji＋IPAdicの基本的なTokenizeテスト")]
         public void TokenizeTest()
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
 
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence("今日も晴天だ。", 1));
 
@@ -51,7 +51,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [Fact]
         public void TokenizeVoidTest()
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence("", 1));
             tokens.Count.Should().Be(0);
         }
@@ -112,7 +112,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData(11, 1, "それで済ますことはない。", "ない")]
         public void GetJodoshiTest(int nouse1, int nouser2, string text, string jodoshi)
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
@@ -165,7 +165,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData(1, 6, "吾輩は猫 ", false)]
         public void TaigendomeTest(int nouse1, int nouser2, string text, bool taigendomeFlag)
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
@@ -213,7 +213,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             "カタカナ|表現|は|プラスチック|樹脂|や|シス|卿|や|ジュース|製造|機|の|よう|に|1|単語|で|あっ|て|も|分割|し|ます|。")]
         public void DisplayTokens(string nouse1, string text, string expected)
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
@@ -289,7 +289,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("061", "われらは歩く。", "*:名詞,代名詞:*", "われ")]
         public void DaimeishiMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
@@ -414,7 +414,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("094", "よほど堪えたと見えて、", "*:副詞:*", "よほど")]
         public void FukushiMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
@@ -457,7 +457,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("012", "ごもっとも", "*:接頭詞:*", "ご")]
         public void PrefixGoMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
@@ -506,7 +506,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("018", "強目の火力で、", "*:名詞,接尾:*", "目")]
         public void SuffixMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
@@ -584,7 +584,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("047", "賛成若しくは反対の方は、", "*:接続詞:*", "若しくは")]
         public void ConjunctionMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
@@ -624,7 +624,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("009", "三日程経過した。", "*:名詞,一般:ニッテイ", "日程")]
         public void JodoshiJoshiMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
@@ -710,7 +710,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("055", "これに付いて考慮する。", "*:動詞,自立:ツイ", "付い")]
         public void OkuriganaMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
         {
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
@@ -760,7 +760,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             var sw = new Stopwatch();
             sw.Start();
 
-            NeologdJapaneseTokenizer tokenizer = new NeologdJapaneseTokenizer();
+            KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(fileContents, 1));
 
             sw.Stop();
