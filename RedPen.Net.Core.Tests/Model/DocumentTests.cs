@@ -136,7 +136,7 @@ namespace RedPen.Net.Core.Tests.Model
         [Fact]
         public void 日本語のトークナイザーテスト()
         {
-            Document doc = Document.Builder(new NeologdJapaneseTokenizer())
+            Document doc = Document.Builder(new KuromojiTokenizer())
                     .SetFileName("今日")
                     .AddSection(0)
                     .AddSectionHeader("天気")

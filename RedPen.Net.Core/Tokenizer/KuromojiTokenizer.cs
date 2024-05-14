@@ -12,18 +12,17 @@ namespace RedPen.Net.Core.Tokenizer
     /// <summary>
     /// Lucene.Net.Analysis.Kuromojiをラップした日本語用Tokenizer。
     /// Neologd辞書はデフォルトでは保持しておらず、使用している辞書はMeCab-IPADIC辞書である。
-    /// TODO: Neologd辞書ロード機能を実装するか、名前を変更することを検討する。
     /// </summary>
-    public class NeologdJapaneseTokenizer : IRedPenTokenizer
+    public class KuromojiTokenizer : IRedPenTokenizer
     {
         private JapaneseTokenizer tokenizer;
 
         // TODO: JapaneseTokenizerの生成コストが気になる。Singleton化して生成コストを削減することを検討する。
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NeologdJapaneseTokenizer"/> class.
+        /// Initializes a new instance of the <see cref="KuromojiTokenizer"/> class.
         /// </summary>
-        public NeologdJapaneseTokenizer()
+        public KuromojiTokenizer()
         {
             // MEMO: 本来なら何らかのTextReaderが必要？
             this.tokenizer = new JapaneseTokenizer(
@@ -43,7 +42,7 @@ namespace RedPen.Net.Core.Tokenizer
             List<TokenElement> tokens = new List<TokenElement>();
             try
             {
-                foreach (TokenElement token in KuromojiNeologd(sentence))
+                foreach (TokenElement token in GetKuromojiTokens(sentence))
                 {
                     tokens.Add(token);
                 }
@@ -62,7 +61,7 @@ namespace RedPen.Net.Core.Tokenizer
         /// </summary>
         /// <param name="src">The src.</param>
         /// <returns>A list of TokenElements.</returns>
-        private List<TokenElement> KuromojiNeologd(Sentence src)
+        private List<TokenElement> GetKuromojiTokens(Sentence src)
         {
             tokenizer.SetReader(new StringReader(src.Content));
             List<TokenElement> tokens = new List<TokenElement>();
