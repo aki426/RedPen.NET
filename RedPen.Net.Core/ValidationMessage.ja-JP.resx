@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CommaNumber" xml:space="preserve">
-    <value>カンマの数（{0}）が最大値（{1}）を超えています。</value>
+  <data name="CommaCount" xml:space="preserve">
+    <value>一文中のカンマの数（{0}）が規定値（{1}）以上でした。</value>
   </data>
   <data name="Contraction" xml:space="preserve">
     <value>省略語 "{0}" が見つかりました。</value>

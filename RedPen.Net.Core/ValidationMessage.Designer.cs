@@ -63,9 +63,9 @@ namespace RedPen.Net.Core {
         /// <summary>
         ///   The number of commas ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string CommaNumber {
+        public static string CommaCount {
             get {
-                return ResourceManager.GetString("CommaNumber", resourceCulture);
+                return ResourceManager.GetString("CommaCount", resourceCulture);
             }
         }
         

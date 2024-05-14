@@ -161,9 +161,9 @@ namespace RedPen.Net.Core.Config
                     JsonSerializer.Serialize(writer, wordSetConf.WordSet, wordSetConf.WordSet.GetType(), options);
                 }
 
-                if (conf is IMaxCountConfigParameter maxCountConf)
+                if (conf is IMinCountConfigParameter minCountConf)
                 {
-                    writer.WriteNumber("MaxCount", maxCountConf.MaxCount);
+                    writer.WriteNumber("MinCount", minCountConf.MinCount);
                 }
 
                 writer.WriteEndObject();

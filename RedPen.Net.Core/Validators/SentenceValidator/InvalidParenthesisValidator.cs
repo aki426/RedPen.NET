@@ -9,21 +9,21 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     /// <summary>InvalidParenthesisのConfiguration</summary>
     public record InvalidParenthesisConfiguration : ValidatorConfiguration,
-        IMaxLengthConfigParameter, IMaxCountConfigParameter, IMaxLevelConfigParameter
+        IMaxLengthConfigParameter, IMinCountConfigParameter, IMaxLevelConfigParameter
     {
         /// <summary>括弧内に存在してもよい単語数の上限</summary>
         public int MaxLength { get; init; }
 
         /// <summary>一文内に存在してよい括弧の上限数</summary>
-        public int MaxCount { get; init; }
+        public int MinCount { get; init; }
 
         /// <summary>一文に存在してよい括弧のネスト数</summary>
         public int MaxLevel { get; init; }
 
-        public InvalidParenthesisConfiguration(ValidationLevel level, int maxLength, int maxCount, int maxLevel) : base(level)
+        public InvalidParenthesisConfiguration(ValidationLevel level, int maxLength, int minCount, int maxLevel) : base(level)
         {
             this.MaxLength = maxLength;
-            this.MaxCount = maxCount;
+            this.MinCount = minCount;
             this.MaxLevel = maxLevel;
         }
     }
@@ -212,9 +212,8 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 else if (periods.Contains(currentChar.c) && parenLevel.Count == 0)
                 {
                     // 文の区切りに到達したとみなせる場合、かつ括弧が閉じ切っていた場合（ゼロレベルに戻った状態）のとき、
-                    // その文の中に存在する括弧の数が規定値を超えていた場合エラーとする。
-
-                    if (subsentenceCount > config.MaxCount)
+                    // その文の中に存在する括弧の数が規定値以上の場合エラーとする。
+                    if (config.MinCount <= subsentenceCount)
                     {
                         result.Add(new ValidationError(
                             ValidationType.InvalidParenthesis,
@@ -222,7 +221,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                             currentChar.sentence,
                             currentChar.sentence.OffsetMap[0],
                             currentChar.sentence.OffsetMap[^1],
-                            MessageArgs: new object[] { subsentenceCount, config.MaxCount },
+                            MessageArgs: new object[] { subsentenceCount, config.MinCount },
                             MessageKey: "SubsentenceTooFrequent"));
                     }
 
@@ -250,7 +249,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             else
             {
                 // ドキュメント構造の最後でピリオド類文字が現れなかった場合に括弧の使いすぎエラーを出す。
-                if (subsentenceCount != 0 && subsentenceCount > config.MaxCount)
+                if (subsentenceCount != 0 && config.MinCount <= subsentenceCount)
                 {
                     result.Add(new ValidationError(
                         ValidationType.InvalidParenthesis,
@@ -258,7 +257,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         sentences.Last(),
                         sentences.Last().OffsetMap[0],
                         sentences.Last().OffsetMap[^1],
-                        MessageArgs: new object[] { subsentenceCount, config.MaxCount },
+                        MessageArgs: new object[] { subsentenceCount, config.MinCount },
                         MessageKey: "SubsentenceTooFrequent"));
                 }
             }

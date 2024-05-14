@@ -74,7 +74,7 @@
     <Compile Include="Parser\SentenceExtractorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedPenUtilityTests.cs" />
-    <Compile Include="Tokenizer\NeologdJapaneseTokenizerTests.cs" />
+    <Compile Include="Tokenizer\KuromojiTokenizerTests.cs" />
     <Compile Include="Tokenizer\TokenElementTests.cs" />
     <Compile Include="Tokenizer\WhiteSpaceTokenizerTests.cs" />
     <Compile Include="Utility\CollectionExtensionsTests.cs" />
@@ -86,7 +86,7 @@
     <Compile Include="Validator\DocumentValidator\JapaneseExpressionVariationValidatorTest.cs" />
     <Compile Include="Validator\DocumentValidator\SuccessiveSentenceValidatorTests.cs" />
     <Compile Include="Validator\ExpressionRuleTests.cs" />
-    <Compile Include="Validator\SentenceValidator\CommaNumberValidatorTests.cs" />
+    <Compile Include="Validator\SentenceValidator\CommaCountValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\DoubledConjunctiveParticleGaValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\DoubledJoshiValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\DoubledWordValidatorTests.cs" />

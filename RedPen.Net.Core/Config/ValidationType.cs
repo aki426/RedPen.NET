@@ -23,7 +23,7 @@ namespace RedPen.Net.Core.Config
     /// <summary>Validationの種類の定義</summary>
     public enum ValidationType
     {
-        CommaNumber,
+        CommaCount,
         Contraction,
         DoubledConjunctiveParticleGa,
         DoubledJoshi,

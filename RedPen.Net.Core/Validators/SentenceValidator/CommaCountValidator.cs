@@ -9,35 +9,35 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
     // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
 
     /// <summary>CommaNumberのConfiguration</summary>
-    public record CommaNumberConfiguration : ValidatorConfiguration, IMaxCountConfigParameter
+    public record CommaCountConfiguration : ValidatorConfiguration, IMinCountConfigParameter
     {
-        public int MaxCount { get; init; }
+        public int MinCount { get; init; }
 
-        public CommaNumberConfiguration(ValidationLevel level, int maxCount) : base(level)
+        public CommaCountConfiguration(ValidationLevel level, int minCount) : base(level)
         {
-            MaxCount = maxCount;
+            MinCount = minCount;
         }
     }
 
     /// <summary>
     /// センテンス内のコンマの最大数を制限としてValidationを実行するValidator。
     /// </summary>
-    public sealed class CommaNumberValidator : Validator, ISentenceValidatable
+    public sealed class CommaCountValidator : Validator, ISentenceValidatable
     {
         /// <summary>Configuration</summary>
-        public CommaNumberConfiguration Config { get; init; }
+        public CommaCountConfiguration Config { get; init; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommaNumberValidator"/> class.
+        /// Initializes a new instance of the <see cref="CommaCountValidator"/> class.
         /// </summary>
         /// <param name="level">The level.</param>
         /// <param name="documentLangForTest">The document lang for test.</param>
         /// <param name="symbolTable">The symbol table.</param>
         /// <param name="config">The config.</param>
-        public CommaNumberValidator(
+        public CommaCountValidator(
             CultureInfo documentLangForTest,
             SymbolTable symbolTable,
-            CommaNumberConfiguration config) :
+            CommaCountConfiguration config) :
             base(config.Level,
                 documentLangForTest,
                 symbolTable)
@@ -58,16 +58,16 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
                 .Where(c => c == this.SymbolTable.GetValueOrFallbackToDefault(SymbolType.COMMA))
                 .Count();
 
-            if (Config.MaxCount < commaCount)
+            if (Config.MinCount <= commaCount)
             {
-                // コンマの数が最大数を超えている場合はエラーとする。
+                // コンマの数がエラーとして扱う最小値以上の場合はエラーとする。
                 result.Add(
                     new ValidationError(
-                        ValidationType.CommaNumber,
+                        ValidationType.CommaCount,
                         this.Level,
                         sentence,
                         // メッセージ引数は実際のコンマの数、最大数の順番で格納する。
-                        MessageArgs: new object[] { commaCount, Config.MaxCount }));
+                        MessageArgs: new object[] { commaCount, Config.MinCount }));
             }
 
             return result;

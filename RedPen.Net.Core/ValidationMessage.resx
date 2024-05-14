@@ -139,7 +139,7 @@
   <data name="ListLevel" xml:space="preserve">
     <value>The list item is nested too deeply.</value>
   </data>
-  <data name="CommaNumber" xml:space="preserve">
+  <data name="CommaCount" xml:space="preserve">
     <value>The number of commas ({0}) exceeds the maximum of {1}.</value>
   </data>
   <data name="Contraction" xml:space="preserve">
