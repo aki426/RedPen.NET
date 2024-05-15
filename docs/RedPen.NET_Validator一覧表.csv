@@ -1,64 +1,64 @@
 ﻿No.,Done,Name,Target,Lang,Description,Property,redpen.cc参照元,textlint参照元
-1,v,CommaCount,Sentence,ANY,センテンス内でMaxCountを超える回数コンマが使用されていた場合エラーとなります。,MaxCount,CommaNumber,-
+15,v,InvalidSymbol,Sentence,ANY,シンボル定義で指定された不正なシンボルを検出します。,※Symbolsブロックで定義,※同名のValidatorをBaseにしています,-
+34,,JapaneseSymbolWithSpace,Sentence,ja-JP,シンボル定義で指定されたシンボル前後のスペース定義に従って、シンボル前後のスペースの有無を検出します。※日本語の規則に合わせてエラーを検出します。,※Symbolsブロックで定義,※同名のValidatorをBaseにしています,-
+57,v,SymbolWithSpace,Sentence,en-US,シンボル定義で指定された「シンボル前後のスペースの有無」に従って、シンボル前後の不正なスペースを検出します。,※Symbolsブロックで定義,※同名のValidatorをBaseにしています,-
+42,,NumberFormat,Sentence,en-US,"数値表現が一般的な記法に従っていない場合にエラーとなります。DecimalDelimiterIsCommaがtrueの場合数値のデリミタを「.」から「,」（ヨーロッパ方式）に変更してValidationを実行します。IgnoreYearがTrueの場合4桁の数値を無視してValidationを実行します。","DecimalDelimiterIsComma, IgnoreYear",※同名のValidatorをBaseにしています,-
+62,,WordFrequency,Document,en-US,ドキュメント中の単語の出現頻度が一般的に妥当とされる出現頻度と比べ異なる場合エラーとなります。DeviationFactorは一般的な出現頻度の何倍まで許容するかを表す係数です。なお、ドキュメントの単語数がMinCount以上の場合エラー検出を行い、下回る場合はValidationを行いません。,"DeviationFactor, MinCount",※同名のValidatorをBaseにしています,-
+54,v,SuccessiveSentence,Sentence,ANY,連続する2つのセンテンスが、MaxLengthを超える文字長で、かつLevenshtein距離がMinDistanceより小さい（2つのセンテンスの差異が小さい）場合エラーとなります。※Levenshtein距離とは2つのセンテンスが何文字異なるかを表す数のことです。,"Distance, MinLength -> MaxLength",※同名のValidatorをBaseにしています,-
+50,,SpaceBeginningOfSentence,Sentence,ANY,センテンス間に半角スペースが存在するかを検出します。Forbiddenがtrueの場合空白を許可しない設定となり、センテンス間に半角スペースが存在する場合にエラーとなります。SkipBeforeに文字列を指定した場合、その文字のいずれかの前にスペースが無くてもエラーになりません。同様に、SkipAfterに指定された文字のいずれかの後にスペースが無くてもエラーになりません。,"Forbidden, SkipBefore, SkipAfter",※同名のValidatorをBaseにしています,-
+51,v,SpaceWithAlphabeticalExpression,Sentence,ja-JP,日本語文中アルファベット表現の前後の空白が存在しない場合エラーとなります。Forbiddenがtrueの場合空白を許可しない設定となり、アルファベット表現と日本語の間に空白が存在する場合にエラーとなります。SkipBeforeに文字列を指定した場合、その文字のいずれかの前にスペースが無くてもエラーになりません。同様に、SkipAfterに指定された文字のいずれかの後にスペースが無くてもエラーになりません。,"Forbidden, SkipBefore, SkipAfter",SpaceBetweenAlphabeticalWord,-
+33,v,JapaneseStyle,Sentence,ja-JP,JodoshiStyleで指定されたスタイル（「だ・である調」または「です・ます調」）以外のスタイルが使用されていた場合エラーとなります。,JodoshiStyle,※同名のValidatorをBaseにしています,https://github.com/textlint-ja/textlint-rule-no-mix-dearu-desumasu
+9,,FrequentSentenceStart,Document,"en-US, ja-JP",先頭からLeadingWordLimitの単語数までを検査した結果、同一表現とみなされたセンテンスが全体のPercentThresholdを超える割合で出現する場合エラーとなります。また、ドキュメント全体のセンテンス数がMaxSentenceCountを超える場合のみエラーを検出します。,"LeadingWordLimit, PercentThreshold, MaxSentenceCount",※同名のValidatorをBaseにしています,-
+1,v,CommaCount,Sentence,ANY,センテンス内でMinCount以上カンマが使用されていた場合エラーとなります。,MinCount,CommaNumber,-
+44,,ParagraphCount,Section,ANY,セクション内にMinCount以上のパラグラフが存在する場合エラーとなります。,MinCount,ParagraphNumber,-
+47,,SectionLength,Section,ANY,セクション内でMinCount以上の単語が使用されていた場合エラーとなります。,MinCount,※同名のValidatorをBaseにしています,-
+63,,WordCount,Sentence,en-US,センテンス内でMinCount以上の単語が使用されていた場合エラーとなります。,MinCount,WordNumber,-
+49,v,SentenceLength,Sentence,ANY,MaxLenghtを超える文字長のセンテンスを検出します。,MaxLength,※同名のValidatorをBaseにしています,-
+46,v,InvalidParenthesis,Document,ANY,不正な括弧を検出します。括弧内の文字数がMaxLengthを超える場合、センテンス内の括弧の個数がMaxCount以上の場合、括弧のネストレベルがMaxLevelを超える場合、左右の括弧の数が等しくない場合にエラーとなります。,"MaxLength, MinCount, MaxLevel",ParenthesizedSentence,-
+12,,HeaderLength,Section,ANY,MinLevelを下回るレベルのセクションでMaxLenghtを超える文字数のヘッダー文を検出します。,"MaxLength, MinLevel",※同名のValidatorをBaseにしています,-
+41,v,LongKanjiChain,Sentence,ja-JP,MaxLengthを超える文字数の漢字の連続を検出します。WordSetで指定された表現は検出対象から除外します。,"Maxlength, WordSet",※同名のValidatorをBaseにしています,-
+40,,ListLevel,Section,ANY,MaxLevelを超える深すぎるレベル階層のリスト項目を検出します。,MaxLevel,※同名のValidatorをBaseにしています,-
+48,,SectionLevel,Section,ANY,MaxLevelを超える深すぎるレベルのセクションを検出します。,MaxLevel,※同名のValidatorをBaseにしています,-
+4,v,DoubledJoshi,Sentence,ja-JP,センテンス内の同一助詞の重複使用を検出します。使用箇所同士の距離が指定された文字数（MinInterval）を下回る場合エラーとなります。WordSetで指定された表現は検出対象から除外します。（例：「一人でで行く」といった文が検出対象となります）,"MinInterval, WordSet",※同名のValidatorをBaseにしています,https://github.com/textlint-ja/textlint-rule-no-doubled-joshi
+59,,UnexpandedAcronym,Document,en-US,省略形の単語（例：ABC）に対応する正式表記（例：Axx Bxx Cxx）がドキュメント中に存在しない場合エラーとなります。MaxLengthを超える文字長の省略形単語についてのみエラーを検出します。,MinLength -> MaxLength,※同名のValidatorをBaseにしています,-
+8,,EmptySection,Section,ANY,セクションに段落や文が1つも含まれていない場合にエラーとなります。MinLeveで指定されたレベルよりも上位のレベルのセクションに対してのみ検出します（例：4を指定した場合、1レベル、2レベル、3レベルのセクションに対してのみValidationを実行します）。,MinLevel,※同名のValidatorをBaseにしています,-
+39,v,KatakanaSpellCheck,Document,ja-JP,カタカナ単語の表記ゆれを検出します。WordSetで指定された表現、またはデフォルト辞書で定義された表現は検出対象から除外します。MinFreqより少ない出現回数の場合エラーとなります。MinRatioはカタカナ単語同士がどれだけ離れているかを表し、この値を下回る場合エラーとなります。検出対象範囲を広げるためにデフォルト辞書を使用したくない場合はEnableDefaultDictをfalseに設定してください。,"MinRatio, MinFreq, WordSet, EnableDefaultDict",※同名のValidatorをBaseにしています,-
+19,,JapaneseAnchorExpression,Sentence,ja-JP,NumberStyleで指定された章節参照スタイル（「1章、１章、一章」の3つのうちいずれか）以外の章節参照スタイルが使用されていた場合エラーとなります。,NumberStyle,※同名のValidatorをBaseにしています,-
+30,v,JapaneseNumberExpression,Sentence,ja-JP,NumberStyleで指定された計数表現スタイル（「1つ、１つ、一つ、ひとつ」の4つのうちいずれか）以外のスタイルが使用されていた場合エラーとなります。,NumberStyle,※同名のValidatorをBaseにしています,-
+45,,ParagraphStartWith,Section,ANY,パラグラフの開始部分がStartWithで指定された規約に従っていない場合エラーとなります。,StartWith,※同名のValidatorをBaseにしています,-
+22,v,JapaneseExpressionVariation,Document,ja-JP,読みが同じでかつ表記が異なる単語を、表記ゆれの可能性がある表現として検出します。表記ゆれと考えられる表現同士で出現回数をカウントし、より少ない方を表記ゆれと判定します。出現回数が同じ場合は双方が表記ゆれの可能性があると判定します。WordMapはある単語の読みを定義した辞書として使用されます（例：map -> マップ、と定義すると「まっぷ」「マップ」に対する表記ゆれとして「map」を検出することができます。読みは全角カタカナで定義してください）。,WordMap,※同名のValidatorをBaseにしています,-
+56,v,SuggestExpression,Sentence,ANY,検出した不正な表現に対して推奨される表現を提案します。「不正な表現と推奨される表現の対応関係」はWordMapの定義に基づきます。,WordMap,※同名のValidatorをBaseにしています,-
+14,v,InvalidExpression,Sentence,ANY,不正な表現を検出します。WordSetで指定された表現が出現した場合エラーとなります。,WordSet,※同名のValidatorをBaseにしています,-
+16,,InvalidWord,Sentence,en-US,不正な単語を検出します。WordSetで指定された単語が検出された場合エラーとなります。,WordSet,※同名のValidatorをBaseにしています,-
+18,v,JapaneseAmbiguousNounConjunction,Sentence,ja-JP,格助詞「の」の連続使用（AのBのC）を曖昧な名詞接続のパターンとして検出します。WordSetで指定された表現は検出対象から除外します。,WordSet,※同名のValidatorをBaseにしています,-
+28,v,JapaneseJoyoOrJinmeiyoKanji,Sentence,ja-JP,常用漢字以外の漢字を検出します。エラーは1文字単位で出力されます。WordSetで指定された「文字」は検出対象から除外します（エラー出力を抑止したい漢字を1文字ずつ定義してください）。,WordSet,JapaneseJoyoKanji,https://github.com/textlint-ja/textlint-rule-ja-joyo-or-jinmeiyo-kanji
+38,v,KatakanaEndHyphen,Sentence,ja-JP,JISZ8301:2008-G.6.2.2b-G.3に基づき、カタカナ単語の語尾にハイフンがあった場合エラーとなります。WordSetで指定された表現は検出対象から除外します。※Validationロジックの根拠となったルールはJIS Z8301:2019からは削除されていることに注意して使用してください。,WordSet,※同名のValidatorをBaseにしています,-
+52,,Spelling,Sentence,en-US,14万語弱のデフォルト単語リストを用いて、英語のスペルミスを検出します。WordSetで指定された単語は検出対象から除外します。,WordSet,※同名のValidatorをBaseにしています,-
+53,,StartWithCapitalLetter,Sentence,en-US,小文字から開始しているセンテンスを検出します。WordSetで指定された単語で開始している場合は検出対象から除外します。,WordSet,※同名のValidatorをBaseにしています,-
+5,v,DoubledWord,Sentence,"en-US, ja-JP",センテンス内のMaxLengthを超える文字数の単語（Token）に対して、同一表現の重複使用を検出します。WordSetで指定された表現は検出対象から除外します。,"WordSet, MinLength -> MaxLength",※同名のValidatorをBaseにしています,-
 2,,Contraction,Sentence,en-US,省略表現（例：「can't」など）を検出します。,,※同名のValidatorをBaseにしています,-
 3,v,DoubledConjunctiveParticleGa,Sentence,ja-JP,センテンス内で接続助詞「が」が2回以上使用されていた場合エラーとなります。（例：「Aですが、Bですが、Cです。」といった文が検出対象となります）,,※同名のValidatorをBaseにしています,https://github.com/textlint-ja/textlint-rule-no-doubled-conjunctive-particle-ga
-4,v,DoubledJoshi,Sentence,ja-JP,センテンス内の同一助詞の重複使用を検出します。使用箇所同士の距離が指定された文字数（MinInterval）を下回る場合エラーとなります。WordSetで指定された表現は検出対象から除外します。（例：「一人でで行く」といった文が検出対象となります）,"MinInterval, WordSet",※同名のValidatorをBaseにしています,https://github.com/textlint-ja/textlint-rule-no-doubled-joshi
-5,v,DoubledWord,Sentence,"en-US, ja-JP",センテンス内のMaxLengthを超える文字数の単語（Token）に対して、同一表現の重複使用を検出します。WordSetで指定された表現は検出対象から除外します。,"WordSet, MinLength -> MaxLength",※同名のValidatorをBaseにしています,-
 6,v,DoubleNegative,Sentence,"en-US, ja-JP",二重否定表現を検出します。※日本語の場合読みに基づいて「ズニ～ナイ」「ナイト～キレマセン」などの表現を検出します。,,※同名のValidatorをBaseにしています,-
 7,,DuplicatedSection,Section,ANY,コサイン距離を基に類似したセクションを検出します。,,※同名のValidatorをBaseにしています,-
-8,,EmptySection,Section,ANY,セクションに段落や文が1つも含まれていない場合にエラーとなります。MinLeveで指定されたレベルよりも上位のレベルのセクションに対してのみ検出します（例：4を指定した場合、1レベル、2レベル、3レベルのセクションに対してのみValidationを実行します）。,MinLevel,※同名のValidatorをBaseにしています,-
-9,,FrequentSentenceStart,Document,"en-US, ja-JP",先頭からLeadingWordLimitの単語数までを検査した結果、同一表現とみなされたセンテンスが全体のPercentThresholdを超える割合で出現する場合エラーとなります。また、ドキュメント全体のセンテンス数がMaxSentenceCountを超える場合のみエラーを検出します。,"LeadingWordLimit, PercentThreshold, MaxSentenceCount",※同名のValidatorをBaseにしています,-
 10,,GappedSection,Document,ANY,セクション番号（見出し番号）の大きさにギャップがある場合にエラーとなります（例：1節の直後に1.1.1節がある場合、1.1節を飛ばしている＝ギャップがあるとみなしてエラーとなります）。,,※同名のValidatorをBaseにしています,-
 11,v,HankakuKana,Sentence,ja-JP,半角カナ文字を検出します。,,※同名のValidatorをBaseにしています,-
-12,,HeaderLength,Section,ANY,MinLevelを下回るレベルのセクションでMaxLenghtを超える文字数のヘッダー文を検出します。,"MaxLength, MinLevel",※同名のValidatorをBaseにしています,-
 13,,Hyphenation,Sentence,en-US,ハイフンで連結された単語列が一般的な利用方法ではない場合にエラーとなります。,,※同名のValidatorをBaseにしています,-
-14,v,InvalidExpression,Sentence,ANY,不正な表現を検出します。WordSetで指定された表現が出現した場合エラーとなります。,WordSet,※同名のValidatorをBaseにしています,-
-15,v,InvalidSymbol,Sentence,ANY,シンボル定義で指定された不正なシンボルを検出します。,※Symbolsブロックで定義,※同名のValidatorをBaseにしています,-
-16,,InvalidWord,Sentence,en-US,不正な単語を検出します。WordSetで指定された単語が検出された場合エラーとなります。,WordSet,※同名のValidatorをBaseにしています,-
 17,,JapaneseAbusage,Sentence,ja-JP,よくある誤用表現を検出します。,,-,https://github.com/textlint-ja/textlint-rule-ja-no-abusage
-18,v,JapaneseAmbiguousNounConjunction,Sentence,ja-JP,格助詞「の」の連続使用（AのBのC）を曖昧な名詞接続のパターンとして検出します。WordSetで指定された表現は検出対象から除外します。,WordSet,※同名のValidatorをBaseにしています,-
-19,,JapaneseAnchorExpression,Sentence,ja-JP,NumberStyleで指定された章節参照スタイル（「1章、１章、一章」の3つのうちいずれか）以外の章節参照スタイルが使用されていた場合エラーとなります。,NumberStyle,※同名のValidatorをBaseにしています,-
 20,,JapaneseDoubledConjunction,Sentence,ja-JP,同一の接続詞の連続を検出します（例「しかし、～。しかし、～。」という「しかし」の連続があった場合エラーとなります）。,,-,https://github.com/textlint-ja/textlint-rule-no-doubled-conjunction
 21,,JapaneseDroppingRa,Sentence,ja-JP,ら抜き表現を検出します。,,-,https://github.com/textlint-ja/textlint-rule-no-dropping-the-ra
-22,v,JapaneseExpressionVariation,Document,ja-JP,読みが同じでかつ表記が異なる単語を、表記ゆれの可能性がある表現として検出します。表記ゆれと考えられる表現同士で出現回数をカウントし、より少ない方を表記ゆれと判定します。出現回数が同じ場合は双方が表記ゆれの可能性があると判定します。WordMapはある単語の読みを定義した辞書として使用されます（例：map -> マップ、と定義すると「まっぷ」「マップ」に対する表記ゆれとして「map」を検出することができます。読みは全角カタカナで定義してください）。,WordMap,※同名のValidatorをBaseにしています,-
 23,,JapaneseFiller,Sentence,ja-JP,「ええと」「あの」「まあ」などのフィラー（つなぎ表現）を検出します。,,-,https://github.com/textlint-ja/textlint-rule-no-filler
 24,,JapaneseOfficialDocumentsKanjiUsage,Sentence,ja-JP,『内閣訓令第1号　公⽤⽂における漢字使⽤等について』<https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/sanko/koyobun/pdf/kunrei.pdf>のルールに従っていない漢字の使用を検出します。,,-,-
 25,,JapaneseGeneralNovelStyle,Sentence,ja-JP,日本語の小説における一般的な作法に従わない表現を検出します。,,-,https://github.com/io-monad/textlint-rule-general-novel-style-ja
 26,,JapaneseInappropriateWord,Sentence,ja-JP,一般的に不適切とされる表現を検出します。,,-,https://github.com/textlint-ja/textlint-rule-ja-no-inappropriate-words
 27,,JapaneseInvalidSa,Sentence,ja-JP,サ抜き、サ入れ表現の誤用を検出します。,,-,https://github.com/textlint-ja/textlint-rule-no-insert-dropping-sa
-28,v,JapaneseJoyoOrJinmeiyoKanji,Sentence,ja-JP,常用漢字以外の漢字を検出します。エラーは1文字単位で出力されます。WordSetで指定された「文字」は検出対象から除外します（エラー出力を抑止したい漢字を1文字ずつ定義してください）。,WordSet,JapaneseJoyoKanji,https://github.com/textlint-ja/textlint-rule-ja-joyo-or-jinmeiyo-kanji
 29,,JapaneseMixedZenHanAlphabet,Sentence,ja-JP,全角と半角アルファベットの混在を検出します。,,-,https://github.com/textlint-ja/textlint-rule-no-mixed-zenkaku-and-hankaku-alphabet
-30,v,JapaneseNumberExpression,Sentence,ja-JP,NumberStyleで指定された計数表現スタイル（「1つ、１つ、一つ、ひとつ」の4つのうちいずれか）以外のスタイルが使用されていた場合エラーとなります。,NumberStyle,※同名のValidatorをBaseにしています,-
 31,,JapanesePreferTariTari,Sentence,ja-JP,例示・並列表現の「～たり」が出現した場合に「〜たり〜たりする」という表現になっていない場合エラーとなります。,,-,https://github.com/textlint-ja/textlint-rule-prefer-tari-tari
 32,,JapaneseRedundantExpression,Sentence,ja-JP,冗長な表現を検出します。,,-,https://github.com/textlint-ja/textlint-rule-ja-no-redundant-expression
-33,v,JapaneseStyle,Sentence,ja-JP,JodoshiStyleで指定されたスタイル（「だ・である調」または「です・ます調」）以外のスタイルが使用されていた場合エラーとなります。,JodoshiStyle,※同名のValidatorをBaseにしています,https://github.com/textlint-ja/textlint-rule-no-mix-dearu-desumasu
-34,,JapaneseSymbolWithSpace,Sentence,ja-JP,シンボル定義で指定されたシンボル前後のスペース定義に従って、シンボル前後のスペースの有無を検出します。※日本語の規則に合わせてエラーを検出します。,※Symbolsブロックで定義,※同名のValidatorをBaseにしています,-
 35,,JapaneseUnnaturalAlphabet,Sentence,ja-JP,日本語文中の不自然なアルファベットの出現を検出します。※タイピングミスによるアルファベットの混入を防止する目的です。,,-,https://github.com/textlint-ja/textlint-rule-ja-unnatural-alphabet
 36,,JapaneseWeakExpression,Sentence,ja-JP,弱い日本語表現を検出し、より適切な表現を提案します。,,-,https://github.com/textlint-ja/textlint-rule-ja-no-weak-phrase
 37,-,JavaScript,Sentence,ja-JP,,,※同名のValidatorをBaseにしています,-
-38,v,KatakanaEndHyphen,Sentence,ja-JP,JISZ8301:2008-G.6.2.2b-G.3に基づき、カタカナ単語の語尾にハイフンがあった場合エラーとなります。WordSetで指定された表現は検出対象から除外します。※Validationロジックの根拠となったルールはJIS Z8301:2019からは削除されていることに注意して使用してください。,WordSet,※同名のValidatorをBaseにしています,-
-39,v,KatakanaSpellCheck,Document,ja-JP,カタカナ単語の表記ゆれを検出します。WordSetで指定された表現、またはデフォルト辞書で定義された表現は検出対象から除外します。MinFreqより少ない出現回数の場合エラーとなります。MinRatioはカタカナ単語同士がどれだけ離れているかを表し、この値を下回る場合エラーとなります。検出対象範囲を広げるためにデフォルト辞書を使用したくない場合はEnableDefaultDictをfalseに設定してください。,"MinRatio, MinFreq, WordSet, EnableDefaultDict",※同名のValidatorをBaseにしています,-
-40,,ListLevel,Section,ANY,MaxLevelを超える深すぎるレベル階層のリスト項目を検出します。,MaxLevel,※同名のValidatorをBaseにしています,-
-41,v,LongKanjiChain,Sentence,ja-JP,MaxLengthを超える文字数の漢字の連続を検出します。WordSetで指定された表現は検出対象から除外します。,"Maxlength, WordSet",※同名のValidatorをBaseにしています,-
-42,,NumberFormat,Sentence,en-US,"数値表現が一般的な記法に従っていない場合にエラーとなります。DecimalDelimiterIsCommaがtrueの場合数値のデリミタを「.」から「,」（ヨーロッパ方式）に変更してValidationを実行します。IgnoreYearがTrueの場合4桁の数値を無視してValidationを実行します。","DecimalDelimiterIsComma, IgnoreYear",※同名のValidatorをBaseにしています,-
 43,v,Okurigana,Sentence,ja-JP,不正な送りがなを検出します。,,※同名のValidatorをBaseにしています,-
-44,,ParagraphCount,Section,ANY,セクション内にMaxCountを超える個数のパラグラフが存在する場合エラーとなります。,MaxCount,ParagraphNumber,-
-45,,ParagraphStartWith,Section,ANY,パラグラフの開始部分がStartWithで指定された規約に従っていない場合エラーとなります。,StartWith,※同名のValidatorをBaseにしています,-
-46,v,InvalidParenthesis,Document,ANY,不正な括弧を検出します。括弧内の文字数がMaxLengthを超える場合、センテンス内の括弧の個数がMaxCountを超える場合、括弧のネストレベルがMaxLevelを超える場合、左右の括弧の数が等しくない場合にエラーとなります。,"MaxLength, MaxCount, MaxLevel",ParenthesizedSentence,-
-47,,SectionLength,Section,ANY,セクション内でMaxCountを超える個数の単語が使用されていた場合エラーとなります。,MaxCount,※同名のValidatorをBaseにしています,-
-48,,SectionLevel,Section,ANY,MaxLevelを超える深すぎるレベルのセクションを検出します。,MaxLevel,※同名のValidatorをBaseにしています,-
-49,v,SentenceLength,Sentence,ANY,MaxLenghtを超える文字長のセンテンスを検出します。,MaxLength,※同名のValidatorをBaseにしています,-
-50,,SpaceBeginningOfSentence,Sentence,ANY,センテンス間に半角スペースが存在するかを検出します。Forbiddenがtrueの場合空白を許可しない設定となり、センテンス間に半角スペースが存在する場合にエラーとなります。SkipBeforeに文字列を指定した場合、その文字のいずれかの前にスペースが無くてもエラーになりません。同様に、SkipAfterに指定された文字のいずれかの後にスペースが無くてもエラーになりません。,"Forbidden, SkipBefore, SkipAfter",※同名のValidatorをBaseにしています,-
-51,v,SpaceWithAlphabeticalExpression,Sentence,ja-JP,日本語文中アルファベット表現の前後の空白が存在しない場合エラーとなります。Forbiddenがtrueの場合空白を許可しない設定となり、アルファベット表現と日本語の間に空白が存在する場合にエラーとなります。SkipBeforeに文字列を指定した場合、その文字のいずれかの前にスペースが無くてもエラーになりません。同様に、SkipAfterに指定された文字のいずれかの後にスペースが無くてもエラーになりません。,"Forbidden, SkipBefore, SkipAfter",SpaceBetweenAlphabeticalWord,-
-52,,Spelling,Sentence,en-US,14万語弱のデフォルト単語リストを用いて、英語のスペルミスを検出します。WordSetで指定された単語は検出対象から除外します。,WordSet,※同名のValidatorをBaseにしています,-
-53,,StartWithCapitalLetter,Sentence,en-US,小文字から開始しているセンテンスを検出します。WordSetで指定された単語で開始している場合は検出対象から除外します。,WordSet,※同名のValidatorをBaseにしています,-
-54,v,SuccessiveSentence,Sentence,ANY,連続する2つのセンテンスが、MaxLengthを超える文字長で、かつLevenshtein距離がMinDistanceより小さい（2つのセンテンスの差異が小さい）場合エラーとなります。※Levenshtein距離とは2つのセンテンスが何文字異なるかを表す数のことです。,"Distance, MinLength -> MaxLength",※同名のValidatorをBaseにしています,-
 55,v,SuccessiveWord,Sentence,ANY,同一の単語の連続使用を検出します。,,※同名のValidatorをBaseにしています,-
-56,v,SuggestExpression,Sentence,ANY,検出した不正な表現に対して推奨される表現を提案します。「不正な表現と推奨される表現の対応関係」はWordMapの定義に基づきます。,WordMap,※同名のValidatorをBaseにしています,-
-57,v,SymbolWithSpace,Sentence,en-US,シンボル定義で指定された「シンボル前後のスペースの有無」に従って、シンボル前後の不正なスペースを検出します。,※Symbolsブロックで定義,※同名のValidatorをBaseにしています,-
 58,v,Taigendome,Sentence,ja-JP,体言止めを検出します。※末尾が体言＝名詞かどうかの判定はKuromojiの判定結果に依存します。,,※同名のValidatorをBaseにしています,-
-59,,UnexpandedAcronym,Document,en-US,省略形の単語（例：ABC）に対応する正式表記（例：Axx Bxx Cxx）がドキュメント中に存在しない場合エラーとなります。MaxLengthを超える文字長の省略形単語についてのみエラーを検出します。,MinLength -> MaxLength,※同名のValidatorをBaseにしています,-
 60,-,VoidSection,Sentence,ja-JP,,,※同名のValidatorをBaseにしています,-
 61,,WeakExpression,Sentence,en-US,WeakExpressionと呼ばれる表現を検出します。,,※同名のValidatorをBaseにしています,-
-62,,WordFrequency,Document,en-US,ドキュメント中の単語の出現頻度が一般的に妥当とされる出現頻度と比べ異なる場合エラーとなります。DeviationFactorは一般的な出現頻度の何倍まで許容するかを表す係数です。なお、ドキュメントの単語数がMaxCountを超えなかった場合はValidationを行いません。,"DeviationFactor, MaxCount",※同名のValidatorをBaseにしています,-
-63,,WordCount,Sentence,en-US,センテンス内でMaxCountを超える個数の単語が使用されていた場合エラーとなります。,MaxCount,WordNumber,-
