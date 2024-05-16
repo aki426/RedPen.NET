@@ -103,11 +103,15 @@
 各ValidatorのConfigurationはJsonファイルで適切なプロパティを指定する必要があります。
 プロパティごとの定義と意味は次の一覧表のとおりです。
 
+##### 共通プロパティ
+
 | Property |  Type  |                                          Description                                           |
 | -------- | ------ | ---------------------------------------------------------------------------------------------- |
 | Name     | string | ※すべてのValidator Configurationで必須のプロパティです。                                       |
 | Level    | string | ※すべてのValidator Configurationで必須のプロパティです。                                       |
 | DictFile | string | 辞書定義ファイルです。※WordSetまたはWordMapプロパティがあるValidator Configurationで有効です。 |
+
+##### 個別プロパティ
 
 |        Property         |           Type           |                                           Description                                            |
 | ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------ |
@@ -199,6 +203,90 @@
 * ValidatorConfigurationName
   * Validator1つに対するConfigurationの名前です。ValidationNameに対して接尾辞「ValidatorConfiguration」を付けたものです。
   * 例として「SentenceLength」に対する「SentenceLengthValidatorConfiguration」がValidatorConfigurationNameに該当します。
+
+### パターンマッチ
+
+RedPen.NETではValidationのためにパターンマッチ機構を持っています。
+パターンマッチの単位としては以下のものがあります。
+
+1. 文字（Char）
+   * 文字1文字に相当します。通常Validationでは完全一致で判定します。
+   * Validator Configuration Propertyでは「CharSet」などで記述することになります。
+2. 単語（Word）
+   * 単語1つに相当します。通常Validationでは完全一致で判定します。
+   * ここでいう単語とは言語ごとのTokenizerでToken分割されたToken1つ分の表層形のことです。
+     * 英語では半角スペースでToken分割されるので、"This is a pen."という文においては"This"、"is"、"a"、"pen"が単語です。
+     * 日本語ではKuromojiによる形態素解析によってToken分割されるので、「これは筆です。」という文においては「これ」「は」「筆」「です」が単語です。KuromojiのToken分割の仕方についてはKuromojiまたはIPAdicなどの仕様を参考にしてください（※大まかにはMeCab + IPAdicのToken分割とほぼ一致します）。
+   * Validator Configuration Propertyでは「WordSet」などで記述することになります。
+3. 表現（Expression）
+   * 複数の単語を含む一連の文字列です。通常Validationでは完全一致で判定します。
+   * 単語によるパターンマッチだけでは十分でない場合、まとまった表現として指定できる一連の表層形のことです。
+     * 英語では、例えば"as soon as"という慣用表現を指定したい場合、それは表現として指定できます。半角スペースを含んだ文字列として"Please email me as soon as possible."などといった文に現れる同様の表現と完全一致するかしないかで判定します。
+     * 日本語では、例えば「株式会社ABC」というまとまった表現んを指定したい場合、それは表現として指定できます。複数のTokenを含んだ文字列として「株式会社ABCの今期の売上は3億円でした。」などといった文に現れる同様の表現と完全一致するかしないかで判定します。
+   * Validator Configuration Propertyでは「ExpressionSet」などで記述することになります。
+4. 文法ルール（GrammarRule）
+   * 表層形（Surface）、品詞（Tags、Part of Speech）、読み（Reading）の連続と順序を指定した文法ルールです。RedPen.NETの最も強力なパターンマッチ機構のための形式です。
+   * Validationでは文法ルールとして与えられたパターンを、Token分割され、品詞と読みの情報を付与された文に対して適用し詳細なパターンマッチを行います。
+   * 文法ルールのBNFは次のとおりです。
+
+#### 文法ルールのBNF
+
+```text
+<grammer-rule> ::= <token-part> <eol> | <token-part> "+" <grammer-rule> <eol> | <token-part> "=" <grammer-rule> <eol> 
+<token-part> ::= <surface> | <surface> ":" <tags-part> | <surface> ":" <tags-part> ":" <reading>
+<surface> ::= "" | "*" | <text>
+<tags-part> ::= <tag> | <tag> ":" <tags-part>
+<tag> ::= "" | "*" | <text> "," <tag>
+<reading> ::= "" | "*" | <text>
+```
+
+* 空白は無視されます。
+* "+"記号は、そのあとに書かれたTokenが直前のTokenの直後に連続することを表します。
+* "="記号は、そのあとに書かれたTokenが直前のTokenの直後または間に1～複数のTokenを挟んだ後に現れることを表します。
+* Tokenの表現については、表層形（Surface）、品詞（Tags、Part of Speech）、読み（Reading）を":"や","で区切って表しますが、空文字、"*"またはそもそも記述しなかった場合はワイルドカードとして扱われいかなるパターンにもマッチします。
+
+#### 文法ルールのパターンマッチ具体例
+
+例えば、「吾輩は猫だが犬でもある。」という文をKuromojiで形態素解析すると次のようになります。※1行につき1Tokenの情報です。
+
+```text
+1 : Surface = "吾輩", Tags = [ "名詞", "代名詞", "一般", "*", "*" ], Reading = "ワガハイ"
+2 : Surface = "は", Tags = [ "助詞", "係助詞", "*", "*" ], Reading = "ハ"
+3 : Surface = "猫", Tags = [ "名詞", "一般", "*", "*" ], Reading = "ネコ"
+4 : Surface = "だ", Tags = [ "助動詞", "特殊・ダ", "基本形" ], Reading = "ダ"
+5 : Surface = "が", Tags = [ "助詞", "接続助詞", "*", "*" ], Reading = "ガ"
+6 : Surface = "犬", Tags = [ "名詞", "一般", "*", "*" ], Reading = "イヌ"
+7 : Surface = "で", Tags = [ "助詞", "格助詞", "一般", "*", "*" ], Reading = "デ"
+8 : Surface = "も", Tags = [ "助詞", "係助詞", "*", "*" ], Reading = "モ"
+9 : Surface = "ある", Tags = [ "動詞", "自立", "五段・ラ行", "基本形" ], Reading = "アル"
+10 : Surface = "。", Tags = [ "記号", "句点", "*", "*" ], Reading = "。"
+```
+
+上記の形態素解析された文に対して、文法ルールとパターンマッチされた具体例を列挙します。
+
+1. 「猫」
+   * 3の「猫」にマッチします。
+2. 「猫:*,一般:ネコ」
+   * 3の「猫」にマッチします。
+3. 「::ネコ」
+   * 3の「猫」にマッチします。
+4. 「猫::イヌ」
+   * 何もマッチしません。
+5. 「吾輩 + は」
+   * 1と2の「吾輩は」にマッチします。
+6. 「*:名詞 + :助詞」（※空文字列と"\*"は同じ扱いです）
+   * 1と2の「吾輩は」と6と7の「犬で」にマッチします。
+7. 「::ワガハイ + は = ::アル」
+   * 1～9の「吾輩は猫だが犬でもある」にマッチします。
+8. 「:名詞 = :名詞 = :名詞」
+   * 1、3、6の「吾輩は猫だが犬」にマッチします。
+
+文法ルールは指定されたパターンを最短一致で判定します。
+このため、1つの文の中に2回以上一致するパターンが現れる場合、複数回検出します。
+また例えば、6の連結記号を変更し「*:名詞 = :助詞」とした場合も結果は同じです。
+1と8にマッチして「吾輩は猫だが犬でも」を検出することはありません。
+
+品詞や読みとその出現順を検出したい場合、文法ルールによるパターンマッチを活用してください。
 
 ## License
 
