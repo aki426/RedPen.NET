@@ -20,6 +20,36 @@ namespace RedPen.Net.Core.Tests.Validator
             this.output = output;
         }
 
+        [Fact]
+        public void RunTest()
+        {
+            var rule = ExpressionRuleExtractor.Run("This:n + is:v");
+            rule.Tokens.Count.Should().Be(2);
+
+            rule.TokenPattern[0].direct.Should().BeFalse();
+            rule.TokenPattern[0].token.Surface.Should().Be("this");
+            rule.TokenPattern[0].token.Tags.Should().Contain("n");
+            rule.TokenPattern[0].token.Reading.Should().Be("");
+
+            rule.TokenPattern[1].direct.Should().BeTrue();
+            rule.TokenPattern[1].token.Surface.Should().Be("is");
+            rule.TokenPattern[1].token.Tags.Should().Contain("v");
+            rule.TokenPattern[1].token.Reading.Should().Be("");
+
+            rule = ExpressionRuleExtractor.Run("僕:名詞:ボク = は:助詞:ハ");
+            rule.Tokens.Count.Should().Be(2);
+
+            rule.TokenPattern[0].direct.Should().BeFalse();
+            rule.TokenPattern[0].token.Surface.Should().Be("僕");
+            rule.TokenPattern[0].token.Tags.Should().Contain("名詞");
+            rule.TokenPattern[0].token.Reading.Should().Be("ボク");
+
+            rule.TokenPattern[1].direct.Should().BeFalse();
+            rule.TokenPattern[1].token.Surface.Should().Be("は");
+            rule.TokenPattern[1].token.Tags.Should().Contain("助詞");
+            rule.TokenPattern[1].token.Reading.Should().Be("ハ");
+        }
+
         /// <summary>ルール表現文字列から抽出したルールのマッチングテスト。</summary>
         [Theory]
         [InlineData("001", "This:n + is:v", "He said , This is a pen .", 1, "This|is")]

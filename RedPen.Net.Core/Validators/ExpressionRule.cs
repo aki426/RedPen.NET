@@ -10,7 +10,9 @@ namespace RedPen.Net.Core.Validators
     public record ExpressionRule
     {
         /// <summary>Tokenのリスト。</summary>
-        public ImmutableList<TokenElement> Tokens { get; init; } = ImmutableList<TokenElement>.Empty;
+        public ImmutableList<(bool direct, TokenElement token)> TokenPattern { get; init; }
+
+        public ImmutableList<TokenElement> Tokens => TokenPattern.Select(i => i.token).ToList().ToImmutableList();
 
         /// <summary>
         /// ExpressionRuleの持つフレーズのSurfaceを連結した文字列を返す。
