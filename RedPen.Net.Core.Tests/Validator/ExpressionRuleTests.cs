@@ -75,8 +75,10 @@ namespace RedPen.Net.Core.Tests.Validator
         [Fact]
         public void ToStringTest()
         {
-            ExpressionRuleExtractor.Run("  This : n      + is : v ").ToString().Should().Be("this:n: + is:v:");
-            ExpressionRuleExtractor.Run("  僕:   名詞, : ボク =            は :助詞:     ハ").ToString().Should().Be("僕:名詞,:ボク = は:助詞:ハ");
+            // 元の入力文法ルール文字列にパターンマッチの結果は同じになるが不要な構成要素が有る場合、省略して出力する。
+            ExpressionRuleExtractor.Run("  This : n :      + is : v : * ").ToString().Should().Be("this:n + is:v:*");
+            ExpressionRuleExtractor.Run("  僕:   名詞, : ボク =            は :助詞:     ハ").ToString().Should().Be("僕:名詞:ボク = は:助詞:ハ");
+            ExpressionRuleExtractor.Run("  : : ボク + : : ハ").ToString().Should().Be("::ボク + ::ハ");
         }
 
         /// <summary>ルール表現文字列から抽出したルールのマッチングテスト。</summary>

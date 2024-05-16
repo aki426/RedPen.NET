@@ -100,7 +100,37 @@ namespace RedPen.Net.Core.Model
         /// ExpressionRuleに変換可能なToken表現形式文字列を取得する。
         /// </summary>
         /// <returns>A string.</returns>
-        public string ConvertToExpressionRuleText() => $"{Surface}:{string.Join(",", Tags)}:{Reading}";
+        public string ConvertToExpressionRuleText()
+        {
+            // NOTE: 末尾の空タグは削除する。
+            ImmutableList<string> currentTags = Tags.Reverse();
+            while (currentTags.Any())
+            {
+                if (currentTags[0] == "")
+                {
+                    currentTags = currentTags.RemoveAt(0);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            string tagStr = currentTags.Any() ? string.Join(",", currentTags.Reverse()) : "";
+
+            // 後の構成要素が無ければ省略して良いのでなるべく省略する。見やすさのため。
+            if (Reading != "")
+            {
+                return $"{Surface}:{tagStr}:{Reading}";
+            }
+            else if (tagStr != "")
+            {
+                return $"{Surface}:{tagStr}";
+            }
+            else
+            {
+                return $"{Surface}";
+            }
+        }
 
         /// <summary>
         /// 相手のTokenと一部でも位置が重なっているかどうかを判定する関数。
