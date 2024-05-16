@@ -61,14 +61,14 @@ namespace RedPen.Net.Core.Utility
         /// <returns>An ExpressionRule.</returns>
         public static ExpressionRule Run(string line)
         {
-            if (line.Trim() == "")
+            if (line == null || line.Trim() == "")
             {
                 throw new ArgumentException("Invalid rule format. Rule expression is empty.", nameof(line));
             }
 
             List<(bool direct, TokenElement token)> result = new List<(bool direct, TokenElement token)>();
             StringBuilder sb = new StringBuilder();
-            bool tokenIsDirect = false; // 最初のトークンの直接接続フラグは何でもよいが、処理の一貫性からFalseにしておく。
+            bool tokenIsDirect = true; // 最初のトークンの直接接続フラグは処理の一貫性からTrueにしておく。
 
             foreach (char c in line)
             {

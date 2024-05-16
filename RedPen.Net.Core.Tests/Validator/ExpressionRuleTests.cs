@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
@@ -48,6 +49,79 @@ namespace RedPen.Net.Core.Tests.Validator
             rule.TokenPattern[1].token.Surface.Should().Be("は");
             rule.TokenPattern[1].token.Tags.Should().Contain("助詞");
             rule.TokenPattern[1].token.Reading.Should().Be("ハ");
+
+            // empty strings
+            Action action = () => ExpressionRuleExtractor.Run(null);
+            action.Should().Throw<ArgumentException>();
+
+            action = () => ExpressionRuleExtractor.Run("");
+            action.Should().Throw<ArgumentException>();
+
+            action = () => ExpressionRuleExtractor.Run("  ");
+            action.Should().Throw<ArgumentException>();
+
+            action = () => ExpressionRuleExtractor.Run(" + ");
+            action.Should().Throw<ArgumentException>();
+
+            // aster '+' is missing
+            action = () => ExpressionRuleExtractor.Run("This:n + is:v + ");
+            action.Should().Throw<ArgumentException>();
+
+            // aster '=' is missing
+            action = () => ExpressionRuleExtractor.Run("This:n + is:v = ");
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void ToStringTest()
+        {
+            ExpressionRuleExtractor.Run("  This : n      + is : v ").ToString().Should().Be("this:n: + is:v:");
+            ExpressionRuleExtractor.Run("  僕:   名詞, : ボク =            は :助詞:     ハ").ToString().Should().Be("僕:名詞,:ボク = は:助詞:ハ");
+        }
+
+        /// <summary>ルール表現文字列から抽出したルールのマッチングテスト。</summary>
+        [Theory]
+        [InlineData("001", "::ナイ + ::ト = ::ナイ", "そんなことが無いとは言えない。", 1, "無い|と|は|言え|ない")]
+        [InlineData("002", "::ナイ + ::ト = ::ナイ", "そんなことが無いとは言えません。", 0, "")]
+        [InlineData("003", "::ナイ + ::ト = ::ナイ", "そんなことが無いとは限らない。", 1, "無い|と|は|限ら|ない")]
+        [InlineData("004", "::ナイ + ::ト = ::ナイ", "そんなことが無いと断定することは出来ないだろう。", 1, "無い|と|断定|する|こと|は|出来|ない")]
+        public void JapaneseMatchesExtendTest(string nouse1, string rule, string text, int matchCount, string expected)
+        {
+            ExpressionRule expressionRule = ExpressionRuleExtractor.Run(rule);
+
+            output.WriteLine("★Rule...");
+            foreach (TokenElement token in expressionRule.Tokens)
+            {
+                output.WriteLine(token.ToString());
+            }
+            output.WriteLine("");
+
+            List<ImmutableList<TokenElement>> matchedTokensList = new List<ImmutableList<TokenElement>>();
+
+            // Sentenceごとにマッチングを取る。
+            Document doc = new PlainTextParserTests(output).GenerateDocument(text, "ja-JP");
+            foreach (var sentence in doc.GetAllSentences())
+            {
+                output.WriteLine("★Sentence...");
+                foreach (TokenElement token in sentence.Tokens)
+                {
+                    output.WriteLine(token.ToString());
+                }
+                output.WriteLine("");
+
+                matchedTokensList.AddRange(expressionRule.MatchesExtend(sentence.Tokens));
+            }
+
+            matchedTokensList.Count.Should().Be(matchCount);
+
+            if (matchedTokensList.Count == 0)
+            {
+                return;
+            }
+
+            // "|"ですべてのSurfaceを連結して比較する。
+            string.Join("|", matchedTokensList.Select(lis => string.Join("|", lis.Select(t => t.Surface))))
+                .Should().Contain(expected);
         }
 
         /// <summary>ルール表現文字列から抽出したルールのマッチングテスト。</summary>

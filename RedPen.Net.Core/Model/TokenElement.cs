@@ -100,7 +100,7 @@ namespace RedPen.Net.Core.Model
         /// ExpressionRuleに変換可能なToken表現形式文字列を取得する。
         /// </summary>
         /// <returns>A string.</returns>
-        public string FormatToExpressionRuleStyle() => $"{Surface}:{string.Join(",", Tags)}:{Reading}";
+        public string ConvertToExpressionRuleText() => $"{Surface}:{string.Join(",", Tags)}:{Reading}";
 
         /// <summary>
         /// 相手のTokenと一部でも位置が重なっているかどうかを判定する関数。

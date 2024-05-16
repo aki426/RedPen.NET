@@ -293,7 +293,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.FormatToExpressionRuleStyle()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
                 ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
@@ -418,7 +418,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.FormatToExpressionRuleStyle()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
                 ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
@@ -461,7 +461,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.FormatToExpressionRuleStyle()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
                 ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
@@ -510,7 +510,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.FormatToExpressionRuleStyle()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
                 ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
@@ -588,7 +588,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.FormatToExpressionRuleStyle()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
                 ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
@@ -628,7 +628,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.FormatToExpressionRuleStyle()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
                 ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
@@ -714,7 +714,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.FormatToExpressionRuleStyle()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
                 ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
