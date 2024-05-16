@@ -62,7 +62,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             // 名詞の連続を連結済みのTokenElementリストに変換して、ExpressionRuleにマッチさせる。
             // これにより名詞連続をバラバラのTokenではなく1つの名詞Tokenとして扱うことでRuleにマッチ可能にする。
             (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
-                nounConjunction.MatchSurfacesAndTags(
+                nounConjunction.MatchesConsecutiveSurfacesAndTags(
                     TokenElement.ConvertToConcatedNouns(sentence.Tokens));
 
             if (value.isMatch)

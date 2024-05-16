@@ -296,7 +296,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
+                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -421,7 +421,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
+                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -464,7 +464,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
+                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -513,7 +513,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
+                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -591,7 +591,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
+                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -631,7 +631,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
+                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -717,7 +717,7 @@ namespace RedPen.Net.Core.Tests.Tokenizer
             tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).Matches(tokens); //.isMatch.Should().BeTrue();
+                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {

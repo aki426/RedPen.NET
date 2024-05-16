@@ -87,13 +87,13 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             {
                 // 設定によってReadingでマッチするかSurfaceでマッチするかを切り替える。
                 var (isMatch, matchedPhrases) = isJapaneseMatchAsReading ?
-                    rule.MatchReadings(sentence.Tokens.Where(t =>
+                    rule.MatchesConsecutiveReadings(sentence.Tokens.Where(t =>
                         // MEMO: 日本語の場合、「、」や半角全角スペースは無視してマッチングする。
                         // Token列にムダな記号が入ることでマッチングが外れることがあるため。
                         t.Surface != SymbolTable.GetValueOrFallbackToDefault(SymbolType.COMMA).ToString()
                         && t.Surface != " "
                         && t.Surface != "　").ToList())
-                    : rule.MatchSurfaces(sentence.Tokens);
+                    : rule.MatchesConsecutiveSurfaces(sentence.Tokens);
 
                 if (isMatch)
                 {

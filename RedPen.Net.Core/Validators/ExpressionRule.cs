@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Dynamic;
 using System.Linq;
-using J2N.Text;
+using System.Text;
 using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators
@@ -34,7 +33,7 @@ namespace RedPen.Net.Core.Validators
         /// <returns>Surface:Tags:Reading [+=] Surface:Tags:Reading...という表現形式の文字列 </returns>
         public override string ToString()
         {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.Append(this.TokenPattern[0].token.ConvertToExpressionRuleText());
 
             foreach (var (direct, token) in this.TokenPattern.Skip(1))
@@ -46,13 +45,18 @@ namespace RedPen.Net.Core.Validators
             return sb.ToString();
         }
 
+        #region '='パターンを無視して連続したGrammerRuleを検出するMatchesConsecutive（隣接連続パターンのマッチ）メソッド群。
+
+        // 隣接連続パターンしか対応していなかったExpressionRule時代の名残だが、
+        // これはこれであいまいな名詞接続のパターン「格助詞の "の" + 名詞連続 + 各助詞の "の"」が連続する場合に有用であるため残しておく。
+
         /// <summary>
         /// 指定されたトークンリスト内に、ExpressionRuleと同じ順序のSurfaceのパターンが1つあるいは複数存在するかどうかを判定する。
         /// </summary>
         /// <param name="tokens">TokenElementのリスト</param>
         /// <returns>引数tokensが空だった場合はTrue。
         /// そのほかの場合は、ルールにマッチするものがあればisMatchがTrue、tokensにマッチした部分リストをマッチした個数分返す。</returns>
-        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchByCondition(
+        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchesConsecutiveByCondition(
             Func<TokenElement, TokenElement, bool> condition,
             IList<TokenElement> tokens)
         {
@@ -66,6 +70,12 @@ namespace RedPen.Net.Core.Validators
             {
                 // マッチ先のトークンリストが空だった場合はthis.Tokensとマッチしようが無いのでFalseが返るべき。
                 return (false, new List<ImmutableList<TokenElement>>());
+            }
+
+            if (this.TokenPattern.Where(i => !i.direct).Any())
+            {
+                // 隣接連続ではない「=」による接続が含まれている場合は、このメソッドの想定ではないのでExceptionを投げる。
+                throw new ArgumentException($"This method is only for consecutive patterns. If you want to use non-consecutive patterns '{this}', please use MatchExtend method.");
             }
 
             // ExpressionRuleと同じ長さの部分Tokenリストを取り出し、conditionで比較しマッチングを取る。
@@ -101,8 +111,8 @@ namespace RedPen.Net.Core.Validators
         /// <param name="tokens">TokenElementのリスト</param>
         /// <returns>引数tokensが空だった場合はTrue。
         /// そのほかの場合は、ルールにマッチするものがあればisMatchがTrue、tokensにマッチした部分リストをマッチした個数分返す。</returns>
-        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchSurfaces(IList<TokenElement> tokens) =>
-            MatchByCondition((x, y) => x.MatchSurface(y), tokens);
+        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchesConsecutiveSurfaces(IList<TokenElement> tokens) =>
+            MatchesConsecutiveByCondition((x, y) => x.MatchSurface(y), tokens);
 
         /// <summary>
         /// 指定されたトークンリスト内に、ExpressionRuleと同じ順序のSurfaceの並びで、
@@ -111,8 +121,8 @@ namespace RedPen.Net.Core.Validators
         /// <param name="tokens">TokenElementのリスト</param>
         /// <returns>引数tokensが空だった場合はTrue。
         /// そのほかの場合は、ルールにマッチするものがあればisMatchがTrue、tokensにマッチした部分リストをマッチした個数分返す。</returns>
-        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchSurfacesAndTags(IList<TokenElement> tokens) =>
-            MatchByCondition((x, y) => x.MatchSurface(y) && x.MatchTags(y), tokens);
+        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchesConsecutiveSurfacesAndTags(IList<TokenElement> tokens) =>
+            MatchesConsecutiveByCondition((x, y) => x.MatchSurface(y) && x.MatchTags(y), tokens);
 
         /// <summary>
         /// 指定されたトークンリスト内に、ExpressionRuleと同じ順序のReadingのパターンが1つあるいは複数存在するかどうかを判定する。
@@ -121,24 +131,20 @@ namespace RedPen.Net.Core.Validators
         /// <param name="tokens">TokenElementのリスト</param>
         /// <returns>引数tokensが空だった場合はTrue。
         /// そのほかの場合は、ルールにマッチするものがあればisMatchがTrue、tokensにマッチした部分リストをマッチした個数分返す。</returns>
-        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchReadings(IList<TokenElement> tokens) =>
-            MatchByCondition((x, y) => x.MatchReading(y), tokens);
+        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchesConsecutiveReadings(IList<TokenElement> tokens) =>
+            MatchesConsecutiveByCondition((x, y) => x.MatchReading(y), tokens);
 
         /// <summary>
         /// 引数のトークンリスト内に、ExpressionRuleと同じ順序のSurface、Tags、Readingがマッチするパターンが1つあるいは複数存在するかどうかを判定する。
         /// </summary>
         /// <param name="tokens">The tokens.</param>
         /// <returns>A (bool isMatch, List&lt;ImmutableList&lt;TokenElement&gt;&gt; tokens) .</returns>
-        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) Matches(IList<TokenElement> tokens) =>
-            MatchByCondition((x, y) => x.MatchSurface(y) && x.MatchTags(y) && x.MatchReading(y), tokens);
+        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchesConsecutive(IList<TokenElement> tokens) =>
+            MatchesConsecutiveByCondition((x, y) => x.MatchSurface(y) && x.MatchTags(y) && x.MatchReading(y), tokens);
 
-        /// <summary>
-        /// 拡張ExpressionRule表現に対して入力トークンリストのマッチングをSurface、Tags、Readingの全てで行う。
-        /// </summary>
-        /// <param name="tokens"></param>
-        /// <returns></returns>
-        public List<ImmutableList<TokenElement>> MatchesExtend(List<TokenElement> tokens) =>
-            MatchByConditionExtend((x, y) => x.MatchSurface(y) && x.MatchTags(y) && x.MatchReading(y), tokens);
+        #endregion '='パターンを無視して連続したGrammerRuleを検出するMatchesConsecutive（隣接連続パターンのマッチ）メソッド群。
+
+        #region '+'パターンと'='パターン両方に対応したMatchメソッド群。同じ範囲を重複検出しない。
 
         /// <summary>
         /// Matches the by condition extend.
@@ -146,7 +152,7 @@ namespace RedPen.Net.Core.Validators
         /// <param name="condition">Token同士をマッチングする場合の条件式</param>
         /// <param name="tokens">ExpressionRuleに対してマッチングを取る相手のTokenリスト。通常SentenceのTokenリスト。</param>
         /// <returns></returns>
-        public List<ImmutableList<TokenElement>> MatchByConditionExtend(
+        public List<ImmutableList<TokenElement>> MatchExtendByCondition(
             Func<TokenElement, TokenElement, bool> condition,
             List<TokenElement> tokens)
         {
@@ -160,7 +166,7 @@ namespace RedPen.Net.Core.Validators
             List<ImmutableList<TokenElement>> results = new List<ImmutableList<TokenElement>>();
             while (restTokens.Any())
             {
-                var (list, rest) = MatchByConditionExtendRecursive(
+                var (list, rest) = MatchExtendByConditionRecursive(
                     condition,
                     this.TokenPattern.ToList(),
                     restTokens,
@@ -187,7 +193,7 @@ namespace RedPen.Net.Core.Validators
         /// <param name="tokens">The tokens.</param>
         /// <param name="result">The result.</param>
         /// <returns>マッチした場合1つ目のリストは空ではない。2つ目のリストはマッチしなかった時点の残りのTokenリスト。</returns>
-        private (ImmutableList<TokenElement>, List<TokenElement> rest) MatchByConditionExtendRecursive(
+        private (ImmutableList<TokenElement>, List<TokenElement> rest) MatchExtendByConditionRecursive(
             Func<TokenElement, TokenElement, bool> condition,
             List<(bool direct, TokenElement token)> tokenPattern,
             List<TokenElement> tokens,
@@ -212,7 +218,7 @@ namespace RedPen.Net.Core.Validators
                 if (condition(token, tokens.First()))
                 {
                     // マッチした場合は次のトークンへ移る。
-                    return MatchByConditionExtendRecursive(
+                    return MatchExtendByConditionRecursive(
                         condition,
                         tokenPattern.Skip(1).ToList(),
                         tokens.Skip(1).ToList(),
@@ -230,7 +236,7 @@ namespace RedPen.Net.Core.Validators
                 if (condition(token, tokens.First()))
                 {
                     // マッチした場合は次のトークンへ移る。
-                    return MatchByConditionExtendRecursive(
+                    return MatchExtendByConditionRecursive(
                         condition,
                         tokenPattern.Skip(1).ToList(),
                         tokens.Skip(1).ToList(),
@@ -239,7 +245,7 @@ namespace RedPen.Net.Core.Validators
                 else
                 {
                     // マッチしなかった場合は次のトークンのマッチングへイテレーションする。
-                    return MatchByConditionExtendRecursive(
+                    return MatchExtendByConditionRecursive(
                         condition,
                         tokenPattern,
                         tokens.Skip(1).ToList(),
@@ -247,5 +253,15 @@ namespace RedPen.Net.Core.Validators
                 }
             }
         }
+
+        /// <summary>
+        /// 拡張ExpressionRule表現に対して入力トークンリストのマッチングをSurface、Tags、Readingの全てで行う。
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
+        public List<ImmutableList<TokenElement>> MatchExtend(List<TokenElement> tokens) =>
+            MatchExtendByCondition((x, y) => x.MatchSurface(y) && x.MatchTags(y) && x.MatchReading(y), tokens);
+
+        #endregion '+'パターンと'='パターン両方に対応したMatchメソッド群。同じ範囲を重複検出しない。
     }
 }

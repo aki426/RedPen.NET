@@ -264,7 +264,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             foreach (ExpressionRule rule in InvalidOkuriganaTokens)
             {
                 (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
-                    rule.MatchSurfaces(sentence.Tokens);
+                    rule.MatchesConsecutiveSurfaces(sentence.Tokens);
 
                 if (value.isMatch)
                 {

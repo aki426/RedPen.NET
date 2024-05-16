@@ -27,7 +27,7 @@ namespace RedPen.Net.Core.Tests.Validator
             var rule = ExpressionRuleExtractor.Run("This:n + is:v");
             rule.Tokens.Count.Should().Be(2);
 
-            rule.TokenPattern[0].direct.Should().BeFalse();
+            rule.TokenPattern[0].direct.Should().BeTrue();
             rule.TokenPattern[0].token.Surface.Should().Be("this");
             rule.TokenPattern[0].token.Tags.Should().Contain("n");
             rule.TokenPattern[0].token.Reading.Should().Be("");
@@ -40,7 +40,7 @@ namespace RedPen.Net.Core.Tests.Validator
             rule = ExpressionRuleExtractor.Run("僕:名詞:ボク = は:助詞:ハ");
             rule.Tokens.Count.Should().Be(2);
 
-            rule.TokenPattern[0].direct.Should().BeFalse();
+            rule.TokenPattern[0].direct.Should().BeTrue();
             rule.TokenPattern[0].token.Surface.Should().Be("僕");
             rule.TokenPattern[0].token.Tags.Should().Contain("名詞");
             rule.TokenPattern[0].token.Reading.Should().Be("ボク");
@@ -125,7 +125,7 @@ namespace RedPen.Net.Core.Tests.Validator
                 }
                 output.WriteLine("");
 
-                matchedTokensList.AddRange(expressionRule.MatchesExtend(sentence.Tokens));
+                matchedTokensList.AddRange(expressionRule.MatchExtend(sentence.Tokens));
             }
 
             matchedTokensList.Count.Should().Be(matchCount);
@@ -170,7 +170,7 @@ namespace RedPen.Net.Core.Tests.Validator
 
                 //(bool isMatch, List<TokenElement> tokens1) =
                 (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
-                    expressionRule.MatchSurfaces(sentence.Tokens);
+                    expressionRule.MatchesConsecutiveSurfaces(sentence.Tokens);
 
                 matchedTokensList.AddRange(value.tokens);
             }
@@ -211,7 +211,7 @@ namespace RedPen.Net.Core.Tests.Validator
 
                 //(bool isMatch, List<TokenElement> tokens1) =
                 (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
-                    expressionRule.MatchSurfaces(sentence.Tokens);
+                    expressionRule.MatchesConsecutiveSurfaces(sentence.Tokens);
 
                 if (value.isMatch)
                 {
@@ -255,7 +255,7 @@ namespace RedPen.Net.Core.Tests.Validator
 
                 //(bool isMatch, List<TokenElement> tokens1) =
                 (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
-                    expressionRule.MatchSurfacesAndTags(sentence.Tokens);
+                    expressionRule.MatchesConsecutiveSurfacesAndTags(sentence.Tokens);
 
                 matchedTokensList.AddRange(value.tokens);
             }
