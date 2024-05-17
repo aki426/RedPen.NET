@@ -14,10 +14,10 @@
   * 体言止めの検出など実際の文章校正ニーズに対応するため、Validatorの新規追加を優先。
   * 設定ファイルをJsonフォーマット化し、OFFオプションを用意するなど実際の運用時に修正が少なく済むことを優先。
 * 劣後事項（もしくは、構想）
-  * MarkdownやAsciidocなど多種多様なフォーマットのParse、C# Parserライブラリの利用。
+  * MarkdownやAsciidocなど多種多様なフォーマットのParser（C# Parserライブラリの利用を構想中……）。
   * 本家のredpen-cliやredpen-serverなど単体動作のためのインターフェースに相当するプロジェクトの再実装。
   * 英語など日本語以外の言語のみに対応するValidatorの再実装。
-  * Javascriptで記述されたValidatorのアドオン機能。
+  * Javascriptで記述されたValidatorのアドオン機能（対応しない可能性大）。
 
 ## システム情報
 
@@ -29,6 +29,7 @@
   * Immutableで参照透過なFunctionalスタイルで再実装しており、クラス構成が変更されています。
   * リソース管理をJAVA版のプロパティテキストファイル方式からResXManagerによるリソース管理方式へ変更しています。
   * リソースや設定ファイルを内部で取り回すために本家がobject型の多相性を用いていたのに対して、EnumやInterfaceによる明示的な定義を用いています。
+  * 文法ルールを考慮したValidationのために本家のExpressionRuleクラスを拡張したGrammerRuleクラスを使用しています。
 * VerifyBasicFunction
   * .NET Standard 2.0フレームワークや利用パッケージの動作確認用のクラスライブラリです。
   * RedPen.NET.Coreと同じ設定、同じ利用パッケージを維持し、フレームワークやパッケージ依存のバグを検出することが目的です。
