@@ -50,6 +50,12 @@ namespace RedPen.Net.Core.Config
         public int MaxLevel { get; init; }
     }
 
+    /// <summary>ValidatorConfigurationの継承クラスがMinLevelプロパティを持つことを示すインターフェース。</summary>
+    public interface IMinLevelConfigParameter
+    {
+        public int MinLevel { get; init; }
+    }
+
     /// <summary>ValidatorConfigurationの継承クラスがWordMapプロパティを持つことを示すインターフェース。</summary>
     public interface IWordMapConfigParameter
     {

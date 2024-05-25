@@ -102,7 +102,7 @@
     <Compile Include="Validator\DocumentValidator\KatakanaSpellCheckValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\LongKanjiChainValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\OkuriganaValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\InvalidParenthesisValidatorTests.cs" />
+    <Compile Include="Validator\DocumentValidator\InvalidParenthesisValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\SentenceLengthValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\SpaceWithAlphabeticalExpressionTests.cs" />
     <Compile Include="Validator\SentenceValidator\SuccessiveWordValidatorTests.cs" />

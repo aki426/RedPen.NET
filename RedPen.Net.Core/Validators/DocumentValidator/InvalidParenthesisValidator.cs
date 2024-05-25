@@ -5,26 +5,26 @@ using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 
-namespace RedPen.Net.Core.Validators.SentenceValidator
+namespace RedPen.Net.Core.Validators.DocumentValidator
 {
     /// <summary>InvalidParenthesisのConfiguration</summary>
     public record InvalidParenthesisConfiguration : ValidatorConfiguration,
-        IMaxLengthConfigParameter, IMinCountConfigParameter, IMaxLevelConfigParameter
+        IMinLengthConfigParameter, IMinCountConfigParameter, IMinLevelConfigParameter
     {
         /// <summary>括弧内に存在してもよい単語数の上限</summary>
-        public int MaxLength { get; init; }
+        public int MinLength { get; init; }
 
         /// <summary>一文内に存在してよい括弧の上限数</summary>
         public int MinCount { get; init; }
 
         /// <summary>一文に存在してよい括弧のネスト数</summary>
-        public int MaxLevel { get; init; }
+        public int MinLevel { get; init; }
 
-        public InvalidParenthesisConfiguration(ValidationLevel level, int maxLength, int minCount, int maxLevel) : base(level)
+        public InvalidParenthesisConfiguration(ValidationLevel level, int minLength, int minCount, int minLevel) : base(level)
         {
-            this.MaxLength = maxLength;
-            this.MinCount = minCount;
-            this.MaxLevel = maxLevel;
+            MinLength = minLength;
+            MinCount = minCount;
+            MinLevel = minLevel;
         }
     }
 
@@ -54,7 +54,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 documentLangForTest,
                 symbolTable)
         {
-            this.Config = config;
+            Config = config;
         }
 
         // カッコの文字種定義
@@ -82,7 +82,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             SymbolTable symbolTable
             )
         {
-            List<ValidationError> result = new List<ValidationError>();
+            var result = new List<ValidationError>();
 
             // MEMO: 空のリストが渡された場合は何もしない。
             if (sentences.Count == 0)
@@ -91,7 +91,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             }
 
             // 文の区切りとみなす文字を定義する。
-            char[] periods = new char[]{
+            var periods = new char[]{
                 // MEMO: 日本語では「。」「？」「！」の3種類が該当。
                 symbolTable.GetValueOrFallbackToDefault(SymbolType.FULL_STOP),
                 symbolTable.GetValueOrFallbackToDefault(SymbolType.QUESTION_MARK),
@@ -99,10 +99,10 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             };
 
             // 文章構造単位で必要な情報を付加しつつ1文字単位で分解する。
-            List<(char c, int indexInSentence, int indexInStructure, Sentence sentence, LineOffset lineOffset)> charStack =
+            var charStack =
                     new List<(char c, int indexInSentence, int indexInStructure, Sentence sentence, LineOffset lineOffset)>();
-            int sentenceStartPosCounter = 0;
-            foreach (Sentence sentence in sentences)
+            var sentenceStartPosCounter = 0;
+            foreach (var sentence in sentences)
             {
                 if (sentence.Content.Length == 0)
                 {
@@ -118,10 +118,10 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             }
 
             // validation
-            List<(char c, int indexInSentence, int indexInStructure, Sentence sentence, LineOffset lineOffset)> parenLevel =
+            var parenLevel =
                 new List<(char c, int indexInSentence, int indexInStructure, Sentence sentence, LineOffset lineOffset)>();
 
-            int subsentenceCount = 0;
+            var subsentenceCount = 0;
 
             foreach (var currentChar in charStack)
             {
@@ -130,7 +130,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     // 左カッコ開始
                     parenLevel.Add(currentChar);
 
-                    if (parenLevel.Count > config.MaxLevel)
+                    if (config.MinLevel <= parenLevel.Count)
                     {
                         // 括弧のネストレベルが規定値を超えた。
                         result.Add(new ValidationError(
@@ -139,7 +139,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                             currentChar.sentence,
                             currentChar.lineOffset,
                             currentChar.lineOffset,
-                            MessageArgs: new object[] { parenLevel.Count, config.MaxLevel },
+                            MessageArgs: new object[] { parenLevel.Count, config.MinLevel },
                             MessageKey: "NestingLevelTooDeep"
                         ));
                         // Validationロジックは破綻しないので処理続行。
@@ -147,7 +147,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 }
                 else if (currentChar.c == R_PAREN || currentChar.c == R_PAREN_FULLWIDTH)
                 {
-                    char lParen = currentChar.c == R_PAREN ? L_PAREN : L_PAREN_FULLWIDTH;
+                    var lParen = currentChar.c == R_PAREN ? L_PAREN : L_PAREN_FULLWIDTH;
 
                     if (parenLevel.Count == 0)
                     {
@@ -187,7 +187,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         // NOTE: センテンスをまたぐ場合があるので、構造上の文字数カウントで判定する。
                         var subSentenceLength = currentChar.indexInStructure - parenLevel.Last().indexInStructure - 1;
 
-                        if (subSentenceLength > config.MaxLength)
+                        if (config.MinLength <= subSentenceLength)
                         {
                             // 括弧内センテンスの文字数が規定値を超えた。
                             result.Add(new ValidationError(
@@ -196,7 +196,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                                 currentChar.sentence,
                                 parenLevel.Last().lineOffset,
                                 currentChar.lineOffset,
-                                MessageArgs: new object[] { subSentenceLength, config.MaxLength },
+                                MessageArgs: new object[] { subSentenceLength, config.MinLength },
                                 MessageKey: "SubsentenceTooLong"));
                         }
 
@@ -277,9 +277,9 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <returns>A list of ValidationErrors.</returns>
         public List<ValidationError> Validate(Document document)
         {
-            List<ValidationError> result = new List<ValidationError>();
+            var result = new List<ValidationError>();
 
-            foreach (List<Sentence> sentences in document.GetAllSentencesByDocumentStructure())
+            foreach (var sentences in document.GetAllSentencesByDocumentStructure())
             {
                 result.AddRange(ValidateSentencesByStructure(sentences, Config, SymbolTable));
             }

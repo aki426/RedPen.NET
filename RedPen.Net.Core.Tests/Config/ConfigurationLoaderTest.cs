@@ -23,7 +23,7 @@ namespace RedPen.Net.Core.Tests.Config
         {
             ""Name"": ""SentenceLength"",
             ""Level"" : ""ERROR"",
-            ""MaxLength"": 120
+            ""MinLength"": 120
         },
         {
             ""Name"": ""JapaneseExpressionVariation"",
