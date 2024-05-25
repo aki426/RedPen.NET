@@ -8,15 +8,15 @@ using RedPen.Net.Core.Model;
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     /// <summary>LongKanjiChainのConfiguration</summary>
-    public record LongKanjiChainConfiguration : ValidatorConfiguration, IMaxLengthConfigParameter, IWordSetConfigParameter
+    public record LongKanjiChainConfiguration : ValidatorConfiguration, IMinLengthConfigParameter, IExpressionSetConfigParameter
     {
-        public int MaxLength { get; init; }
-        public HashSet<string> WordSet { get; init; }
+        public int MinLength { get; init; }
+        public HashSet<string> ExpressionSet { get; init; }
 
-        public LongKanjiChainConfiguration(ValidationLevel level, int maxLength, HashSet<string> wordSet) : base(level)
+        public LongKanjiChainConfiguration(ValidationLevel level, int minLength, HashSet<string> expressionSet) : base(level)
         {
-            this.MaxLength = maxLength;
-            this.WordSet = wordSet;
+            this.MinLength = minLength;
+            this.ExpressionSet = expressionSet;
         }
     }
 
@@ -31,9 +31,6 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
         /// <summary>日本語のみ許容</summary>
         public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
-
-        /// <summary>漢字の範囲を表す正規表現文字列と出現回数%d</summary>
-        // private static readonly string shard = "[\\u4e00-\\u9faf]{%d,}";
 
         /// <summary>漢字の連続を表す正規表現</summary>
         private Regex pat;
@@ -57,7 +54,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             this.Config = config;
 
             // 出現回数を考慮した正規表現を生成。
-            pat = new Regex($"[\\u4e00-\\u9faf]{{{Config.MaxLength + 1},}}");
+            pat = new Regex($"[\\u4e00-\\u9faf]{{{Config.MinLength},}}");
         }
 
         /// <summary>
@@ -75,7 +72,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             foreach (Match match in matches)
             {
                 string word = match.Value;
-                if (!Config.WordSet.Contains(word))
+                if (!Config.ExpressionSet.Contains(word))
                 {
                     result.Add(new ValidationError(
                         ValidationType.LongKanjiChain,
