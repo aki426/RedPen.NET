@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
-using Lucene.Net.Util;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -89,26 +88,23 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 }
                 else
                 {
-                    // pre check
-                    if (curr.Content.Length < Config.MinLength)
+                    // 最小文字数以上の場合にエラーとして検出する。
+                    if (Config.MinLength <= curr.Content.Length)
                     {
-                        // 文が短すぎる場合はスキップする。
-                        continue;
-                    }
-
-                    // 完全一致
-                    // または、LevenStein距離がMaxDistance以下の場合は類似したSentenceとしてエラーとする。
-                    if (curr.Content.ToLower() == prev.Content.ToLower()
-                        || levenshteinDistanceUtility.GetDistance(curr.Content.ToLower(), prev.Content.ToLower()) < Config.MaxDistance)
-                    {
-                        // error.
-                        result.Add(new ValidationError(
-                            ValidationType.SuccessiveSentence,
-                            this.Level,
-                            curr,
-                            curr.OffsetMap[0],
-                            curr.OffsetMap[^1],
-                            MessageArgs: new object[] { prev.Content, curr.Content }));
+                        // 完全一致
+                        // または、LevenStein距離がMaxDistance以下の場合は類似したSentenceとしてエラーとする。
+                        if (curr.Content.ToLower() == prev.Content.ToLower()
+                            || levenshteinDistanceUtility.GetDistance(curr.Content.ToLower(), prev.Content.ToLower()) <= Config.MaxDistance)
+                        {
+                            // error.
+                            result.Add(new ValidationError(
+                                ValidationType.SuccessiveSentence,
+                                this.Level,
+                                curr,
+                                curr.OffsetMap[0],
+                                curr.OffsetMap[^1],
+                                MessageArgs: new object[] { prev.Content, curr.Content }));
+                        }
                     }
                 }
 
