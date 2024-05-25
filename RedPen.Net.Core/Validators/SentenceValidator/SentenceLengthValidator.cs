@@ -9,13 +9,13 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
 
     /// <summary>SentenceLengthのConfiguration</summary>
-    public record SentenceLengthConfiguration : ValidatorConfiguration, IMaxLengthConfigParameter
+    public record SentenceLengthConfiguration : ValidatorConfiguration, IMinLengthConfigParameter
     {
-        public int MaxLength { get; init; }
+        public int MinLength { get; init; }
 
-        public SentenceLengthConfiguration(ValidationLevel level, int maxLength) : base(level)
+        public SentenceLengthConfiguration(ValidationLevel level, int minLength) : base(level)
         {
-            MaxLength = maxLength;
+            MinLength = minLength;
         }
     }
 
@@ -46,7 +46,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <returns>A ValidationError? .</returns>
         public List<ValidationError> Validate(Sentence sentence)
         {
-            if (sentence.Content.Length > Config.MaxLength)
+            if (Config.MinLength <= sentence.Content.Length)
             {
                 return new List<ValidationError>()
                 {
@@ -54,7 +54,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         ValidationType.SentenceLength,
                         this.Level,
                         sentence,
-                        MessageArgs: new object[] { sentence.Content.Length, Config.MaxLength })
+                        MessageArgs: new object[] { sentence.Content.Length, Config.MinLength })
                 };
             }
             else

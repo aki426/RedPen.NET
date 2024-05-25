@@ -64,7 +64,7 @@ namespace RedPen.Net.Core.Tests.Config
             configuration.ValidatorConfigurations[0].Should().BeOfType<SentenceLengthConfiguration>();
             var sentenceLengthConfig = configuration.ValidatorConfigurations[0] as SentenceLengthConfiguration;
             sentenceLengthConfig.Level.Should().Be(ValidationLevel.ERROR);
-            sentenceLengthConfig.MaxLength.Should().Be(120);
+            sentenceLengthConfig.MinLength.Should().Be(120);
 
             configuration.ValidatorConfigurations[1].Should().BeOfType<JapaneseExpressionVariationConfiguration>();
             var japaneseExpressionVariationConfig = configuration.ValidatorConfigurations[1] as JapaneseExpressionVariationConfiguration;

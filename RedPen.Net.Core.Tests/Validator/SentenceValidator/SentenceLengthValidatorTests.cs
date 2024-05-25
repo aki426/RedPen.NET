@@ -58,7 +58,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         [Fact]
         public void testWithLongSentence()
         {
-            validator.Config.MaxLength.Should().Be(30);
+            validator.Config.MinLength.Should().Be(30);
             validator.ValidationName.Should().Be("SentenceLength");
 
             // 5. テスト対象のオブジェクトを生成する。
