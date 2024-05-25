@@ -22,6 +22,8 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     // Detects appearances of Non-joyo kanjis in document.
     // Note: this validator works only for Japanese texts.
 
+    // TODO: 人名漢字にも対応すべきか。
+
     /// <summary>JapaneseJoyoKanjiのValidator</summary>
     public class JapaneseJoyoKanjiValidator : Validator, ISentenceValidatable
     {

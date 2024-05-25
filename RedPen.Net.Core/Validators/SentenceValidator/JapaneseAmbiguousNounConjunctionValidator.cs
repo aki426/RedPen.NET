@@ -10,13 +10,13 @@ using RedPen.Net.Core.Utility;
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     /// <summary>JapaneseAmbiguousNounConjunctionのConfiguration</summary>
-    public record JapaneseAmbiguousNounConjunctionConfiguration : ValidatorConfiguration, IWordSetConfigParameter
+    public record JapaneseAmbiguousNounConjunctionConfiguration : ValidatorConfiguration, IExpressionSetConfigParameter
     {
-        public HashSet<string> WordSet { get; init; }
+        public HashSet<string> ExpressionSet { get; init; }
 
-        public JapaneseAmbiguousNounConjunctionConfiguration(ValidationLevel level, HashSet<string> wordSet) : base(level)
+        public JapaneseAmbiguousNounConjunctionConfiguration(ValidationLevel level, HashSet<string> expressionSet) : base(level)
         {
-            this.WordSet = wordSet;
+            this.ExpressionSet = expressionSet;
         }
     }
 
@@ -71,7 +71,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 {
                     var surface = string.Join("", matchedTokens.Select(t => t.Surface));
                     // Ignoreリストに入っていない表現であればエラーとして出力する。
-                    if (!Config.WordSet.Contains(surface))
+                    if (!Config.ExpressionSet.Contains(surface))
                     {
                         result.Add(new ValidationError(
                             ValidationType.JapaneseAmbiguousNounConjunction,

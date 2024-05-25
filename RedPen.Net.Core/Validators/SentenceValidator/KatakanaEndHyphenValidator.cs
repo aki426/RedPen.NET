@@ -50,13 +50,13 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     // このValidatorの存在意義はかつてに比べて減っているという現在の状況を踏まえて利用してください。
 
     /// <summary>KatakanaEndHyphenのConfiguration</summary>
-    public record KatakanaEndHyphenConfiguration : ValidatorConfiguration, IWordSetConfigParameter
+    public record KatakanaEndHyphenConfiguration : ValidatorConfiguration, IExpressionSetConfigParameter
     {
-        public HashSet<string> WordSet { get; init; }
+        public HashSet<string> ExpressionSet { get; init; }
 
-        public KatakanaEndHyphenConfiguration(ValidationLevel level, HashSet<string> wordSet) : base(level)
+        public KatakanaEndHyphenConfiguration(ValidationLevel level, HashSet<string> expressionSet) : base(level)
         {
-            this.WordSet = wordSet;
+            this.ExpressionSet = expressionSet;
         }
     }
 
@@ -126,7 +126,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 }
                 else
                 {
-                    if (this.Config.WordSet.Count == 0 || !this.Config.WordSet.Contains(katakana.ToString()))
+                    if (this.Config.ExpressionSet.Count == 0 || !this.Config.ExpressionSet.Contains(katakana.ToString()))
                     {
                         if (HasInvalidEndHyphen(katakana.ToString()))
                         {
@@ -148,7 +148,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             // カタカナ語で終わっているセンテンスの救済措置。
             if (katakana.Length > 0)
             {
-                if (this.Config.WordSet.Count == 0 || !this.Config.WordSet.Contains(katakana.ToString()))
+                if (this.Config.ExpressionSet.Count == 0 || !this.Config.ExpressionSet.Contains(katakana.ToString()))
                 {
                     if (HasInvalidEndHyphen(katakana.ToString()))
                     {

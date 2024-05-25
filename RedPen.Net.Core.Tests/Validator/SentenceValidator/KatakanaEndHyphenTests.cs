@@ -134,7 +134,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         {
             // TODO: WordSetが単純なHashSetであるため、ValidatorとValidatorConfigurationの不変性が崩れている。
             // ImmutableHahsSetへ修正し、設定を変更する場合はValidatorとValidatorConfigurationを再生成するようにする。
-            validator.Config.WordSet.Add(allowWord);
+            validator.Config.ExpressionSet.Add(allowWord);
 
             // Tokenizeが走るので大仰でもDocumentを生成する。
             Document document = Document.Builder(RedPenTokenizerFactory.CreateTokenizer(documentLang))
