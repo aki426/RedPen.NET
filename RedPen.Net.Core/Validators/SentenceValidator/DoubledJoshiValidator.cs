@@ -5,23 +5,22 @@ using System.Linq;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
     /// <summary>DoubledJoshiのConfiguration</summary>
-    public record DoubledJoshiConfiguration : ValidatorConfiguration, IMinIntervalConfigParameter, IWordSetConfigParameter
+    public record DoubledJoshiConfiguration : ValidatorConfiguration, IMaxIntervalConfigParameter, IWordSetConfigParameter
     {
-        public int MinInterval { get; init; }
+        public int MaxInterval { get; init; }
 
         public HashSet<string> WordSet { get; init; }
 
         public DoubledJoshiConfiguration(
             ValidationLevel level,
-            int minInterval,
+            int maxInterval,
             HashSet<string> wordSet) : base(level)
         {
-            this.MinInterval = minInterval;
+            this.MaxInterval = maxInterval;
             this.WordSet = wordSet;
         }
     }
@@ -85,6 +84,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 foreach (TokenElement token in joshiCache[joshi].Skip(1))
                 {
                     // 2つの助詞のIndex距離を計算する。
+                    // TODO: これは単語数をカウントしているので、ユーザにとって文字数の方が自然なら仕様変更した方が良いかもしれない。
                     int prevIndex = sentence.Tokens.IndexOf(prev);
                     int currIndex = sentence.Tokens.IndexOf(token);
 
@@ -97,7 +97,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     }
 
                     // インターバル以下の距離で出現した場合はエラー。
-                    if (Math.Abs(currIndex - prevIndex) <= Config.MinInterval)
+                    if (Math.Abs(currIndex - prevIndex) - 1 <= Config.MaxInterval)
                     {
                         result.Add(new ValidationError(
                             ValidationType.DoubledJoshi,

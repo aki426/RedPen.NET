@@ -18,16 +18,15 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
         }
 
         [Theory]
-        [InlineData("001", "私は彼は好き。", 1, "", 0, "")]
+        [InlineData("001", "私は彼は好き。", 0, "", 0, "")]
         [InlineData("002", "私は彼は好き。", 2, "", 1, "は")]
         [InlineData("003", "私は彼が好き。", 2, "", 0, "")]
         [InlineData("004", "私は彼は好き。", 2, "は", 0, "")]
-        [InlineData("005", "彼の色鉛筆と私の筆箱。", 1, "", 0, "")]
-        [InlineData("006", "彼の色鉛筆と私の筆箱。", 2, "", 0, "")]
-        [InlineData("007", "彼の色鉛筆と私の筆箱。", 3, "", 0, "")]
-        [InlineData("008", "彼の色鉛筆と私の筆箱。", 4, "", 1, "の")]
-        [InlineData("009", "二人でで一人の仮面ライダーだ。", 1, "", 1, "で")]
-        public void BasicTest(string nouse1, string text, int minInterval, string skipJoshi, int errorCount, string expected)
+        [InlineData("005", "彼の色鉛筆と私の筆箱。", 2, "", 0, "")]
+        [InlineData("006", "彼の色鉛筆と私の筆箱。", 3, "", 1, "の")]
+        [InlineData("007", "彼の色鉛筆と私の筆箱。", 4, "", 1, "の")]
+        [InlineData("008", "二人でで一人の仮面ライダーだ。", 1, "", 1, "で")]
+        public void BasicTest(string nouse1, string text, int maxInterval, string skipJoshi, int errorCount, string expected)
         {
             // Document
             CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
@@ -35,7 +34,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             // ValidatorConfiguration
             var validatorConfiguration = new DoubledJoshiConfiguration(
                 ValidationLevel.ERROR,
-                minInterval,
+                maxInterval,
                 skipJoshi.Split(',').ToHashSet());
 
             // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。

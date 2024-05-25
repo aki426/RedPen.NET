@@ -140,6 +140,11 @@ namespace RedPen.Net.Core.Config
         public int MinInterval { get; init; }
     }
 
+    public interface IMaxIntervalConfigParameter
+    {
+        public int MaxInterval { get; init; }
+    }
+
     public interface IMinRatioConfigParameter
     {
         public double MinRatio { get; init; }
