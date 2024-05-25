@@ -11,13 +11,13 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
     // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
 
     /// <summary>SuggestExpressionのConfiguration</summary>
-    public record SuggestExpressionConfiguration : ValidatorConfiguration, IWordMapConfigParameter
+    public record SuggestExpressionConfiguration : ValidatorConfiguration, IExpressionMapConfigParameter
     {
-        public Dictionary<string, string> WordMap { get; init; }
+        public Dictionary<string, string> ExpressionMap { get; init; }
 
-        public SuggestExpressionConfiguration(ValidationLevel level, Dictionary<string, string> wordMap) : base(level)
+        public SuggestExpressionConfiguration(ValidationLevel level, Dictionary<string, string> expressionMap) : base(level)
         {
-            WordMap = wordMap;
+            ExpressionMap = expressionMap;
         }
     }
 
@@ -53,7 +53,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         {
             List<ValidationError> result = new List<ValidationError>();
 
-            foreach (KeyValuePair<string, string> kvp in Config.WordMap)
+            foreach (KeyValuePair<string, string> kvp in Config.ExpressionMap)
             {
                 string content = sentence.Content;
                 // 日本語の場合、正表現の中に誤表現が含まれる場合があるので、先に正表現をマスキングした文字列で判定を行う。

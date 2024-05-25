@@ -63,6 +63,13 @@ namespace RedPen.Net.Core.Config
         public Dictionary<string, string> WordMap { get; init; }
     }
 
+    /// <summary>ValidatorConfigurationの継承クラスがExpressionMapプロパティを持つことを示すインターフェース。</summary>
+    public interface IExpressionMapConfigParameter
+    {
+        /// <summary>何らかの単語のマッピング（辞書）を表すConfigurationパラメータ。</summary>
+        public Dictionary<string, string> ExpressionMap { get; init; }
+    }
+
     /// <summary>ValidatorConfigurationの継承クラスがWordListプロパティを持つことを示すインターフェース。</summary>
     public interface IWordListConfigParameter
     {
