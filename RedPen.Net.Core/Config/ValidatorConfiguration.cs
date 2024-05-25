@@ -145,9 +145,9 @@ namespace RedPen.Net.Core.Config
         public int MaxInterval { get; init; }
     }
 
-    public interface IMinRatioConfigParameter
+    public interface IMaxRatioConfigParameter
     {
-        public double MinRatio { get; init; }
+        public double MaxRatio { get; init; }
     }
 
     public interface IMinFreqConfigParameter

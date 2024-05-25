@@ -12,19 +12,19 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
     /// <summary>KatakanaSpellCheckのConfiguration</summary>
     public record KatakanaSpellCheckConfiguration
         : ValidatorConfiguration,
-        IMinRatioConfigParameter, IMinFreqConfigParameter, IWordSetConfigParameter,
+        IMaxRatioConfigParameter, IMinFreqConfigParameter, IExpressionSetConfigParameter,
         IEnableDefaultDictConfigParameter
     {
-        public double MinRatio { get; init; }
+        public double MaxRatio { get; init; }
         public int MinFreq { get; init; }
-        public HashSet<string> WordSet { get; init; }
+        public HashSet<string> ExpressionSet { get; init; }
         public bool EnableDefaultDict { get; init; }
 
-        public KatakanaSpellCheckConfiguration(ValidationLevel level, double minRatio, int minFreq, HashSet<string> wordSet, bool enableDefaultDict) : base(level)
+        public KatakanaSpellCheckConfiguration(ValidationLevel level, double maxRatio, int minFreq, HashSet<string> expressionSet, bool enableDefaultDict) : base(level)
         {
-            this.MinRatio = minRatio;
+            this.MaxRatio = maxRatio;
             this.MinFreq = minFreq;
-            this.WordSet = wordSet;
+            this.ExpressionSet = expressionSet;
             this.EnableDefaultDict = enableDefaultDict;
         }
     }
@@ -142,14 +142,14 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 // Configで指定されたカタカナ語セット内に存在する場合
                 // 既存のカタカナ語出現頻度がしきい値以上の場合（＝たくさん出現しているものはエラーではないと考える）
                 if ((Config.EnableDefaultDict && katakanaWordDict.Contains(katakana))
-                    || Config.WordSet.Contains(katakana)
-                    || katakanaLists[katakana].Count > Config.MinFreq)
+                    || Config.ExpressionSet.Contains(katakana)
+                    || Config.MinFreq <= katakanaLists[katakana].Count)
                 {
                     continue;
                 }
 
                 // Levenshtein距離を計算し、しきい値以下の場合はエラーとして出力（かけ離れ過ぎていないカタカナ語の表記ゆれを検出する工夫）
-                var lsDistThreshold = (int)Math.Round(katakana.Length * Config.MinRatio);
+                var lsDistThreshold = (int)Math.Round(katakana.Length * Config.MaxRatio);
                 var found = false;
                 // 現在対象としているカタカナ語同士でチェックしても意味が無いので抜く。
                 foreach (var other in katakanaLists.Keys.Where(s => s != katakana))
