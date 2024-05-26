@@ -17,6 +17,7 @@ namespace RedPen.Net.Core.Tests.Config
         public void LoadFromJsonStringTest()
         {
             string jsonString = @"{
+    // コメントも書けます。
     ""Lang"": ""ja-JP"",
     ""Variant"": ""zenkaku"",
     ""ValidatorConfigurations"": [

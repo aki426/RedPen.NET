@@ -13,6 +13,10 @@ namespace RedPen.Net.Core.Config
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
+        // NOTE: Configurationのデシリアライズ時はLangのチェックはしない。
+        // ValidatorにDIした時点でLangのチェックが行われる。
+        // なお、LevelがOFFだった場合はValidatorが作成されないので言語チェックもされない。
+
         /// <summary>
         /// Json形式の文字列からConfigurationを読み込む。
         /// </summary>
@@ -24,7 +28,10 @@ namespace RedPen.Net.Core.Config
             {
                 Converters = {
                     new ValidatorConfigurationConverter(),
-                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+
+                // コメント付きJsonファイルを読み込めるようにする。
+                ReadCommentHandling = JsonCommentHandling.Skip
             };
 
             Configuration? configuration = JsonSerializer.Deserialize<Configuration>(jsonString, options);

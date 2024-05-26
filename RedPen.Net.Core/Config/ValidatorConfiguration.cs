@@ -11,13 +11,14 @@ namespace RedPen.Net.Core.Config
     /// <param name="Level"></param>
     public abstract record ValidatorConfiguration(ValidationLevel Level = ValidationLevel.OFF)
     {
-        [JsonIgnore]
         /// <summary>クラス名からValidationNameを取得する（末尾の"Configuration"を除去したものがValidationの識別子）。</summary>
+        [JsonIgnore]
         public string ValidationName => this.GetType().Name.Substring(0, this.GetType().Name.Length - "Configuration".Length);
 
         /// <summary>JsonのNameプロパティに出力するためのプロパティ。</summary>
         public string Name => ValidationName;
 
+        /// <summary>This type.</summary>
         [JsonIgnore]
         public ValidationType Type => ValidationTypeExtend.ConvertFrom(ValidationName);
     }
