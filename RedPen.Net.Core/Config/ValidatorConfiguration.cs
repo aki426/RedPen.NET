@@ -70,6 +70,12 @@ namespace RedPen.Net.Core.Config
         public Dictionary<string, string> ExpressionMap { get; init; }
     }
 
+    /// <summary>ValidatorConfigurationの継承クラスがGrammarRuleMapプロパティを持つことを示すインターフェース。</summary>
+    public interface IGrammarRuleMapConfigParameter
+    {
+        public Dictionary<string, string> GrammarRuleMap { get; init; }
+    }
+
     /// <summary>ValidatorConfigurationの継承クラスがWordListプロパティを持つことを示すインターフェース。</summary>
     public interface IWordListConfigParameter
     {

@@ -107,6 +107,7 @@
     <Compile Include="Validator\SentenceValidator\SpaceWithAlphabeticalExpressionTests.cs" />
     <Compile Include="Validator\SentenceValidator\SuccessiveWordValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\SuggestExpressionValidatorTests.cs" />
+    <Compile Include="Validator\SentenceValidator\SuggestGrammarRuleValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\SymbolWithSpaceValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\TaigendomeValidatorTests.cs" />
     <Compile Include="Validator\ValidatorTestsUtility.cs" />
