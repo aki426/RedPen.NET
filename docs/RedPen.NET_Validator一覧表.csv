@@ -76,4 +76,4 @@ ExpressionSetで指定された表現、またはデフォルト辞書で定義�
 61,,WeakExpression,Sentence,en-US,WeakExpressionと呼ばれる表現を検出します。,,※同名のValidatorをBaseにしています,-
 62,,WordFrequency,Document,en-US,ドキュメント中の単語の出現頻度が一般的に妥当とされる出現頻度と比べ異なる場合エラーとなります。DeviationFactorは一般的な出現頻度の何倍まで許容するかを表す係数です。なお、ドキュメントの単語数がMinCount以上の場合エラー検出を行い、下回る場合はValidationを行いません。,"DeviationFactor, MinCount",※同名のValidatorをBaseにしています,-
 63,,SentenceWordCount,Sentence,en-US,センテンス内でMinCount以上の単語が使用されていた場合エラーとなります。,MinCount,WordNumber,-
-64,,SuggestGrammarRule,Sentence,ANY,品詞や読みを考慮した文法ルールに合致した表現に対して推奨される表現を提案します。「文法ルールと推奨される表現の対応関係」はGrammerRuleMapの定義に基づきます（※GrammerRuleMapはJsonフォーマットConfigurationの場合KeyにGrammerRule文字列を、Valueに推奨表現を定義してください）。,GrammarRuleMap,-,-
+64,v,SuggestGrammarRule,Sentence,ANY,品詞や読みを考慮した文法ルールに合致した表現に対して推奨される表現を提案します。「文法ルールと推奨される表現の対応関係」はGrammerRuleMapの定義に基づきます（※GrammerRuleMapはJsonフォーマットConfigurationの場合KeyにGrammerRule文字列を、Valueに推奨表現を定義してください）。,GrammarRuleMap,-,-
