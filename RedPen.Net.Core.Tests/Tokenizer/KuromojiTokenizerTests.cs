@@ -287,16 +287,16 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("059", "我等は歩く。", "*:名詞,代名詞:*", "")]
         [InlineData("060", "われは歩く。", "*:名詞,代名詞:*", "われ")]
         [InlineData("061", "われらは歩く。", "*:名詞,代名詞:*", "われ")]
-        public void DaimeishiMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
+        public void DaimeishiMatchGrammarRuleTest(string nouse1, string text, string rule, string expected)
         {
             KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
+                GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -412,16 +412,16 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("092", "やはり困難が、", "*:副詞:*", "やはり")]
         [InlineData("093", "余程堪えたと見えて、", "*:副詞:*", "余程")]
         [InlineData("094", "よほど堪えたと見えて、", "*:副詞:*", "よほど")]
-        public void FukushiMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
+        public void FukushiMatchGrammarRuleTest(string nouse1, string text, string rule, string expected)
         {
             KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
+                GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -455,16 +455,16 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("010", "御もっとも", "*:接頭詞:*", "御")]
         [InlineData("011", "ご尤も", "*:接頭詞:*", "ご")]
         [InlineData("012", "ごもっとも", "*:接頭詞:*", "ご")]
-        public void PrefixGoMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
+        public void PrefixGoMatchGrammarRuleTest(string nouse1, string text, string rule, string expected)
         {
             KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
+                GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -504,16 +504,16 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("016", "少な目に言った。", "*:名詞,接尾:*", "")]
         [InlineData("017", "強めの火力で、", "*:名詞,接尾:*", "")]
         [InlineData("018", "強目の火力で、", "*:名詞,接尾:*", "目")]
-        public void SuffixMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
+        public void SuffixMatchGrammarRuleTest(string nouse1, string text, string rule, string expected)
         {
             KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
+                GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -582,16 +582,16 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("045", "賛成復は反対の方は、", "*:接続詞:*", "")]
         [InlineData("046", "賛成もしくは反対の方は、", "*:接続詞:*", "もしくは")]
         [InlineData("047", "賛成若しくは反対の方は、", "*:接続詞:*", "若しくは")]
-        public void ConjunctionMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
+        public void ConjunctionMatchGrammarRuleTest(string nouse1, string text, string rule, string expected)
         {
             KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
+                GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -622,16 +622,16 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("007", "調査しただけである。", "*:助詞,副助詞:ダケ", "だけ")]
         [InlineData("008", "三日ほど経過した。", "*:名詞,接尾,助数詞:ニチ + *:助詞,副助詞:ホド", "日")]
         [InlineData("009", "三日程経過した。", "*:名詞,一般:ニッテイ", "日程")]
-        public void JodoshiJoshiMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
+        public void JodoshiJoshiMatchGrammarRuleTest(string nouse1, string text, string rule, string expected)
         {
             KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
+                GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {
@@ -708,16 +708,16 @@ namespace RedPen.Net.Core.Tests.Tokenizer
         [InlineData("053", "調査だけに過ぎない。", "*:動詞,自立:スギ", "過ぎ")]
         [InlineData("054", "これについて考慮する。", "*:助詞,格助詞:ニツイテ", "について")]
         [InlineData("055", "これに付いて考慮する。", "*:動詞,自立:ツイ", "付い")]
-        public void OkuriganaMatchExpressionRuleTest(string nouse1, string text, string expressionRule, string expected)
+        public void OkuriganaMatchGrammarRuleTest(string nouse1, string text, string rule, string expected)
         {
             KuromojiTokenizer tokenizer = new KuromojiTokenizer();
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToExpressionRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
 
             var (isMatch, tokens1) =
-                ExpressionRuleExtractor.Run(expressionRule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
+                GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
 
             if (isMatch)
             {

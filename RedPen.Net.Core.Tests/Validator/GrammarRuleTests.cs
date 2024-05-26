@@ -12,11 +12,11 @@ using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Validator
 {
-    public class ExpressionRuleTests
+    public class GrammarRuleTests
     {
         private ITestOutputHelper output;
 
-        public ExpressionRuleTests(ITestOutputHelper output)
+        public GrammarRuleTests(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -24,51 +24,51 @@ namespace RedPen.Net.Core.Tests.Validator
         [Fact]
         public void RunTest()
         {
-            var rule = ExpressionRuleExtractor.Run("This:n + is:v");
+            var rule = GrammarRuleExtractor.Run("This:n + is:v");
             rule.Tokens.Count.Should().Be(2);
 
-            rule.TokenPattern[0].direct.Should().BeTrue();
-            rule.TokenPattern[0].token.Surface.Should().Be("this");
-            rule.TokenPattern[0].token.Tags.Should().Contain("n");
-            rule.TokenPattern[0].token.Reading.Should().Be("");
+            rule.Pattern[0].direct.Should().BeTrue();
+            rule.Pattern[0].token.Surface.Should().Be("this");
+            rule.Pattern[0].token.Tags.Should().Contain("n");
+            rule.Pattern[0].token.Reading.Should().Be("");
 
-            rule.TokenPattern[1].direct.Should().BeTrue();
-            rule.TokenPattern[1].token.Surface.Should().Be("is");
-            rule.TokenPattern[1].token.Tags.Should().Contain("v");
-            rule.TokenPattern[1].token.Reading.Should().Be("");
+            rule.Pattern[1].direct.Should().BeTrue();
+            rule.Pattern[1].token.Surface.Should().Be("is");
+            rule.Pattern[1].token.Tags.Should().Contain("v");
+            rule.Pattern[1].token.Reading.Should().Be("");
 
-            rule = ExpressionRuleExtractor.Run("僕:名詞:ボク = は:助詞:ハ");
+            rule = GrammarRuleExtractor.Run("僕:名詞:ボク = は:助詞:ハ");
             rule.Tokens.Count.Should().Be(2);
 
-            rule.TokenPattern[0].direct.Should().BeTrue();
-            rule.TokenPattern[0].token.Surface.Should().Be("僕");
-            rule.TokenPattern[0].token.Tags.Should().Contain("名詞");
-            rule.TokenPattern[0].token.Reading.Should().Be("ボク");
+            rule.Pattern[0].direct.Should().BeTrue();
+            rule.Pattern[0].token.Surface.Should().Be("僕");
+            rule.Pattern[0].token.Tags.Should().Contain("名詞");
+            rule.Pattern[0].token.Reading.Should().Be("ボク");
 
-            rule.TokenPattern[1].direct.Should().BeFalse();
-            rule.TokenPattern[1].token.Surface.Should().Be("は");
-            rule.TokenPattern[1].token.Tags.Should().Contain("助詞");
-            rule.TokenPattern[1].token.Reading.Should().Be("ハ");
+            rule.Pattern[1].direct.Should().BeFalse();
+            rule.Pattern[1].token.Surface.Should().Be("は");
+            rule.Pattern[1].token.Tags.Should().Contain("助詞");
+            rule.Pattern[1].token.Reading.Should().Be("ハ");
 
             // empty strings
-            Action action = () => ExpressionRuleExtractor.Run(null);
+            Action action = () => GrammarRuleExtractor.Run(null);
             action.Should().Throw<ArgumentException>();
 
-            action = () => ExpressionRuleExtractor.Run("");
+            action = () => GrammarRuleExtractor.Run("");
             action.Should().Throw<ArgumentException>();
 
-            action = () => ExpressionRuleExtractor.Run("  ");
+            action = () => GrammarRuleExtractor.Run("  ");
             action.Should().Throw<ArgumentException>();
 
-            action = () => ExpressionRuleExtractor.Run(" + ");
+            action = () => GrammarRuleExtractor.Run(" + ");
             action.Should().Throw<ArgumentException>();
 
             // aster '+' is missing
-            action = () => ExpressionRuleExtractor.Run("This:n + is:v + ");
+            action = () => GrammarRuleExtractor.Run("This:n + is:v + ");
             action.Should().Throw<ArgumentException>();
 
             // aster '=' is missing
-            action = () => ExpressionRuleExtractor.Run("This:n + is:v = ");
+            action = () => GrammarRuleExtractor.Run("This:n + is:v = ");
             action.Should().Throw<ArgumentException>();
         }
 
@@ -76,9 +76,9 @@ namespace RedPen.Net.Core.Tests.Validator
         public void ToStringTest()
         {
             // 元の入力文法ルール文字列にパターンマッチの結果は同じになるが不要な構成要素が有る場合、省略して出力する。
-            ExpressionRuleExtractor.Run("  This : n :      + is : v : * ").ToString().Should().Be("this:n + is:v:*");
-            ExpressionRuleExtractor.Run("  僕:   名詞, : ボク =            は :助詞:     ハ").ToString().Should().Be("僕:名詞:ボク = は:助詞:ハ");
-            ExpressionRuleExtractor.Run("  : : ボク + : : ハ").ToString().Should().Be("::ボク + ::ハ");
+            GrammarRuleExtractor.Run("  This : n :      + is : v : * ").ToString().Should().Be("this:n + is:v:*");
+            GrammarRuleExtractor.Run("  僕:   名詞, : ボク =            は :助詞:     ハ").ToString().Should().Be("僕:名詞:ボク = は:助詞:ハ");
+            GrammarRuleExtractor.Run("  : : ボク + : : ハ").ToString().Should().Be("::ボク + ::ハ");
         }
 
         /// <summary>ルール表現文字列から抽出したルールのマッチングテスト。</summary>
@@ -105,10 +105,10 @@ namespace RedPen.Net.Core.Tests.Validator
         [InlineData("014", ":形容詞,自立:ナイ + ::ト = :助動詞,特殊・ナイ:ナイ", "これは想定内とは言えない。", 0, "")]
         public void JapaneseMatchesExtendTest(string nouse1, string rule, string text, int matchCount, string expected)
         {
-            ExpressionRule expressionRule = ExpressionRuleExtractor.Run(rule);
+            GrammarRule grammarRule = GrammarRuleExtractor.Run(rule);
 
             output.WriteLine("★Rule...");
-            foreach (TokenElement token in expressionRule.Tokens)
+            foreach (TokenElement token in grammarRule.Tokens)
             {
                 output.WriteLine(token.ToString());
             }
@@ -127,7 +127,7 @@ namespace RedPen.Net.Core.Tests.Validator
                 }
                 output.WriteLine("");
 
-                matchedTokensList.AddRange(expressionRule.MatchExtend(sentence.Tokens));
+                matchedTokensList.AddRange(grammarRule.MatchExtend(sentence.Tokens));
             }
 
             matchedTokensList.Count.Should().Be(matchCount);
@@ -149,10 +149,10 @@ namespace RedPen.Net.Core.Tests.Validator
         [InlineData("003", "a + pen:n", "This is a pen. He has a pen.", 2, "a|pen|a|pen")]
         public void MatchSurfaceTest(string nouse1, string rule, string text, int matchCount, string expected)
         {
-            ExpressionRule expressionRule = ExpressionRuleExtractor.Run(rule);
+            GrammarRule grammarRule = GrammarRuleExtractor.Run(rule);
 
             output.WriteLine("★Rule...");
-            foreach (TokenElement token in expressionRule.Tokens)
+            foreach (TokenElement token in grammarRule.Tokens)
             {
                 output.WriteLine(token.ToString());
             }
@@ -172,7 +172,7 @@ namespace RedPen.Net.Core.Tests.Validator
 
                 //(bool isMatch, List<TokenElement> tokens1) =
                 (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
-                    expressionRule.MatchesConsecutiveSurfaces(sentence.Tokens);
+                    grammarRule.MatchesConsecutiveSurfaces(sentence.Tokens);
 
                 matchedTokensList.AddRange(value.tokens);
             }
@@ -190,10 +190,10 @@ namespace RedPen.Net.Core.Tests.Validator
         [InlineData("002", "本日+は", "本日は晴天なり、本日は曇天なり。", 2, "本日|は|本日|は")]
         public void JapaneseMatchSurfaceTest(string nouse1, string rule, string text, int matchCount, string expected)
         {
-            ExpressionRule expressionRule = ExpressionRuleExtractor.Run(rule);
+            GrammarRule grammarRule = GrammarRuleExtractor.Run(rule);
 
             output.WriteLine("★Rule...");
-            foreach (TokenElement token in expressionRule.Tokens)
+            foreach (TokenElement token in grammarRule.Tokens)
             {
                 output.WriteLine(token.ToString());
             }
@@ -213,7 +213,7 @@ namespace RedPen.Net.Core.Tests.Validator
 
                 //(bool isMatch, List<TokenElement> tokens1) =
                 (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
-                    expressionRule.MatchesConsecutiveSurfaces(sentence.Tokens);
+                    grammarRule.MatchesConsecutiveSurfaces(sentence.Tokens);
 
                 if (value.isMatch)
                 {
@@ -234,10 +234,10 @@ namespace RedPen.Net.Core.Tests.Validator
         [InlineData("002", "*:名詞 + の:助詞 + *:名詞 + の:助詞 + *:名詞", "つまり弊社の方針とはこうです。", 0, "")]
         public void JapaneseMatchSurfaceAndTagsTest(string nouse1, string rule, string text, int matchCount, string expected)
         {
-            ExpressionRule expressionRule = ExpressionRuleExtractor.Run(rule);
+            GrammarRule grammarRule = GrammarRuleExtractor.Run(rule);
 
             output.WriteLine("★Rule...");
-            foreach (TokenElement token in expressionRule.Tokens)
+            foreach (TokenElement token in grammarRule.Tokens)
             {
                 output.WriteLine(token.ToString());
             }
@@ -257,7 +257,7 @@ namespace RedPen.Net.Core.Tests.Validator
 
                 //(bool isMatch, List<TokenElement> tokens1) =
                 (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
-                    expressionRule.MatchesConsecutiveSurfacesAndTags(sentence.Tokens);
+                    grammarRule.MatchesConsecutiveSurfacesAndTags(sentence.Tokens);
 
                 matchedTokensList.AddRange(value.tokens);
             }

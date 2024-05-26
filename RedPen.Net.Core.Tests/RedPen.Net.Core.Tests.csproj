@@ -80,12 +80,12 @@
     <Compile Include="Utility\CollectionExtensionsTests.cs" />
     <Compile Include="Utility\DictionaryLoaderTests.cs" />
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
-    <Compile Include="Utility\ExpressionRuleExtractorTests.cs" />
+    <Compile Include="Utility\GrammarRuleExtractorTests.cs" />
     <Compile Include="Utility\LevenshteinDistanceUtilityTests.cs" />
     <Compile Include="Utility\UnicodeUtilityTests.cs" />
     <Compile Include="Validator\DocumentValidator\JapaneseWordVariationValidatorTest.cs" />
     <Compile Include="Validator\DocumentValidator\SuccessiveSentenceValidatorTests.cs" />
-    <Compile Include="Validator\ExpressionRuleTests.cs" />
+    <Compile Include="Validator\GrammarRuleTests.cs" />
     <Compile Include="Validator\SentenceValidator\CommaCountValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\DoubledConjunctiveParticleGaValidatorTests.cs" />
     <Compile Include="Validator\SentenceValidator\DoubledJoshiValidatorTests.cs" />

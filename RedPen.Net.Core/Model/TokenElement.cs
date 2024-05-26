@@ -97,10 +97,10 @@ namespace RedPen.Net.Core.Model
         }
 
         /// <summary>
-        /// ExpressionRuleに変換可能なToken表現形式文字列を取得する。
+        /// GrammarRuleに変換可能なToken表現形式文字列を取得する。
         /// </summary>
         /// <returns>A string.</returns>
-        public string ConvertToExpressionRuleText()
+        public string ConvertToGrammarRuleText()
         {
             // NOTE: 末尾の空タグは削除する。
             ImmutableList<string> currentTags = Tags.Reverse();
@@ -156,7 +156,7 @@ namespace RedPen.Net.Core.Model
         public bool HasKatakana() => Surface.Any(c => UnicodeUtility.IsKatakana(c));
 
         /// <summary>
-        /// Surfaceがマッチするかどうか＝ExpressionRuleとしてマッチするかどうかを判定する関数。
+        /// Surfaceがマッチするかどうか＝GrammarRuleとしてマッチするかどうかを判定する関数。
         /// MEMO: 完全一致ではないことに注意。
         /// </summary>
         /// <param name="other">The other.</param>

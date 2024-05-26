@@ -7,39 +7,39 @@ using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators
 {
-    /// <summary>トークン列によって表現された表現ルール。</summary>
-    public record ExpressionRule
+    /// <summary>トークン列によって表現された文法ルール。Token列に対してパターンマッチする。</summary>
+    public record GrammarRule
     {
         /// <summary>Tokenのリスト。</summary>
-        public ImmutableList<(bool direct, TokenElement token)> TokenPattern { get; init; }
+        public ImmutableList<(bool direct, TokenElement token)> Pattern { get; init; }
 
-        public ImmutableList<TokenElement> Tokens => TokenPattern.Select(i => i.token).ToList().ToImmutableList();
+        public ImmutableList<TokenElement> Tokens => Pattern.Select(i => i.token).ToList().ToImmutableList();
 
         /// <summary>
-        /// ExpressionRuleの持つフレーズのSurfaceを連結した文字列を返す。
+        /// GrammarRuleの持つフレーズのSurfaceを連結した文字列を返す。
         /// </summary>
         /// <returns>A string.</returns>
         public string ToSurface() => string.Join("", this.Tokens.Select(e => e.Surface));
 
         /// <summary>
-        /// ExpressionRuleの持つフレーズのReadingを連結した文字列を返す。
+        /// GrammarRuleの持つフレーズのReadingを連結した文字列を返す。
         /// </summary>
         /// <returns>A string.</returns>
         public string ToReading() => string.Join("", this.Tokens.Select(e => e.Reading));
 
         /// <summary>
-        /// ExpressionRuleの表現パターンを文字列に変換する。
+        /// GrammarRuleの表現パターンを文字列に変換する。
         /// </summary>
         /// <returns>Surface:Tags:Reading [+=] Surface:Tags:Reading...という表現形式の文字列 </returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(this.TokenPattern[0].token.ConvertToExpressionRuleText());
+            sb.Append(this.Pattern[0].token.ConvertToGrammarRuleText());
 
-            foreach (var (direct, token) in this.TokenPattern.Skip(1))
+            foreach (var (direct, token) in this.Pattern.Skip(1))
             {
                 sb.Append(direct ? " + " : " = ");
-                sb.Append(token.ConvertToExpressionRuleText());
+                sb.Append(token.ConvertToGrammarRuleText());
             }
 
             return sb.ToString();
@@ -51,7 +51,7 @@ namespace RedPen.Net.Core.Validators
         // これはこれであいまいな名詞接続のパターン「格助詞の "の" + 名詞連続 + 各助詞の "の"」が連続する場合に有用であるため残しておく。
 
         /// <summary>
-        /// 指定されたトークンリスト内に、ExpressionRuleと同じ順序のSurfaceのパターンが1つあるいは複数存在するかどうかを判定する。
+        /// 指定されたトークンリスト内に、GrammarRuleと同じ順序のSurfaceのパターンが1つあるいは複数存在するかどうかを判定する。
         /// </summary>
         /// <param name="tokens">TokenElementのリスト</param>
         /// <returns>引数tokensが空だった場合はTrue。
@@ -72,13 +72,13 @@ namespace RedPen.Net.Core.Validators
                 return (false, new List<ImmutableList<TokenElement>>());
             }
 
-            if (this.TokenPattern.Where(i => !i.direct).Any())
+            if (this.Pattern.Where(i => !i.direct).Any())
             {
-                // 隣接連続ではない「=」による接続が含まれている場合は、このメソッドの想定ではないのでExceptionを投げる。
+                // 隣接連続ではない、「=」による接続が含まれている場合は、このメソッドの想定ではないのでExceptionを投げる。
                 throw new ArgumentException($"This method is only for consecutive patterns. If you want to use non-consecutive patterns '{this}', please use MatchExtend method.");
             }
 
-            // ExpressionRuleと同じ長さの部分Tokenリストを取り出し、conditionで比較しマッチングを取る。
+            // Tokensと同じ長さの部分Tokenリストを取り出し、conditionで比較しマッチングを取る。
             List<ImmutableList<TokenElement>> matchedTokens = new List<ImmutableList<TokenElement>>();
             for (int i = 0; i <= tokens.Count - this.Tokens.Count; i++)
             {
@@ -106,7 +106,7 @@ namespace RedPen.Net.Core.Validators
         }
 
         /// <summary>
-        /// 指定されたトークンリスト内に、ExpressionRuleと同じ順序のSurfaceのパターンが1つあるいは複数存在するかどうかを判定する。
+        /// 指定されたトークンリスト内に、GrammarRuleと同じ順序のSurfaceのパターンが1つあるいは複数存在するかどうかを判定する。
         /// </summary>
         /// <param name="tokens">TokenElementのリスト</param>
         /// <returns>引数tokensが空だった場合はTrue。
@@ -115,7 +115,7 @@ namespace RedPen.Net.Core.Validators
             MatchesConsecutiveByCondition((x, y) => x.MatchSurface(y), tokens);
 
         /// <summary>
-        /// 指定されたトークンリスト内に、ExpressionRuleと同じ順序のSurfaceの並びで、
+        /// 指定されたトークンリスト内に、GrammarRuleと同じ順序のSurfaceの並びで、
         /// しかも各TokenのTagsがマッチするパターンが1つあるいは複数存在するかどうかを判定する。
         /// </summary>
         /// <param name="tokens">TokenElementのリスト</param>
@@ -125,7 +125,7 @@ namespace RedPen.Net.Core.Validators
             MatchesConsecutiveByCondition((x, y) => x.MatchSurface(y) && x.MatchTags(y), tokens);
 
         /// <summary>
-        /// 指定されたトークンリスト内に、ExpressionRuleと同じ順序のReadingのパターンが1つあるいは複数存在するかどうかを判定する。
+        /// 指定されたトークンリスト内に、GrammarRuleと同じ順序のReadingのパターンが1つあるいは複数存在するかどうかを判定する。
         /// MEMO: 主に複数Surfaceに対して読みが一意である日本語のフレーズマッチに使用する。
         /// </summary>
         /// <param name="tokens">TokenElementのリスト</param>
@@ -135,7 +135,7 @@ namespace RedPen.Net.Core.Validators
             MatchesConsecutiveByCondition((x, y) => x.MatchReading(y), tokens);
 
         /// <summary>
-        /// 引数のトークンリスト内に、ExpressionRuleと同じ順序のSurface、Tags、Readingがマッチするパターンが1つあるいは複数存在するかどうかを判定する。
+        /// 引数のトークンリスト内に、GrammarRuleと同じ順序のSurface、Tags、Readingがマッチするパターンが1つあるいは複数存在するかどうかを判定する。
         /// </summary>
         /// <param name="tokens">The tokens.</param>
         /// <returns>A (bool isMatch, List&lt;ImmutableList&lt;TokenElement&gt;&gt; tokens) .</returns>
@@ -150,7 +150,7 @@ namespace RedPen.Net.Core.Validators
         /// Matches the by condition extend.
         /// </summary>
         /// <param name="condition">Token同士をマッチングする場合の条件式</param>
-        /// <param name="tokens">ExpressionRuleに対してマッチングを取る相手のTokenリスト。通常SentenceのTokenリスト。</param>
+        /// <param name="tokens">GrammarRuleに対してマッチングを取る相手のTokenリスト。通常SentenceのTokenリスト。</param>
         /// <returns></returns>
         public List<ImmutableList<TokenElement>> MatchExtendByCondition(
             Func<TokenElement, TokenElement, bool> condition,
@@ -158,7 +158,7 @@ namespace RedPen.Net.Core.Validators
         {
             if (this.Tokens.Count == 0)
             {
-                // MEMO: ExpressionRuleのパターンが空ならFalseで良い。
+                // MEMO: GrammarRuleのパターンが空ならFalseで良い。
                 return new List<ImmutableList<TokenElement>>();
             }
 
@@ -168,7 +168,7 @@ namespace RedPen.Net.Core.Validators
             {
                 var (list, rest) = MatchExtendByConditionRecursive(
                     condition,
-                    this.TokenPattern.ToList(),
+                    this.Pattern.ToList(),
                     restTokens,
                     ImmutableList.Create<TokenElement>());
 
@@ -186,7 +186,7 @@ namespace RedPen.Net.Core.Validators
         }
 
         /// <summary>
-        /// ExpressionRuleのパターンとトークンリストのマッチングを再帰的に行う。
+        /// GrammarRuleのパターンとトークンリストのマッチングを再帰的に行う。
         /// </summary>
         /// <param name="condition">The condition.</param>
         /// <param name="tokenPattern">The token pattern.</param>
@@ -255,7 +255,7 @@ namespace RedPen.Net.Core.Validators
         }
 
         /// <summary>
-        /// 拡張ExpressionRule表現に対して入力トークンリストのマッチングをSurface、Tags、Readingの全てで行う。
+        /// 拡張GrammarRule表現に対して入力トークンリストのマッチングをSurface、Tags、Readingの全てで行う。
         /// </summary>
         /// <param name="tokens"></param>
         /// <returns></returns>

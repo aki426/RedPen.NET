@@ -7,11 +7,11 @@ using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Utility
 {
-    public class ExpressionRuleExtractorTests
+    public class GrammarRuleExtractorTests
     {
         private ITestOutputHelper output;
 
-        public ExpressionRuleExtractorTests(ITestOutputHelper output)
+        public GrammarRuleExtractorTests(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -24,7 +24,7 @@ namespace RedPen.Net.Core.Tests.Utility
         [InlineData("005", "This:n +  is:v", 2, "This:n|is:v")]
         public void SplitTest(string nouse1, string text, int count, string expected)
         {
-            string[] segments = ExpressionRuleExtractor.SplitToRuleElements(text);
+            string[] segments = GrammarRuleExtractor.SplitToRuleElements(text);
             segments.Length.Should().Be(count);
 
             string.Join("|", segments).Should().Be(expected);
@@ -34,22 +34,22 @@ namespace RedPen.Net.Core.Tests.Utility
         [Fact]
         public void RunTest()
         {
-            ExpressionRule expressionRule = ExpressionRuleExtractor.Run("This: n,noun + is: v");
+            GrammarRule rule = GrammarRuleExtractor.Run("This: n,noun + is: v");
             // MEMO: ルール文字列はマッチングのためすべて小文字に変換される。
-            expressionRule.ToSurface().Should().Be("thisis");
+            rule.ToSurface().Should().Be("thisis");
 
-            foreach (TokenElement token in expressionRule.Tokens)
+            foreach (TokenElement token in rule.Tokens)
             {
                 output.WriteLine(token.ToString());
             }
 
-            expressionRule.Tokens[0].Surface.Should().Be("this");
-            expressionRule.Tokens[0].Tags.Count.Should().Be(2);
-            expressionRule.Tokens[0].Tags[0].Should().Be("n");
-            expressionRule.Tokens[0].Tags[1].Should().Be("noun");
-            expressionRule.Tokens[1].Surface.Should().Be("is");
-            expressionRule.Tokens[1].Tags.Count.Should().Be(1);
-            expressionRule.Tokens[1].Tags[0].Should().Be("v");
+            rule.Tokens[0].Surface.Should().Be("this");
+            rule.Tokens[0].Tags.Count.Should().Be(2);
+            rule.Tokens[0].Tags[0].Should().Be("n");
+            rule.Tokens[0].Tags[1].Should().Be("noun");
+            rule.Tokens[1].Surface.Should().Be("is");
+            rule.Tokens[1].Tags.Count.Should().Be(1);
+            rule.Tokens[1].Tags[0].Should().Be("v");
         }
     }
 }

@@ -67,7 +67,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 ValidationType.SuggestGrammarRule,
                 this.Level,
                 sentence,
-                MessageArgs: new object[] { argsForMessageArg }));
+                MessageArgs: new object[] { }));
 
             return result;
         }

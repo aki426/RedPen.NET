@@ -33,7 +33,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <summary></summary>
         public override List<string> SupportedLanguages => new List<string>() { "ja-JP", "en-US" };
 
-        private List<ExpressionRule> invalidExpressions;
+        private List<GrammarRule> invalidExpressions;
         private HashSet<string> negativeWords;
         private bool isJapaneseMatchAsReading = false;
 
@@ -60,7 +60,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             // TODO: Configurableにした方が良いかどうかはユースケース考えて検討する。
             if (documentLangForTest.Name == "ja-JP")
             {
-                invalidExpressions = ExpressionRuleExtractor.LoadExpressionRules(DefaultResources.DoubleNegativeExpression_ja);
+                invalidExpressions = GrammarRuleExtractor.LoadGrammarRules(DefaultResources.DoubleNegativeExpression_ja);
                 negativeWords = ResourceFileLoader.LoadWordSet(DefaultResources.DoubleNegativeWord_ja);
 
                 // MEMO: 日本語の場合は漢字／ひらがな表記のゆれがあるので、Readingでのマッチングを行う。
@@ -68,7 +68,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             }
             else
             {
-                invalidExpressions = ExpressionRuleExtractor.LoadExpressionRules(DefaultResources.DoubleNegativeExpression_en);
+                invalidExpressions = GrammarRuleExtractor.LoadGrammarRules(DefaultResources.DoubleNegativeExpression_en);
                 negativeWords = ResourceFileLoader.LoadWordSet(DefaultResources.DoubleNegativeWord_en);
             }
         }
@@ -82,8 +82,8 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         {
             List<ValidationError> result = new List<ValidationError>();
 
-            // ExpressionRuleを用いた判定を行う。
-            foreach (ExpressionRule rule in invalidExpressions)
+            // GrammarRuleを用いた判定を行う。
+            foreach (GrammarRule rule in invalidExpressions)
             {
                 // 設定によってReadingでマッチするかSurfaceでマッチするかを切り替える。
                 var (isMatch, matchedPhrases) = isJapaneseMatchAsReading ?
@@ -113,13 +113,13 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 }
             }
 
-            // ExpressionRuleにより二重否定表現が見つかった場合はその時点で判定を終了する。
+            // GrammarRuleにより二重否定表現が見つかった場合はその時点で判定を終了する。
             if (result.Any())
             {
                 return result;
             }
 
-            // ExpressionRuleで二重否定表現が見つからなかった場合は、否定語の出現回数をカウントし2回以上出現していた場合はエラーとみなす。
+            // GrammarRuleで二重否定表現が見つからなかった場合は、否定語の出現回数をカウントし2回以上出現していた場合はエラーとみなす。
             // MEMO: 現時点では否定語の出現回数判定は英語のみを想定している。
             List<TokenElement> negativeTokens = new List<TokenElement>();
             foreach (TokenElement token in sentence.Tokens)

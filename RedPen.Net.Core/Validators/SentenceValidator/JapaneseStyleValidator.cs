@@ -114,7 +114,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 {
                     if (buffer.Any())
                     {
-                        // TODO: ExpressionRuleでのパターンマッチへのリファクタリングを検討する。
+                        // TODO: GrammarRuleでのパターンマッチへのリファクタリングを検討する。
 
                         // MEMO: 助動詞「だ」の後に助詞「と」が続く場合は、助動詞「だと」とみなして1Tokenとして登録する。
                         // 「だと」という表現はです・ます調でも不自然ではない表現として使われるため。

@@ -10,17 +10,17 @@ using RedPen.Net.Core.Validators;
 namespace RedPen.Net.Core.Utility
 {
     /// <summary>
-    /// RedPenのルール表記文字列からルールを抽出するクラス。
+    /// RedPenのルール表記文字列から文法ルールを抽出するクラス。
     /// </summary>
-    public static class ExpressionRuleExtractor
+    public static class GrammarRuleExtractor
     {
         /// <summary>
-        /// RuleExpressionを定義された複数行テキストからExpressionRuleのリストを読み込む。
+        /// RuleExpressionを定義された複数行テキストからGrammarRuleのリストを読み込む。
         /// MEMO: 冒頭に#記号があるばあいはコメントとして無視される。
         /// </summary>
         /// <param name="ruleDefinition">テキストファイルの中身などの複数行テキスト</param>
-        /// <returns>A list of ExpressionRules.</returns>
-        public static List<ExpressionRule> LoadExpressionRules(string ruleDefinition)
+        /// <returns>A list of GrammarRules.</returns>
+        public static List<GrammarRule> LoadGrammarRules(string ruleDefinition)
         {
             return ruleDefinition.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(line => line.Trim())
@@ -58,8 +58,8 @@ namespace RedPen.Net.Core.Utility
         /// Create a rule from input sentence.
         /// </summary>
         /// <param name="line">ルール表記文字列は「Surface:タグ,タグ,タグ,...:Reading + Surface:タグ,...:Reading + ...」という形式。</param>
-        /// <returns>An ExpressionRule.</returns>
-        public static ExpressionRule Run(string line)
+        /// <returns>An GrammarRule.</returns>
+        public static GrammarRule Run(string line)
         {
             if (line == null || line.Trim() == "")
             {
@@ -117,9 +117,9 @@ namespace RedPen.Net.Core.Utility
 
             result.Add((tokenIsDirect, ConvertToToken(sb.ToString())));
 
-            return new ExpressionRule()
+            return new GrammarRule()
             {
-                TokenPattern = result.ToImmutableList()
+                Pattern = result.ToImmutableList()
             };
         }
 

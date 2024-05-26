@@ -51,15 +51,15 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             this.Config = config;
         }
 
-        /// <summary>あいまいな名詞接続のパターン「格助詞の "の" + 名詞連続 + 各助詞の "の"」のExpressionRule。</summary>
-        private static ExpressionRule nounConjunction =
-            ExpressionRuleExtractor.Run("*:名詞 + の:助詞 + *:名詞 + の:助詞 + *:名詞");
+        /// <summary>あいまいな名詞接続のパターン「格助詞の "の" + 名詞連続 + 各助詞の "の"」のGrammarRule。</summary>
+        private static GrammarRule nounConjunction =
+            GrammarRuleExtractor.Run("*:名詞 + の:助詞 + *:名詞 + の:助詞 + *:名詞");
 
         public List<ValidationError> Validate(Sentence sentence)
         {
             List<ValidationError> result = new List<ValidationError>();
 
-            // 名詞の連続を連結済みのTokenElementリストに変換して、ExpressionRuleにマッチさせる。
+            // 名詞の連続を連結済みのTokenElementリストに変換して、GrammarRuleにマッチさせる。
             // これにより名詞連続をバラバラのTokenではなく1つの名詞Tokenとして扱うことでRuleにマッチ可能にする。
             (bool isMatch, List<ImmutableList<TokenElement>> tokens) value =
                 nounConjunction.MatchesConsecutiveSurfacesAndTags(
