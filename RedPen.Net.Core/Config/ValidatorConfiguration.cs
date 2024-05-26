@@ -22,66 +22,67 @@ namespace RedPen.Net.Core.Config
         public ValidationType Type => ValidationTypeExtend.ConvertFrom(ValidationName);
     }
 
-    // MEMO: 以下、個別のValidatorConfigurationクラスのプロパティ定義のためのInterface
+    #region Max/Min系のプロパティ定義のためのInterface
 
     /// <summary>ValidatorConfigurationの継承クラスがMaxLengthプロパティを持つことを示すインターフェース。</summary>
     public interface IMaxLengthConfigParameter
     {
-        /// <summary>何らかの最長数を表すConfigurationパラメータ。</summary>
+        /// <summary>エラーとする文字数の最大値を表すConfigurationパラメータ。</summary>
         public int MaxLength { get; init; }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがMinLengthプロパティを持つことを示すインターフェース。</summary>
     public interface IMinLengthConfigParameter
     {
-        /// <summary>何らかの最小数を表すConfigurationパラメータ。</summary>
+        /// <summary>エラーとする文字数の最小値を表すConfigurationパラメータ。</summary>
         public int MinLength { get; init; }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがMinCountプロパティを持つことを示すインターフェース。</summary>
     public interface IMinCountConfigParameter
     {
+        /// <summary>エラーとする対象物の個数の最小値を表すConfigurationパラメータ。</summary>
         public int MinCount { get; init; }
-    }
-
-    /// <summary>ValidatorConfigurationの継承クラスがMaxLevelプロパティを持つことを示すインターフェース。</summary>
-    public interface IMaxLevelConfigParameter
-    {
-        public int MaxLevel { get; init; }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがMinLevelプロパティを持つことを示すインターフェース。</summary>
     public interface IMinLevelConfigParameter
     {
+        /// <summary>エラーとするレベルの最小値を表すConfigurationパラメータ。</summary>
         public int MinLevel { get; init; }
     }
 
-    /// <summary>ValidatorConfigurationの継承クラスがWordMapプロパティを持つことを示すインターフェース。</summary>
-    public interface IWordMapConfigParameter
+    /// <summary>MaxInterval</summary>
+    public interface IMaxIntervalConfigParameter
     {
-        /// <summary>何らかの単語のマッピング（辞書）を表すConfigurationパラメータ。</summary>
-        public Dictionary<string, string> WordMap { get; init; }
+        /// <summary>エラーとする間隔の最大値を表すConfigurationパラメータ。</summary>
+        public int MaxInterval { get; init; }
     }
 
-    /// <summary>ValidatorConfigurationの継承クラスがExpressionMapプロパティを持つことを示すインターフェース。</summary>
-    public interface IExpressionMapConfigParameter
+    /// <summary>MaxRatio</summary>
+    public interface IMaxRatioConfigParameter
     {
-        /// <summary>何らかの単語のマッピング（辞書）を表すConfigurationパラメータ。</summary>
-        public Dictionary<string, string> ExpressionMap { get; init; }
+        /// <summary>エラーとする割合の最大値を表すConfigurationパラメータ。</summary>
+        public double MaxRatio { get; init; }
     }
 
-    /// <summary>ValidatorConfigurationの継承クラスがGrammarRuleMapプロパティを持つことを示すインターフェース。</summary>
-    public interface IGrammarRuleMapConfigParameter
+    /// <summary>MinFreq</summary>
+    public interface IMinFreqConfigParameter
     {
-        public Dictionary<string, string> GrammarRuleMap { get; init; }
+        /// <summary>エラーとする発生回数の最小値を表すConfigurationパラメータ。</summary>
+        public int MinFreq { get; init; }
     }
 
-    /// <summary>ValidatorConfigurationの継承クラスがWordListプロパティを持つことを示すインターフェース。</summary>
-    public interface IWordListConfigParameter
+    /// <summary>MaxDistance</summary>
+    public interface IMaxDistanceConfigParameter
     {
-        /// <summary>何らかの単語リストを表すConfigurationパラメータ。</summary>
-        public List<string> WordList { get; init; }
+        /// <summary>エラーとする対象物の間隔の最大値を表すConfigurationパラメータ。</summary>
+        public int MaxDistance { get; init; }
     }
+
+    #endregion Max/Min系のプロパティ定義のためのInterface
+
+    #region Set/Map系のプロパティ定義のためのInterface
 
     /// <summary>ValidatorConfigurationの継承クラスがWordSetプロパティを持つことを示すインターフェース。</summary>
     public interface ICharSetConfigParameter
@@ -105,6 +106,38 @@ namespace RedPen.Net.Core.Config
         /// <summary>何らかの単語セットを表すConfigurationパラメータ。
         /// MEMO: 単語セットに単語が含まれるかどうか、を判定するValidationの場合に用いる。</summary>
         public HashSet<string> ExpressionSet { get; init; }
+    }
+
+    /// <summary>ValidatorConfigurationの継承クラスがWordMapプロパティを持つことを示すインターフェース。</summary>
+    public interface IWordMapConfigParameter
+    {
+        /// <summary>何らかの単語のマッピング（辞書）を表すConfigurationパラメータ。</summary>
+        public Dictionary<string, string> WordMap { get; init; }
+    }
+
+    /// <summary>ValidatorConfigurationの継承クラスがExpressionMapプロパティを持つことを示すインターフェース。</summary>
+    public interface IExpressionMapConfigParameter
+    {
+        /// <summary>何らかの単語のマッピング（辞書）を表すConfigurationパラメータ。</summary>
+        public Dictionary<string, string> ExpressionMap { get; init; }
+    }
+
+    /// <summary>ValidatorConfigurationの継承クラスがGrammarRuleMapプロパティを持つことを示すインターフェース。</summary>
+    public interface IGrammarRuleMapConfigParameter
+    {
+        /// <summary>GrammarRuleと対応する文字列のマッピングをあらわすConfigurationパラメータ。</summary>
+        public Dictionary<string, string> GrammarRuleMap { get; init; }
+    }
+
+    #endregion Set/Map系のプロパティ定義のためのInterface
+
+    #region その他のプロパティ定義のためのInterface
+
+    /// <summary>EnableDefaultDict</summary>
+    public interface IEnableDefaultDictConfigParameter
+    {
+        /// <summary>デフォルト辞書を使用するかどうかを表す。デフォルトではTrue。</summary>
+        public bool EnableDefaultDict { get; init; }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがJodoshiStyleプロパティを持つことを示すインターフェース。</summary>
@@ -147,42 +180,18 @@ namespace RedPen.Net.Core.Config
     /// <summary>ValidatorConfigurationの継承クラスがSkipAfterプロパティを持つことを示すインターフェース。</summary>
     public interface ISkipAfterConfigParameter
     {
+        /// <summary>指定された文字列に含まれる文字が、その後ろにスペースを取らなくても良い＝Skipできる文字であることを表すプロパティ</summary>
         public string SkipAfter { get; init; }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがSkipBeforeプロパティを持つことを示すインターフェース。</summary>
     public interface ISkipBeforeConfigParameter
     {
+        /// <summary>
+        /// 指定された文字列に含まれる文字が、その前にスペースを取らなくても良い＝Skipできる文字であることを表すプロパティ
+        /// </summary>
         public string SkipBefore { get; init; }
     }
 
-    public interface IMinIntervalConfigParameter
-    {
-        public int MinInterval { get; init; }
-    }
-
-    public interface IMaxIntervalConfigParameter
-    {
-        public int MaxInterval { get; init; }
-    }
-
-    public interface IMaxRatioConfigParameter
-    {
-        public double MaxRatio { get; init; }
-    }
-
-    public interface IMinFreqConfigParameter
-    {
-        public int MinFreq { get; init; }
-    }
-
-    public interface IEnableDefaultDictConfigParameter
-    {
-        public bool EnableDefaultDict { get; init; }
-    }
-
-    public interface IMaxDistanceConfigParameter
-    {
-        public int MaxDistance { get; init; }
-    }
+    #endregion その他のプロパティ定義のためのInterface
 }

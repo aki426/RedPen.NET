@@ -18,7 +18,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         public double MaxRatio { get; init; }
         public int MinFreq { get; init; }
         public HashSet<string> ExpressionSet { get; init; }
-        public bool EnableDefaultDict { get; init; }
+        public bool EnableDefaultDict { get; init; } = true;
 
         public KatakanaSpellCheckConfiguration(ValidationLevel level, double maxRatio, int minFreq, HashSet<string> expressionSet, bool enableDefaultDict) : base(level)
         {

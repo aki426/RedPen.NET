@@ -67,7 +67,8 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         }
 
         /// <summary>
-        /// 2文字を確認し、前の文字が標準ラテン文字ではなく、かつSkipBeforeに指定された文字ではなく、かつ左カッコ、右カッコ、カンマではなく、
+        /// 2文字を確認し、
+        /// 前の文字が標準ラテン文字ではなく、かつSkipAfterに指定された文字ではなく、かつ左カッコ、右カッコ、カンマではなく、
         /// かつ後の文字が標準ラテン文字であり、ユニコードレターである場合にtrueを返す関数。
         /// </summary>
         /// <param name="first">The prev character.</param>
@@ -85,8 +86,9 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         }
 
         /// <summary>
-        /// 2文字を確認し、前の文字が標準ラテン文字であり、ユニコードレターであり、
-        /// 後の文字が標準ラテン文字ではなく、かつSkipAfterに指定された文字ではなく、かつ左カッコ、右カッコ、カンマではない場合にtrueを返す関数。
+        /// 2文字を確認し、
+        /// 前の文字が標準ラテン文字であり、ユニコードレターであり、
+        /// 後の文字が標準ラテン文字ではなく、かつSkipBeforeに指定された文字ではなく、かつ左カッコ、右カッコ、カンマではない場合にtrueを返す関数。
         /// </summary>
         /// <param name="first">The prev character.</param>
         /// <param name="second">The next character.</param>

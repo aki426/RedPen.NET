@@ -73,6 +73,7 @@
     <Compile Include="Parser\PlainTextParserTests.cs" />
     <Compile Include="Parser\SentenceExtractorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RedPenTests.cs" />
     <Compile Include="RedPenUtilityTests.cs" />
     <Compile Include="Tokenizer\KuromojiTokenizerTests.cs" />
     <Compile Include="Tokenizer\TokenElementTests.cs" />

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
-using RedPen.Net.Core.Config;
+﻿using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators

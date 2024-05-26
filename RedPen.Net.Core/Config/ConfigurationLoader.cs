@@ -144,15 +144,26 @@ namespace RedPen.Net.Core.Config
 
                 // ValidatorConfiguration.csに定義されたどのInterface型を継承しているかによってプロパティを特定する。
                 // TODO: ValidatorConfiguration向けのプロパティ用Interfaceを追加した場合はここに書き出しロジックを追加する。
-                if (conf is IMaxLengthConfigParameter maxLengthConf)
-                {
-                    writer.WriteNumber("MaxLength", maxLengthConf.MaxLength);
-                }
 
-                if (conf is IWordMapConfigParameter wordMapConf)
+                #region Max/Min系のプロパティ
+
+                if (conf is IMaxLengthConfigParameter maxLengthConf) { writer.WriteNumber("MaxLength", maxLengthConf.MaxLength); }
+                if (conf is IMinLengthConfigParameter minLengthConf) { writer.WriteNumber("MinLength", minLengthConf.MinLength); }
+                if (conf is IMinCountConfigParameter minCountConf) { writer.WriteNumber("MinCount", minCountConf.MinCount); }
+                if (conf is IMinLevelConfigParameter minLevelConf) { writer.WriteNumber("MinLevel", minLevelConf.MinLevel); }
+                if (conf is IMaxIntervalConfigParameter maxIntervalConf) { writer.WriteNumber("MaxInterval", maxIntervalConf.MaxInterval); }
+                if (conf is IMaxRatioConfigParameter maxRatioConf) { writer.WriteNumber("MaxRatio", maxRatioConf.MaxRatio); }
+                if (conf is IMinFreqConfigParameter minFreqConf) { writer.WriteNumber("MinFreq", minFreqConf.MinFreq); }
+                if (conf is IMaxDistanceConfigParameter maxDistanceConf) { writer.WriteNumber("MaxDistance", maxDistanceConf.MaxDistance); }
+
+                #endregion Max/Min系のプロパティ
+
+                #region Set/Map系のプロパティ
+
+                if (conf is ICharSetConfigParameter charSetConf)
                 {
-                    writer.WritePropertyName("WordMap");
-                    JsonSerializer.Serialize(writer, wordMapConf.WordMap, wordMapConf.WordMap.GetType(), options);
+                    writer.WritePropertyName("CharSet");
+                    JsonSerializer.Serialize(writer, charSetConf.CharSet, charSetConf.CharSet.GetType(), options);
                 }
 
                 if (conf is IWordSetConfigParameter wordSetConf)
@@ -161,10 +172,42 @@ namespace RedPen.Net.Core.Config
                     JsonSerializer.Serialize(writer, wordSetConf.WordSet, wordSetConf.WordSet.GetType(), options);
                 }
 
-                if (conf is IMinCountConfigParameter minCountConf)
+                if (conf is IExpressionSetConfigParameter expressionSetConf)
                 {
-                    writer.WriteNumber("MinCount", minCountConf.MinCount);
+                    writer.WritePropertyName("ExpressionSet");
+                    JsonSerializer.Serialize(writer, expressionSetConf.ExpressionSet, expressionSetConf.ExpressionSet.GetType(), options);
                 }
+
+                if (conf is IWordMapConfigParameter wordMapConf)
+                {
+                    writer.WritePropertyName("WordMap");
+                    JsonSerializer.Serialize(writer, wordMapConf.WordMap, wordMapConf.WordMap.GetType(), options);
+                }
+
+                if (conf is IExpressionMapConfigParameter expressionMapConf)
+                {
+                    writer.WritePropertyName("ExpressionMap");
+                    JsonSerializer.Serialize(writer, expressionMapConf.ExpressionMap, expressionMapConf.ExpressionMap.GetType(), options);
+                }
+
+                if (conf is IGrammarRuleMapConfigParameter grammarRuleMapConf)
+                {
+                    writer.WritePropertyName("GrammarMap");
+                    JsonSerializer.Serialize(writer, grammarRuleMapConf.GrammarRuleMap, grammarRuleMapConf.GrammarRuleMap.GetType(), options);
+                }
+
+                #endregion Set/Map系のプロパティ
+
+                #region その他のプロパティ
+
+                if (conf is IEnableDefaultDictConfigParameter enableDefaultDictConf) { writer.WriteBoolean("EnableDefaultDict", enableDefaultDictConf.EnableDefaultDict); }
+                if (conf is IJodoshiStyleConfigParameter jodoshiStyleConf) { writer.WriteString("JodoshiStyle", jodoshiStyleConf.JodoshiStyle.ToString()); }
+                if (conf is INumberStyleConfigParameter numberStyleConf) { writer.WriteString("NumberStyle", numberStyleConf.NumberStyle.ToString()); }
+                if (conf is IForbiddenConfigParameter forbiddenConf) { writer.WriteBoolean("Forbidden", forbiddenConf.Forbidden); }
+                if (conf is ISkipAfterConfigParameter skipAfterConf) { writer.WriteString("SkipAfter", skipAfterConf.SkipAfter); }
+                if (conf is ISkipBeforeConfigParameter skipBeforeConf) { writer.WriteString("SkipBefore", skipBeforeConf.SkipBefore); }
+
+                #endregion その他のプロパティ
 
                 writer.WriteEndObject();
             }
