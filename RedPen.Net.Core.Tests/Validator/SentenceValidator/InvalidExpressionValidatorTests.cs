@@ -12,11 +12,11 @@ using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 {
-    public class InvalidExpressionValidatorTest
+    public class InvalidExpressionValidatorTests
     {
         private readonly ITestOutputHelper output;
 
-        public InvalidExpressionValidatorTest(ITestOutputHelper output)
+        public InvalidExpressionValidatorTests(ITestOutputHelper output)
         {
             this.output = output;
         }
