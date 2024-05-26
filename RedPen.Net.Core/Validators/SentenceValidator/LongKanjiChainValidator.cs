@@ -80,7 +80,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         sentence,
                         sentence.ConvertToLineOffset(match.Index),
                         sentence.ConvertToLineOffset(match.Index + match.Length - 1),
-                        MessageArgs: new object[] { word, word.Length }));
+                        MessageArgs: new object[] { word, word.Length, Config.MinLength }));
                 }
             }
 

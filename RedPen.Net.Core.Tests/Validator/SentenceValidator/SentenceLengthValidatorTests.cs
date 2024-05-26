@@ -83,7 +83,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("ja-JP"))
-                    .Should().Be("文の長さ（84）が最大値（30）を超えています。");
+                    .Should().Be("文の長さ（84文字）が規定値（30文字）以上でした。");
         }
 
         /// <summary>

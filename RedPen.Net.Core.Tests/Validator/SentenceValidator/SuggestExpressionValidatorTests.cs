@@ -78,7 +78,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             output.WriteLine(manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")));
 
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
-                .Be("不正な単語 \"like\" が見つかりました。代替表現 \"such as\" を使用してください。");
+                .Be("不正な表現 \"like\" が見つかりました。代替表現 \"such as\" の使用を検討してください。");
         }
 
         /// <summary>英語文のテスト。</summary>
@@ -156,7 +156,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             // 7. エラーメッセージを生成する。
             var manager = ErrorMessageManager.GetInstance();
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
-                .Be("不正な単語 \"おはよう\" が見つかりました。代替表現 \"おはようございます\" を使用してください。");
+                .Be("不正な表現 \"おはよう\" が見つかりました。代替表現 \"おはようございます\" の使用を検討してください。");
 
             // MEMO: 誤表現が正表現の一部である場合、正表現が使用されている場合は誤表現を検出しない。
             // MEMO: ただし、誤表現のスキップは1組の正誤の中でだけの話で、他の正誤の組み合わせに対して検出キャンセルはしない。
@@ -166,7 +166,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             // 「おはよう」は「おはようございます」の一部であるため、エラーとして検出されない。
             // 一方、「おはおは」は「おはようございます」の一部ではあるが、それは「おはおは」に対する正表現ではないため、エラーとして検出される。
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
-                .Be("不正な単語 \"おはおは\" が見つかりました。代替表現 \"朝の挨拶\" を使用してください。");
+                .Be("不正な表現 \"おはおは\" が見つかりました。代替表現 \"朝の挨拶\" の使用を検討してください。");
 
             suggestExpressionConfiguration = new SuggestExpressionConfiguration(
                 ValidationLevel.ERROR,
@@ -185,7 +185,7 @@ namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
             errors = validator.Validate(new Sentence("おはおは日本。", 1));
             errors.Count.Should().Be(1);
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
-                .Be("不正な単語 \"おはおは\" が見つかりました。代替表現 \"おはようございます\" を使用してください。");
+                .Be("不正な表現 \"おはおは\" が見つかりました。代替表現 \"おはようございます\" の使用を検討してください。");
 
             // MEMO: 一方、正表現が誤表現の一部をマスクするような関係の場合、期待する誤表現が検出されなくなってしまう。
             errors = validator.Validate(new Sentence("おはおはようございます日本。", 1));

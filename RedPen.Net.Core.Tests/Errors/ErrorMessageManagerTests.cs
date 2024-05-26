@@ -17,7 +17,7 @@ namespace RedPen.Net.Core.Tests.Errors
                 ValidationType.SentenceLength, "",
                 CultureInfo.GetCultureInfo("ja-JP"),
                 new object[] { 30, 20 })
-                    .Should().Be("文の長さ（30）が最大値（20）を超えています。");
+                    .Should().Be("文の長さ（30文字）が規定値（20文字）以上でした。");
 
             manager.GetErrorMessage(
                 ValidationType.SpaceWithAlphabeticalExpression, "After",
