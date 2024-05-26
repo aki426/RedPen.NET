@@ -112,10 +112,10 @@
   <data name="JapaneseWordVariation_Normal" xml:space="preserve">
     <value>Found possible Japanese word "{0}" is variations of "{1}" at {2}</value>
   </data>
-  <data name="SectionLength" xml:space="preserve">
-    <value>The number of characters in the section ({0}) exceeds the maximum of {1}.</value>
+  <data name="" xml:space="preserve">
+    <value></value>
   </data>
-  <data name="ParagraphNumber" xml:space="preserve">
+  <data name="ParagraphCount" xml:space="preserve">
     <value>The number of paragraphs ({0}) exceeds the maximum of {1}.</value>
   </data>
   <data name="ParagraphStartWith" xml:space="preserve">
@@ -297,5 +297,14 @@
   </data>
   <data name="InvalidParenthesis_MismatchedParentheses" xml:space="preserve">
     <value>Found an invalid mismatched parentheses "{0}".</value>
+  </data>
+  <data name="SectionWordCount" xml:space="preserve">
+    <value>The number of characters in the section ({0}) exceeds the maximum of {1}.</value>
+  </data>
+  <data name="SentenceWordCount" xml:space="preserve">
+    <value>The number of words ({0}) exceeds the maximum of {1}.</value>
+  </data>
+  <data name="SuggestGrammarRule" xml:space="preserve">
+    <value>Found expression "{0}" that is matched by grammar rule "{1}". Use the synonym "{2}" instead.</value>
   </data>
 </root>

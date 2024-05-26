@@ -136,10 +136,10 @@
     <value>二重否定表現 "{0}" が見つかりました。</value>
   </data>
   <data name="DuplicatedSection" xml:space="preserve">
-    <value>類似する節（ {0} 行目から開始）が見つかりました。</value>
+    <value>セクション（{0}行目から開始）に対して類似する節（{1}行目から開始）が見つかりました。</value>
   </data>
   <data name="EmptySection" xml:space="preserve">
-    <value>中身の存在しない節 "{0}" が見つかりました。</value>
+    <value>中身の存在しないセクション "{0}" が見つかりました。</value>
   </data>
   <data name="EndOfSentence" xml:space="preserve">
     <value>不正な文末表現 "{0}" が見つかりました。</value>
@@ -148,13 +148,13 @@
     <value>"{0}" から始まる文が全体の {1}% 存在しています。</value>
   </data>
   <data name="GappedSection" xml:space="preserve">
-    <value>節 "{0}" （レベル {1}）の配置が不正です。レベル {2} へ再配置してください。</value>
+    <value>セクション "{0}" （レベル {1}）の配置が不正です。レベル {2} へ再配置してください。</value>
   </data>
   <data name="HankakuKana" xml:space="preserve">
     <value>半角カナ文字 "{0}" が見つかりました。</value>
   </data>
   <data name="HeaderLength" xml:space="preserve">
-    <value>見出しの長さ（{0}）が最大値（{1}）を超えています。</value>
+    <value>見出しの長さ（{0}）が規定値（{1}）以上でした。</value>
   </data>
   <data name="Hyphenation_HyphenatedInDictionary" xml:space="preserve">
     <value>"{0}" はハイフンを用いた表現 "{1}" を使用してください。</value>
@@ -187,7 +187,7 @@
     <value>不正な計数表現 "{0}" が見つかりました。</value>
   </data>
   <data name="JapaneseStyle" xml:space="preserve">
-    <value>不正なスタイル "{0}" が見つかりました。</value>
+    <value>不正な文体の使用 "{0}" が見つかりました。文体を常体 or 敬体で統一してください。</value>
   </data>
   <data name="KatakanaEndHyphen" xml:space="preserve">
     <value>不正なハイフンを含むカタカナ単語 "{0}" が見つかりました。</value>
@@ -196,10 +196,10 @@
     <value>カタカナ単語 "{0}" は "{1}"（出現位置：{2}）の揺らぎ表現と考えられます。</value>
   </data>
   <data name="ListLevel" xml:space="preserve">
-    <value>リストのレベルが深すぎます。</value>
+    <value>リストのレベル（{0}）が規定値（{1}）以上でした。</value>
   </data>
   <data name="LongKanjiChain" xml:space="preserve">
-    <value>長すぎる熟語 "{0}"（{1} 文字） が見つかりました。</value>
+    <value>熟語 "{0}" の文字数（{1} 文字）が規定値（{2}文字）以上でした。</value>
   </data>
   <data name="NumberFormat_TooManyDecimals" xml:space="preserve">
     <value>数値表現 "{0}" の小数点記号が多すぎます。</value>
@@ -213,20 +213,20 @@
   <data name="Okurigana" xml:space="preserve">
     <value>不正な送り仮名 "{0}" が見つかりました。</value>
   </data>
-  <data name="ParagraphNumber" xml:space="preserve">
-    <value>セクション内のパラグラフ数（{0}）が最大値（{1}）を超えています。</value>
+  <data name="ParagraphCount" xml:space="preserve">
+    <value>セクション内のパラグラフ数（{0}）が規定値（{1}）以上でした。</value>
   </data>
   <data name="ParagraphStartWith" xml:space="preserve">
     <value>不正なパラグラフ開始部分 "{0}" が見つかりました。</value>
   </data>
   <data name="InvalidParenthesis_NestingLevelTooDeep" xml:space="preserve">
-    <value>括弧のネストレベル（{0}）が最大値（{1}）を超えています。</value>
+    <value>括弧のネストレベル（{0}）が規定値（{1}）以上でした。</value>
   </data>
   <data name="InvalidParenthesis_SubsentenceTooFrequent" xml:space="preserve">
-    <value>1文中の括弧の数（{0}）が最大値（{1}）を超えています。</value>
+    <value>1文中の括弧の数（{0}）が規定値（{1}）以上でした。</value>
   </data>
   <data name="InvalidParenthesis_SubsentenceTooLong" xml:space="preserve">
-    <value>括弧内の文の長さ（{0}文字）が最大値（{1}文字）を超えています。</value>
+    <value>括弧内の文の長さ（{0}文字）が規定値（{1}文字）以上でした。</value>
   </data>
   <data name="Quotation_DoubleLeft" xml:space="preserve">
     <value>左クォートが連続して使われています。</value>
@@ -249,14 +249,11 @@
   <data name="RedundantExpression" xml:space="preserve">
     <value>"{0}" は冗長な表現です。</value>
   </data>
-  <data name="SectionLength" xml:space="preserve">
-    <value>セクション内の文字数（{0}）が最大値（{1}）を超えています。</value>
-  </data>
   <data name="SectionLevel" xml:space="preserve">
-    <value>節 "{0}" のレベルが深すぎます。</value>
+    <value>節 "{0}" のレベルが規定値（{1}）以上でした。</value>
   </data>
   <data name="SentenceLength" xml:space="preserve">
-    <value>文の長さ（{0}）が最大値（{1}）を超えています。</value>
+    <value>文の長さ（{0}文字）が規定値（{1}文字）以上でした。</value>
   </data>
   <data name="SpaceBeginningOfSentence" xml:space="preserve">
     <value>文頭にスペースがありません。</value>
@@ -277,13 +274,13 @@
     <value>小文字 "{0}" で開始している文が見つかりました。</value>
   </data>
   <data name="SuccessiveSentence" xml:space="preserve">
-    <value>類似する文 "{0}"、"{1}" が連続して使用されています。</value>
+    <value>類似している文 "{0}"、"{1}" が連続して使用されています。</value>
   </data>
   <data name="SuccessiveWord" xml:space="preserve">
     <value>連続して使われている単語 "{0}" が見つかりました。</value>
   </data>
   <data name="SuggestExpression" xml:space="preserve">
-    <value>不正な単語 "{0}" が見つかりました。代替表現 "{1}" を使用してください。</value>
+    <value>不正な表現 "{0}" が見つかりました。代替表現 "{1}" の使用を検討してください。</value>
   </data>
   <data name="SymbolWithSpace_After" xml:space="preserve">
     <value>シンボル "{0}" の後にスペースが必要です 。</value>
@@ -295,10 +292,10 @@
     <value>シンボル "{0}" の前後にスペースが必要です。</value>
   </data>
   <data name="UnexpandedAcronym_UnexpandedAcronym" xml:space="preserve">
-    <value>省略語 "{0}" の正式な表現が文書中に見つかりませんでした。</value>
+    <value>省略語 "{0}" の正式な表現がドキュメント中に見つかりませんでした。</value>
   </data>
   <data name="VoidSection" xml:space="preserve">
-    <value>節の中身が空です。</value>
+    <value>セクションの中身が空です。</value>
   </data>
   <data name="WeakExpression_WeakExpression" xml:space="preserve">
     <value>"{0}" は弱い表現です。</value>
@@ -310,12 +307,21 @@
     <value>一文中の単語数（{0}）が最大値（{1}）を超えています。</value>
   </data>
   <data name="JapaneseWordVariation_SameCount" xml:space="preserve">
-    <value>"{0}" と "{1}"（出現位置：{2}）は同じ回数出現しているため、どちらかが揺らぎ表現と考えられます。</value>
+    <value>"{0}" と "{1}"（出現位置：{2}）が同じ回数使用されています。どちらかが揺らぎ表現と考えられます。</value>
   </data>
   <data name="Taigendome" xml:space="preserve">
     <value>体言止め "{0}" が見つかりました。</value>
   </data>
   <data name="InvalidParenthesis_MismatchedParentheses" xml:space="preserve">
-    <value>左右の括弧の対応が取れていない不正な括弧 "{0}" が見つかりました。</value>
+    <value>不正な括弧 "{0}" が見つかりました。開き括弧と閉じ括弧の種類と数が一致するように修正してください。</value>
+  </data>
+  <data name="SectionWordCount" xml:space="preserve">
+    <value>セクション内の単語数（{0}）が規定値（{1}）以上でした。</value>
+  </data>
+  <data name="SentenceWordCount" xml:space="preserve">
+    <value>センテンス内の単語数（{0}）が規定値（{1}）以上でした。</value>
+  </data>
+  <data name="SuggestGrammarRule" xml:space="preserve">
+    <value>表現 "{0}" が文法ルール "{1}" に一致しました。代替表現 "{2}" の使用を検討してください。</value>
   </data>
 </root>

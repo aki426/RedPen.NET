@@ -61,6 +61,15 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
+        ///    に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string _ {
+            get {
+                return ResourceManager.GetString("", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   The number of commas ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string CommaCount {
@@ -396,9 +405,9 @@ namespace RedPen.Net.Core {
         /// <summary>
         ///   The number of paragraphs ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string ParagraphNumber {
+        public static string ParagraphCount {
             get {
-                return ResourceManager.GetString("ParagraphNumber", resourceCulture);
+                return ResourceManager.GetString("ParagraphCount", resourceCulture);
             }
         }
         
@@ -475,15 +484,6 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The number of characters in the section ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string SectionLength {
-            get {
-                return ResourceManager.GetString("SectionLength", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   The section &quot;{0}&quot; is too deep. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SectionLevel {
@@ -493,11 +493,29 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
+        ///   The number of characters in the section ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SectionWordCount {
+            get {
+                return ResourceManager.GetString("SectionWordCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   The length of the sentence ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SentenceLength {
             get {
                 return ResourceManager.GetString("SentenceLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The number of words ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SentenceWordCount {
+            get {
+                return ResourceManager.GetString("SentenceWordCount", resourceCulture);
             }
         }
         
@@ -579,6 +597,15 @@ namespace RedPen.Net.Core {
         public static string SuggestExpression {
             get {
                 return ResourceManager.GetString("SuggestExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found expression &quot;{0}&quot; that is matched by grammar rule &quot;{1}&quot;. Use the synonym &quot;{2}&quot; instead. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string SuggestGrammarRule {
+            get {
+                return ResourceManager.GetString("SuggestGrammarRule", resourceCulture);
             }
         }
         
