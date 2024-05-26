@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Validators.SentenceValidator
 {
@@ -28,9 +31,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <summary>ValidatorConfiguration</summary>
         public SuggestGrammarRuleConfiguration Config { get; init; }
 
-        // TODO: サポート対象言語がANYではない場合overrideで再定義する。
-        /// <summary></summary>
-        public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
+        public ImmutableList<(GrammarRule rule, string suggest)> GrammarRules { get; init; }
 
         // TODO: コンストラクタの引数定義は共通にすること。
         /// <summary>
@@ -40,15 +41,23 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
         /// <param name="symbolTable">The symbol table.</param>
         /// <param name="config">The config.</param>
         public SuggestGrammarRuleValidator(
-            CultureInfo documentLangForTest,
-            SymbolTable symbolTable,
-            SuggestGrammarRuleConfiguration config) :
-            base(
-                config.Level,
-                documentLangForTest,
-                symbolTable)
+                CultureInfo documentLangForTest,
+                SymbolTable symbolTable,
+                SuggestGrammarRuleConfiguration config) :
+                base(
+                    config.Level,
+                    documentLangForTest,
+                    symbolTable)
         {
             this.Config = config;
+
+            // GrammarRuleと、検出された場合のメッセージを紐づける。
+            List<(GrammarRule rule, string suggest)> temp = new List<(GrammarRule rule, string suggest)>();
+            foreach (KeyValuePair<string, string> pair in config.GrammarRuleMap)
+            {
+                temp.Add((GrammarRuleExtractor.Run(pair.Key), pair.Value));
+            }
+            this.GrammarRules = temp.ToImmutableList();
         }
 
         /// <summary>
@@ -61,13 +70,27 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             List<ValidationError> result = new List<ValidationError>();
 
             // validation
+            foreach ((GrammarRule rule, string suggest) in this.GrammarRules)
+            {
+                List<ImmutableList<TokenElement>> list = rule.MatchExtend(sentence.Tokens);
 
-            // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            result.Add(new ValidationError(
-                ValidationType.SuggestGrammarRule,
-                this.Level,
-                sentence,
-                MessageArgs: new object[] { }));
+                if (list.Any())
+                {
+                    foreach (ImmutableList<TokenElement> matchedTokens in list)
+                    {
+                        // 文法ルールにマッチした場合、マッチした文字列、文法ルール、提案の3つをメッセージとして出力する。
+                        var surface = string.Join("", matchedTokens.Select(t => t.Surface));
+
+                        result.Add(new ValidationError(
+                            ValidationType.SuggestGrammarRule,
+                            this.Level,
+                            sentence,
+                            matchedTokens.First().OffsetMap[0],
+                            matchedTokens.Last().OffsetMap[^1],
+                            MessageArgs: new object[] { surface, rule.ToString(), suggest }));
+                    }
+                }
+            }
 
             return result;
         }

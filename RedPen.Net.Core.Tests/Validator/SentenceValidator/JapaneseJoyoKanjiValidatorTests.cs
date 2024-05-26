@@ -9,7 +9,6 @@ using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Validators.SentenceValidator;
 using Xunit;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace RedPen.Net.Core.Tests.Validator.SentenceValidator
 {
