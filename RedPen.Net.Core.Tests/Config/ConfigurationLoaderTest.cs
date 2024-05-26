@@ -26,13 +26,13 @@ namespace RedPen.Net.Core.Tests.Config
             ""MinLength"": 120
         },
         {
-            ""Name"": ""JapaneseExpressionVariation"",
+            ""Name"": ""JapaneseWordVariation"",
             ""Level"" : ""INFO"",
             ""WordMap"": {
                 ""node"": ""ノード"",
                 ""edge"": ""エッジ"",
                 ""graph"": ""グラフ"",
-                ""vertex"": ""頂点""
+                ""vertex"": ""バーテックス""
             }
         }
     ],
@@ -66,8 +66,8 @@ namespace RedPen.Net.Core.Tests.Config
             sentenceLengthConfig.Level.Should().Be(ValidationLevel.ERROR);
             sentenceLengthConfig.MinLength.Should().Be(120);
 
-            configuration.ValidatorConfigurations[1].Should().BeOfType<JapaneseExpressionVariationConfiguration>();
-            var japaneseExpressionVariationConfig = configuration.ValidatorConfigurations[1] as JapaneseExpressionVariationConfiguration;
+            configuration.ValidatorConfigurations[1].Should().BeOfType<JapaneseWordVariationConfiguration>();
+            var japaneseExpressionVariationConfig = configuration.ValidatorConfigurations[1] as JapaneseWordVariationConfiguration;
             japaneseExpressionVariationConfig.Level.Should().Be(ValidationLevel.INFO);
             japaneseExpressionVariationConfig.WordMap.Count.Should().Be(4);
             japaneseExpressionVariationConfig.WordMap["node"].Should().Be("ノード");

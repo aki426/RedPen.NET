@@ -43,7 +43,7 @@ namespace RedPen.Net.Core.Config
         JapaneseAmbiguousNounConjunction,
         JapaneseAnchorExpression,
         JapaneseBrokenExpression,
-        JapaneseExpressionVariation,
+        JapaneseWordVariation,
         JapaneseJoyoKanji,
         JapaneseNumberExpression,
         JapaneseStyle,

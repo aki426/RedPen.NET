@@ -11,24 +11,24 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
     // MEMO: Configurationの定義は短いのでValidatorファイル内に併記する。
 
     /// <summary>JapaneseExpressionVariationのConfiguration</summary>
-    public record JapaneseExpressionVariationConfiguration : ValidatorConfiguration, IWordMapConfigParameter
+    public record JapaneseWordVariationConfiguration : ValidatorConfiguration, IWordMapConfigParameter
     {
         public Dictionary<string, string> WordMap { get; init; }
 
-        public JapaneseExpressionVariationConfiguration(ValidationLevel level, Dictionary<string, string> wordMap) : base(level)
+        public JapaneseWordVariationConfiguration(ValidationLevel level, Dictionary<string, string> wordMap) : base(level)
         {
             WordMap = wordMap;
         }
     }
 
     /// <summary>日本語の表記ゆれを検出するValidator。</summary>
-    public class JapaneseExpressionVariationValidator : Validator, IDocumentValidatable
+    public class JapaneseWordVariationValidator : Validator, IDocumentValidatable
     {
         /// <summary>Nlog</summary>
         private static Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>ValidationConfiguration</summary>
-        public JapaneseExpressionVariationConfiguration Config { get; init; }
+        public JapaneseWordVariationConfiguration Config { get; init; }
 
         // MEMO: 一旦、複数Documentをまたいだゆらぎ表現検出は対応しないものとする。
         // 1Documentにつき1Validationを原則とする。
@@ -46,12 +46,12 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         // ValidatorはJapaneseExpressionVariationConfigurationの設定情報のみを用いて処理を行う。
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JapaneseExpressionVariationValidator"/> class.
+        /// Initializes a new instance of the <see cref="JapaneseWordVariationValidator"/> class.
         /// </summary>
-        public JapaneseExpressionVariationValidator(
+        public JapaneseWordVariationValidator(
             CultureInfo documentLangForTest,
             SymbolTable symbolTable,
-            JapaneseExpressionVariationConfiguration config) :
+            JapaneseWordVariationConfiguration config) :
             base(
                 config.Level,
                 documentLangForTest,
@@ -148,15 +148,15 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         /// <returns>小文字化またはWordMapから取得されたReadingか元々のTokenのReadingまたはSurface</returns>
         private string GetPlainReading(TokenElement token)
         {
-            string surface = token.Surface.ToLower(); // MEMO: ToLower()の時点でsurfaceは英語表現だと期待されている？
+            // MEMO: 英語表現はToLower()で大文字小文字を無視する。
+            string surface = token.Surface.ToLower();
 
-            // MEMO: むしろゆらぎ表現マップは英語表現の日本語読み辞書として機能している？
-
-            // ゆらぎ表現マップに「誤」として存在するかチェック。
+            // MEMO: むしろゆらぎ表現マップは読みを登録した辞書として機能する。
+            // PlainReadingの代わりに登録された読みがあればそれを返す。
             return spellingVariationMap.ContainsKey(surface) ?
                 spellingVariationMap[surface] :
                 // surfaceが辞書に存在しない場合は、TokenElementからreadingまたはsurfaceを返す。
-                (token.Reading == null ? surface : token.Reading);
+                (token.Reading == null || token.Reading == "" ? surface : token.Reading);
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     {
                         // 出現数が同数の場合、どちらかがゆらぎでどちらかが正の可能性。=> key: SameCount
                         errors.Add(new ValidationError(
-                            ValidationType.JapaneseExpressionVariation,
+                            ValidationType.JapaneseWordVariation,
                             this.Level,
                             sentence,
                             targetToken.OffsetMap[0],
@@ -262,7 +262,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     {
                         // 相手の方が多い場合、targetTokenがゆらぎで相手が正と推測。=> key: Normal
                         errors.Add(new ValidationError(
-                            ValidationType.JapaneseExpressionVariation,
+                            ValidationType.JapaneseWordVariation,
                             this.Level,
                             sentence,
                             targetToken.OffsetMap[0],

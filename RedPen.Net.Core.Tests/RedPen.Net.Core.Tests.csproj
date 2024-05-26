@@ -83,7 +83,7 @@
     <Compile Include="Utility\ExpressionRuleExtractorTests.cs" />
     <Compile Include="Utility\LevenshteinDistanceUtilityTests.cs" />
     <Compile Include="Utility\UnicodeUtilityTests.cs" />
-    <Compile Include="Validator\DocumentValidator\JapaneseExpressionVariationValidatorTest.cs" />
+    <Compile Include="Validator\DocumentValidator\JapaneseWordVariationValidatorTest.cs" />
     <Compile Include="Validator\DocumentValidator\SuccessiveSentenceValidatorTests.cs" />
     <Compile Include="Validator\ExpressionRuleTests.cs" />
     <Compile Include="Validator\SentenceValidator\CommaCountValidatorTests.cs" />

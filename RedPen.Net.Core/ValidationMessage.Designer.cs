@@ -277,24 +277,6 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found possible Japanese word &quot;{0}&quot; is variations of &quot;{1}&quot; at {2} に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string JapaneseExpressionVariation_Normal {
-            get {
-                return ResourceManager.GetString("JapaneseExpressionVariation_Normal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Found possible Japanese word variations &quot;{0}&quot;, &quot;{1}&quot; at {2} に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string JapaneseExpressionVariation_SameCount {
-            get {
-                return ResourceManager.GetString("JapaneseExpressionVariation_SameCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Found non-joyo kanji: &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string JapaneseJoyoKanji {
@@ -318,6 +300,24 @@ namespace RedPen.Net.Core {
         public static string JapaneseStyle {
             get {
                 return ResourceManager.GetString("JapaneseStyle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found possible Japanese word &quot;{0}&quot; is variations of &quot;{1}&quot; at {2} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string JapaneseWordVariation_Normal {
+            get {
+                return ResourceManager.GetString("JapaneseWordVariation_Normal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Found possible Japanese word variations &quot;{0}&quot;, &quot;{1}&quot; at {2} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string JapaneseWordVariation_SameCount {
+            get {
+                return ResourceManager.GetString("JapaneseWordVariation_SameCount", resourceCulture);
             }
         }
         

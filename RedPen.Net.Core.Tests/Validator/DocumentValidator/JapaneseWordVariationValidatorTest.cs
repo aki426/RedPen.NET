@@ -19,21 +19,21 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
     /// <summary>
     /// The japanese expression variation validator test.
     /// </summary>
-    public class JapaneseExpressionVariationValidatorTest
+    public class JapaneseWordVariationValidatorTest
     {
         private readonly ITestOutputHelper output;
 
         private CultureInfo documentLang = CultureInfo.GetCultureInfo("ja-JP");
 
-        private JapaneseExpressionVariationConfiguration validatorConfiguration;
+        private JapaneseWordVariationConfiguration validatorConfiguration;
 
-        private JapaneseExpressionVariationValidator validator;
+        private JapaneseWordVariationValidator validator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JapaneseExpressionVariationValidatorTest"/> class.
+        /// Initializes a new instance of the <see cref="JapaneseWordVariationValidatorTest"/> class.
         /// </summary>
         /// <param name="output">The output.</param>
-        public JapaneseExpressionVariationValidatorTest(ITestOutputHelper output)
+        public JapaneseWordVariationValidatorTest(ITestOutputHelper output)
         {
             this.output = output;
 
@@ -60,13 +60,13 @@ namespace RedPen.Net.Core.Tests.Validator.DocumentValidator
 
             // ValidatorConfigurationの生成。
             validatorConfiguration =
-                new JapaneseExpressionVariationConfiguration(ValidationLevel.ERROR, expressionVariationMap);
+                new JapaneseWordVariationConfiguration(ValidationLevel.ERROR, expressionVariationMap);
 
             // カスタムシンボルを使わない場合は空リストを渡す。デフォルトシンボルはnew時に自動的にSymbolTableにロードされる。
             SymbolTable symbolTable = new SymbolTable(documentLang, "", new List<Symbol>());
 
             // Validatorの生成。
-            validator = new JapaneseExpressionVariationValidator(
+            validator = new JapaneseWordVariationValidator(
                 documentLang,
                 symbolTable,
                 validatorConfiguration);

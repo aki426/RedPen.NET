@@ -109,7 +109,7 @@
   <data name="GappedSection" xml:space="preserve">
     <value>The section "{0}" (level {1}) is misplaced. It should have level of {2}.</value>
   </data>
-  <data name="JapaneseExpressionVariation_Normal" xml:space="preserve">
+  <data name="JapaneseWordVariation_Normal" xml:space="preserve">
     <value>Found possible Japanese word "{0}" is variations of "{1}" at {2}</value>
   </data>
   <data name="SectionLength" xml:space="preserve">
@@ -289,7 +289,7 @@
   <data name="SuccessiveSentence" xml:space="preserve">
     <value>Found similar two sentences in succession: "{0}" and "{1}"</value>
   </data>
-  <data name="JapaneseExpressionVariation_SameCount" xml:space="preserve">
+  <data name="JapaneseWordVariation_SameCount" xml:space="preserve">
     <value>Found possible Japanese word variations "{0}", "{1}" at {2}</value>
   </data>
   <data name="Taigendome" xml:space="preserve">

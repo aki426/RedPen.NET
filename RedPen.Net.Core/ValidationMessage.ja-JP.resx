@@ -177,7 +177,7 @@
   <data name="JapaneseBrokenExpression" xml:space="preserve">
     <value>ら抜き言葉 "{0}" が見つかりました。</value>
   </data>
-  <data name="JapaneseExpressionVariation_Normal" xml:space="preserve">
+  <data name="JapaneseWordVariation_Normal" xml:space="preserve">
     <value>"{0}" は "{1}"（出現位置：{2}）の揺らぎ表現と考えられます。</value>
   </data>
   <data name="JapaneseJoyoKanji" xml:space="preserve">
@@ -309,7 +309,7 @@
   <data name="WordNumber" xml:space="preserve">
     <value>一文中の単語数（{0}）が最大値（{1}）を超えています。</value>
   </data>
-  <data name="JapaneseExpressionVariation_SameCount" xml:space="preserve">
+  <data name="JapaneseWordVariation_SameCount" xml:space="preserve">
     <value>"{0}" と "{1}"（出現位置：{2}）は同じ回数出現しているため、どちらかが揺らぎ表現と考えられます。</value>
   </data>
   <data name="Taigendome" xml:space="preserve">
