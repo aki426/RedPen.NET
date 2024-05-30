@@ -12,10 +12,12 @@
   * 他のC#アプリケーションのバックエンドとして運用したいため、本家のredpen-coreプロジェクトの実装を優先。
   * です・ます調とだ・である調の統一など実際の文章校正ニーズに対応するため、既存Validatorの機能改善を優先。
   * 体言止めの検出など実際の文章校正ニーズに対応するため、Validatorの新規追加を優先。
-  * 設定ファイルをJsonフォーマット化し、OFFオプションを用意するなど実際の運用時に修正が少なく済むことを優先。
+  * 設定ファイルをJsonフォーマット化し、OFFオプションを用意、コメントを許容するなど実際の運用時の効率を優先。
+  * [textlint](https://github.com/textlint/textlint)の日本語Validation機能を積極的に取り込むことを優先。
+  * 豊富なテストケースにより各Validatorの挙動検証を重視。
 * 劣後事項（もしくは、構想）
   * MarkdownやAsciidocなど多種多様なフォーマットのParser（C# Parserライブラリの利用を構想中……）。
-  * 本家のredpen-cliやredpen-serverなど単体動作のためのインターフェースに相当するプロジェクトの再実装。
+  * 本家のredpen-cliやredpen-serverなど単体動作のためのインターフェースに相当するプロジェクトの再実装（Blazorによるサーバサイド実装を構想中……）。
   * 英語など日本語以外の言語のみに対応するValidatorの再実装。
   * Javascriptで記述されたValidatorのアドオン機能（対応しない可能性大）。
 
@@ -25,9 +27,10 @@
 
 * RedPen.NET.Core
   * 本家[RedPen](https://github.com/redpen-cc/redpen)の[redpen-core](https://github.com/redpen-cc/redpen/tree/master/redpen-core)ライブラリに相当します。
-  * .NET Standard 2.0、C# 10を採用しています。これは.Net Frameworkアプリケーションからの利用を想定しているためです。
-  * Immutableで参照透過なFunctionalスタイルで再実装しており、クラス構成が変更されています。
+  * .NET Standard 2.0、C# 10を採用しています。これは.NETだけでなく.Net Frameworkアプリケーションからの利用も想定しているためです。
+  * Immutableで参照透過なFunctionalスタイルで再実装しており、本家からクラス構成が変更されています。
   * リソース管理をJAVA版のプロパティテキストファイル方式からResXManagerによるリソース管理方式へ変更しています。
+    * エラーメッセージは日英どちらでも出力できるように構成を変更し、文言を全面的に見直しています。
   * リソースや設定ファイルを内部で取り回すために本家がobject型の多相性を用いていたのに対して、EnumやInterfaceによる明示的な定義を用いています。
   * 文法ルールを考慮したValidationのために本家のExpressionRuleクラスを拡張したGrammerRuleクラスを使用しています。
 * VerifyBasicFunction
@@ -42,7 +45,7 @@
   * System.Collections.Immutable
   * PolySharp
   * Nlog
-  * ※その他はソリューションのNuGetパッケージマネージャやNOTICE.mdを確認してください。
+  * ※その他はソリューションのNuGetパッケージマネージャや[NOTICE](https://github.com/aki426/RedPen.NET/blob/main/NOTICE.md)を確認してください。
 * RedPen.Net.Core.Tests
   * xunit
   * xunit.runner.visualstudio
@@ -52,7 +55,27 @@
 
 ## 基本的な使い方
 
-※作成中※
+RedPen.NETは大きく設定とValidation実行の2つのフェーズに分かれます。
+
+1. 設定
+   1. JsonのConfigurationファイルを読み込むことなどによって、Configurationインスタンスを生成し、RedPenの動作を定義します。
+      1. Lang設定はRedPenが検証するドキュメントの言語です。RedPenはその言語向けの設定を読み込み、その言語専用のValidatorになります。
+         1. JsonでLangを設定する際は、[System.Globalization.CultureInfo.Name](https://learn.microsoft.com/ja-jp/dotnet/api/system.globalization.cultureinfo.name?view=net-8.0)のフォーマットに従ってください。主には"ja-JP"と"en-US"の2種類です。
+      2. 記号（Symbol）の設定などLang設定だけでは不十分な場合、Variantを設定します。
+         1. 現在Variantの設定はLangが"ja-JP"の場合のみ有効です。一般的な設定"zenkaku"、理系論文などの記号運用に即した"zenkaku2"、半角記号を使用する"hankaku"などがあります。
+      3. ValidatorConfigurations設定は、個々のValidatorの設定を記述します。
+         1. 全Validator共通のプロパティとして、NameとLevelがあります。
+            1. NameにはValidationNameを記載します。
+            2. LevelにはERROR、WARN、INFO、OFFの4つのうちいずれかを記載します。OFFの場合その設定に対応するValidatorは実行されません。
+         2. 個別のプロパティは、Validatorごとに設定できる項目が決まっています。後述する一覧表やプロパティの説明を参照してください。
+      4. Symbols設定は、LagnとVariantだけでは記号の設定が不十分な場合に設定します。デフォルトの記号設定に対して個別に設定を上書きします。
+   2. Configurationに定義された設定でValidator、SymbolTableをロードします。
+      1. RedPen.NETはConfigurationを読み込んだ後はその「状態」を維持してドキュメントを読み込み、エラーを返すValidatorの集合体として振る舞います。途中で設定の一部を変更することは想定していませんので、別の設定でValidationしたい場合は別のConfigurationを生成し、RedPenに読み込ませてください。
+2. Validation実行
+   1. テキストファイルとしてドキュメントを読み込みます。
+   2. ドキュメントの言語とフォーマットに合わせてTokenizerとParserを選択し、Documentクラスインスタンスを生成します。
+   3. Documentクラスインスタンスに対して、各Validatorを適用し、結果のValidationErrorクラスインスタンスを収集します。
+   4. ValidationErrorをそのまま使用したり、ErrorMessageManagerを用いて任意の言語のエラーメッセージへ変換します。
 
 ## 動作設定
 
@@ -60,44 +83,42 @@
 
 ※作成中※
 
+Jsonファイルのサンプルは[SampleConf.json](https://github.com/aki426/RedPen.NET/blob/main/RedPen.Net.Core.Tests/Config/DATA/SampleConf.json)を参考にしてください。
+
 ### Validator Configuration
 
-当面優先して実装予定のValidatorとそのConfigurationです。
+最新の実装状況は[RedPen.NET_Validator一覧表.csv](https://github.com/aki426/RedPen.NET/blob/main/docs/RedPen.NET_Validator%E4%B8%80%E8%A6%A7%E8%A1%A8.csv)を確認してください。
 
-#### 全言語に適用可能なValidator Configuration
+実装済みの主なValidatorとそのConfigurationは以下のとおりです。Langは対応するドキュメントの言語を表します。
 
-| Done |        Name        |  Target  |                          Description                           |           Property            |
-| ---- | ------------------ | -------- | -------------------------------------------------------------- | ----------------------------- |
-| v    | CommaNumber        | Sentence | センテンス内の最大回数を超えるコンマの使用を検出               | MaxCount                      |
-| v    | DoubledWord        | Sentence | センテンス内の同一表現の重複使用を検出                         | DictFile, WordSet, MinLength  |
-| v    | InvalidExpression  | Sentence | 不正な表現を検出                                               | DictFile, WordSet             |
-| v    | InvalidSymbol      | Sentence | 不正なシンボルを検出                                           | ※Symbolsブロックで定義        |
-| v    | InvalidParenthesis | Sentence | 不正な括弧を検出                                               | MaxLength, MaxCount, MaxLevel |
-| v    | SentenceLength     | Sentence | 最大文字長を超えるセンテンスを検出                             | MaxLength                     |
-| v    | SuccessiveSentence | Sentence | 最小文字長以上かつ編集距離閾値以下の類似文の二回連続使用を検出 | Distance, MinLength           |
-| v    | SuccessiveWord     | Sentence | 同一の単語の連続使用を検出                                     |                               |
-| v    | SuggestExpression  | Sentence | 不正な表現に対する推奨表現の提案                               | DictFile, WordMap             |
-| v    | SymbolWithSpace    | Sentence | シンボル前後のスペースの有無を検出                             | ※Symbolsブロックで定義        |
-
-#### 日本語（Lang = ja-JP）にのみ適用可能なValidator Configuration
-
-| Done |               Name               |  Target  |                               Description                                |                    Property                    |
-| ---- | -------------------------------- | -------- | ------------------------------------------------------------------------ | ---------------------------------------------- |
-| v    | DoubledConjunctiveParticleGa     | Sentence | センテンス内の接続助詞「が」の2回以上の使用を検出                        |                                                |
-| v    | DoubledJoshi                     | Sentence | センテンス内の同一助詞の重複使用を検出                                   | MinInterval, WordSet                           |
-| v    | DoubleNegative                   | Sentence | 二重否定表現を検出                                                       |                                                |
-| v    | HankakuKana                      | Sentence | 半角カナ文字を検出                                                       |                                                |
-| v    | JapaneseAmbiguousNounConjunction | Sentence | 曖昧な名詞接続のパターン（格助詞「の」の連続使用など）を検出             |                                                |
-| v    | JapaneseExpressionVariation      | Document | 日本語の表記ゆれを検出                                                   | DictFile, WordMap                              |
-| v    | JapaneseJoyoKanji                | Sentence | 常用漢字以外の漢字を検出                                                 | WordSet                                        |
-| v    | JapaneseNumberExpression         | Sentence | 計数表現スタイルの一貫性の破れを検出                                     | NumberStyle                                    |
-| v    | JapaneseStyle                    | Sentence | ですます調とである調の混在を検出                                         | JodoshiStyle                                   |
-| v    | KatakanaEndHyphen                | Sentence | JIS Z8301:2008 - G.6.2.2 b - G.3基準のカタカナ単語の語尾のハイフンを検出 | WordSet                                        |
-| v    | KatakanaSpellCheck               | Document | カタカナ単語の表記ゆれを検出                                             | DictFile, MinRatio, MinFreq, EnableDefaultDict |
-| v    | LongKanjiChain                   | Sentence | 最大文字長を超える漢字の連続を検出                                       | Maxlength, WordSet                             |
-| v    | Okurigana                        | Sentence | 不正な送りがなを検出                                                     |                                                |
-| v    | SpaceWithAlphabeticalExpression  | Sentence | アルファベット単語前後の空白を検出                                       | Forbidden, SkipBefore, SkipAfter               |
-| v    | Taigendome                       | Sentence | 体言止めを検出                                                           |                                                |
+| No. |               Name               |     Lang     |                                                                  Description                                                                  |                      Property                       |
+| --- | -------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 1   | CommaCount                       | ANY          | センテンス内でMinCount以上カンマが使用されていた場合エラーとなります。                                                                        | MinCount                                            |
+| 3   | DoubledConjunctiveParticleGa     | ja-JP        | センテンス内で接続助詞「が」が2回以上使用されていた場合エラーとなります。（例：「Aですが、Bですが、Cです。」といった文が検出対象となります）  |                                                     |
+| 4   | DoubledJoshi                     | ja-JP        | センテンス内の同一助詞の重複使用を検出します（例：「一人でで行く」といった文が検出対象となります）。                                          | WordSet, MaxInterval                                |
+| 5   | DoubledWord                      | en-US, ja-JP | 同一単語の重複使用を検出します。                                                                                                              | WordSet, MinLength                                  |
+| 6   | DoubleNegative                   | en-US, ja-JP | 二重否定表現を検出します。※日本語の場合読みと品詞に基づいて「ズニ～ナイ」「ナイト～マセン」などの表現を検出します。                           |                                                     |
+| 11  | HankakuKana                      | ja-JP        | 半角カナ文字を検出します。                                                                                                                    |                                                     |
+| 14  | InvalidExpression                | ANY          | 不正な表現を検出します。                                                                                                                      | ExpressionSet                                       |
+| 15  | InvalidSymbol                    | ANY          | シンボル定義で指定された不正なシンボルを検出します。                                                                                          | ※Symbolsブロックで定義                              |
+| 18  | JapaneseAmbiguousNounConjunction | ja-JP        | 格助詞「の」の連続使用（AのBのC）を曖昧な名詞接続のパターンとして検出します。                                                                 | ExpressionSet                                       |
+| 22  | JapaneseWordVariation            | ja-JP        | 読みが同じでありながら表記が異なる単語を、表記ゆれの可能性がある単語として検出します。                                                        | WordMap                                             |
+| 28  | JapaneseJoyoKanji                | ja-JP        | 常用漢字以外の漢字を検出します。                                                                                                              | CharSet                                             |
+| 30  | JapaneseNumberExpression         | ja-JP        | NumberStyleで指定された計数表現スタイル（「1つ、１つ、一つ、ひとつ」の4つのうちいずれか）以外のスタイルが使用されていた場合エラーとなります。 | NumberStyle                                         |
+| 33  | JapaneseStyle                    | ja-JP        | JodoshiStyleで指定されたスタイル（「だ・である調」または「です・ます調」）以外のスタイルが使用されていた場合エラーとなります。                | JodoshiStyle                                        |
+| 38  | KatakanaEndHyphen                | ja-JP        | JISZ8301:2008-G.6.2.2b-G.3に基づき、カタカナ単語の語尾にハイフンがあった場合エラーとなります。                                                | ExpressionSet                                       |
+| 39  | KatakanaSpellCheck               | ja-JP        | カタカナ単語の表記ゆれを検出します。                                                                                                          | ExpressionSet, MinFreq, MaxRatio, EnableDefaultDict |
+| 41  | LongKanjiChain                   | ja-JP        | 文字長がMinLength以上の漢字連続表現（熟語）を検出します。                                                                                     | ExpressionSet, Minlength                            |
+| 43  | Okurigana                        | ja-JP        | 不正な送りがなを検出します。                                                                                                                  |                                                     |
+| 46  | InvalidParenthesis               | ANY          | 不正な括弧を検出します。                                                                                                                      | MinLength, MinCount, MinLevel                       |
+| 49  | SentenceLength                   | ANY          | センテンスの文字長がMinLenght以上の場合エラーとなります。                                                                                     | MinLength                                           |
+| 51  | SpaceWithAlphabeticalExpression  | ja-JP        | 日本語文中アルファベット表現の前後の空白が存在しない場合エラーとなります。                                                                    | Forbidden, SkipBefore, SkipAfter                    |
+| 54  | SuccessiveSentence               | ANY          | 連続する2つのセンテンスが類似している場合エラーとなります。                                                                                   | MinLength, MaxDistance                              |
+| 55  | SuccessiveWord                   | ANY          | 同一の単語の連続使用を検出します。                                                                                                            |                                                     |
+| 56  | SuggestExpression                | ANY          | 検出した不正な表現に対して推奨される表現を提案します。                                                                                        | ExpressionMap                                       |
+| 57  | SymbolWithSpace                  | en-US        | シンボル定義で指定された「シンボル前後のスペースの有無」に従って、シンボル前後の不正なスペースを検出します。                                  | ※Symbolsブロックで定義                              |
+| 58  | Taigendome                       | ja-JP        | 体言止めを検出します。※末尾が体言＝名詞かどうかの判定はKuromojiの判定結果に依存します。                                                       |                                                     |
+| 64  | SuggestGrammarRule               | ANY          | 品詞や読みを考慮した文法ルールに合致した表現に対して推奨される表現を提案します。                                                              | GrammarRuleMap                                      |
 
 #### Validator Configuration Property
 
@@ -106,43 +127,34 @@
 
 ##### 共通プロパティ
 
-| Property |  Type  |                                          Description                                           |
-| -------- | ------ | ---------------------------------------------------------------------------------------------- |
-| Name     | string | ※すべてのValidator Configurationで必須のプロパティです。                                       |
-| Level    | string | ※すべてのValidator Configurationで必須のプロパティです。                                       |
-| DictFile | string | 辞書定義ファイルです。※WordSetまたはWordMapプロパティがあるValidator Configurationで有効です。 |
+| Property |  Type  |                                        Description                                         |
+| -------- | ------ | ------------------------------------------------------------------------------------------ |
+| Name     | string | ※すべてのValidator Configurationで必須のプロパティです。                                   |
+| Level    | string | ※すべてのValidator Configurationで必須のプロパティです。                                   |
+| DictFile | string | 辞書定義ファイルです。※～Setまたは～MapプロパティがあるValidator Configurationで有効です。 |
 
 ##### 個別プロパティ
 
-|        Property         |           Type           |                                           Description                                            |
-| ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------ |
-| DecimalDelimiterIsComma |                          |                                                                                                  |
-| DeviationFactor         |                          |                                                                                                  |
-| Distance                | number                   | 「距離」を浮動小数点数で表現したものです。                                                       |
-| EnableDefaultDict       | true / false             | RedPen.NETの標準辞書がある場合、それを使用する／しないを制御します。                             |
-| Forbidden               | true / false             | Validation条件を反転させて適用可能なものについて、true / falseで反転する／しないを制御できます。 |
-| IgnoreYear              |                          |                                                                                                  |
-| JodoshiStyle            |                          |                                                                                                  |
-| LeadingWordLimit        |                          |                                                                                                  |
-| MaxCount                |                          |                                                                                                  |
-| MaxLength               | number                   | 最大長をintで表現したものです。大体の場合、文字数です。                                          |
-| MaxLevel                | number                   | 最大レベルをintで表現したものです。                                                              |
-| MaxSentenceCount        | number                   | センテンスの個数の最大値をintで表現したものです。                                                |
-| MinFreq                 | number                   | 最小頻度をintで表現したものです。                                                                |
-| MinInterval             |                          |                                                                                                  |
-| MinLength               | number                   | 最小長をintで表現したものです。大体の場合、文字数です。                                          |
-| MinLevel                |                          |                                                                                                  |
-| MinRatio                | number                   | 最小割合を浮動小数点数で表現したものです。                                                       |
-| NoSpace                 | true / false             | trueの場合、スペースを許容しなくなります。                                                       |
-| NumberStyle             |                          |                                                                                                  |
-| PercentThreshold        |                          |                                                                                                  |
-| SkipAfter               |                          |                                                                                                  |
-| SkipBefore              |                          |                                                                                                  |
-| StartWith               |                          |                                                                                                  |
-| WordMap                 | <string, string>のobject | 辞書定義です。                                                                                   |
-| WordSet                 | stringのarray            | 文字列リストです。処理速度のため内部実装はHashSetを用いています。                                |
+※作成中※
+
+|                Property                |           Type           |                                           Description                                            |
+| -------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------ |
+| MaxDistance / MinDistance              | number                   | 「距離」を浮動小数点数で表現したものです。                                                       |
+| EnableDefaultDict                      | true / false             | RedPen.NETの標準辞書がある場合、それを使用する／しないを制御します。                             |
+| Forbidden                              | true / false             | Validation条件を反転させて適用可能なものについて、true / falseで反転する／しないを制御できます。 |
+| MaxCount / MinCount                    |                          | 最大／最小回数をintで表現したものです。大体の場合、出現回数です。                                |
+| MaxLength / MinLength                  | number                   | 最大／最小長をintで表現したものです。大体の場合、文字数です。                                    |
+| MaxLevel / MinLevel                    | number                   | 最大／最小レベルをintで表現したものです。大体の場合、章レベルを表します。                        |
+| MinFreq                                | number                   | 最小頻度をintで表現したものです。※割合ではなく、出現回数です。                                   |
+| MinInterval                            | number                   | 出現する表現の間隔を表現したものです。大体の場合、間に挟まる文字数を表します。                   |
+| MinRatio                               | number                   | 最小割合を浮動小数点数で表現したものです。                                                       |
+| NoSpace                                | true / false             | trueの場合、スペースを許容しなくなります。                                                       |
+| WordMap, ExpressionMap, GrammarRuleMap | <string, string>のobject | それぞれ単語、表現、文法ルールとそれに対応する情報の辞書定義です。                               |
+| CharSet, WordSet, ExpressionSet        | stringのarray            | それぞれ文字、単語、表現のリストです。処理速度のため内部実装はHashSetを用いています。            |
 
 ##### 補足説明
+
+※作成中※
 
 * Name
   * すべてのValidator Configurationで必須のプロパティです。
@@ -156,29 +168,9 @@
   * 実行環境におけるファイルへのパスを指定します。
   * WordSetまたはWordMapの定義をJsonファイルに直接記入するのではなく、別ファイルで渡したい場合に使用します。
   * ファイルのフォーマットは、WordSetをプロパティに持つ場合は1行1文字列のリスト、WordMapをプロパティに持つ場合は1行につき2つの文字列をタブ区切りで記載したDictionaryとなります。
-* DecimalDelimiterIsComma
-* DeviationFactor
-* Distance
 * EnableDefaultDict
   * RedPen.NETの標準辞書がある場合、それを使用するかしないかのフラグです。
   * WordMapやWordSetをプロパティとして持つValidationにおいて、WordMapやWordSetに標準辞書のデータを追加する／しない、という挙動になります。
-* Forbidden
-* IgnoreYear
-* JodoshiStyle
-* LeadingWordLimit
-* MaxCount
-* MaxLength
-* MaxLevel
-* MaxSentenceCount
-* MinFreq
-* MinInterval
-* MinLevel
-* MinRatio
-* NumberStyle
-* PercentThreshold
-* SkipAfter
-* SkipBefore
-* StartWith
 * WordMap
   * JsonのオブジェクトとしてKeyに「検出したい表現」を、Valueに「提案したい表現」を記述します。表記上は誤→正の順番になります。
 * WordSet
@@ -249,12 +241,12 @@ RedPen.NETではValidationのためにパターンマッチ機構を持ってい
 #### 文法ルールのBNF
 
 ```text
-<grammer-rule> ::= <token-part> <eol> | <token-part> "+" <grammer-rule> <eol> | <token-part> "=" <grammer-rule> <eol> 
-<token-part> ::= <surface> | <surface> ":" <tags-part> | <surface> ":" <tags-part> ":" <reading>
-<surface> ::= "" | "*" | <text>
-<tags-part> ::= <tag> | <tag> ":" <tags-part>
-<tag> ::= "" | "*" | <text> "," <tag>
-<reading> ::= "" | "*" | <text>
+| <grammer-rule> ::= <token-part> <eol> | <token-part> "+" <grammer-rule> <eol> | <token-part> "=" <grammer-rule> <eol>   |
+| <token-part> ::= <surface>            | <surface> ":" <tags-part>             | <surface> ":" <tags-part> ":" <reading> |
+| <surface> ::= ""                      | "*"                                   | <text>                                  |
+| <tags-part> ::= <tag>                 | <tag> ":" <tags-part>                 |                                         |
+| <tag> ::= ""                          | "*"                                   | <text> "," <tag>                        |
+| <reading> ::= ""                      | "*"                                   | <text>                                  |
 ```
 
 * 空白は無視されます。
@@ -267,41 +259,41 @@ RedPen.NETではValidationのためにパターンマッチ機構を持ってい
 例えば、「吾輩は猫だが犬でもある。」という文をKuromojiで形態素解析すると次のようになります。※1行につき1Tokenの情報です。
 
 ```text
-1 : Surface = "吾輩", Tags = [ "名詞", "代名詞", "一般", "*", "*" ], Reading = "ワガハイ"
-2 : Surface = "は", Tags = [ "助詞", "係助詞", "*", "*" ], Reading = "ハ"
-3 : Surface = "猫", Tags = [ "名詞", "一般", "*", "*" ], Reading = "ネコ"
-4 : Surface = "だ", Tags = [ "助動詞", "特殊・ダ", "基本形" ], Reading = "ダ"
-5 : Surface = "が", Tags = [ "助詞", "接続助詞", "*", "*" ], Reading = "ガ"
-6 : Surface = "犬", Tags = [ "名詞", "一般", "*", "*" ], Reading = "イヌ"
-7 : Surface = "で", Tags = [ "助詞", "格助詞", "一般", "*", "*" ], Reading = "デ"
-8 : Surface = "も", Tags = [ "助詞", "係助詞", "*", "*" ], Reading = "モ"
-9 : Surface = "ある", Tags = [ "動詞", "自立", "五段・ラ行", "基本形" ], Reading = "アル"
-10 : Surface = "。", Tags = [ "記号", "句点", "*", "*" ], Reading = "。"
+Token1 : Surface = "吾輩", Tags = [ "名詞", "代名詞", "一般", "*", "*" ], Reading = "ワガハイ"
+Token2 : Surface = "は", Tags = [ "助詞", "係助詞", "*", "*" ], Reading = "ハ"
+Token3 : Surface = "猫", Tags = [ "名詞", "一般", "*", "*" ], Reading = "ネコ"
+Token4 : Surface = "だ", Tags = [ "助動詞", "特殊・ダ", "基本形" ], Reading = "ダ"
+Token5 : Surface = "が", Tags = [ "助詞", "接続助詞", "*", "*" ], Reading = "ガ"
+Token6 : Surface = "犬", Tags = [ "名詞", "一般", "*", "*" ], Reading = "イヌ"
+Token7 : Surface = "で", Tags = [ "助詞", "格助詞", "一般", "*", "*" ], Reading = "デ"
+Token8 : Surface = "も", Tags = [ "助詞", "係助詞", "*", "*" ], Reading = "モ"
+Token9 : Surface = "ある", Tags = [ "動詞", "自立", "五段・ラ行", "基本形" ], Reading = "アル"
+Token10 : Surface = "。", Tags = [ "記号", "句点", "*", "*" ], Reading = "。"
 ```
 
 上記の形態素解析された文に対して、文法ルールとパターンマッチされた具体例を列挙します。
 
 1. 「猫」
-   * 3の「猫」にマッチします。
+   * Token3の「猫」にマッチします。
 2. 「猫:*,一般:ネコ」
-   * 3の「猫」にマッチします。
+   * Token3の「猫」にマッチします。
 3. 「::ネコ」
-   * 3の「猫」にマッチします。
+   * Token3の「猫」にマッチします。
 4. 「猫::イヌ」
    * 何もマッチしません。
 5. 「吾輩 + は」
-   * 1と2の「吾輩は」にマッチします。
+   * Token1とToken2の「吾輩は」にマッチします。
 6. 「*:名詞 + :助詞」（※空文字列と"\*"は同じ扱いです）
-   * 1と2の「吾輩は」と6と7の「犬で」にマッチします。
+   * Token1とToken2の「吾輩は」とToken6とToken7の「犬で」にマッチします。
 7. 「::ワガハイ + は = ::アル」
-   * 1～9の「吾輩は猫だが犬でもある」にマッチします。
+   * Token1～9の「吾輩は猫だが犬でもある」にマッチします。
 8. 「:名詞 = :名詞 = :名詞」
-   * 1、3、6の「吾輩は猫だが犬」にマッチします。
+   * Token1、3、6の「吾輩は猫だが犬」にマッチします。
 
-文法ルールは指定されたパターンを最短一致で判定します。
-このため、1つの文の中に2回以上一致するパターンが現れる場合、複数回検出します。
-また例えば、6の連結記号を変更し「*:名詞 = :助詞」とした場合も結果は同じです。
-1と8にマッチして「吾輩は猫だが犬でも」を検出することはありません。
+文法ルールは指定されたパターンを最短一致で判定し、先に一致した部分は飛ばして次に一致する箇所を探索します。
+このため、1つの文の中に文字列を共有しないパターンが複数現れる場合、複数回エラーを検出します。
+また例えば、6「\*:名詞 + :助詞」の連結記号を変更し「\*:名詞 = :助詞」とした場合も結果は同じです。
+先にToken1とToken2の「吾輩は」にマッチするので、Token1とToken8にマッチして「吾輩は猫だが犬でも」を検出することはありません。
 
 品詞や読みとその出現順を検出したい場合、文法ルールによるパターンマッチを活用してください。
 
