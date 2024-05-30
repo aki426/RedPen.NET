@@ -84,36 +84,36 @@
     <Compile Include="Utility\GrammarRuleExtractorTests.cs" />
     <Compile Include="Utility\LevenshteinDistanceUtilityTests.cs" />
     <Compile Include="Utility\UnicodeUtilityTests.cs" />
-    <Compile Include="Validator\DocumentValidator\JapaneseWordVariationValidatorTest.cs" />
-    <Compile Include="Validator\DocumentValidator\SuccessiveSentenceValidatorTests.cs" />
-    <Compile Include="Validator\GrammarRuleTests.cs" />
-    <Compile Include="Validator\SentenceValidator\CommaCountValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\DoubledConjunctiveParticleGaValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\DoubledJoshiValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\DoubledWordValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\DoubleNegativeValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\HankakuKanaValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\InvalidExpressionValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\InvalidSymbolValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\JapaneseAmbiguousNounConjunctionValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\JapaneseJoyoKanjiValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\JapaneseNumberExpressionValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\JapaneseStyleValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\KatakanaEndHyphenTests.cs" />
-    <Compile Include="Validator\DocumentValidator\KatakanaSpellCheckValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\LongKanjiChainValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\OkuriganaValidatorTests.cs" />
-    <Compile Include="Validator\DocumentValidator\InvalidParenthesisValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\SentenceLengthValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\SpaceWithAlphabeticalExpressionTests.cs" />
-    <Compile Include="Validator\SentenceValidator\SuccessiveWordValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\SuggestExpressionValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\SuggestGrammarRuleValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\SymbolWithSpaceValidatorTests.cs" />
-    <Compile Include="Validator\SentenceValidator\TaigendomeValidatorTests.cs" />
-    <Compile Include="Validator\ValidatorTestsUtility.cs" />
-    <Compile Include="Validator\ValidatorFactoryTests.cs" />
-    <Compile Include="Validator\ValidatorTests.cs" />
+    <Compile Include="Validators\DocumentValidator\JapaneseWordVariationValidatorTest.cs" />
+    <Compile Include="Validators\DocumentValidator\SuccessiveSentenceValidatorTests.cs" />
+    <Compile Include="Validators\GrammarRuleTests.cs" />
+    <Compile Include="Validators\SentenceValidator\CommaCountValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\DoubledConjunctiveParticleGaValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\DoubledJoshiValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\DoubledWordValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\DoubleNegativeValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\HankakuKanaValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\InvalidExpressionValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\InvalidSymbolValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\JapaneseAmbiguousNounConjunctionValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\JapaneseJoyoKanjiValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\JapaneseNumberExpressionValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\JapaneseStyleValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\KatakanaEndHyphenTests.cs" />
+    <Compile Include="Validators\DocumentValidator\KatakanaSpellCheckValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\LongKanjiChainValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\OkuriganaValidatorTests.cs" />
+    <Compile Include="Validators\DocumentValidator\InvalidParenthesisValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SentenceLengthValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SpaceWithAlphabeticalExpressionTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SuccessiveWordValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SuggestExpressionValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SuggestGrammarRuleValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SymbolWithSpaceValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\TaigendomeValidatorTests.cs" />
+    <Compile Include="Validators\ValidatorTestsUtility.cs" />
+    <Compile Include="Validators\ValidatorFactoryTests.cs" />
+    <Compile Include="Validators\ValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RedPen.Net.Core\RedPen.Net.Core.csproj">
@@ -127,7 +127,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Config\DATA\SampleConf.json" />
+    <None Include="Config\DATA\SampleConf.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

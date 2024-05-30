@@ -4,7 +4,7 @@
     "Variant": "zenkaku",
     "ValidatorConfigurations": [
         {
-            "Name": "CommmaCount",
+            "Name": "CommaCount",
             "Level": "ERROR",
             "MinCount": 3
         },
@@ -148,5 +148,6 @@
                 "たり = たり = した": "AとBをした"
             }
         }
-    ]
+    ],
+    "Symbols": []
 }

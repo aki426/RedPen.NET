@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using RedPen.Net.Core.Utility;
 
 namespace RedPen.Net.Core.Config
 {
@@ -16,11 +18,52 @@ namespace RedPen.Net.Core.Config
         public string ValidationName => this.GetType().Name.Substring(0, this.GetType().Name.Length - "Configuration".Length);
 
         /// <summary>JsonのNameプロパティに出力するためのプロパティ。</summary>
+        [JsonIgnore]
         public string Name => ValidationName;
 
         /// <summary>This type.</summary>
         [JsonIgnore]
         public ValidationType Type => ValidationTypeExtend.ConvertFrom(ValidationName);
+
+        /// <summary>デバッグ用のコレクション内確認用文字列出力</summary>
+        [JsonIgnore]
+        public string StringCollection => GetStringCollectionDebugText();
+
+        /// <summary>
+        /// Gets the string collection debug text.
+        /// </summary>
+        /// <returns>A string.</returns>
+        private string GetStringCollectionDebugText()
+        {
+            if (this is ICharSetConfigParameter charSetConfig)
+            {
+                return $"CharSet: {charSetConfig.CharSet.ToStringExt()}";
+            }
+            else if (this is IWordSetConfigParameter wordSetConfig)
+            {
+                return $"WordSet: {wordSetConfig.WordSet.ToStringExt()}";
+            }
+            else if (this is IExpressionSetConfigParameter expressionSetConfig)
+            {
+                return $"ExpressionSet: {expressionSetConfig.ExpressionSet.ToStringExt()}";
+            }
+            else if (this is IWordMapConfigParameter wordMapConfig)
+            {
+                return $"WordMap: {wordMapConfig.WordMap.ToStringExt()}";
+            }
+            else if (this is IExpressionMapConfigParameter expressionMapConfig)
+            {
+                return $"ExpressionMap: {expressionMapConfig.ExpressionMap.ToStringExt()}";
+            }
+            else if (this is IGrammarRuleMapConfigParameter grammarRuleMapConfig)
+            {
+                return $"GrammarRuleMap: {grammarRuleMapConfig.GrammarRuleMap.ToStringExt()}";
+            }
+            else
+            {
+                return "Nothing.";
+            }
+        }
     }
 
     #region Max/Min系のプロパティ定義のためのInterface
