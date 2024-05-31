@@ -121,7 +121,7 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found invalid expression \"オワタ\".");
+                    .Should().Be("An invalid expression \"オワタ\" was found.");
 
             manager.GetErrorMessage(
                 errors[0],
@@ -131,7 +131,7 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
             manager.GetErrorMessage(
                 errors[1],
                 CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found invalid expression \"マジですか\".");
+                    .Should().Be("An invalid expression \"マジですか\" was found.");
 
             manager.GetErrorMessage(
                 errors[1],

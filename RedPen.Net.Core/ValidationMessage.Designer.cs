@@ -61,15 +61,6 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///    に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string _Empty_1_ {
-            get {
-                return ResourceManager.GetString("_Empty[1]", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   The number of commas in a sentence ({0}) exceeded the specified value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string CommaCount {

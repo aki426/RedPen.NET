@@ -248,7 +248,7 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found possible Japanese word variations \"肖像(名詞)\", \"昭三(名詞)\" at (L1,8)");
+                    .Should().Be("\"肖像(名詞)\" and \"昭三(名詞)\" (position: (L1,8)) are used the same number of times. One of them is considered a fluctuation expression.");
 
             manager.GetErrorMessage(
                 errors[0],
@@ -258,7 +258,7 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
             manager.GetErrorMessage(
                 errors[1],
                 CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("Found possible Japanese word variations \"昭三(名詞)\", \"肖像(名詞)\" at (L1,0)");
+                    .Should().Be("\"昭三(名詞)\" and \"肖像(名詞)\" (position: (L1,0)) are used the same number of times. One of them is considered a fluctuation expression.");
 
             manager.GetErrorMessage(
                 errors[1],

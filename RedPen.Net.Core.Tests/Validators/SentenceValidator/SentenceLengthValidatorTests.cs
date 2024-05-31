@@ -78,7 +78,7 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
             manager.GetErrorMessage(
                 errors[0],
                 CultureInfo.GetCultureInfo("en-US"))
-                    .Should().Be("The length of the sentence (84) exceeds the maximum of 30.");
+                    .Should().Be("The sentence length (84 characters) exceeded the specified value (30 characters).");
 
             manager.GetErrorMessage(
                 errors[0],

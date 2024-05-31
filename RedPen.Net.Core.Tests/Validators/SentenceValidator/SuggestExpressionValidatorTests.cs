@@ -115,17 +115,17 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
             // 7. エラーメッセージを生成する。
             var manager = ErrorMessageManager.GetInstance();
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("en-US")).Should()
-                .Be("Found invalid word \"like\". Use the synonym \"such as\" instead.");
+                .Be("An invalid expression \"like\" was found. Consider using the alternative expression \"such as\".");
             manager.GetErrorMessage(errors[1], CultureInfo.GetCultureInfo("en-US")).Should()
-                .Be("Found invalid word \"like\". Use the synonym \"such as\" instead.");
+                .Be("An invalid expression \"like\" was found. Consider using the alternative expression \"such as\".");
 
             errors = validator.Validate(new Sentence("it like a info.", 1));
             errors.Count.Should().Be(2);
 
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("en-US")).Should()
-                .Be("Found invalid word \"like\". Use the synonym \"such as\" instead.");
+                .Be("An invalid expression \"like\" was found. Consider using the alternative expression \"such as\".");
             manager.GetErrorMessage(errors[1], CultureInfo.GetCultureInfo("en-US")).Should()
-                .Be("Found invalid word \"info\". Use the synonym \"information\" instead.");
+                .Be("An invalid expression \"info\" was found. Consider using the alternative expression \"information\".");
         }
 
         /// <summary>日本語文のテスト。</summary>

@@ -112,9 +112,6 @@
   <data name="JapaneseWordVariation_Normal" xml:space="preserve">
     <value>"{0}" is considered a fluctuation expression of "{1}" (position: {2}).</value>
   </data>
-  <data name="_Empty[1]" xml:space="preserve">
-    <value></value>
-  </data>
   <data name="ParagraphCount" xml:space="preserve">
     <value>The number of paragraphs in the section ({0}) exceeded the specified value ({1}).</value>
   </data>
