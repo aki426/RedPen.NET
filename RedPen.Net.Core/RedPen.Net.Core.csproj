@@ -1,6 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Product>RedPen.NET</Product>
+    <PackageId>RedPen.Net.Core</PackageId>
+    <Version>0.1.0-beta20240531</Version>
+    <Copyright>Copyright (c) KANEDA Akihiro 2024</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/aki426/RedPen.NET</RepositoryUrl>
+    <PackageTags>lint;api</PackageTags>
+    <Authors>KANEDA Akihiro</Authors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Description>RedPen.NET is an open source proofreading tool to check if your documents meet the writing standard.</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
@@ -99,6 +109,7 @@
     <None Update="Resources\DefaultResources\WordFrequency\WordFrequency.en.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>
