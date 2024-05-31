@@ -98,213 +98,213 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="UnexpandedAcronym_UnexpandedAcronym" xml:space="preserve">
-    <value>The expanded form of the acronym {0} is not present in the document.</value>
+    <value>The formal expression for the abbreviation "{0}" was not found in the document.</value>
   </data>
   <data name="FrequentSentenceStart_SentenceStartTooFrequent" xml:space="preserve">
     <value>{1}% of sentences start with "{0}".</value>
   </data>
   <data name="WordFrequency_WordUsedTooFrequently" xml:space="preserve">
-    <value>The word "{0}" comprises {1}% of all words. Expected around {2}%.</value>
+    <value>The word "{0}" is used {1}% of all words. The desired usage rate is around {2}%.</value>
   </data>
   <data name="GappedSection" xml:space="preserve">
-    <value>The section "{0}" (level {1}) is misplaced. It should have level of {2}.</value>
+    <value>The placement of section "{0}" (level {1}) is incorrect. Please relocate it to level {2}.</value>
   </data>
   <data name="JapaneseWordVariation_Normal" xml:space="preserve">
-    <value>Found possible Japanese word "{0}" is variations of "{1}" at {2}</value>
+    <value>"{0}" is considered a fluctuation expression of "{1}" (position: {2}).</value>
   </data>
-  <data name="" xml:space="preserve">
+  <data name="_Empty[1]" xml:space="preserve">
     <value></value>
   </data>
   <data name="ParagraphCount" xml:space="preserve">
-    <value>The number of paragraphs ({0}) exceeds the maximum of {1}.</value>
+    <value>The number of paragraphs in the section ({0}) exceeded the specified value ({1}).</value>
   </data>
   <data name="ParagraphStartWith" xml:space="preserve">
-    <value>Found invalid beginning of paragraph "{0}".</value>
+    <value>An invalid paragraph start "{0}" was found.</value>
   </data>
   <data name="DuplicatedSection" xml:space="preserve">
-    <value>Found duplicated section (starts from line {0}).</value>
+    <value>A similar clause (starting from line {1}) was found for the section (starting from line {0}).</value>
   </data>
   <data name="SectionLevel" xml:space="preserve">
-    <value>The section "{0}" is too deep.</value>
+    <value>The level of clause "{0}" exceeded the specified value ({1}).</value>
   </data>
   <data name="VoidSection" xml:space="preserve">
-    <value>The section is void.</value>
+    <value>The section content is empty.</value>
   </data>
   <data name="EmptySection" xml:space="preserve">
-    <value>The section "{0}" is empty.</value>
+    <value>An empty section "{0}" was found.</value>
   </data>
   <data name="HeaderLength" xml:space="preserve">
-    <value>The length of header ({0}) exceeds the maximum of {1}.</value>
+    <value>The length of the heading ({0}) exceeded the specified value ({1}).</value>
   </data>
   <data name="ListLevel" xml:space="preserve">
-    <value>The list item is nested too deeply.</value>
+    <value>The list level ({0}) exceeded the specified value ({1}).</value>
   </data>
   <data name="CommaCount" xml:space="preserve">
-    <value>The number of commas ({0}) exceeds the maximum of {1}.</value>
+    <value>The number of commas in a sentence ({0}) exceeded the specified value ({1}).</value>
   </data>
   <data name="Contraction" xml:space="preserve">
-    <value>Found contraction "{0}".</value>
+    <value>The abbreviation "{0}" was found.</value>
   </data>
   <data name="EndOfSentence" xml:space="preserve">
-    <value>Found invalid end of sentence "{0}".</value>
+    <value>An invalid sentence-ending expression "{0}" was found.</value>
   </data>
   <data name="InvalidExpression" xml:space="preserve">
-    <value>Found invalid expression "{0}".</value>
+    <value>An invalid expression "{0}" was found.</value>
   </data>
   <data name="InvalidSymbol" xml:space="preserve">
-    <value>Found invalid symbol "{0}".</value>
+    <value>An invalid symbol "{0}" was found.</value>
   </data>
   <data name="InvalidWord" xml:space="preserve">
-    <value>Found invalid word "{0}".</value>
+    <value>An invalid word "{0}" was found.</value>
   </data>
   <data name="KatakanaEndHyphen" xml:space="preserve">
-    <value>Found invalid Katakana end-hyphen "{0}".</value>
+    <value>An invalid katakana word "{0}" containing a hyphen was found.</value>
   </data>
   <data name="KatakanaSpellCheck" xml:space="preserve">
-    <value>Found a Katakana word "{0}", which is similar to "{1}" at position {2}.</value>
+    <value>The katakana word "{0}" is considered a fluctuation expression of "{1}" (position: {2}).</value>
   </data>
   <data name="SentenceLength" xml:space="preserve">
-    <value>The length of the sentence ({0}) exceeds the maximum of {1}.</value>
+    <value>The sentence length ({0} characters) exceeded the specified value ({1} characters).</value>
   </data>
   <data name="SpaceBeginningOfSentence" xml:space="preserve">
-    <value>Whitespace does not exist at the beginning of the sentence.</value>
+    <value>There is no space at the beginning of the sentence.</value>
   </data>
   <data name="Spelling" xml:space="preserve">
-    <value>Found possibly misspelled word "{0}".</value>
+    <value>A possibly misspelled word "{0}" was found.</value>
   </data>
   <data name="StartWithCapitalLetter" xml:space="preserve">
-    <value>Sentence starts with a lowercase character "{0}".</value>
+    <value>A sentence starting with a lowercase letter "{0}" was found.</value>
   </data>
   <data name="SuggestExpression" xml:space="preserve">
-    <value>Found invalid word "{0}". Use the synonym "{1}" instead.</value>
+    <value>An invalid expression "{0}" was found. Consider using the alternative expression "{1}".</value>
   </data>
   <data name="WordNumber" xml:space="preserve">
-    <value>The number of words ({0}) exceeds the maximum of {1}.</value>
+    <value>The number of words in a sentence ({0}) exceeds the maximum value ({1}).</value>
   </data>
   <data name="Quotation_DoubleRight" xml:space="preserve">
-    <value>Two right quotation marks in succession.</value>
+    <value>Right quotes are used consecutively.</value>
   </data>
   <data name="Quotation_DoubleLeft" xml:space="preserve">
-    <value>Two left quotation marks in succession.</value>
+    <value>Left quotes are used consecutively.</value>
   </data>
   <data name="Quotation_RightSpace" xml:space="preserve">
-    <value>Right quotation mark does not have a space.</value>
+    <value>There is no space next to the right quote.</value>
   </data>
   <data name="Quotation_LeftSpace" xml:space="preserve">
-    <value>Left quotation mark does not have a space.</value>
+    <value>There is no space next to the left quote.</value>
   </data>
   <data name="Quotation_RightExist" xml:space="preserve">
-    <value>Right quotation mark is missing.</value>
+    <value>The right quote is missing.</value>
   </data>
   <data name="Quotation_LeftExist" xml:space="preserve">
-    <value>Left quotation mark is missing.</value>
+    <value>The left quote is missing.</value>
   </data>
   <data name="SpaceWithAlphabeticalExpression_Before" xml:space="preserve">
-    <value>Space not present before an alphabetical word.</value>
+    <value>A space is required before the half-width alphabet expression "{0}".</value>
   </data>
   <data name="SpaceWithAlphabeticalExpression_After" xml:space="preserve">
-    <value>Space not present after an alphabetical word.</value>
+    <value>A space is required after the half-width alphabet expression "{0}".</value>
   </data>
   <data name="SpaceWithAlphabeticalExpression_Forbidden" xml:space="preserve">
-    <value>Space not allowed to exist around the alphabetical word "{0}".</value>
+    <value>Invalid spaces were found around the half-width alphabet expression "{0}".</value>
   </data>
   <data name="SymbolWithSpace_Before" xml:space="preserve">
-    <value>Need whitespace before symbol "{0}".</value>
+    <value>A space is required before the symbol "{0}".</value>
   </data>
   <data name="SymbolWithSpace_After" xml:space="preserve">
-    <value>Need whitespace after symbol "{0}".</value>
+    <value>A space is required after the symbol "{0}".</value>
   </data>
   <data name="SymbolWithSpace_BeforeAfter" xml:space="preserve">
-    <value>Need whitespace before and after symbol "{0}".</value>
+    <value>Spaces are required before and after the symbol "{0}".</value>
   </data>
   <data name="DoubledWord" xml:space="preserve">
-    <value>Found repeated word "{0}".</value>
+    <value>The word "{0}" is used more than twice in a sentence.</value>
   </data>
   <data name="SuccessiveWord" xml:space="preserve">
-    <value>Found word "{0}" repeated twice in succession.</value>
+    <value>The word "{0}" is used consecutively.</value>
   </data>
   <data name="HankakuKana" xml:space="preserve">
-    <value>Found Hankaku Kana character "{0}".</value>
+    <value>The half-width katakana character "{0}" was found.</value>
   </data>
   <data name="JapaneseStyle" xml:space="preserve">
-    <value>Found invalid Japanese Style "{0}"</value>
+    <value>The use of an incorrect writing style "{0}" was found. Please unify the writing style to plain or polite form.</value>
   </data>
   <data name="DoubleNegative" xml:space="preserve">
-    <value>Found double negative expression "{0}"</value>
+    <value>A double negative expression "{0}" was found.</value>
   </data>
   <data name="NumberFormat_TooManyDecimals" xml:space="preserve">
-    <value>Number {0} has too many decimal delimiters.</value>
+    <value>The decimal point symbol in the numeric expression "{0}" is used too many times.</value>
   </data>
   <data name="NumberFormat_UndelimitedSequenceTooLong" xml:space="preserve">
-    <value>Number {0} requires a delimiter every three digits (eg: 1,000.00 or 1.000,00).</value>
+    <value>The delimiter in the numeric expression "{0}" is invalid. A delimiter is required every three digits.</value>
   </data>
   <data name="NumberFormat_UndelimitedSequenceTooShort" xml:space="preserve">
-    <value>Number {0} has a delimiter in the wrong position.</value>
+    <value>The position of the delimiter in the numeric expression "{0}" is incorrect.</value>
   </data>
   <data name="InvalidParenthesis_NestingLevelTooDeep" xml:space="preserve">
-    <value>Parenthesized sentences are nested {0} level which exceeds the maximum of  {1}.</value>
+    <value>The nesting level of parentheses ({0}) exceeded the specified value ({1}).</value>
   </data>
   <data name="InvalidParenthesis_SubsentenceTooLong" xml:space="preserve">
-    <value>Parenthesized sentence length {0} exceeds the maximum of {1}.</value>
+    <value>The length of the sentence inside the parentheses ({0} characters) exceeded the specified value ({1} characters).</value>
   </data>
   <data name="InvalidParenthesis_SubsentenceTooFrequent" xml:space="preserve">
-    <value>Too many parenthesized sentences {0} exceeds the maximum of {1}.</value>
+    <value>The number of parentheses in a sentence ({0}) exceeded the specified value ({1}).</value>
   </data>
   <data name="Hyphenation_HyphenatedInDictionary" xml:space="preserve">
-    <value>This phrase "{0}" should be hyphenated. ie: "{0}"</value>
+    <value>Please use the hyphenated expression "{1}" for "{0}".</value>
   </data>
   <data name="Okurigana" xml:space="preserve">
-    <value>Found an invalid Okurigana expression "{0}"</value>
+    <value>An invalid okurigana "{0}" was found.</value>
   </data>
   <data name="DoubledJoshi" xml:space="preserve">
-    <value>Found repeated Joshi word "{0}"</value>
+    <value>The particle "{0}" is used more than twice in a sentence.</value>
   </data>
   <data name="WeakExpression_WeakExpression" xml:space="preserve">
-    <value>{0} is considered a weak expression.</value>
+    <value>"{0}" is a weak expression.</value>
   </data>
   <data name="JapaneseAnchorExpression" xml:space="preserve">
-    <value>Found invalid anchor expression "{0}".</value>
+    <value>An invalid chapter/section anchor "{0}" was found.</value>
   </data>
   <data name="RedundantExpression" xml:space="preserve">
-    <value>{0} is considered redundant expression.</value>
+    <value>"{0}" is a redundant expression.</value>
   </data>
   <data name="LongKanjiChain" xml:space="preserve">
-    <value>Found too long kanji chain: "{0}" ({1}.)</value>
+    <value>The number of characters in the phrase "{0}" ({1} characters) exceeded the specified value ({2} characters).</value>
   </data>
   <data name="JapaneseNumberExpression" xml:space="preserve">
-    <value>Found invalid number expression "{0}".</value>
+    <value>An invalid counting expression "{0}" was found.</value>
   </data>
   <data name="JapaneseAmbiguousNounConjunction" xml:space="preserve">
-    <value>Found ambiguous noun conjunction: "...{0}..."</value>
+    <value>An ambiguous noun connection pattern "{0}" with consecutive "の" particles was found.</value>
   </data>
   <data name="JapaneseBrokenExpression" xml:space="preserve">
-    <value>Found broken japanese expression (missing "Ra"): "{0}"</value>
+    <value>A "ra-nuki" word "{0}" was found.</value>
   </data>
   <data name="JapaneseJoyoKanji" xml:space="preserve">
-    <value>Found non-joyo kanji: "{0}"</value>
+    <value>A non-Joyo kanji character "{0}" was found.</value>
   </data>
   <data name="DoubledConjunctiveParticleGa" xml:space="preserve">
-    <value>Found multiple conjunctive particle: "{0}"</value>
+    <value>Multiple occurrences of the adversative conjunction particle "{0}" were found in a sentence.</value>
   </data>
   <data name="SuccessiveSentence" xml:space="preserve">
-    <value>Found similar two sentences in succession: "{0}" and "{1}"</value>
+    <value>Similar sentences "{0}" and "{1}" are used consecutively.</value>
   </data>
   <data name="JapaneseWordVariation_SameCount" xml:space="preserve">
-    <value>Found possible Japanese word variations "{0}", "{1}" at {2}</value>
+    <value>"{0}" and "{1}" (position: {2}) are used the same number of times. One of them is considered a fluctuation expression.</value>
   </data>
   <data name="Taigendome" xml:space="preserve">
-    <value>Found noun "{0}" at end of sentence.</value>
+    <value>A "taigen-dome" (noun ending) "{0}" was found.</value>
   </data>
   <data name="InvalidParenthesis_MismatchedParentheses" xml:space="preserve">
-    <value>Found an invalid mismatched parentheses "{0}".</value>
+    <value>Invalid brackets "{0}" were found. Please correct the types and numbers of opening and closing brackets to match.</value>
   </data>
   <data name="SectionWordCount" xml:space="preserve">
-    <value>The number of characters in the section ({0}) exceeds the maximum of {1}.</value>
+    <value>The number of words in the section ({0}) exceeded the specified value ({1}).</value>
   </data>
   <data name="SentenceWordCount" xml:space="preserve">
-    <value>The number of words ({0}) exceeds the maximum of {1}.</value>
+    <value>The number of words in the sentence ({0}) exceeded the specified value ({1}).</value>
   </data>
   <data name="SuggestGrammarRule" xml:space="preserve">
-    <value>Found expression "{0}" that is matched by grammar rule "{1}". Use the synonym "{2}" instead.</value>
+    <value>The expression "{0}" matched the grammar rule "{1}". Consider using the alternative expression "{2}".</value>
   </data>
 </root>

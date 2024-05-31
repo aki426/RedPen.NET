@@ -63,14 +63,14 @@ namespace RedPen.Net.Core {
         /// <summary>
         ///    に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string _ {
+        public static string _Empty_1_ {
             get {
-                return ResourceManager.GetString("", resourceCulture);
+                return ResourceManager.GetString("_Empty[1]", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   The number of commas ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        ///   The number of commas in a sentence ({0}) exceeded the specified value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string CommaCount {
             get {
@@ -79,7 +79,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found contraction &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   The abbreviation &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Contraction {
             get {
@@ -88,7 +88,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found multiple conjunctive particle: &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        ///   Multiple occurrences of the adversative conjunction particle &quot;{0}&quot; were found in a sentence. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string DoubledConjunctiveParticleGa {
             get {
@@ -97,7 +97,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found repeated Joshi word &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        ///   The particle &quot;{0}&quot; is used more than twice in a sentence. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string DoubledJoshi {
             get {
@@ -106,7 +106,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found repeated word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   The word &quot;{0}&quot; is used more than twice in a sentence. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string DoubledWord {
             get {
@@ -115,7 +115,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found double negative expression &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        ///   A double negative expression &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string DoubleNegative {
             get {
@@ -124,7 +124,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found duplicated section (starts from line {0}). に類似しているローカライズされた文字列を検索します。
+        ///   A similar clause (starting from line {1}) was found for the section (starting from line {0}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string DuplicatedSection {
             get {
@@ -133,7 +133,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The section &quot;{0}&quot; is empty. に類似しているローカライズされた文字列を検索します。
+        ///   An empty section &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string EmptySection {
             get {
@@ -142,7 +142,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found invalid end of sentence &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   An invalid sentence-ending expression &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string EndOfSentence {
             get {
@@ -160,7 +160,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The section &quot;{0}&quot; (level {1}) is misplaced. It should have level of {2}. に類似しているローカライズされた文字列を検索します。
+        ///   The placement of section &quot;{0}&quot; (level {1}) is incorrect. Please relocate it to level {2}. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string GappedSection {
             get {
@@ -169,7 +169,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found Hankaku Kana character &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   The half-width katakana character &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string HankakuKana {
             get {
@@ -178,7 +178,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The length of header ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        ///   The length of the heading ({0}) exceeded the specified value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string HeaderLength {
             get {
@@ -187,7 +187,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   This phrase &quot;{0}&quot; should be hyphenated. ie: &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        ///   Please use the hyphenated expression &quot;{1}&quot; for &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Hyphenation_HyphenatedInDictionary {
             get {
@@ -196,7 +196,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found invalid expression &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   An invalid expression &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string InvalidExpression {
             get {
@@ -205,7 +205,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found an invalid mismatched parentheses &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   Invalid brackets &quot;{0}&quot; were found. Please correct the types and numbers of opening and closing brackets to match. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string InvalidParenthesis_MismatchedParentheses {
             get {
@@ -214,7 +214,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Parenthesized sentences are nested {0} level which exceeds the maximum of  {1}. に類似しているローカライズされた文字列を検索します。
+        ///   The nesting level of parentheses ({0}) exceeded the specified value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string InvalidParenthesis_NestingLevelTooDeep {
             get {
@@ -223,7 +223,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Too many parenthesized sentences {0} exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        ///   The number of parentheses in a sentence ({0}) exceeded the specified value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string InvalidParenthesis_SubsentenceTooFrequent {
             get {
@@ -232,7 +232,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Parenthesized sentence length {0} exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        ///   The length of the sentence inside the parentheses ({0} characters) exceeded the specified value ({1} characters). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string InvalidParenthesis_SubsentenceTooLong {
             get {
@@ -241,7 +241,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found invalid symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   An invalid symbol &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string InvalidSymbol {
             get {
@@ -250,7 +250,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found invalid word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   An invalid word &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string InvalidWord {
             get {
@@ -259,7 +259,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found ambiguous noun conjunction: &quot;...{0}...&quot; に類似しているローカライズされた文字列を検索します。
+        ///   An ambiguous noun connection pattern &quot;{0}&quot; with consecutive &quot;の&quot; particles was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string JapaneseAmbiguousNounConjunction {
             get {
@@ -268,7 +268,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found invalid anchor expression &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   An invalid chapter/section anchor &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string JapaneseAnchorExpression {
             get {
@@ -277,7 +277,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found broken japanese expression (missing &quot;Ra&quot;): &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        ///   A &quot;ra-nuki&quot; word &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string JapaneseBrokenExpression {
             get {
@@ -286,7 +286,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found non-joyo kanji: &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        ///   A non-Joyo kanji character &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string JapaneseJoyoKanji {
             get {
@@ -295,7 +295,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found invalid number expression &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   An invalid counting expression &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string JapaneseNumberExpression {
             get {
@@ -304,7 +304,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found invalid Japanese Style &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        ///   The use of an incorrect writing style &quot;{0}&quot; was found. Please unify the writing style to plain or polite form. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string JapaneseStyle {
             get {
@@ -313,7 +313,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found possible Japanese word &quot;{0}&quot; is variations of &quot;{1}&quot; at {2} に類似しているローカライズされた文字列を検索します。
+        ///   &quot;{0}&quot; is considered a fluctuation expression of &quot;{1}&quot; (position: {2}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string JapaneseWordVariation_Normal {
             get {
@@ -322,7 +322,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found possible Japanese word variations &quot;{0}&quot;, &quot;{1}&quot; at {2} に類似しているローカライズされた文字列を検索します。
+        ///   &quot;{0}&quot; and &quot;{1}&quot; (position: {2}) are used the same number of times. One of them is considered a fluctuation expression. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string JapaneseWordVariation_SameCount {
             get {
@@ -331,7 +331,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found invalid Katakana end-hyphen &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   An invalid katakana word &quot;{0}&quot; containing a hyphen was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string KatakanaEndHyphen {
             get {
@@ -340,7 +340,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found a Katakana word &quot;{0}&quot;, which is similar to &quot;{1}&quot; at position {2}. に類似しているローカライズされた文字列を検索します。
+        ///   The katakana word &quot;{0}&quot; is considered a fluctuation expression of &quot;{1}&quot; (position: {2}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string KatakanaSpellCheck {
             get {
@@ -349,7 +349,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The list item is nested too deeply. に類似しているローカライズされた文字列を検索します。
+        ///   The list level ({0}) exceeded the specified value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string ListLevel {
             get {
@@ -358,7 +358,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found too long kanji chain: &quot;{0}&quot; ({1}.) に類似しているローカライズされた文字列を検索します。
+        ///   The number of characters in the phrase &quot;{0}&quot; ({1} characters) exceeded the specified value ({2} characters). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string LongKanjiChain {
             get {
@@ -367,7 +367,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Number {0} has too many decimal delimiters. に類似しているローカライズされた文字列を検索します。
+        ///   The decimal point symbol in the numeric expression &quot;{0}&quot; is used too many times. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string NumberFormat_TooManyDecimals {
             get {
@@ -376,7 +376,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Number {0} requires a delimiter every three digits (eg: 1,000.00 or 1.000,00). に類似しているローカライズされた文字列を検索します。
+        ///   The delimiter in the numeric expression &quot;{0}&quot; is invalid. A delimiter is required every three digits. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string NumberFormat_UndelimitedSequenceTooLong {
             get {
@@ -385,7 +385,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Number {0} has a delimiter in the wrong position. に類似しているローカライズされた文字列を検索します。
+        ///   The position of the delimiter in the numeric expression &quot;{0}&quot; is incorrect. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string NumberFormat_UndelimitedSequenceTooShort {
             get {
@@ -394,7 +394,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found an invalid Okurigana expression &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        ///   An invalid okurigana &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Okurigana {
             get {
@@ -403,7 +403,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The number of paragraphs ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        ///   The number of paragraphs in the section ({0}) exceeded the specified value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string ParagraphCount {
             get {
@@ -412,7 +412,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found invalid beginning of paragraph &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   An invalid paragraph start &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string ParagraphStartWith {
             get {
@@ -421,7 +421,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Two left quotation marks in succession. に類似しているローカライズされた文字列を検索します。
+        ///   Left quotes are used consecutively. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Quotation_DoubleLeft {
             get {
@@ -430,7 +430,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Two right quotation marks in succession. に類似しているローカライズされた文字列を検索します。
+        ///   Right quotes are used consecutively. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Quotation_DoubleRight {
             get {
@@ -439,7 +439,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Left quotation mark is missing. に類似しているローカライズされた文字列を検索します。
+        ///   The left quote is missing. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Quotation_LeftExist {
             get {
@@ -448,7 +448,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Left quotation mark does not have a space. に類似しているローカライズされた文字列を検索します。
+        ///   There is no space next to the left quote. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Quotation_LeftSpace {
             get {
@@ -457,7 +457,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Right quotation mark is missing. に類似しているローカライズされた文字列を検索します。
+        ///   The right quote is missing. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Quotation_RightExist {
             get {
@@ -466,7 +466,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Right quotation mark does not have a space. に類似しているローカライズされた文字列を検索します。
+        ///   There is no space next to the right quote. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Quotation_RightSpace {
             get {
@@ -475,7 +475,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   {0} is considered redundant expression. に類似しているローカライズされた文字列を検索します。
+        ///   &quot;{0}&quot; is a redundant expression. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string RedundantExpression {
             get {
@@ -484,7 +484,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The section &quot;{0}&quot; is too deep. に類似しているローカライズされた文字列を検索します。
+        ///   The level of clause &quot;{0}&quot; exceeded the specified value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SectionLevel {
             get {
@@ -493,7 +493,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The number of characters in the section ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        ///   The number of words in the section ({0}) exceeded the specified value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SectionWordCount {
             get {
@@ -502,7 +502,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The length of the sentence ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        ///   The sentence length ({0} characters) exceeded the specified value ({1} characters). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SentenceLength {
             get {
@@ -511,7 +511,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The number of words ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        ///   The number of words in the sentence ({0}) exceeded the specified value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SentenceWordCount {
             get {
@@ -520,7 +520,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Whitespace does not exist at the beginning of the sentence. に類似しているローカライズされた文字列を検索します。
+        ///   There is no space at the beginning of the sentence. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SpaceBeginningOfSentence {
             get {
@@ -529,7 +529,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Space not present after an alphabetical word. に類似しているローカライズされた文字列を検索します。
+        ///   A space is required after the half-width alphabet expression &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SpaceWithAlphabeticalExpression_After {
             get {
@@ -538,7 +538,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Space not present before an alphabetical word. に類似しているローカライズされた文字列を検索します。
+        ///   A space is required before the half-width alphabet expression &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SpaceWithAlphabeticalExpression_Before {
             get {
@@ -547,7 +547,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Space not allowed to exist around the alphabetical word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   Invalid spaces were found around the half-width alphabet expression &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SpaceWithAlphabeticalExpression_Forbidden {
             get {
@@ -556,7 +556,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found possibly misspelled word &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   A possibly misspelled word &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Spelling {
             get {
@@ -565,7 +565,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Sentence starts with a lowercase character &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   A sentence starting with a lowercase letter &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string StartWithCapitalLetter {
             get {
@@ -574,7 +574,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found similar two sentences in succession: &quot;{0}&quot; and &quot;{1}&quot; に類似しているローカライズされた文字列を検索します。
+        ///   Similar sentences &quot;{0}&quot; and &quot;{1}&quot; are used consecutively. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SuccessiveSentence {
             get {
@@ -583,7 +583,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found word &quot;{0}&quot; repeated twice in succession. に類似しているローカライズされた文字列を検索します。
+        ///   The word &quot;{0}&quot; is used consecutively. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SuccessiveWord {
             get {
@@ -592,7 +592,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found invalid word &quot;{0}&quot;. Use the synonym &quot;{1}&quot; instead. に類似しているローカライズされた文字列を検索します。
+        ///   An invalid expression &quot;{0}&quot; was found. Consider using the alternative expression &quot;{1}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SuggestExpression {
             get {
@@ -601,7 +601,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found expression &quot;{0}&quot; that is matched by grammar rule &quot;{1}&quot;. Use the synonym &quot;{2}&quot; instead. に類似しているローカライズされた文字列を検索します。
+        ///   The expression &quot;{0}&quot; matched the grammar rule &quot;{1}&quot;. Consider using the alternative expression &quot;{2}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SuggestGrammarRule {
             get {
@@ -610,7 +610,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Need whitespace after symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   A space is required after the symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SymbolWithSpace_After {
             get {
@@ -619,7 +619,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Need whitespace before symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   A space is required before the symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SymbolWithSpace_Before {
             get {
@@ -628,7 +628,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Need whitespace before and after symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
+        ///   Spaces are required before and after the symbol &quot;{0}&quot;. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string SymbolWithSpace_BeforeAfter {
             get {
@@ -637,7 +637,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   Found noun &quot;{0}&quot; at end of sentence. に類似しているローカライズされた文字列を検索します。
+        ///   A &quot;taigen-dome&quot; (noun ending) &quot;{0}&quot; was found. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Taigendome {
             get {
@@ -646,7 +646,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The expanded form of the acronym {0} is not present in the document. に類似しているローカライズされた文字列を検索します。
+        ///   The formal expression for the abbreviation &quot;{0}&quot; was not found in the document. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string UnexpandedAcronym_UnexpandedAcronym {
             get {
@@ -655,7 +655,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The section is void. に類似しているローカライズされた文字列を検索します。
+        ///   The section content is empty. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string VoidSection {
             get {
@@ -664,7 +664,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   {0} is considered a weak expression. に類似しているローカライズされた文字列を検索します。
+        ///   &quot;{0}&quot; is a weak expression. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string WeakExpression_WeakExpression {
             get {
@@ -673,7 +673,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The word &quot;{0}&quot; comprises {1}% of all words. Expected around {2}%. に類似しているローカライズされた文字列を検索します。
+        ///   The word &quot;{0}&quot; is used {1}% of all words. The desired usage rate is around {2}%. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string WordFrequency_WordUsedTooFrequently {
             get {
@@ -682,7 +682,7 @@ namespace RedPen.Net.Core {
         }
         
         /// <summary>
-        ///   The number of words ({0}) exceeds the maximum of {1}. に類似しているローカライズされた文字列を検索します。
+        ///   The number of words in a sentence ({0}) exceeds the maximum value ({1}). に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string WordNumber {
             get {
