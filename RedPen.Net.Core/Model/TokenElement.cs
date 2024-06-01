@@ -59,7 +59,8 @@ namespace RedPen.Net.Core.Model
         {
             Surface = surface;
             Tags = tags;
-            Reading = reading;
+            // NOTE: KuromojiでTokenizeした場合、英語表現はReadingがNullになるため、その場合はSurfaceをToLowerしたものをReadingとして扱う。
+            Reading = reading ?? surface.ToLower();
             OffsetMap = offsetMap;
         }
 

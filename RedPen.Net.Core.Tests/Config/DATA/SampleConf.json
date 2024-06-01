@@ -87,8 +87,8 @@
         {
             "Name": "LongKanjiChain",
             "Level": "ERROR",
-            "ExpressionSet": [ "東京特許許可局" ],
-            "Minlength": 5
+            "MinLength": 5,
+            "ExpressionSet": [ "東京特許許可局" ]
         },
         {
             "Name": "Okurigana",
