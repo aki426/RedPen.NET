@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NLog;
@@ -13,13 +14,25 @@ namespace RedPen.Net.Core.Config
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        public ConfigurationLoader()
+        /// <summary>RedPen.NETのJson設定ファイルとして読み込んでよいValidatorConfigurationの定義</summary>
+        public ImmutableDictionary<string, Type> ValidatorConfigurationDefinitions { get; init; }
+
+        /// <summary>
+        /// ConfigurationLoaderとして読み込むべきValidatorConfigurationの定義を指定して新しいインスタンスを初期化します。
+        /// Initializes a new instance of the <see cref="ConfigurationLoader"/> class.
+        /// </summary>
+        /// <param name="validatorConfigurationDefinitions">The validator configuration definitions.</param>
+        public ConfigurationLoader(ImmutableDictionary<string, Type> validatorConfigurationDefinitions)
         {
+            ValidatorConfigurationDefinitions = validatorConfigurationDefinitions;
         }
 
+        //public ConfigurationLoader()
+        //{
+        //}
+
         // NOTE: Configurationのデシリアライズ時はLangのチェックはしない。
-        // ValidatorにDIした時点でLangのチェックが行われる。
-        // なお、LevelがOFFだった場合はValidatorが作成されないので言語チェックもされない。
+        // ValidatorにDIした時点でValidatorのコンストラクタでLangのチェックが行われる。
 
         /// <summary>
         /// Json形式の文字列からConfigurationを読み込む。
@@ -31,7 +44,7 @@ namespace RedPen.Net.Core.Config
             var options = new JsonSerializerOptions
             {
                 Converters = {
-                    new ValidatorConfigurationConverter(),
+                    new ValidatorConfigurationConverter(this.ValidatorConfigurationDefinitions),
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
 
                 // コメント付きJsonファイルを読み込めるようにする。
@@ -53,6 +66,20 @@ namespace RedPen.Net.Core.Config
         /// </summary>
         public class ValidatorConfigurationConverter : JsonConverter<ValidatorConfiguration>
         {
+            private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
+            /// <summary>RedPen.NETのJson設定ファイルとして読み込んでよいValidatorConfigurationの定義</summary>
+            public ImmutableDictionary<string, Type> ValidatorConfigurationDefinitions { get; init; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ValidatorConfigurationConverter"/> class.
+            /// </summary>
+            /// <param name="validatorConfigurationDefinitions">The load config definitions.</param>
+            public ValidatorConfigurationConverter(ImmutableDictionary<string, Type> validatorConfigurationDefinitions)
+            {
+                ValidatorConfigurationDefinitions = validatorConfigurationDefinitions;
+            }
+
             /// <summary>
             /// Cans the convert.
             /// </summary>
@@ -111,20 +138,25 @@ namespace RedPen.Net.Core.Config
                 }
 
                 // NOTE: 「ペイロードが独自の型情報を指定できるようにすることは、Webアプリケーションの脆弱性の一般的な原因」
-                // になりうるため、Enum型のValidationTypeにアセンブリ内に実在するConfigurationとValidatorのみを指定できる機能を付加している。
+                // になりうるため、ConfigurationLoaderのコンストラクト時に渡されたValidatorConfigurationの定義に無い設定は
+                // 読み込まずに例外を発生させる。
 
-                // ConvertFromは対応するValidationTypeが存在しない場合は例外が発生する。
-                ValidationType validationType = ValidationTypeExtend.ConvertFrom(typeName);
-                Type? type = validationType.GetTypeAsConfigurationClass();
-                if (type == null)
+                //ValidationType validationType = ValidationTypeExtend.ConvertFrom(typeName);
+                //Type? type = validationType.GetTypeAsConfigurationClass();
+
+                if (!this.ValidatorConfigurationDefinitions.ContainsKey(typeName))
                 {
                     throw new JsonException($"No such a ValidationType as {typeName}");
                 }
 
-                ValidatorConfiguration? conf = JsonSerializer.Deserialize(ref reader, type, optionForNoLoop) as ValidatorConfiguration;
+                ValidatorConfiguration? conf = JsonSerializer.Deserialize(
+                    ref reader,
+                    this.ValidatorConfigurationDefinitions[typeName],
+                    optionForNoLoop) as ValidatorConfiguration;
+
                 if (conf == null)
                 {
-                    throw new JsonException($"Deserialized {validationType.ConfigurationName()} is null.");
+                    throw new JsonException($"Deserialized {this.ValidatorConfigurationDefinitions[typeName].Name} is null.");
                 }
 
                 return conf;

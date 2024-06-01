@@ -101,12 +101,15 @@ namespace RedPen.Net.Core.Validators
         public List<ValidationError> Validate(Sentence sentence);
     }
 
-    // MEMO: 以下はValidator実装のボイラープレート。
-
-    // TODO: Validator初期実装時は以下を適宜コピペして使ってもよい。
+    // <For Contributors>
+    // NOTE: 以下はValidator実装のボイラープレートです。
+    // Validator初期実装時は以下を適宜コピペして使ってください。
+    // NOTE: ValidatorConfigurationとValidatorには命名規則があります。
+    // <ValidationName>Configuration, <ValidationName>Validatorという命名規則から逸脱しないようにしてください。
+    // RedPen.NETのメタ定義としてこの命名規則でチェックをかけています。
+    // 具体的な挙動についてはDefaultValidationDefinitionを参照してください。
 
     //// TODO: Configurationにはパラメータに応じたInterfaceがあるので、必要なパラメータはInterfaceを実装することで定義する。
-
     ///// <summary>XXXのConfiguration</summary>
     //public record XXXConfiguration : ValidatorConfiguration
     //{

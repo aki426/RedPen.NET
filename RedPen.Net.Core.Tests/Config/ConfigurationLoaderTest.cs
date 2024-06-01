@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
+using RedPen.Net.Core.Globals;
 using RedPen.Net.Core.Validators.DocumentValidator;
 using RedPen.Net.Core.Validators.SentenceValidator;
 using Xunit;
@@ -55,7 +56,8 @@ namespace RedPen.Net.Core.Tests.Config
     ]
 }";
 
-            var jsonLoader = new ConfigurationLoader();
+            // ライブラリ実装済みのValidatorConfiguration定義を与える。その定義にあるValidatorConfigurationのみロードされる。
+            var jsonLoader = new ConfigurationLoader(DefaultValidationDefinition.ValidatorConfTypeDefinitions);
             var configuration = jsonLoader.Load(jsonString);
 
             configuration.Lang.Should().Be("ja-JP");
