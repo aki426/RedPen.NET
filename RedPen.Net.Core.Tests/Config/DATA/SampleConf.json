@@ -1,6 +1,6 @@
 {
     // サンプルConfファイルです。すべての実装済みのValidatorについて
-    "Lang": "ja-JP",
+    "DocumentLang": "ja-JP",
     "Variant": "zenkaku",
     "ValidatorConfigurations": [
         {

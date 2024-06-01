@@ -32,7 +32,7 @@ namespace RedPen.Net.Core.Tests.Parser
             //    .Build();
             Configuration configuration = new Configuration()
             {
-                Lang = lang,
+                DocumentLang = lang,
                 Variant = "",
                 ValidatorConfigurations = new List<ValidatorConfiguration>(),
                 Symbols = new List<Symbol>(),
@@ -43,7 +43,7 @@ namespace RedPen.Net.Core.Tests.Parser
                 doc = _parser.Parse(
                     sampleText,
                     new SentenceExtractor(configuration.SymbolTable),
-                    RedPenTokenizerFactory.CreateTokenizer(configuration.CultureInfo));
+                    RedPenTokenizerFactory.CreateTokenizer(configuration.DocumentCultureInfo));
             }
             catch (Exception e)
             {

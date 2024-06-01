@@ -19,7 +19,7 @@ namespace RedPen.Net.Core.Tests.Config
         {
             string jsonString = @"{
     // コメントも書けます。
-    ""Lang"": ""ja-JP"",
+    ""DocumentLang"": ""ja-JP"",
     ""Variant"": ""zenkaku"",
     ""ValidatorConfigurations"": [
         {
@@ -60,8 +60,8 @@ namespace RedPen.Net.Core.Tests.Config
             var jsonLoader = new ConfigurationLoader(DefaultValidationDefinition.ValidatorConfTypeDefinitions);
             var configuration = jsonLoader.Load(jsonString);
 
-            configuration.Lang.Should().Be("ja-JP");
-            configuration.CultureInfo.Should().Be(CultureInfo.GetCultureInfo("ja-JP"));
+            configuration.DocumentLang.Should().Be("ja-JP");
+            configuration.DocumentCultureInfo.Should().Be(CultureInfo.GetCultureInfo("ja-JP"));
             configuration.Variant.Should().Be("zenkaku");
 
             configuration.ValidatorConfigurations.Count.Should().Be(2);

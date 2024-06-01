@@ -96,7 +96,7 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
             //    .Build();
             Configuration configuration = new Configuration()
             {
-                Lang = documentLang.Name,
+                DocumentLang = documentLang.Name,
                 Variant = "",
                 ValidatorConfigurations = new List<ValidatorConfiguration>(),
                 Symbols = new List<Symbol>(),
@@ -108,7 +108,7 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
                 document = new PlainTextParser().Parse(
                     text,
                     new SentenceExtractor(configuration.SymbolTable),
-                    RedPenTokenizerFactory.CreateTokenizer(configuration.CultureInfo));
+                    RedPenTokenizerFactory.CreateTokenizer(configuration.DocumentCultureInfo));
             }
             catch (Exception e)
             {
