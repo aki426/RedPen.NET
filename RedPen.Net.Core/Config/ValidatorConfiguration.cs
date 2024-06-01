@@ -46,6 +46,14 @@ namespace RedPen.Net.Core.Config
             {
                 return $"ExpressionSet: {expressionSetConfig.ExpressionSet.ToStringExt()}";
             }
+            else if (this is IGrammarRuleSetConfigParameter grammarRuleSetConfig)
+            {
+                return $"GrammarRuleSet: {grammarRuleSetConfig.GrammarRuleSet.ToStringExt()}";
+            }
+            else if (this is ICharMapConfigParameter charMapConfig)
+            {
+                return $"CharMap: {charMapConfig.CharMap.ToStringExt()}";
+            }
             else if (this is IWordMapConfigParameter wordMapConfig)
             {
                 return $"WordMap: {wordMapConfig.WordMap.ToStringExt()}";

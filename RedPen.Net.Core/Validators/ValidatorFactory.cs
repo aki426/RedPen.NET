@@ -7,8 +7,8 @@ using RedPen.Net.Core.Config;
 namespace RedPen.Net.Core.Validators
 {
     /// <summary>
-    /// Validatorを生成するクラス。厳密なFactoryパターンではないので、生成したらしっぱなしであることに注意。
-    /// Validator生成のための定義は、ValidationType.csに記述されている。
+    /// Validatorを生成するクラス。
+    /// 厳密なFactoryパターンではないので、生成したらしっぱなしであることに注意。
     /// </summary>
     public class ValidatorFactory
     {
@@ -46,16 +46,17 @@ namespace RedPen.Net.Core.Validators
         /// <param name="symbolTable">Validator動作時のSymbolTable設定。</param>
         /// <param name="validatorConfiguration">具体的なValidatorConfigurationを与える。</param>
         /// <returns>引数に対応したValidatorインスタンス。</returns>
-        public Validator GetValidator(
+        public Validator? GetValidator(
             CultureInfo cultureInfo,
             SymbolTable symbolTable,
             ValidatorConfiguration validatorConfiguration)
         {
-            // MEMO: Validatorの引数付きコンストラクタの引数定義は実装時の要注意事項として全Validatorで共通とする。
+            // NOTE: Validatorの引数付きコンストラクタの引数定義は実装時の要注意事項として全Validatorで共通とする。
             var args = new object[] { cultureInfo, symbolTable, validatorConfiguration };
 
+            // NOTE: ValidatorConfigurationから直接対応するValidatorのTypeを取得し、生成する。
             object v = Activator.CreateInstance(
-                validatorConfiguration.Type.GetTypeAsValidatorClass(),
+                Type.GetType(GetValidatorFullName(validatorConfiguration)),
                 BindingFlags.CreateInstance,
                 null,
                 args,
@@ -67,7 +68,7 @@ namespace RedPen.Net.Core.Validators
                 LOG.Warn($"Failed to create Validator instance for {validatorConfiguration.ValidationName}");
                 return null;
             }
-            else if (v is Validator && validatorConfiguration.Type.EqualsAsValidator(v as Validator))
+            else if (v is Validator && validatorConfiguration.ValidationName == (v as Validator).ValidationName)
             {
                 return v as Validator;
             }
@@ -76,6 +77,18 @@ namespace RedPen.Net.Core.Validators
                 LOG.Warn($"Failed to set Validator type for {validatorConfiguration.ValidationName}");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// ValidatorConfigurationから、対応するValidatorを取得する。
+        /// NOTE: ValidatorとValidationConfigurationは同じ名前空間に属していることが前提となる。
+        /// </summary>
+        /// <param name="validatorConfiguration">The validator configuration.</param>
+        /// <returns>Validatorのアセンブリ修飾名</returns>
+        public static string GetValidatorFullName(ValidatorConfiguration validatorConfiguration)
+        {
+            var confFullName = validatorConfiguration.GetType().FullName;
+            return $"{confFullName.Substring(0, confFullName.Length - "Configuration".Length)}Validator";
         }
     }
 }
