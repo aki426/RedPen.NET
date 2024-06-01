@@ -16,7 +16,21 @@ namespace RedPen.Net.Core.Config.Tests
             defaultConstructed.ValidatorConfigurations.Should().BeEmpty();
             defaultConstructed.Symbols.Should().BeEmpty();
 
-            //var defaultConstructedWithDocumentLang = new Configuration() { DocumentLang = "en-US" };
+            // デフォルトコンストラクタの場合、各初期値は他の値に影響を与えない。
+            var withDocumentLang = new Configuration() { DocumentLang = "en-US" };
+            withDocumentLang.DocumentLang.Should().Be("en-US");
+            withDocumentLang.Variant.Should().Be("");
+            withDocumentLang.MessageLang.Should().Be("ja-JP");
+
+            var withVariant = new Configuration() { Variant = "zenkaku" };
+            withVariant.DocumentLang.Should().Be("ja-JP");
+            withVariant.Variant.Should().Be("zenkaku");
+            withVariant.MessageLang.Should().Be("ja-JP");
+
+            var withMessageLang = new Configuration() { MessageLang = "en-US" };
+            withMessageLang.DocumentLang.Should().Be("ja-JP");
+            withMessageLang.Variant.Should().Be("");
+            withMessageLang.MessageLang.Should().Be("en-US");
         }
     }
 }
