@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using RedPen.Net.Core.Utility;
 
@@ -82,11 +81,25 @@ namespace RedPen.Net.Core.Config
         public int MinLength { get; init; }
     }
 
+    /// <summary>ValidatorConfigurationの継承クラスがMaxCountプロパティを持つことを示すインターフェース。</summary>
+    public interface IMaxCountConfigParameter
+    {
+        /// <summary>エラーとする対象物の個数の最大値を表すConfigurationパラメータ。</summary>
+        public int MaxCount { get; init; }
+    }
+
     /// <summary>ValidatorConfigurationの継承クラスがMinCountプロパティを持つことを示すインターフェース。</summary>
     public interface IMinCountConfigParameter
     {
         /// <summary>エラーとする対象物の個数の最小値を表すConfigurationパラメータ。</summary>
         public int MinCount { get; init; }
+    }
+
+    /// <summary>ValidatorConfigurationの継承クラスがMaxLevelプロパティを持つことを示すインターフェース。</summary>
+    public interface IMaxLevelConfigParameter
+    {
+        /// <summary>エラーとするレベルの最大値を表すConfigurationパラメータ。</summary>
+        public int MaxLevel { get; init; }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがMinLevelプロパティを持つことを示すインターフェース。</summary>
@@ -103,11 +116,32 @@ namespace RedPen.Net.Core.Config
         public int MaxInterval { get; init; }
     }
 
+    /// <summary>MinInterval</summary>
+    public interface IMinIntervalConfigParameter
+    {
+        /// <summary>エラーとする間隔の最小値を表すConfigurationパラメータ。</summary>
+        public int MinInterval { get; init; }
+    }
+
     /// <summary>MaxRatio</summary>
     public interface IMaxRatioConfigParameter
     {
         /// <summary>エラーとする割合の最大値を表すConfigurationパラメータ。</summary>
         public double MaxRatio { get; init; }
+    }
+
+    /// <summary>MinRatio</summary>
+    public interface IMinRatioConfigParameter
+    {
+        /// <summary>エラーとする割合の最小値を表すConfigurationパラメータ。</summary>
+        public double MinRatio { get; init; }
+    }
+
+    /// <summary>MaxFreq</summary>
+    public interface IMaxFreqConfigParameter
+    {
+        /// <summary>エラーとする発生回数の最大値を表すConfigurationパラメータ。</summary>
+        public int MaxFreq { get; init; }
     }
 
     /// <summary>MinFreq</summary>
@@ -124,32 +158,57 @@ namespace RedPen.Net.Core.Config
         public int MaxDistance { get; init; }
     }
 
+    /// <summary>MinDistance</summary>
+    public interface IMinDistanceConfigParameter
+    {
+        /// <summary>エラーとする対象物の間隔の最小値を表すConfigurationパラメータ。</summary>
+        public int MinDistance { get; init; }
+    }
+
     #endregion Max/Min系のプロパティ定義のためのInterface
 
     #region Set/Map系のプロパティ定義のためのInterface
 
-    /// <summary>ValidatorConfigurationの継承クラスがWordSetプロパティを持つことを示すインターフェース。</summary>
+    /// <summary>ValidatorConfigurationの継承クラスがCharSetプロパティを持つことを示すインターフェース。</summary>
     public interface ICharSetConfigParameter
     {
-        /// <summary>何らかの単語セットを表すConfigurationパラメータ。
-        /// MEMO: 単語セットに単語が含まれるかどうか、を判定するValidationの場合に用いる。</summary>
+        /// <summary>文字セットを表すConfigurationパラメータ。
+        /// NOTE: 文字セットに含まれる文字がドキュメント中に出現するか、の判定等に用いる。</summary>
         public HashSet<string> CharSet { get; init; }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがWordSetプロパティを持つことを示すインターフェース。</summary>
     public interface IWordSetConfigParameter
     {
-        /// <summary>何らかの単語セットを表すConfigurationパラメータ。
-        /// MEMO: 単語セットに単語が含まれるかどうか、を判定するValidationの場合に用いる。</summary>
+        /// <summary>何らかの単語（＝Token）セットを表すConfigurationパラメータ。
+        /// NOTE: 単語セットに含まれる単語がドキュメント中に出現するか、の判定等に用いる。</summary>
         public HashSet<string> WordSet { get; init; }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがExpressionSetプロパティを持つことを示すインターフェース。</summary>
     public interface IExpressionSetConfigParameter
     {
-        /// <summary>何らかの単語セットを表すConfigurationパラメータ。
-        /// MEMO: 単語セットに単語が含まれるかどうか、を判定するValidationの場合に用いる。</summary>
+        /// <summary>何らかの表現（単語の連続）セットを表すConfigurationパラメータ。
+        /// NOTE: 表現セットに含まれる表現がドキュメント中に出現するか、の判定等に用いる。</summary>
         public HashSet<string> ExpressionSet { get; init; }
+    }
+
+    /// <summary>ValidatorConfigurationの継承クラスがGrammarRuleSetプロパティを持つことを示すインターフェース。</summary>
+    public interface IGrammarRuleSetConfigParameter
+    {
+        /// <summary>何らかの文法ルールセットを表すConfigurationパラメータ。
+        /// NOTE: 文法ルールセットに含まれる文法パターンがドキュメント中に出現するか、の判定等に用いる。</summary>
+        public HashSet<string> GrammarRuleSet { get; init; }
+    }
+
+    // TODO: Dictionary<string, string>の代わりにDictionary<char, char>に変更することも検討する。
+    // ただしJsonフォーマットに文字を指定する方法が無いので、stringで十分かもしれない。
+
+    /// <summary>ValidatorConfigurationの継承クラスがCharMapプロパティを持つことを示すインターフェース。</summary>
+    public interface ICharMapConfigParameter
+    {
+        /// <summary>何らかの文字のマッピング（辞書）を表すConfigurationパラメータ。</summary>
+        public Dictionary<string, string> CharMap { get; init; }
     }
 
     /// <summary>ValidatorConfigurationの継承クラスがWordMapプロパティを持つことを示すインターフェース。</summary>
@@ -162,7 +221,7 @@ namespace RedPen.Net.Core.Config
     /// <summary>ValidatorConfigurationの継承クラスがExpressionMapプロパティを持つことを示すインターフェース。</summary>
     public interface IExpressionMapConfigParameter
     {
-        /// <summary>何らかの単語のマッピング（辞書）を表すConfigurationパラメータ。</summary>
+        /// <summary>何らかの表現のマッピング（辞書）を表すConfigurationパラメータ。</summary>
         public Dictionary<string, string> ExpressionMap { get; init; }
     }
 

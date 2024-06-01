@@ -13,6 +13,10 @@ namespace RedPen.Net.Core.Config
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
+        public ConfigurationLoader()
+        {
+        }
+
         // NOTE: Configurationのデシリアライズ時はLangのチェックはしない。
         // ValidatorにDIした時点でLangのチェックが行われる。
         // なお、LevelがOFFだった場合はValidatorが作成されないので言語チェックもされない。
@@ -127,6 +131,7 @@ namespace RedPen.Net.Core.Config
             }
 
             // Convertersを調整しないと何回もValidatorConfigurationConverterが呼ばれて無限ループになってしまうため必要。
+            // NOTE: 特にLodaerの設定に依存しないのでstaticで良い。
             private static JsonSerializerOptions optionForNoLoop = new JsonSerializerOptions
             {
                 // MEMO: Enumを文字列へ変換し、フォーマットはCamelCaseにする。
@@ -151,17 +156,30 @@ namespace RedPen.Net.Core.Config
 
                 // ValidatorConfiguration.csに定義されたどのInterface型を継承しているかによってプロパティを特定する。
                 // TODO: ValidatorConfiguration向けのプロパティ用Interfaceを追加した場合はここに書き出しロジックを追加する。
+                // NOTE: Interface型を検査しているだけなので、ValidatorConfiguration自体を追加した場合にWriteメソッドに変更を加える必要は無い。
 
                 #region Max/Min系のプロパティ
 
                 if (conf is IMaxLengthConfigParameter maxLengthConf) { writer.WriteNumber("MaxLength", maxLengthConf.MaxLength); }
                 if (conf is IMinLengthConfigParameter minLengthConf) { writer.WriteNumber("MinLength", minLengthConf.MinLength); }
+
+                if (conf is IMaxCountConfigParameter maxCountConf) { writer.WriteNumber("MaxCount", maxCountConf.MaxCount); }
                 if (conf is IMinCountConfigParameter minCountConf) { writer.WriteNumber("MinCount", minCountConf.MinCount); }
+
+                if (conf is IMaxLevelConfigParameter maxLevelConf) { writer.WriteNumber("MaxLevel", maxLevelConf.MaxLevel); }
                 if (conf is IMinLevelConfigParameter minLevelConf) { writer.WriteNumber("MinLevel", minLevelConf.MinLevel); }
+
                 if (conf is IMaxIntervalConfigParameter maxIntervalConf) { writer.WriteNumber("MaxInterval", maxIntervalConf.MaxInterval); }
+                if (conf is IMinIntervalConfigParameter minIntervalConf) { writer.WriteNumber("MinInterval", minIntervalConf.MinInterval); }
+
                 if (conf is IMaxRatioConfigParameter maxRatioConf) { writer.WriteNumber("MaxRatio", maxRatioConf.MaxRatio); }
+                if (conf is IMinRatioConfigParameter minRatioConf) { writer.WriteNumber("MinRatio", minRatioConf.MinRatio); }
+
+                if (conf is IMaxFreqConfigParameter maxFreqConf) { writer.WriteNumber("MaxFreq", maxFreqConf.MaxFreq); }
                 if (conf is IMinFreqConfigParameter minFreqConf) { writer.WriteNumber("MinFreq", minFreqConf.MinFreq); }
+
                 if (conf is IMaxDistanceConfigParameter maxDistanceConf) { writer.WriteNumber("MaxDistance", maxDistanceConf.MaxDistance); }
+                if (conf is IMinDistanceConfigParameter minDistanceConf) { writer.WriteNumber("MinDistance", minDistanceConf.MinDistance); }
 
                 #endregion Max/Min系のプロパティ
 
@@ -183,6 +201,18 @@ namespace RedPen.Net.Core.Config
                 {
                     writer.WritePropertyName("ExpressionSet");
                     JsonSerializer.Serialize(writer, expressionSetConf.ExpressionSet, expressionSetConf.ExpressionSet.GetType(), options);
+                }
+
+                if (conf is IGrammarRuleSetConfigParameter grammarRuleSetConf)
+                {
+                    writer.WritePropertyName("GrammarSet");
+                    JsonSerializer.Serialize(writer, grammarRuleSetConf.GrammarRuleSet, grammarRuleSetConf.GrammarRuleSet.GetType(), options);
+                }
+
+                if (conf is ICharMapConfigParameter charMapConf)
+                {
+                    writer.WritePropertyName("CharMap");
+                    JsonSerializer.Serialize(writer, charMapConf.CharMap, charMapConf.CharMap.GetType(), options);
                 }
 
                 if (conf is IWordMapConfigParameter wordMapConf)
