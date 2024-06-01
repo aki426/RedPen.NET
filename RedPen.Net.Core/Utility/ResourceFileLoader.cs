@@ -23,5 +23,8 @@ namespace RedPen.Net.Core.Utility
         }
 
         // TODO: LoadWordMapの実装。
+
+        // TODO: 全てのDefaultResourceを読み込むValidationについて、EnableDefaultDictパラメータを反映し、
+        // ValidatorConfigurationのコンストラクタでのデフォルトリソース読み込みを実装する。
     }
 }

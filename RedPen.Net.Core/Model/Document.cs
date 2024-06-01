@@ -1,8 +1,7 @@
-﻿using Lucene.Net.Util;
+﻿using System.Collections.Generic;
+using System.Linq;
 using RedPen.Net.Core.Parser;
 using RedPen.Net.Core.Tokenizer;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace RedPen.Net.Core.Model
 {

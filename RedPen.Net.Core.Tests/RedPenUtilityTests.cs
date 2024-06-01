@@ -5,6 +5,8 @@ using Xunit;
 
 namespace RedPen.Net.Core.Tests
 {
+    // TODO: ResourceFileLoaderクラスで代替可能であれば捨てる。
+
     /// <summary>
     /// The red pen utility tests.
     /// </summary>

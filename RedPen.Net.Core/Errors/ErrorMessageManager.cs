@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using NLog;
-using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Validators;
 
 namespace RedPen.Net.Core.Errors

@@ -6,12 +6,8 @@ namespace RedPen.Net.Core.Validators
     /// <summary>Validatorの返すエラー情報</summary>
     public record ValidationError
     {
-        ///// <summary>Validationタイプ</summary>
-        //public ValidationType Type { get; init; }
-
         /// <summary>ValidationName</summary>
         public string ValidationName { get; init; }
-
         /// <summary>エラーレベル</summary>
         public ValidationLevel Level { get; init; }
         /// <summary>エラー発生したセンテンス。</summary>
@@ -40,7 +36,7 @@ namespace RedPen.Net.Core.Validators
             Sentence sentenceWithError,
             LineOffset? StartPosition = null,
             LineOffset? EndPosition = null,
-            object[] MessageArgs = null,
+            object[]? MessageArgs = null,
             string MessageKey = "")
         {
             this.ValidationName = validationName;
@@ -51,29 +47,6 @@ namespace RedPen.Net.Core.Validators
             this.MessageArgs = MessageArgs ?? new object[0];
             this.MessageKey = MessageKey;
         }
-
-        ///// <summary>
-        ///// センテンス内の開始終了位置をintで与えることができる<see cref="ValidationError"/>コンストラクタ。class.
-        ///// </summary>
-        ///// <param name="type">The type.</param>
-        ///// <param name="Level">The level.</param>
-        ///// <param name="sentenceWithError">The sentence with error.</param>
-        ///// <param name="startPosition">The start position.</param>
-        ///// <param name="endPosition">The end position.</param>
-        ///// <param name="MessageArgs">The message args.</param>
-        //internal ValidationError(
-        //    ValidationType type,
-        //    ValidationLevel Level,
-        //    Sentence sentenceWithError,
-        //    int startPosition,
-        //    int endPosition,
-        //    object[] MessageArgs = null,
-        //    string MessageKey = "") :
-        //    this(type, Level, sentenceWithError, null, null, MessageArgs, MessageKey)
-        //{
-        //    this.StartPosition = sentenceWithError.GetOffset(startPosition) ?? throw new NullReferenceException("No value present");
-        //    this.EndPosition = sentenceWithError.GetOffset(endPosition) ?? throw new NullReferenceException("No value present");
-        //}
 
         /// <summary>Get line number in which the error occurs.</summary>
         public int LineNumber => Sentence.LineNumber;

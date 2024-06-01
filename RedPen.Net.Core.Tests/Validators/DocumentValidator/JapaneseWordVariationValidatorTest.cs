@@ -41,6 +41,9 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
             // 各テストケースで共通なので、コンストラクタで実行してしまってよい。
             // Documentの違いはValidateで対応可能。
 
+            // TODO: DefaultResourceからのデフォルトDictionaryまたはHashSetの読み込みは、
+            // EnableDefaultDictパラメータによってValidatorConfigurationのコンストラクタで制御する。
+
             // DefaultResourceの読み込み。
             Dictionary<string, string> expressionVariationMap = new Dictionary<string, string>();
             string v = DefaultResources.ResourceManager.GetString($"SpellingVariation_ja");

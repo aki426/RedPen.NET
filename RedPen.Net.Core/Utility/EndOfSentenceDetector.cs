@@ -22,14 +22,6 @@ namespace RedPen.Net.Core.Utility
         /// <summary>ピリオド文字列が含まれていても文末とはみなさないホワイトワードのリスト。</summary>
         private List<string> _whiteWords;
 
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="EndOfSentenceDetector"/> class.
-        ///// </summary>
-        ///// <param name="periodPattern">The periodPattern.</param>
-        //public EndOfSentenceDetector(Regex periodPattern) : this(periodPattern, new List<string>())
-        //{
-        //}
-
         /// <summary>
         /// Initializes a new instance of the <see cref="EndOfSentenceDetector"/> class.
         /// </summary>

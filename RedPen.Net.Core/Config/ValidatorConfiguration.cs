@@ -28,6 +28,9 @@ namespace RedPen.Net.Core.Config
         [JsonIgnore]
         public string StringCollection => GetStringCollectionDebugText();
 
+        /// <summary>SetまたはMapパラメータに対して読み込むべき外部ファイル</summary>
+        public string DictFile { get; init; }
+
         /// <summary>
         /// Gets the string collection debug text.
         /// </summary>

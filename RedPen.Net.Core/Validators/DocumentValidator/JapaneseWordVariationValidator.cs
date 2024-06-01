@@ -18,6 +18,9 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
         public JapaneseWordVariationConfiguration(ValidationLevel level, Dictionary<string, string> wordMap) : base(level)
         {
             WordMap = wordMap;
+
+            // TODO: DefaultResourceからのデフォルトDictionaryまたはHashSetの読み込みは、
+            // EnableDefaultDictパラメータによってValidatorConfigurationのコンストラクタで制御する。
         }
     }
 

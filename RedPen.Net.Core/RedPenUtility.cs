@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace RedPen.Net.Core
 {
+    // TODO: ResourceFileLoaderクラスで代替可能であれば捨てる。
+
     /// <summary>
     /// RedPenに存在する便利関数をテスタブルにするために括りだしたクラス。
     /// </summary>

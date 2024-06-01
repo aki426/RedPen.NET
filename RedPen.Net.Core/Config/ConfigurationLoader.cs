@@ -27,10 +27,6 @@ namespace RedPen.Net.Core.Config
             ValidatorConfigurationDefinitions = validatorConfigurationDefinitions;
         }
 
-        //public ConfigurationLoader()
-        //{
-        //}
-
         // NOTE: Configurationのデシリアライズ時はLangのチェックはしない。
         // ValidatorにDIした時点でValidatorのコンストラクタでLangのチェックが行われる。
 

@@ -23,14 +23,6 @@ namespace RedPen.Net.Core.Config
             { ValidationLevel.ERROR, 3 }
         };
 
-        //private static Dictionary<ValidationLevel, string> mapping = new Dictionary<ValidationLevel, string>()
-        //{
-        //    { ValidationLevel.OFF, "Off" },
-        //    { ValidationLevel.INFO, "Info" },
-        //    { ValidationLevel.WARN, "Warn" },
-        //    { ValidationLevel.ERROR, "Error" }
-        //};
-
         /// <summary>
         /// Are the worse than.
         /// </summary>
@@ -97,24 +89,6 @@ namespace RedPen.Net.Core.Config
             }
 
             throw new ArgumentException("No such a error level as " + level);
-
-            //switch (level.ToUpper())
-            //{
-            //    case "OFF":
-            //        return ValidationLevel.OFF;
-
-            //    case "INFO":
-            //        return ValidationLevel.INFO;
-
-            //    case "WARN":
-            //        return ValidationLevel.WARN;
-
-            //    case "ERROR":
-            //        return ValidationLevel.ERROR;
-
-            //    default:
-            //        throw new ArgumentException("No such a error level as " + level);
-            //}
         }
     }
 }
