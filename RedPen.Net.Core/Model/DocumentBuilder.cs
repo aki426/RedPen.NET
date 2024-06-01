@@ -45,6 +45,7 @@ namespace RedPen.Net.Core.Model
             Sections = new List<Section>();
             FileName = null;
             Tokenizer = tokenizer;
+            PreprocessorRules = new HashSet<PreprocessorRule>();
         }
 
         /// <summary>
@@ -81,13 +82,9 @@ namespace RedPen.Net.Core.Model
             // すべてのHeaderSentencesに対してTokenizeを実行する。
             section = section with
             {
-                HeaderSentences = section.HeaderSentences.Select(sentence => sentence with { Tokens = Tokenizer.Tokenize(sentence) }).ToList()
+                HeaderSentences = section.HeaderSentences
+                    .Select(sentence => sentence with { Tokens = Tokenizer.Tokenize(sentence) }).ToList()
             };
-
-            //foreach (Sentence sentence in section.HeaderSentences)
-            //{
-            //    sentence.Tokens = this.Tokenizer.Tokenize(sentence);
-            //}
 
             Sections.Add(section);
 

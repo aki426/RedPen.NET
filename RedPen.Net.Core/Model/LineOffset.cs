@@ -5,7 +5,7 @@ using System.Linq;
 namespace RedPen.Net.Core.Model
 {
     /// <summary>原文テキストにおける行番号とオフセット位置を表す。
-    /// 原文テキストにおけるある文字の位置を、1始まりの行Indexと0始まるの列Indexで表現したもの、という解釈も成り立つ。</summary>
+    /// 原文テキストにおけるある文字の位置を、1始まりの行Indexと0始まりの列Indexで表現したもの、という解釈も成り立つ。</summary>
     public record LineOffset : IComparable<LineOffset>
     {
         /// <summary>行番号。1始まり。</summary>
@@ -55,6 +55,7 @@ namespace RedPen.Net.Core.Model
 
         /// <summary>
         /// ある行に存在する文字列strに対して、開始位置を指定して、その文字列の各文字に対するLineOffsetリストを生成する。
+        /// NOTE: 改行コードはLFのみを想定。LFが現れた場合にのみ行番号を増加する。
         /// </summary>
         /// <param name="lineNum"></param>
         /// <param name="startOffset"></param>
@@ -62,7 +63,24 @@ namespace RedPen.Net.Core.Model
         /// <returns></returns>
         public static List<LineOffset> MakeOffsetList(int lineNum, int startOffset, string str)
         {
-            return Enumerable.Range(startOffset, str.Length).Select(offset => new LineOffset(lineNum, offset)).ToList();
+            List<LineOffset> result = new List<LineOffset>();
+
+            foreach (char ch in str)
+            {
+                if (ch == '\n')
+                {
+                    result.Add(new LineOffset(lineNum, startOffset));
+                    lineNum++;
+                    startOffset = 0;
+                }
+                else
+                {
+                    result.Add(new LineOffset(lineNum, startOffset));
+                    startOffset++;
+                }
+            }
+
+            return result;
         }
     }
 }

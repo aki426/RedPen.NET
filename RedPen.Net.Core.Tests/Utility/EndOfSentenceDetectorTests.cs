@@ -28,15 +28,15 @@ namespace RedPen.Net.Core.Tests.Utility
 
             // 通常のセンテンスの末尾を検出する。
             endOfSentenceDetector.GetSentenceEndPosition("", 0).Should().Be(-1);
-            endOfSentenceDetector.GetSentenceEndPosition(".", 0).Should().Be(0);
-            endOfSentenceDetector.GetSentenceEndPosition("A.", 0).Should().Be(1);
-            endOfSentenceDetector.GetSentenceEndPosition("this is a pen.", 0).Should().Be(13);
+            endOfSentenceDetector.GetSentenceEndPosition(".", 0).Should().Be(0); // '.'
+            endOfSentenceDetector.GetSentenceEndPosition("A.", 0).Should().Be(1); // '.'
+            endOfSentenceDetector.GetSentenceEndPosition("this is a pen.", 0).Should().Be(13); // '.'
 
             // 末尾に空白があるパターン。
-            endOfSentenceDetector.GetSentenceEndPosition("this is a pen. ", 0).Should().Be(13);
+            endOfSentenceDetector.GetSentenceEndPosition("this is a pen. ", 0).Should().Be(13); // 空白の直前の'.'
 
             // ...があり、さらに空白があるパターンと無いパターン。
-            endOfSentenceDetector.GetSentenceEndPosition("this is a pen... ", 0).Should().Be(15);
+            endOfSentenceDetector.GetSentenceEndPosition("this is a pen... ", 0).Should().Be(15); // 空白の直前の'.'
             endOfSentenceDetector.GetSentenceEndPosition("this is a pen...", 0).Should().Be(15);
         }
 

@@ -14,13 +14,13 @@ namespace RedPen.Net.Core.Parser
         private static Logger LOG = LogManager.GetCurrentClassLogger();
 
         /// <summary>Full stop = 句点を表すパターン。</summary>
-        private Regex fullStopPattern;
+        private Regex _fullStopPattern;
 
         /// <summary>Full stop = 句点を表す文字</summary>
-        private char[] fullStopList;
+        private char[] _fullStopList;
 
         /// <summary>Right quotation = 右引用符を表す文字</summary>
-        private char[] rightQuotationList;
+        private char[] _rightQuotationList;
 
         // TODO: make white words configurable.
 
@@ -36,30 +36,19 @@ namespace RedPen.Net.Core.Parser
             "B.C", "A.D." };
 
         /// <summary>EndOfSentenceDetector</summary>
-        private EndOfSentenceDetector endOfSentenceDetector;
+        private EndOfSentenceDetector _endOfSentenceDetector;
 
         /// <summary>SymbolTable</summary>
-        private SymbolTable? symbolTable = null;
-
-        // MEMO: 未使用につきコメントアウト。
-
-        ///// <summary>
-        ///// Prevents a default instance of the <see cref="SentenceExtractor"/> class from being created.
-        ///// </summary>
-        ///// <param name="fullStopList">fullStopList set of end of sentence characters</param>
-        //private SentenceExtractor(char[] fullStopList)
-        //    : this(fullStopList, extractRightQuotations(Configuration.Builder().Build().SymbolTable))
-        //{
-        //}
+        private SymbolTable? _symbolTable = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SentenceExtractor"/> class.
         /// </summary>
         /// <param name="symbolTable">The symbol table.</param>
         public SentenceExtractor(SymbolTable symbolTable)
-            : this(extractPeriods(symbolTable), extractRightQuotations(symbolTable))
+            : this(GetPeriodsFrom(symbolTable), GetRightQuotationsFrom(symbolTable))
         {
-            this.symbolTable = symbolTable;
+            this._symbolTable = symbolTable;
         }
 
         /// <summary>
@@ -69,11 +58,11 @@ namespace RedPen.Net.Core.Parser
         /// <param name="rightQuotationList">The right quotation list.</param>
         private SentenceExtractor(char[] fullStopList, char[] rightQuotationList)
         {
-            this.fullStopList = fullStopList;
-            this.rightQuotationList = rightQuotationList;
+            this._fullStopList = fullStopList;
+            this._rightQuotationList = rightQuotationList;
 
-            this.fullStopPattern = this.constructEndSentencePattern();
-            this.endOfSentenceDetector = new EndOfSentenceDetector(this.fullStopPattern, WHITE_WORDS);
+            this._fullStopPattern = this.ConstructEndSentencePattern();
+            this._endOfSentenceDetector = new EndOfSentenceDetector(this._fullStopPattern, WHITE_WORDS);
         }
 
         /// <summary>
@@ -81,7 +70,7 @@ namespace RedPen.Net.Core.Parser
         /// </summary>
         /// <param name="symbolTable">The symbol table.</param>
         /// <returns>An array of char.</returns>
-        private static char[] extractPeriods(SymbolTable symbolTable)
+        private static char[] GetPeriodsFrom(SymbolTable symbolTable)
         {
             char[] periods = new char[]{
                 // MEMO: 日本語では「。」「？」「！」の3種類が該当。
@@ -98,7 +87,7 @@ namespace RedPen.Net.Core.Parser
         /// </summary>
         /// <param name="symbolTable">The symbol table.</param>
         /// <returns>An array of char.</returns>
-        private static char[] extractRightQuotations(SymbolTable symbolTable)
+        private static char[] GetRightQuotationsFrom(SymbolTable symbolTable)
         {
             char[] rightQuotations = new char[]{
                 // MEMO: 日本語では「’」と「”」が該当。ただしこの記号で文を区切る意識がある日本語話者は少ないはず。
@@ -109,120 +98,87 @@ namespace RedPen.Net.Core.Parser
             return rightQuotations;
         }
 
-        // MEMO: .NETでは正規表現のエスケープはRegex.Escape()で行う。
-        //private static string handleSpecialCharacter(char endChar)
-        //{
-        //    if (endChar == '.')
-        //    {
-        //        return "\\.";
-        //    }
-        //    else if (endChar == '?')
-        //    {
-        //        return "\\?";
-        //    }
-        //    else if (endChar == '!')
-        //    {
-        //        return "\\!";
-        //    }
-        //    else
-        //    {
-        //        return endChar.ToString();
-        //    }
-        //}
-
-        private void generateSimplePattern(char[] endCharacters, StringBuilder patternString)
+        /// <summary>
+        /// エスケープされた文字のグループパターンを生成します。
+        /// </summary>
+        /// <param name="endCharacters">The end characters.</param>
+        /// <returns>A string.</returns>
+        private static string ConvertToEscapedCharGroupPattern(char[] endCharacters)
         {
+            StringBuilder patternString = new StringBuilder();
+
             patternString.Append("[");
             foreach (char endChar in endCharacters)
             {
-                //patternString.Append(handleSpecialCharacter(endChar));
                 patternString.Append(Regex.Escape(endChar.ToString()));
             }
             patternString.Append("]");
+
+            return patternString.ToString();
         }
 
         /// <summary>
         /// fullStopListとrightQuotationListから、文末を検出するための正規表現を構築します。
+        /// NOTE: 正規表現としては「[終端文字][右クォーテーション]?」となります。
         /// </summary>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        private Regex constructEndSentencePattern()
+        private Regex ConstructEndSentencePattern()
         {
-            if (this.fullStopList == null || this.fullStopList.Length == 0)
+            if (this._fullStopList == null || this._fullStopList.Length == 0)
             {
                 throw new ArgumentNullException("No end character is specified");
             }
 
             StringBuilder patternString = new StringBuilder();
-            generateSimplePattern(this.fullStopList, patternString);
-            patternString.Append("[");
-            foreach (char rightQuotation in rightQuotationList)
-            {
-                patternString.Append(rightQuotation);
-            }
-            patternString.Append("]?");
+
+            patternString.Append(ConvertToEscapedCharGroupPattern(this._fullStopList));
+            patternString.Append(ConvertToEscapedCharGroupPattern(this._rightQuotationList));
+            patternString.Append("?");
 
             return new Regex(patternString.ToString()); ;
         }
 
-        //    /**
-        //     * Get Sentence lists.
-        //     *
-        //     * @param line              Input line which can contain more than one sentences
-        //     * @param sentencePositions List of extracted sentences
-        //     * @return remaining line
-        //     */
-        //public int Extract(string line, List<(int first, int second)> sentencePositions)
-        //{
-        //    int startPosition = 0;
-        //    // センテンスのちょうど終わりの文字の位置を返す。センテンスはその文字位置を含む。
-        //    int periodPosition = endOfSentenceDetector.GetSentenceEndPosition(line, 0);
+        // TODO: Extractメソッドの戻り値のsecondは、終了文字のオフセット+1を返している。
+        // テストケースでしか使われていないが、文字位置指定の一貫性を保つためにsecondを終了文字のオフセットそのものに見直す検討をする。
 
-        //    // センテンスの終了位置が不正でなければ結果に詰め込んでいく。
-        //    while (0 <= periodPosition)
-        //    {
-        //        // 結果には、センテンスの開始位置と終了位置+1を詰め込む。つまり左閉右開区間となる。
-        //        sentencePositions.Add(new(startPosition, periodPosition + 1));
-
-        //        // iteration.
-        //        startPosition = periodPosition + 1;
-        //        periodPosition = endOfSentenceDetector.GetSentenceEndPosition(line, startPosition);
-        //    }
-
-        //    return startPosition;
-        //}
-
+        /// <summary>
+        /// Sentenceのリストを返します。
+        /// 結果のリストはセンテンスの開始位置と終了位置+1のタプルのリストです。
+        /// </summary>
+        /// <param name="line">Input line which can contain more than one sentences.</param>
+        /// <returns>List of extracted sentences</returns>
         public List<(int first, int second)> Extract(string line)
         {
             List<(int first, int second)> sentencePositions = new List<(int first, int second)>();
 
             int startPosition = 0;
-            // センテンスのちょうど終わりの文字の位置を返す。センテンスはその文字位置を含む。
-            int periodPosition = endOfSentenceDetector.GetSentenceEndPosition(line, 0);
+            // センテンスのちょうど終わりの文字の位置を返す。センテンスはその文字（ピリオドなど）位置を含む。
+            int periodPosition = _endOfSentenceDetector.GetSentenceEndPosition(line, 0);
 
             // センテンスの終了位置が不正でなければ結果に詰め込んでいく。
             while (0 <= periodPosition)
             {
                 // 結果には、センテンスの開始位置と終了位置+1を詰め込む。つまり左閉右開区間となる。
+                // TODO: 現在はfirstはそのセンテンスの開始位置だが、secondeは次のセンテンスの開始位置おなっておりこれで良いかどうか検討が必要。
                 sentencePositions.Add(new(startPosition, periodPosition + 1));
 
                 // iteration.
                 startPosition = periodPosition + 1;
-                periodPosition = endOfSentenceDetector.GetSentenceEndPosition(line, startPosition);
+                periodPosition = _endOfSentenceDetector.GetSentenceEndPosition(line, startPosition);
             }
 
             return sentencePositions;
         }
 
-        //    /**
-        //     * Given string, return sentence end position.
-        //     *
-        //     * @param str input string
-        //     * @return position of full stop when there is a full stop, -1 otherwise
-        //     */
+        /// <summary>
+        /// Given string, return sentence end position.
+        /// </summary>
+        /// <param name="str">input string</param>
+        /// <returns>position of full stop when there is a full stop, -1 otherwise</returns>
         public int GetSentenceEndPosition(string str)
         {
-            return this.endOfSentenceDetector.GetSentenceEndPosition(str, 0);
+            return this._endOfSentenceDetector.GetSentenceEndPosition(str, 0);
         }
 
         /// <summary>
@@ -238,7 +194,7 @@ namespace RedPen.Net.Core.Parser
             // 日本語設定のみのハードコーディングだが、日本語は空文字列で
             // それ以外の言語は半角空白をBlokenLineSeparatorとする、という2択で良いのか疑問が残る。
             // TODO: 多言語対応の際には、このメソッドの実装を見直す。
-            return (symbolTable != null) && (symbolTable.Lang == "ja-JP") ? "" : " ";
+            return (_symbolTable != null) && (_symbolTable.Lang == "ja-JP") ? "" : " ";
         }
     }
 }

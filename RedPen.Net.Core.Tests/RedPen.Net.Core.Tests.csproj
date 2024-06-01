@@ -66,6 +66,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\DocumentCollectionTests.cs" />
     <Compile Include="Model\DocumentTests.cs" />
+    <Compile Include="Model\LineOffsetTests.cs" />
     <Compile Include="Model\SectionTests.cs" />
     <Compile Include="Parser\BaseDocumentParserTests.cs" />
     <Compile Include="Parser\Common\LineTests.cs" />

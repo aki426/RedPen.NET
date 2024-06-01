@@ -5,13 +5,9 @@ using System.Linq;
 namespace RedPen.Net.Core.Model
 {
     /// <summary>原文のテキスト位置と文字列の対応関係を記録した1センテンス分のオブジェクト。</summary>
-    public record class Sentence
+    public record Sentence
     {
-        // TODO: recordで実装したが、隠ぺいしたほうが良いものはアクセシビリティを変更する。
-
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
-
-        //private static readonly long serialVersionUID = 3761982769692999924L;
 
         /// <summary>センテンスがパラグラフ内で最初のセンテンスである場合Trueになるフラグ。</summary>
         public bool IsFirstSentence { get; init; }
@@ -34,46 +30,43 @@ namespace RedPen.Net.Core.Model
         /// <summary>センテンスを構成するTokenのリスト。</summary>
         public List<TokenElement> Tokens { get; init; }
 
-        /// <summary>
-        /// lineNum行にオフセット位置0で開始しているSentenceを生成する。
-        /// Initializes a new instance of the <see cref="Sentence"/> class.
-        /// </summary>
-        /// <param name="sentenceContent">The sentence content.</param>
-        /// <param name="lineNum">The line num.</param>
-        public Sentence(string sentenceContent, int lineNum) : this(sentenceContent, lineNum, 0)
-        {
-        }
+        ///// <summary>
+        ///// lineNum行にオフセット位置0で開始しているSentenceを生成する。
+        ///// Initializes a new instance of the <see cref="Sentence"/> class.
+        ///// </summary>
+        ///// <param name="content">The sentence content.</param>
+        ///// <param name="lineNum">The line num.</param>
+        //public Sentence(string content, int lineNum) : this(content, lineNum, 0)
+        //{
+        //}
 
         /// <summary>
-        /// lineNum行の位置startOffsetで開始しているSentenceを生成する。
+        /// lineNum行の位置startOffsetで開始する、改行コード\nのみを改行とするOffsetMapを持つSentenceを生成する。
+        /// NOTE: ParserによりSentenceを生成されない場合のテストケース向けコンストラクタ。
         /// Initializes a new instance of the <see cref="Sentence"/> class.
         /// </summary>
-        /// <param name="sentenceContent">The sentence content.</param>
+        /// <param name="content">センテンスの文字列。改行コードは\nで\nのみを改行とみなす。</param>
         /// <param name="lineNum">The line num.</param>
-        /// <param name="startOffset">The start offset.</param>
-        public Sentence(string sentenceContent, int lineNum, int startOffset)
+        /// <param name="StartOffset">The start offset.</param>
+        public Sentence(string content, int lineNum, int StartOffset = 0)
         {
-            this.Content = sentenceContent;
-            //this.LineNumber = lineNum;
+            this.Content = content;
             this.IsFirstSentence = false;
             this.Links = new List<string>();
             this.Tokens = new List<TokenElement>();
-            //this.StartPositionOffset = startOffset;
-
-            // MEMO: Sentenceは1行内に収まっていることを前提にしている。
-            this.OffsetMap = Enumerable.Range(startOffset, sentenceContent.Length).Select(offset => new LineOffset(lineNum, offset)).ToList();
+            this.OffsetMap = LineOffset.MakeOffsetList(lineNum, StartOffset, content);
         }
 
-        // MEMO: 複数行に分割されたセンテンスはParserによってList<LineOffset> OffsetMapを計算され与えられる。
-
         /// <summary>
-        /// 複数行にまたがるSentenceをサポートする、1文字ずつのLineOffsetを記録した完全なSentenceインスタンスを生成する。
+        /// 1文字ずつのLineOffsetを記録した完全なSentenceインスタンスを生成する。
+        /// NOTE: Parser向けの正規コンストラクタ。
         /// Initializes a new instance of the <see cref="Sentence"/> class.
         /// </summary>
         /// <param name="content">The content.</param>
         /// <param name="offsetMap">The offset map.</param>
         /// <param name="links">The links.</param>
-        public Sentence(string content, List<LineOffset> offsetMap, List<string> links)
+        /// <param name="IsFirstSentence">If true, is first sentence.</param>
+        public Sentence(string content, List<LineOffset> offsetMap, List<string> links, bool IsFirstSentence = false)
         {
             // MEMO: 位置が存在しないSentenceは存在しないという前提。
             if (!offsetMap.Any() || offsetMap.Count == 0)
@@ -82,8 +75,9 @@ namespace RedPen.Net.Core.Model
                 LOG.Error(msg);
                 throw new System.ArgumentException(msg);
             }
+
             // MEMO: Contentの文字数とOffsetMapの要素数が一致していない場合はエラーとする。
-            if (content.Count() != offsetMap.Count)
+            if (content.Length != offsetMap.Count)
             {
                 string msg = "Content length and OffsetMap size are different. Sentence content: " + content;
                 LOG.Error(msg);
@@ -91,49 +85,11 @@ namespace RedPen.Net.Core.Model
             }
 
             this.Content = content;
-            //this.LineNumber = offsetMap[0].LineNum;
-            this.IsFirstSentence = false;
+            this.IsFirstSentence = IsFirstSentence;
             this.Links = links;
             this.Tokens = new List<TokenElement>();
-            //this.StartPositionOffset = offsetMap[0].Offset;
             this.OffsetMap = offsetMap;
         }
-
-        ///// <summary>
-        ///// Get offset position for specified character position.
-        ///// </summary>
-        ///// <param name="position">character position in a sentence</param>
-        ///// <returns>offset position</returns>
-        //public LineOffset? GetOffset(int position)
-        //{
-        //    if (position >= 0)
-        //    {
-        //        // MEMO: あらかじめContentの全文字とLineOffset（元テキストでの出現位置）の対応関係を表現した
-        //        // List<LineOffset>が作成されており、Contentの文字数とList＜LineOffset>の要素数が同じに保たれていることが前提。
-        //        if (position < this.OffsetMap.Count)
-        //        {
-        //            return this.OffsetMap[position];
-        //        }
-        //        else if ((position > 0) && (this.OffsetMap.Count == position))
-        //        {
-        //            // MEMO: Contentが空文字列ではない場合の末尾指定。改行かEOLのためのもの？
-        //            LineOffset last = this.OffsetMap[this.OffsetMap.Count - 1];
-        //            return last with { Offset = last.Offset + 1 };
-        //        }
-        //        else if (this.OffsetMap.Any())
-        //        {
-        //            LineOffset last = this.OffsetMap[this.OffsetMap.Count - 1];
-        //            return last with { Offset = position - this.OffsetMap.Count }; // 改行に関して考慮するとこのようになる。
-        //        }
-        //        else
-        //        {
-        //            // MEMO: Contentの長さを超えてLineOffsetを返すことになるはず。
-        //            return new LineOffset(this.LineNumber, position);
-        //        }
-        //    }
-
-        //    return null;
-        //}
 
         /// <summary>
         /// Sentence.ContentのIndexに対して元のテキストのLineOffsetを返す関数。
@@ -166,14 +122,5 @@ namespace RedPen.Net.Core.Model
         {
             return this.OffsetMap.IndexOf(offset); // 発見されなかった場合は-1が返る。
         }
-
-        ///// <summary>
-        ///// Get size of offset mapping table (the size should be same as the content length).
-        ///// </summary>
-        ///// <returns>size of position mapping table</returns>
-        //public int GetOffsetMapSize()
-        //{
-        //    return this.OffsetMap.Count;
-        //}
     }
 }

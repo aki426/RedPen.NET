@@ -9,23 +9,44 @@ using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Tests.Parser
 {
+    /// <summary>
+    /// The sentence extractor tests.
+    /// </summary>
     public class SentenceExtractorTests
     {
         private ITestOutputHelper output;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SentenceExtractorTests"/> class.
+        /// </summary>
+        /// <param name="output">The output.</param>
         public SentenceExtractorTests(ITestOutputHelper output)
         {
             this.output = output;
         }
 
-        //private List<Sentence> CreateSentences(List<(int, int)> outputPositions, int lastPosition, string line)
+        /// <summary>
+        /// Creates the sentences.
+        /// </summary>
+        /// <param name="outputPositions">The output positions.</param>
+        /// <param name="line">The line.</param>
+        /// <returns>A list of Sentences.</returns>
         private List<Sentence> CreateSentences(List<(int, int)> outputPositions, string line)
         {
             var output = new List<Sentence>();
+
+            int lineNum = 1;
+            int startOffset = 0;
+
             foreach (var (first, second) in outputPositions)
             {
+                var sentence = new Sentence(line.Substring(first, second - first), lineNum, startOffset);
                 // MEMO: OffsetMap生成のために開始位置オフセットをコンストラクタ引数で渡しておく。
-                output.Add(new Sentence(line.Substring(first, second - first), 1, first));
+                output.Add(sentence);
+
+                // 改行が含まれていた場合Sentence生成時にOffsetMapが生成されるので、その最後の位置を取得して次のSentenceの開始位置とする。
+                lineNum = sentence.OffsetMap.Last().LineNum;
+                startOffset = sentence.OffsetMap.Last().Offset + 1;
             }
             return output;
         }
@@ -202,7 +223,7 @@ namespace RedPen.Net.Core.Tests.Parser
             string input = @"サン
 プル。";
 
-            // カスタムシンボル無しのen-USデフォルトのSymbolTableをロード。
+            // カスタムシンボル無しのデフォルトのSymbolTableをロード。
             var extractor = new SentenceExtractor(new SymbolTable("ja-JP", "", new List<Symbol>()));
 
             // センテンスの分割位置を取得し、センテンスオブジェクトを生成する。
@@ -224,9 +245,11 @@ namespace RedPen.Net.Core.Tests.Parser
             outputSentences[0].OffsetMap[1].Should().Be(new LineOffset(1, 1)); // ン
             outputSentences[0].OffsetMap[2].Should().Be(new LineOffset(1, 2)); // \r ←PlainTextParserなどでは\r\nは\nに変換される。
             outputSentences[0].OffsetMap[3].Should().Be(new LineOffset(1, 3)); // \n
-            outputSentences[0].OffsetMap[4].Should().Be(new LineOffset(1, 4)); // プ
-            outputSentences[0].OffsetMap[5].Should().Be(new LineOffset(1, 5)); // ル
-            outputSentences[0].OffsetMap[6].Should().Be(new LineOffset(1, 6)); // 。
+            // LineOffset.MakeOffsetListでも\nを改行とみなすので、LineOffsetMapに改行のあることが反映される。
+            // が、それはSentenceの正しい分割を意味しない。
+            outputSentences[0].OffsetMap[4].Should().Be(new LineOffset(2, 0)); // プ
+            outputSentences[0].OffsetMap[5].Should().Be(new LineOffset(2, 1)); // ル
+            outputSentences[0].OffsetMap[6].Should().Be(new LineOffset(2, 2)); // 。
 
             outputSentences[0].Content[2].Should().Be('\r');
             outputSentences[0].Content[3].Should().Be('\n');

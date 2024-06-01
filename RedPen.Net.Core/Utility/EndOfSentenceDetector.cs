@@ -17,28 +17,28 @@ namespace RedPen.Net.Core.Utility
         // TODO: 関数名、変数名などの命名を見直してわかりやすくする。
 
         /// <summary>ピリオド文字列のパターン。</summary>
-        private Regex periodPattern;
+        private Regex _periodPattern;
 
         /// <summary>ピリオド文字列が含まれていても文末とはみなさないホワイトワードのリスト。</summary>
-        private List<string> whiteWords;
+        private List<string> _whiteWords;
+
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="EndOfSentenceDetector"/> class.
+        ///// </summary>
+        ///// <param name="periodPattern">The periodPattern.</param>
+        //public EndOfSentenceDetector(Regex periodPattern) : this(periodPattern, new List<string>())
+        //{
+        //}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EndOfSentenceDetector"/> class.
         /// </summary>
         /// <param name="periodPattern">The periodPattern.</param>
-        public EndOfSentenceDetector(Regex periodPattern) : this(periodPattern, new List<string>())
+        /// <param name="WhiteWords">The white word list.</param>
+        public EndOfSentenceDetector(Regex periodPattern, List<string>? WhiteWords = null)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EndOfSentenceDetector"/> class.
-        /// </summary>
-        /// <param name="periodPattern">The periodPattern.</param>
-        /// <param name="whiteWords">The white word list.</param>
-        public EndOfSentenceDetector(Regex periodPattern, List<string> whiteWords)
-        {
-            this.periodPattern = periodPattern;
-            this.whiteWords = whiteWords;
+            this._periodPattern = periodPattern;
+            this._whiteWords = WhiteWords ?? new List<string>();
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace RedPen.Net.Core.Utility
             HashSet<int> nonEndOfSentencePositions = new HashSet<int>();
 
             // ホワイトリストに含まれる文字列は、センテンスの終わりには該当しない。
-            foreach (string whiteWord in this.whiteWords)
+            foreach (string whiteWord in this._whiteWords)
             {
                 int offset = 0;
                 while (true)
@@ -97,12 +97,12 @@ namespace RedPen.Net.Core.Utility
             return nonEndOfSentencePositions;
         }
 
-        private bool IsNonAlphabetEndOfSentenceWithPartialSentence(string str, int position, int matchPosition)
+        private static bool IsNonAlphabetEndOfSentenceWithPartialSentence(string str, int position, int matchPosition)
         {
             return (matchPosition == -1 && (!UnicodeUtility.IsBasicLatin(str[position])));
         }
 
-        private bool IsNonAlphabetWithoutSucessiveEnd(string str, int nextPosition, int matchPosition)
+        private static bool IsNonAlphabetWithoutSucessiveEnd(string str, int nextPosition, int matchPosition)
         {
             return matchPosition > -1 && (!UnicodeUtility.IsBasicLatin(str[matchPosition]))
                     && matchPosition != nextPosition;
@@ -111,7 +111,7 @@ namespace RedPen.Net.Core.Utility
         private int HandleSuccessivePeriods(string str, int position, HashSet<int> whitePositions)
         {
             int nextPosition = position + 1;
-            Match matcher = this.periodPattern.Match(str, nextPosition);
+            Match matcher = this._periodPattern.Match(str, nextPosition);
             int matchPosition = -1;
             if (matcher.Success)
             {
@@ -152,7 +152,7 @@ namespace RedPen.Net.Core.Utility
         /// <param name="match"></param>
         /// <param name="whitePositions"></param>
         /// <returns></returns>
-        private static bool IsPositionOverWrapping(System.Text.RegularExpressions.Match match, HashSet<int> whitePositions)
+        private static bool IsPositionOverWrapping(Match match, HashSet<int> whitePositions)
         {
             // MEMO: Matchの範囲表現として、Indexは0始まりのStringのIndex。
             // Index1つ＝1文字に該当するので、match.Index + match.Lengthはマッチした部分文字列の最後の文字の次の位置を指す。
@@ -185,7 +185,7 @@ namespace RedPen.Net.Core.Utility
             int offset,
             HashSet<int> whitePositions)
         {
-            var matchCollection = periodPattern.Matches(str, offset);
+            var matchCollection = _periodPattern.Matches(str, offset);
             if (matchCollection.Count == 0)
             {
                 // マッチしなかった場合はfalseを返す。
@@ -195,7 +195,7 @@ namespace RedPen.Net.Core.Utility
             // MEMO: patternは通常句読点だが、長さのある文字列とみなす。
             // よって検出されたデリミタとホワイトワードの突合は範囲の突合であり1文字でもPositionが一致した場合は
             // そのデリミタはセンテンスの終わりとはみなさない。
-            foreach (System.Text.RegularExpressions.Match match in matchCollection)
+            foreach (Match match in matchCollection)
             {
                 if (IsPositionOverWrapping(match, whitePositions))
                 {

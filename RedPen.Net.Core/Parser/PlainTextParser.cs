@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 
@@ -14,6 +15,7 @@ namespace RedPen.Net.Core.Parser
     {
         /// <summary>
         /// Parse input stream as document.
+        /// NOTE: 改行コードはLFのみを想定。
         /// </summary>
         /// <param name="inputStream">The input stream.</param>
         /// <param name="fileName">The file name.</param>
@@ -154,6 +156,7 @@ namespace RedPen.Net.Core.Parser
 
             List<LineOffset> offsetMap = new List<LineOffset>();
             string normalizedSentence = ""; // 改行などを除去したSentence.Contentに格納される文字列。
+            StringBuilder sb = new StringBuilder();
             int i; // MEMO: 連続する2つのfor文用。
 
             // skip leading line breaks to find the start line of the sentence
@@ -185,6 +188,7 @@ namespace RedPen.Net.Core.Parser
                         // 通常brokenLineSeparatorは半角スペースか空文字列だが、念のためリストを生成する。
                         offsetMap.AddRange(LineOffset.MakeOffsetList(lineNum, offset, brokenLineSeparator));
                         normalizedSentence += brokenLineSeparator;
+                        sb.Append(brokenLineSeparator);
                     }
                     lineNum++; // 改行により行数をカウントアップ。
                     offset = 0;
@@ -193,6 +197,7 @@ namespace RedPen.Net.Core.Parser
                 {
                     // 1文字ずつ元テキストでの位置を記録。
                     normalizedSentence += ch;
+                    sb.Append(ch);
                     offsetMap.Add(new LineOffset(lineNum, offset));
                     offset++; // 次の文字のオフセット位置へカウントアップ。※このまま次のセンテンスのオフセット位置を指すこともできる。
                 }

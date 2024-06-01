@@ -3,10 +3,10 @@ using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Validators
 {
-    // TODO: recordか何かで書き直すことを検討する。
+    /// <summary>Validatorの返すエラー情報</summary>
     public record ValidationError
     {
-        /// <summary>エラータイプ</summary>
+        /// <summary>Validationタイプ</summary>
         public ValidationType Type { get; init; }
         /// <summary>エラーレベル</summary>
         public ValidationLevel Level { get; init; }
