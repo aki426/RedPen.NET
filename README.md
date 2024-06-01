@@ -241,12 +241,12 @@ RedPen.NETではValidationのためにパターンマッチ機構を持ってい
 #### 文法ルールのBNF
 
 ```text
-| <grammer-rule> ::= <token-part> <eol> | <token-part> "+" <grammer-rule> <eol> | <token-part> "=" <grammer-rule> <eol>   |
-| <token-part> ::= <surface>            | <surface> ":" <tags-part>             | <surface> ":" <tags-part> ":" <reading> |
-| <surface> ::= ""                      | "*"                                   | <text>                                  |
-| <tags-part> ::= <tag>                 | <tag> ":" <tags-part>                 |                                         |
-| <tag> ::= ""                          | "*"                                   | <text> "," <tag>                        |
-| <reading> ::= ""                      | "*"                                   | <text>                                  |
+<grammer-rule> ::= <token-part> <eol> | <token-part> "+" <grammer-rule> <eol> | <token-part> "=" <grammer-rule> <eol>
+<token-part> ::= <surface> | <surface> ":" <tags-part> | <surface> ":" <tags-part> ":" <reading>
+<surface> ::= "" | "*" | <text>
+<tags-part> ::= <tag> | <tag> "," <tags-part>
+<tag> ::= "" | "*"  | <text>
+<reading> ::= "" | "*" | <text>
 ```
 
 * 空白は無視されます。
