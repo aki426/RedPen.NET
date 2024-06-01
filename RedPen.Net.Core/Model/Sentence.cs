@@ -30,16 +30,6 @@ namespace RedPen.Net.Core.Model
         /// <summary>センテンスを構成するTokenのリスト。</summary>
         public List<TokenElement> Tokens { get; init; }
 
-        ///// <summary>
-        ///// lineNum行にオフセット位置0で開始しているSentenceを生成する。
-        ///// Initializes a new instance of the <see cref="Sentence"/> class.
-        ///// </summary>
-        ///// <param name="content">The sentence content.</param>
-        ///// <param name="lineNum">The line num.</param>
-        //public Sentence(string content, int lineNum) : this(content, lineNum, 0)
-        //{
-        //}
-
         /// <summary>
         /// lineNum行の位置startOffsetで開始する、改行コード\nのみを改行とするOffsetMapを持つSentenceを生成する。
         /// NOTE: ParserによりSentenceを生成されない場合のテストケース向けコンストラクタ。
