@@ -55,7 +55,9 @@ namespace RedPen.Net.Core.Tests.Config
     ]
 }";
 
-            var configuration = ConfigurationLoader.Load(jsonString);
+            var jsonLoader = new ConfigurationLoader();
+            var configuration = jsonLoader.Load(jsonString);
+
             configuration.Lang.Should().Be("ja-JP");
             configuration.CultureInfo.Should().Be(CultureInfo.GetCultureInfo("ja-JP"));
             configuration.Variant.Should().Be("zenkaku");

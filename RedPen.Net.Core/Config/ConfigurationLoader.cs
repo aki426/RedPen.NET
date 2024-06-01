@@ -26,7 +26,7 @@ namespace RedPen.Net.Core.Config
         /// </summary>
         /// <param name="jsonString">The json string.</param>
         /// <returns>A Configuration.</returns>
-        public static Configuration Load(string jsonString)
+        public Configuration Load(string jsonString)
         {
             var options = new JsonSerializerOptions
             {
