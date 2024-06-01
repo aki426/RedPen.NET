@@ -88,9 +88,16 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
 ";
             Document document = null;
             // Lang設定以外はデフォルト。
-            Configuration configuration = Configuration.Builder()
-                .SetLang(documentLang.Name)
-                .Build();
+            //Configuration configuration = Configuration.Builder()
+            //    .SetLang(documentLang.Name)
+            //    .Build();
+            Configuration configuration = new Configuration()
+            {
+                Lang = documentLang.Name,
+                Variant = "",
+                ValidatorConfigurations = new List<ValidatorConfiguration>(),
+                Symbols = new List<Symbol>(),
+            };
 
             // Parse
             try

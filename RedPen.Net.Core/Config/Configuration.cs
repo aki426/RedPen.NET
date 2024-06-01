@@ -41,28 +41,28 @@ namespace RedPen.Net.Core.Config
         [JsonIgnore]
         public SymbolTable SymbolTable => new(CultureInfo.Name, Variant, Symbols);
 
-        /// <summary>
-        /// 新しいConfigurationBuilderを生成する。
-        /// </summary>
-        /// <returns>A ConfigurationBuilder.</returns>
-        public static ConfigurationBuilder Builder()
-        {
-            return new ConfigurationBuilder();
-        }
+        ///// <summary>
+        ///// 新しいConfigurationBuilderを生成する。
+        ///// </summary>
+        ///// <returns>A ConfigurationBuilder.</returns>
+        //public static ConfigurationBuilder Builder()
+        //{
+        //    return new ConfigurationBuilder();
+        //}
 
-        /// <summary>
-        /// Builders the.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>A ConfigurationBuilder.</returns>
-        public static ConfigurationBuilder Builder(string key)
-        {
-            // 文字列の中から最初のピリオドの位置を取得する。
-            int dotPos = key.IndexOf('.');
-            ConfigurationBuilder builder = new ConfigurationBuilder().SetLang(dotPos > 0 ? key.Substring(0, dotPos) : key);
-            if (dotPos > 0) { builder.SetVariant(key.Substring(dotPos + 1)); }
-            return builder;
-        }
+        ///// <summary>
+        ///// Builders the.
+        ///// </summary>
+        ///// <param name="key">The key.</param>
+        ///// <returns>A ConfigurationBuilder.</returns>
+        //public static ConfigurationBuilder Builder(string key)
+        //{
+        //    // 文字列の中から最初のピリオドの位置を取得する。
+        //    int dotPos = key.IndexOf('.');
+        //    ConfigurationBuilder builder = new ConfigurationBuilder().SetLang(dotPos > 0 ? key.Substring(0, dotPos) : key);
+        //    if (dotPos > 0) { builder.SetVariant(key.Substring(dotPos + 1)); }
+        //    return builder;
+        //}
     }
 
     ///// <summary>

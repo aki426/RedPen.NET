@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
@@ -26,9 +27,16 @@ namespace RedPen.Net.Core.Tests.Parser
         {
             Document doc = null;
             // Lang設定以外はデフォルト。
-            Configuration configuration = Configuration.Builder()
-                .SetLang(lang)
-                .Build();
+            //Configuration configuration = Configuration.Builder()
+            //    .SetLang(lang)
+            //    .Build();
+            Configuration configuration = new Configuration()
+            {
+                Lang = lang,
+                Variant = "",
+                ValidatorConfigurations = new List<ValidatorConfiguration>(),
+                Symbols = new List<Symbol>(),
+            };
 
             try
             {

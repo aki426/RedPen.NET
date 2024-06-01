@@ -72,17 +72,17 @@ namespace RedPen.Net.Core.Tests.Config
         //    configuration.ValidatorConfigurations.Count.Should().Be(3);
         //}
 
-        /// <summary>
-        /// Lang設定を何も与えなかった場合にenがデフォルトとして設定されることを確認するテスト。
-        /// </summary>
-        [Fact]
-        public void DefaultLangTest()
-        {
-            Configuration configuration = Configuration.Builder()
-                .Build(); // NOTE: load "en" setting when lang is not specified
-            configuration.Lang.Should().Be("en-US");
-            configuration.Lang.Should().NotBeNull();
-        }
+        ///// <summary>
+        ///// Lang設定を何も与えなかった場合にenがデフォルトとして設定されることを確認するテスト。
+        ///// </summary>
+        //[Fact]
+        //public void DefaultLangTest()
+        //{
+        //    Configuration configuration = Configuration.Builder()
+        //        .Build(); // NOTE: load "en" setting when lang is not specified
+        //    configuration.Lang.Should().Be("en-US");
+        //    configuration.Lang.Should().NotBeNull();
+        //}
 
         /// <summary>
         /// UniqueKeyのテスト。
