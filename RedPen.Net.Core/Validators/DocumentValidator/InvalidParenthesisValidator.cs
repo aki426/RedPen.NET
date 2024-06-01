@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
@@ -134,7 +135,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     {
                         // 括弧のネストレベルが規定値を超えた。
                         result.Add(new ValidationError(
-                            ValidationType.InvalidParenthesis,
+                            config.ValidationName,
                             config.Level,
                             currentChar.sentence,
                             currentChar.lineOffset,
@@ -153,7 +154,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     {
                         // 対応する左カッコが存在しないのに右カッコが出現した。
                         result.Add(new ValidationError(
-                            ValidationType.InvalidParenthesis,
+                            config.ValidationName,
                             config.Level,
                             currentChar.sentence,
                             currentChar.lineOffset,
@@ -169,7 +170,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     {
                         // 対応する左カッコの文字種が右カッコと一致しない。
                         result.Add(new ValidationError(
-                            ValidationType.InvalidParenthesis,
+                            config.ValidationName,
                             config.Level,
                             currentChar.sentence,
                             currentChar.lineOffset,
@@ -191,7 +192,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                         {
                             // 括弧内センテンスの文字数が規定値を超えた。
                             result.Add(new ValidationError(
-                                ValidationType.InvalidParenthesis,
+                                config.ValidationName,
                                 config.Level,
                                 currentChar.sentence,
                                 parenLevel.Last().lineOffset,
@@ -216,7 +217,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     if (config.MinCount <= subsentenceCount)
                     {
                         result.Add(new ValidationError(
-                            ValidationType.InvalidParenthesis,
+                            config.ValidationName,
                             config.Level,
                             currentChar.sentence,
                             currentChar.sentence.OffsetMap[0],
@@ -236,7 +237,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 foreach (var lparen in parenLevel)
                 {
                     result.Add(new ValidationError(
-                        ValidationType.InvalidParenthesis,
+                        config.ValidationName,
                         config.Level,
                         lparen.sentence,
                         lparen.lineOffset,
@@ -252,7 +253,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 if (subsentenceCount != 0 && config.MinCount <= subsentenceCount)
                 {
                     result.Add(new ValidationError(
-                        ValidationType.InvalidParenthesis,
+                        config.ValidationName,
                         config.Level,
                         sentences.Last(),
                         sentences.Last().OffsetMap[0],

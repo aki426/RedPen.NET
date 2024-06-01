@@ -211,7 +211,7 @@ namespace RedPen.Net.Core
                         switch (rule.Type)
                         {
                             case PreprocessorRule.RuleType.SUPPRESS:
-                                if (rule.IsTriggeredBy(document, error.LineNumber, error.Type.ValidationName()))
+                                if (rule.IsTriggeredBy(document, error.LineNumber, error.ValidationName))
                                 {
                                     suppressedErrors.Add(error);
                                 }

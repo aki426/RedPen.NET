@@ -58,7 +58,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 foreach (Match match in m)
                 {
                     result.Add(new ValidationError(
-                        ValidationType.JapaneseNumberExpression,
+                        ValidationName,
                         this.Level,
                         sentence,
                         sentence.ConvertToLineOffset(match.Index),

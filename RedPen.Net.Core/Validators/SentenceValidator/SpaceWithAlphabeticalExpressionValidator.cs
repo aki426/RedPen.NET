@@ -137,7 +137,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     else
                     {
                         result.Add(new ValidationError(
-                            ValidationType.SpaceWithAlphabeticalExpression,
+                            ValidationName,
                             this.Level,
                             sentence,
                             sentence.ConvertToLineOffset(match.Index),
@@ -160,7 +160,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     {
                         // 1文字目がスペースであるべき場合、エラーとして報告する。
                         result.Add(new ValidationError(
-                            ValidationType.SpaceWithAlphabeticalExpression,
+                            ValidationName,
                             this.Level,
                             sentence,
                             sentence.ConvertToLineOffset(idx),
@@ -173,7 +173,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     {
                         // 2文字目がスペースであるべき場合、エラーとして報告する。
                         result.Add(new ValidationError(
-                            ValidationType.SpaceWithAlphabeticalExpression,
+                            ValidationName,
                             this.Level,
                             sentence,
                             sentence.ConvertToLineOffset(idx),

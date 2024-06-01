@@ -250,7 +250,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 if (startPosition != -1)
                 {
                     result.Add(new ValidationError(
-                        ValidationType.Okurigana,
+                        ValidationName,
                         this.Level,
                         sentence,
                         sentence.ConvertToLineOffset(startPosition),
@@ -271,7 +271,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     foreach (var tokens in value.tokens)
                     {
                         result.Add(new ValidationError(
-                            ValidationType.Okurigana,
+                            ValidationName,
                             this.Level,
                             sentence,
                             tokens.First().OffsetMap[0],

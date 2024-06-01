@@ -51,7 +51,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 return new List<ValidationError>()
                 {
                     new ValidationError(
-                        ValidationType.SentenceLength,
+                        ValidationName,
                         this.Level,
                         sentence,
                         MessageArgs: new object[] { sentence.Content.Length, Config.MinLength })

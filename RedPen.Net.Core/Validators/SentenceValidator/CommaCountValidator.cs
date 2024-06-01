@@ -63,7 +63,7 @@ namespace RedPen.Net.Core.Validators.SentecneValidator
                 // コンマの数がエラーとして扱う最小値以上の場合はエラーとする。
                 result.Add(
                     new ValidationError(
-                        ValidationType.CommaCount,
+                        ValidationName,
                         this.Level,
                         sentence,
                         // メッセージ引数は実際のコンマの数、最大数の順番で格納する。

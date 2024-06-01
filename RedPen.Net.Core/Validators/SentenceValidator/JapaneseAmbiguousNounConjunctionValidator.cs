@@ -74,7 +74,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     if (!Config.ExpressionSet.Contains(surface))
                     {
                         result.Add(new ValidationError(
-                            ValidationType.JapaneseAmbiguousNounConjunction,
+                            ValidationName,
                             this.Level,
                             sentence,
                             matchedTokens.First().OffsetMap[0],

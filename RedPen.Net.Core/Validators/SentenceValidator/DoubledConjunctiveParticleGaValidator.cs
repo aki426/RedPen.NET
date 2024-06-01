@@ -66,7 +66,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             {
                 // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
                 result.Add(new ValidationError(
-                    ValidationType.DoubledConjunctiveParticleGa,
+                    ValidationName,
                     this.Level,
                     sentence,
                     gaList.First().OffsetMap[0],

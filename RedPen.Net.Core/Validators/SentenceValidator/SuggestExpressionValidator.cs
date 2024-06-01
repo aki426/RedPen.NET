@@ -96,7 +96,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     }
 
                     result.Add(new ValidationError(
-                        ValidationType.SuggestExpression,
+                        ValidationName,
                         this.Level,
                         sentence,
                         sentence.ConvertToLineOffset(start),

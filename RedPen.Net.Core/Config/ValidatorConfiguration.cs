@@ -20,9 +20,9 @@ namespace RedPen.Net.Core.Config
         [JsonIgnore]
         public string Name => ValidationName;
 
-        /// <summary>This type.</summary>
-        [JsonIgnore]
-        public ValidationType Type => ValidationTypeExtend.ConvertFrom(ValidationName);
+        ///// <summary>This type.</summary>
+        //[JsonIgnore]
+        //public ValidationType Type => ValidationTypeExtend.ConvertFrom(ValidationName);
 
         /// <summary>デバッグ用のコレクション内確認用文字列出力</summary>
         [JsonIgnore]

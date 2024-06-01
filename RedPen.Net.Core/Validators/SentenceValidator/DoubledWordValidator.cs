@@ -61,7 +61,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     && !Config.WordSet.Contains(word))
                 {
                     result.Add(new ValidationError(
-                        ValidationType.DoubledWord,
+                        ValidationName,
                         this.Level,
                         sentence,
                         token.OffsetMap[0],

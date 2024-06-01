@@ -172,7 +172,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                             {
                                 // MessageArgsは、該当カタカナ語、表記ゆれ相手、表記ゆれ相手の出現位置、の3つ。
                                 errors.Add(new ValidationError(
-                                    ValidationType.KatakanaSpellCheck,
+                                    ValidationName,
                                     Level,
                                     tokenAndSentence.sentence,
                                     tokenAndSentence.token.OffsetMap[0],

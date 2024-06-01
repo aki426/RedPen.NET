@@ -61,7 +61,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     int matchEndPosition = matchStartPosition + invalidWord.Length - 1;
                     result.Add(
                         new ValidationError(
-                            ValidationType.InvalidExpression,
+                            ValidationName,
                             this.Level,
                             sentence,
                             sentence.ConvertToLineOffset(matchStartPosition),

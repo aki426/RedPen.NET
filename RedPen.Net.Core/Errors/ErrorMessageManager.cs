@@ -29,15 +29,15 @@ namespace RedPen.Net.Core.Errors
         /// <summary>
         /// 引数を元情報としてエラーメッセージを生成する関数。
         /// </summary>
-        /// <param name="type">The type.</param>
+        /// <param name="validationName">The type.</param>
         /// <param name="messageKey">The message key.</param>
         /// <param name="cultureInfo">カルチャ指定でエラーメッセージの言語を切り替える。</param>
         /// <param name="messageArgs">The message args.</param>
         /// <returns>A string.</returns>
-        public string GetErrorMessage(ValidationType type, string messageKey, CultureInfo cultureInfo, object[] messageArgs)
+        public string GetErrorMessage(string validationName, string messageKey, CultureInfo cultureInfo, object[] messageArgs)
         {
             string suffix = messageKey == string.Empty ? "" : $"_{messageKey}";
-            string key = $"{type.ValidationName()}{suffix}";
+            string key = $"{validationName}{suffix}";
             string pattern = ValidationMessage.ResourceManager.GetString(key, cultureInfo);
 
             return string.Format(cultureInfo, pattern, messageArgs);
@@ -51,7 +51,7 @@ namespace RedPen.Net.Core.Errors
         /// <returns>A string.</returns>
         public string GetErrorMessage(ValidationError error, CultureInfo cultureInfo)
         {
-            return GetErrorMessage(error.Type, error.MessageKey, cultureInfo, error.MessageArgs);
+            return GetErrorMessage(error.ValidationName, error.MessageKey, cultureInfo, error.MessageArgs);
         }
     }
 }

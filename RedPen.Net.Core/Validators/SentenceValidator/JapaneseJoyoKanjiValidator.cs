@@ -91,7 +91,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 else
                 {
                     result.Add(new ValidationError(
-                        ValidationType.JapaneseJoyoKanji,
+                        ValidationName,
                         this.Level,
                         sentence,
                         sentence.ConvertToLineOffset(match.Index),

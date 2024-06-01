@@ -243,7 +243,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     {
                         // 出現数が同数の場合、どちらかがゆらぎでどちらかが正の可能性。=> key: SameCount
                         errors.Add(new ValidationError(
-                            ValidationType.JapaneseWordVariation,
+                            this.ValidationName,
                             this.Level,
                             sentence,
                             targetToken.OffsetMap[0],
@@ -262,7 +262,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                     {
                         // 相手の方が多い場合、targetTokenがゆらぎで相手が正と推測。=> key: Normal
                         errors.Add(new ValidationError(
-                            ValidationType.JapaneseWordVariation,
+                            this.ValidationName,
                             this.Level,
                             sentence,
                             targetToken.OffsetMap[0],

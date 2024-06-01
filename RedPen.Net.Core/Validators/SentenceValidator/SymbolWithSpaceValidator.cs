@@ -84,7 +84,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     if (key != string.Empty)
                     {
                         result.Add(new ValidationError(
-                            ValidationType.SymbolWithSpace,
+                            ValidationName,
                             this.Level,
                             sentence,
                             sentence.ConvertToLineOffset(position),

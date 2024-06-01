@@ -131,7 +131,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         if (HasInvalidEndHyphen(katakana.ToString()))
                         {
                             result.Add(new ValidationError(
-                                ValidationType.KatakanaEndHyphen,
+                                ValidationName,
                                 this.Level,
                                 sentence,
                                 positionBuffer.First(),
@@ -153,7 +153,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     if (HasInvalidEndHyphen(katakana.ToString()))
                     {
                         result.Add(new ValidationError(
-                            ValidationType.KatakanaEndHyphen,
+                            ValidationName,
                             this.Level,
                             sentence,
                             positionBuffer.First(),

@@ -6,8 +6,12 @@ namespace RedPen.Net.Core.Validators
     /// <summary>Validatorの返すエラー情報</summary>
     public record ValidationError
     {
-        /// <summary>Validationタイプ</summary>
-        public ValidationType Type { get; init; }
+        ///// <summary>Validationタイプ</summary>
+        //public ValidationType Type { get; init; }
+
+        /// <summary>ValidationName</summary>
+        public string ValidationName { get; init; }
+
         /// <summary>エラーレベル</summary>
         public ValidationLevel Level { get; init; }
         /// <summary>エラー発生したセンテンス。</summary>
@@ -24,14 +28,14 @@ namespace RedPen.Net.Core.Validators
         /// <summary>
         /// センテンス内の開始終了位置をLineOffset型で与えることができる<see cref="ValidationError"/>コンストラクタ。class.
         /// </summary>
-        /// <param name="type">The type.</param>
+        /// <param name="validationName">The vadlidation name.</param>
         /// <param name="level">The level.</param>
         /// <param name="sentenceWithError">The sentence with error.</param>
         /// <param name="StartPosition">The start position.</param>
         /// <param name="EndPosition">The end position.</param>
         /// <param name="MessageArgs">The message args.</param>
         public ValidationError(
-            ValidationType type,
+            string validationName,
             ValidationLevel level,
             Sentence sentenceWithError,
             LineOffset? StartPosition = null,
@@ -39,7 +43,7 @@ namespace RedPen.Net.Core.Validators
             object[] MessageArgs = null,
             string MessageKey = "")
         {
-            this.Type = type;
+            this.ValidationName = validationName;
             this.Level = level;
             this.Sentence = sentenceWithError;
             this.StartPosition = StartPosition;

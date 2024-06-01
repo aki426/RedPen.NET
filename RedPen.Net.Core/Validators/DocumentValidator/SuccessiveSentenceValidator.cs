@@ -98,7 +98,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                         {
                             // error.
                             result.Add(new ValidationError(
-                                ValidationType.SuccessiveSentence,
+                                ValidationName,
                                 this.Level,
                                 curr,
                                 curr.OffsetMap[0],

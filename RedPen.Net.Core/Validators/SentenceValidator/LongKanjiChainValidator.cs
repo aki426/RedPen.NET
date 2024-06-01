@@ -75,7 +75,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 if (!Config.ExpressionSet.Contains(word))
                 {
                     result.Add(new ValidationError(
-                        ValidationType.LongKanjiChain,
+                        ValidationName,
                         this.Level,
                         sentence,
                         sentence.ConvertToLineOffset(match.Index),

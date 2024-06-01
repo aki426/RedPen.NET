@@ -213,7 +213,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             foreach (var token in errorJodoshi)
             {
                 result.Add(new ValidationError(
-                    ValidationType.JapaneseStyle,
+                    ValidationName,
                     this.Level,
                     sentence,
                     token.OffsetMap[0],

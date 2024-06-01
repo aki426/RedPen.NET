@@ -50,7 +50,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     && !IsPartOfNumber(sentence, token))
                 {
                     result.Add(new ValidationError(
-                        ValidationType.SuccessiveWord,
+                        ValidationName,
                         this.Level,
                         sentence,
                         token.OffsetMap[0],

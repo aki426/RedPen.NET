@@ -70,7 +70,7 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
             List<ValidationError> errors = validator.Validate(str);
 
             errors.Count.Should().Be(1);
-            errors[0].Type.Should().Be(ValidationType.SentenceLength);
+            errors[0].ValidationName.Should().Be("SentenceLength");
 
             // 7. エラーメッセージを生成する。
             var manager = ErrorMessageManager.GetInstance();

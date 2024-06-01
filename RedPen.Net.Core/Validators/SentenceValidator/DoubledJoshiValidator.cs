@@ -100,7 +100,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     if (Math.Abs(currIndex - prevIndex) - 1 <= Config.MaxInterval)
                     {
                         result.Add(new ValidationError(
-                            ValidationType.DoubledJoshi,
+                            ValidationName,
                             this.Level,
                             sentence,
                             token.OffsetMap[0],

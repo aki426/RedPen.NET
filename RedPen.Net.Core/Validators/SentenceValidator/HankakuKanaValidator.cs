@@ -56,7 +56,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 // AddLocalizedError(sentence, content[match.Index]);
                 // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
                 result.Add(new ValidationError(
-                    ValidationType.HankakuKana,
+                    ValidationName,
                     this.Level,
                     sentence,
                     sentence.ConvertToLineOffset(match.Index),

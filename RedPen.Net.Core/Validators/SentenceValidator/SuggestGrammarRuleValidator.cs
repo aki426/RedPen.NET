@@ -82,7 +82,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         var surface = string.Join("", matchedTokens.Select(t => t.Surface));
 
                         result.Add(new ValidationError(
-                            ValidationType.SuggestGrammarRule,
+                            ValidationName,
                             this.Level,
                             sentence,
                             matchedTokens.First().OffsetMap[0],

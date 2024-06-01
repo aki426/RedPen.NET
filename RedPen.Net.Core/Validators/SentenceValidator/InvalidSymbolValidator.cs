@@ -63,7 +63,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         if (invalidChar != '.' || !IsDigitPeriod(charPosition, sentence.Content))
                         {
                             result.Add(new ValidationError(
-                                ValidationType.InvalidSymbol,
+                                ValidationName,
                                 this.Level,
                                 sentence,
                                 sentence.ConvertToLineOffset(charPosition),

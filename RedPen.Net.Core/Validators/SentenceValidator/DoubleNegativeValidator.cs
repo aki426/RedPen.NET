@@ -100,7 +100,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                     foreach (ImmutableList<TokenElement> errorPhrase in matchedPhrases)
                     {
                         result.Add(new ValidationError(
-                            ValidationType.DoubleNegative,
+                            ValidationName,
                             this.Level,
                             sentence,
                             errorPhrase.First().OffsetMap[0],
@@ -132,7 +132,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 if (negativeTokens.Count >= 2)
                 {
                     result.Add(new ValidationError(
-                        ValidationType.DoubleNegative,
+                        ValidationName,
                         this.Level,
                         sentence,
                         negativeTokens.First().OffsetMap[0],
