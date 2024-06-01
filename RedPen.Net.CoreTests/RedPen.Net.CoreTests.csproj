@@ -13,6 +13,7 @@
     <RootNamespace>RedPen.Net.CoreTests</RootNamespace>
     <AssemblyName>RedPen.Net.CoreTests</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>10.0</LangVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
