@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VerifyBasicFunction", "Veri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VerifyBasicFunction.Tests", "VerifyBasicFunction.Tests\VerifyBasicFunction.Tests.csproj", "{08412741-B72A-43AB-8E37-5A2F753B0409}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedPen.Net.CoreTests", "RedPen.Net.CoreTests\RedPen.Net.CoreTests.csproj", "{D6E6FF20-0C46-4D53-ACB9-6D17776635F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,12 +35,16 @@ Global
 		{08412741-B72A-43AB-8E37-5A2F753B0409}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08412741-B72A-43AB-8E37-5A2F753B0409}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08412741-B72A-43AB-8E37-5A2F753B0409}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6E6FF20-0C46-4D53-ACB9-6D17776635F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6E6FF20-0C46-4D53-ACB9-6D17776635F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6E6FF20-0C46-4D53-ACB9-6D17776635F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6E6FF20-0C46-4D53-ACB9-6D17776635F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_NeutralResourcesLanguage = en-US
 		SolutionGuid = {B3B9B530-AEC3-4B3A-BAB8-F4BCADC73493}
+		RESX_NeutralResourcesLanguage = en-US
 	EndGlobalSection
 EndGlobal
