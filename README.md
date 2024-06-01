@@ -241,7 +241,8 @@ RedPen.NETではValidationのためにパターンマッチ機構を持ってい
 #### 文法ルールのBNF
 
 ```text
-<grammer-rule> ::= <token-part> <eol> | <token-part> "+" <grammer-rule> <eol> | <token-part> "=" <grammer-rule> <eol>
+<grammar-rule-text> ::= <grammar-rule> <eol>
+<grammar-rule> ::= <token-part> | <token-part> "+" <grammar-rule> | <token-part> "=" <grammar-rule>
 <token-part> ::= <surface> | <surface> ":" <tags-part> | <surface> ":" <tags-part> ":" <reading>
 <surface> ::= "" | "*" | <text>
 <tags-part> ::= <tag> | <tag> "," <tags-part>
