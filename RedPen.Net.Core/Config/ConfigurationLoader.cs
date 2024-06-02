@@ -6,6 +6,9 @@ using NLog;
 
 namespace RedPen.Net.Core.Config
 {
+    // NOTE: ConfigurationLoaderはWriteつまりJsonシリアライズ機能を持つが、
+    // 実質的にはJsonデシリアライズしか用途が無いので命名は"Loader"のままにしておく。
+
     /// <summary>
     /// RedPenのConfファイルをロードするクラスです。
     /// MEMO: JAVA版がXML形式であるのに対して、C#版ではJson形式を基本とします。
