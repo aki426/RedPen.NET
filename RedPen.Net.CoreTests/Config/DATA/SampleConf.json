@@ -1,0 +1,153 @@
+{
+    // サンプルConfファイルです。すべての実装済みのValidatorについて
+    "DocumentLang": "ja-JP",
+    "Variant": "zenkaku",
+    "ValidatorConfigurations": [
+        {
+            "Name": "CommaCount",
+            "Level": "ERROR",
+            "MinCount": 3
+        },
+        {
+            "Name": "DoubledConjunctiveParticleGa",
+            "Level": "ERROR"
+        },
+        {
+            "Name": "DoubledJoshi",
+            "Level": "ERROR",
+            "WordSet": [ "が", "の" ],
+            "MaxInterval": 1
+        },
+        {
+            "Name": "DoubledWord",
+            "Level": "ERROR",
+            "WordSet": [ "トレイン" ],
+            "MinLength": 3
+        },
+        {
+            "Name": "DoubleNegative",
+            "Level": "ERROR"
+        },
+        {
+            "Name": "HankakuKana",
+            "Level": "ERROR"
+        },
+        {
+            "Name": "InvalidExpression",
+            "Level": "ERROR",
+            "ExpressionSet": [ "ダメ、ゼッタイ", "ダメダメダメ" ]
+        },
+        {
+            "Name": "InvalidSymbol",
+            "Level": "ERROR"
+        },
+        {
+            "Name": "JapaneseAmbiguousNounConjunction",
+            "Level": "ERROR",
+            "ExpressionSet": [ "本日の東京の天気", "本日の大阪の天気" ]
+        },
+        {
+            "Name": "JapaneseWordVariation",
+            "Level": "ERROR",
+            "WordMap": {
+                "Excel": "エクセル",
+                "Word": "ワード",
+                "PowerPoint": "パワーポイント",
+                "Outlook": "アウトルック"
+            }
+        },
+        {
+            "Name": "JapaneseJoyoKanji",
+            "Level": "ERROR",
+            "CharSet": [ "學", "函" ]
+        },
+        {
+            "Name": "JapaneseNumberExpression",
+            "Level": "ERROR",
+            "NumberStyle": "HankakuOnly"
+        },
+        {
+            "Name": "JapaneseStyle",
+            "Level": "ERROR",
+            "JodoshiStyle": "DesuMasu"
+        },
+        {
+            "Name": "KatakanaEndHyphen",
+            "Level": "ERROR",
+            "ExpressionSet": [ "プログラマー", "コンパイラー" ]
+        },
+        {
+            "Name": "KatakanaSpellCheck",
+            "Level": "ERROR",
+            "ExpressionSet": [ "ライター" ],
+            "MinFreq": 3,
+            "MaxRatio": 0.3,
+            "EnableDefaultDict": true
+        },
+        {
+            "Name": "LongKanjiChain",
+            "Level": "ERROR",
+            "MinLength": 5,
+            "ExpressionSet": [ "東京特許許可局" ]
+        },
+        {
+            "Name": "Okurigana",
+            "Level": "ERROR"
+        },
+        {
+            "Name": "InvalidParenthesis",
+            "Level": "ERROR",
+            "MinLength": 10,
+            "MinCount": 3,
+            "MinLevel": 3
+        },
+        {
+            "Name": "SentenceLength",
+            "Level": "ERROR",
+            "MinLength": 40
+        },
+        {
+            "Name": "SpaceWithAlphabeticalExpression",
+            "Level": "ERROR",
+            "Forbidden": true,
+            "SkipAfter": "「",
+            "SkipBefore": "」"
+        },
+        {
+            "Name": "SuccessiveSentence",
+            "Level": "ERROR",
+            "MinLength": 20,
+            "MaxDistance": 5
+        },
+        {
+            "Name": "SuccessiveWord",
+            "Level": "ERROR"
+        },
+        {
+            "Name": "SuggestExpression",
+            "Level": "ERROR",
+            "ExpressionMap": {
+                "ダメ、ゼッタイ": "絶対に駄目",
+                "ダメダメダメ": "駄目"
+            }
+        },
+        {
+            // SymbolWithSpaceはja-JPのドキュメントにも適用できるべきか要検討。
+            "Name": "SymbolWithSpace",
+            "Level": "ERROR"
+        },
+        {
+            "Name": "Taigendome",
+            "Level": "ERROR"
+        },
+        {
+            "Name": "SuggestGrammarRule",
+            "Level": "ERROR",
+            "GrammarRuleMap": {
+                "本日 = なり": "本日は～です",
+                "たり = たり = した": "AとBをした"
+            }
+        }
+    ],
+    "Symbols": []
+}
