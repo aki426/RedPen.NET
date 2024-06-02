@@ -22,6 +22,7 @@ using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Globals;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Parser;
+using RedPen.Net.Core.Tokenizer;
 using RedPen.Net.Core.Validators;
 
 namespace RedPen.Net.Core
@@ -70,6 +71,86 @@ namespace RedPen.Net.Core
                 ));
 
             return jsonLoader.Load(jsonString);
+        }
+
+        /// <summary>
+        /// Configurationで定義されたValidatorを生成する。
+        /// </summary>
+        /// <param name="config">The config.</param>
+        /// <returns>A list of Validators.</returns>
+        public List<Validator> GetValidators(Configuration config)
+        {
+            // 応用アプリケーション側で追加したValidationの情報を元にValidatorを生成する。
+            // 生成されるValidatorはどのみちConfigurationの定義で制限されているので、ValidatorFactoryは追加の情報を与えるだけで良い。
+            var validatorFactory = new ValidatorFactory(
+                ValidationDefinitions.Select(i => new KeyValuePair<string, Type>(i.ValidationName, i.ValidatorType))
+                .ToImmutableDictionary());
+
+            List<Validator> validators = new List<Validator>();
+            foreach (ValidatorConfiguration conf in config.ValidatorConfigurations.Where(i => i.Level != ValidationLevel.OFF))
+            {
+                Validator? validator = validatorFactory.GetValidator(config.DocumentCultureInfo, config.SymbolTable, conf);
+                if (validator != null)
+                {
+                    validators.Add(validator);
+                }
+                else
+                {
+                    LOG.Warn("Failed to create validator: {0}", conf.ValidationName);
+                    throw new ArgumentException("Failed to create validator: " + conf.ValidationName);
+                }
+            }
+
+            return validators;
+        }
+
+        /// <summary>
+        /// ドキュメントのParse。Parserを選択することでファイルフォーマットに対応する。
+        /// </summary>
+        /// <param name="parser">The parser.</param>
+        /// <param name="config">The config.</param>
+        /// <param name="documentText">The document text.</param>
+        /// <returns>A Document.</returns>
+        public static Document Parse(IDocumentParser parser, Configuration config, string documentText)
+        {
+            Document document;
+            try
+            {
+                // NOTE: ドキュメントのフォーマットは入力ファイルの拡張子などで判別するのが一般的だが、
+                // それはCoreライブラリの領域ではないのでParserの指定は応用アプリケーションで行い、選択はCoreで行う。
+                document = parser.Parse(
+                    documentText,
+                    new SentenceExtractor(config.SymbolTable),
+                    RedPenTokenizerFactory.CreateTokenizer(config.DocumentCultureInfo));
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+
+            return document;
+        }
+
+        public static List<ValidationError> Validate(Document document, List<Validator> validators)
+        {
+            List<ValidationError> errors = new List<ValidationError>();
+            // Validate Document
+            foreach (IDocumentValidatable validator in validators.Where(v => v is IDocumentValidatable)
+                .Select(v => v as IDocumentValidatable).Where(v => v != null))
+            {
+                errors.AddRange(validator.Validate(document));
+            }
+            // Validate Sentences
+            foreach (ISentenceValidatable validator in validators.Where(v => v is ISentenceValidatable)
+                .Select(v => v as ISentenceValidatable).Where(v => v != null))
+            {
+                foreach (var sentence in document.GetAllSentences().Where(s => s.Content != ""))
+                {
+                    errors.AddRange(validator.Validate(sentence));
+                }
+            }
+
+            return errors;
         }
     }
 }
