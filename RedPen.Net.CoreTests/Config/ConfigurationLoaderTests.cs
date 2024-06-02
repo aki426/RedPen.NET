@@ -28,7 +28,7 @@ namespace RedPen.Net.Core.Config.Tests
         public void LoadLangSettingTest()
         {
             // ライブラリ実装済みのValidatorConfiguration定義を与える。その定義にあるValidatorConfigurationのみロードされる。
-            var jsonLoader = new ConfigurationLoader(DefaultValidationDefinition.ValidatorConfTypeDefinitions);
+            var jsonLoader = new ConfigurationLoader(DefaultValidationDefinition.ValidationNameToValidatorConfigurationTypeMap);
 
             // Void test
             Action action;
@@ -149,7 +149,7 @@ namespace RedPen.Net.Core.Config.Tests
 }";
 
             // ライブラリ実装済みのValidatorConfiguration定義を与える。その定義にあるValidatorConfigurationのみロードされる。
-            var jsonLoader = new ConfigurationLoader(DefaultValidationDefinition.ValidatorConfTypeDefinitions);
+            var jsonLoader = new ConfigurationLoader(DefaultValidationDefinition.ValidationNameToValidatorConfigurationTypeMap);
             var configuration = jsonLoader.Load(jsonString);
 
             configuration.DocumentLang.Should().Be("ja-JP");

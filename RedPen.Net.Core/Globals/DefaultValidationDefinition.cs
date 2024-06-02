@@ -35,13 +35,18 @@ namespace RedPen.Net.Core.Globals
 
         // TODO: 将来的にはPrismか.NET Community Toolkitを利用してもよいかもしれない。
 
+        /// <summary>実装済みのValidationのValidationNameリスト。
+        /// NOTE: ValidatorConfigurationのクラス定義を元に生成している。</summary>
+        public static ImmutableList<string> ValidationNames =>
+            ValidatorConfigurationTypes.Select(i => i.Name.Replace("Configuration", "")).ToImmutableList();
+
         /// <summary>ValidatorConfigurationクラスを実装した具象クラスのTypeリスト</summary>
         public static ImmutableList<Type> ValidatorConfigurationTypes =>
             Assembly.GetExecutingAssembly().GetTypes()
                 .Where(i => typeof(ValidatorConfiguration).IsAssignableFrom(i) && !i.IsAbstract).ToImmutableList();
 
         /// <summary>ValidationNameとValidatorConfigurationのTypeを紐づけた定義リスト</summary>
-        public static ImmutableDictionary<string, Type> ValidatorConfTypeDefinitions =>
+        public static ImmutableDictionary<string, Type> ValidationNameToValidatorConfigurationTypeMap =>
             ValidatorConfigurationTypes.Select(i => new KeyValuePair<string, Type>(i.Name.Replace("Configuration", ""), i))
             .ToImmutableDictionary();
 
