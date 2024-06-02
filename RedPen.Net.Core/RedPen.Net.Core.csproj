@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Product>RedPen.NET</Product>
     <PackageId>RedPen.Net.Core</PackageId>
-    <Version>0.1.0-beta20240531</Version>
+    <Version>0.2.0-beta20240602</Version>
     <Copyright>Copyright (c) KANEDA Akihiro 2024</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/aki426/RedPen.NET</RepositoryUrl>
