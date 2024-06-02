@@ -127,6 +127,7 @@
             "Name": "SuggestExpression",
             "Level": "ERROR",
             "ExpressionMap": {
+                "正誤チェック": "正誤判定",
                 "ダメ、ゼッタイ": "絶対に駄目",
                 "ダメダメダメ": "駄目"
             }
