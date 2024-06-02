@@ -130,7 +130,7 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
             output.WriteLine(errors[1].ToString());
 
             // 7. エラーメッセージを生成する。
-            var manager = ErrorMessageManager.GetInstance();
+            var manager = new ErrorMessageManager();
 
             manager.GetErrorMessage(
                 errors[0],

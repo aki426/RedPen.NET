@@ -24,7 +24,7 @@ namespace RedPen.Net.Core.Tests.Errors
         [Fact]
         public void BasicTest()
         {
-            var manager = ErrorMessageManager.GetInstance();
+            var manager = new ErrorMessageManager();
 
             manager.GetErrorMessage(
                 "SentenceLength",

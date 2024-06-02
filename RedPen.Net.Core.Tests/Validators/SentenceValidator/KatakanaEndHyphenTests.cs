@@ -119,7 +119,7 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
 
             if (errors.Any())
             {
-                var manager = ErrorMessageManager.GetInstance();
+                var manager = new ErrorMessageManager();
 
                 output.WriteLine("");
                 output.WriteLine("★Errors:");
@@ -172,7 +172,7 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
 
             if (errors.Any())
             {
-                var manager = ErrorMessageManager.GetInstance();
+                var manager = new ErrorMessageManager();
 
                 output.WriteLine("");
                 output.WriteLine("★Errors:");

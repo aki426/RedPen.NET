@@ -69,7 +69,7 @@ namespace RedPen.Net.Core.Tests.Validators
 
             if (errors.Any())
             {
-                var manager = ErrorMessageManager.GetInstance();
+                var manager = new ErrorMessageManager();
 
                 output.WriteLine("");
                 output.WriteLine("★Errors:");
@@ -148,7 +148,7 @@ namespace RedPen.Net.Core.Tests.Validators
             // 全エラーの可視化とエラー内容の検証。
             if (errors.Any())
             {
-                var manager = ErrorMessageManager.GetInstance();
+                var manager = new ErrorMessageManager();
 
                 output.WriteLine("");
                 output.WriteLine("★Errors:");
@@ -230,7 +230,7 @@ namespace RedPen.Net.Core.Tests.Validators
             // 全エラーの可視化とエラー内容の検証。
             if (errors.Any())
             {
-                var manager = ErrorMessageManager.GetInstance();
+                var manager = new ErrorMessageManager();
 
                 output.WriteLine("");
                 output.WriteLine("★Errors:");

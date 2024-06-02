@@ -87,7 +87,7 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
             errors.Count.Should().Be(1);
 
             // 7. エラーメッセージを生成する。
-            var manager = ErrorMessageManager.GetInstance();
+            var manager = new ErrorMessageManager();
 
             output.WriteLine(manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")));
 
@@ -127,7 +127,7 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
             errors.Count.Should().Be(2);
 
             // 7. エラーメッセージを生成する。
-            var manager = ErrorMessageManager.GetInstance();
+            var manager = new ErrorMessageManager();
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("en-US")).Should()
                 .Be("An invalid expression \"like\" was found. Consider using the alternative expression \"such as\".");
             manager.GetErrorMessage(errors[1], CultureInfo.GetCultureInfo("en-US")).Should()
@@ -168,7 +168,7 @@ namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
             errors.Count.Should().Be(1);
 
             // 7. エラーメッセージを生成する。
-            var manager = ErrorMessageManager.GetInstance();
+            var manager = new ErrorMessageManager();
             manager.GetErrorMessage(errors[0], CultureInfo.GetCultureInfo("ja-JP")).Should()
                 .Be("不正な表現 \"おはよう\" が見つかりました。代替表現 \"おはようございます\" の使用を検討してください。");
 

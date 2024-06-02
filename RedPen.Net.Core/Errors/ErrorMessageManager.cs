@@ -27,26 +27,46 @@ namespace RedPen.Net.Core.Errors
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        private static ErrorMessageManager instance;
+        //private static ErrorMessageManager instance;
 
-        /// <summary>Singletonのインスタンスを取得する。</summary>
-        /// <returns>An ErrorMessageManager.</returns>
-        public static ErrorMessageManager GetInstance()
+        ///// <summary>Singletonのインスタンスを取得する。</summary>
+        ///// <returns>An ErrorMessageManager.</returns>
+        //public static ErrorMessageManager GetInstance()
+        //{
+        //    if (instance == null)
+        //    {
+        //        instance = new ErrorMessageManager();
+        //    }
+
+        //    return instance;
+        //}
+
+        /// <summary>ライブラリのリソース外で定義されたErrorMessage</summary>
+        private ImmutableList<ErrorMessageDefinition> ErrorMessageDefinitions { get; init; }
+
+        /// <summary>
+        /// ライブラリ外の定義が無い場合のコンストラクタ。
+        /// Initializes a new instance of the <see cref="ErrorMessageManager"/> class.
+        /// </summary>
+        public ErrorMessageManager()
         {
-            if (instance == null)
-            {
-                instance = new ErrorMessageManager();
-            }
-
-            return instance;
+            ErrorMessageDefinitions = ImmutableList<ErrorMessageDefinition>.Empty;
         }
 
-        private ImmutableList<ErrorMessageDefinition> ErrorMessageDefinitions = null;
-
-        public void SetValidatorDefinition(ImmutableList<ErrorMessageDefinition> errorMessageDefinitions)
+        /// <summary>
+        /// ライブラリ外で定義されたErrorMessageがある場合のコンストラクタ。
+        /// Initializes a new instance of the <see cref="ErrorMessageManager"/> class.
+        /// </summary>
+        /// <param name="errorMessageDefinitions">The error message definitions.</param>
+        public ErrorMessageManager(ImmutableList<ErrorMessageDefinition> errorMessageDefinitions)
         {
             ErrorMessageDefinitions = errorMessageDefinitions;
         }
+
+        //public void SetValidatorDefinition(ImmutableList<ErrorMessageDefinition> errorMessageDefinitions)
+        //{
+        //    ErrorMessageDefinitions = errorMessageDefinitions;
+        //}
 
         /// <summary>
         /// 引数を元情報としてエラーメッセージを生成する関数。

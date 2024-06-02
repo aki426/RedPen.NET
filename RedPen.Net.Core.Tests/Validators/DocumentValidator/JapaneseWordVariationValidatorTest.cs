@@ -147,7 +147,7 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
             errors.Count().Should().Be(6);
 
             // 7. エラーメッセージを生成する。
-            var manager = ErrorMessageManager.GetInstance();
+            var manager = new ErrorMessageManager();
 
             output.WriteLine("");
             output.WriteLine("--- Error messages. ---");
@@ -187,7 +187,7 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
             errors.Count().Should().Be(2);
 
             // 7. エラーメッセージを生成する。
-            var manager = ErrorMessageManager.GetInstance();
+            var manager = new ErrorMessageManager();
 
             // デフォルトディクショナリに登録されている辞書データは、あくまでReadingの指定であるため、Variationとして処理されるためには、
             // 本文中にそのReadingに対応するSurfaceが出現している必要がある。
@@ -264,7 +264,7 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
             errors.Count().Should().Be(2);
 
             // 7. エラーメッセージを生成する。
-            var manager = ErrorMessageManager.GetInstance();
+            var manager = new ErrorMessageManager();
 
             // MEMO: Validatorの挙動を、同ReadingのSurfaceが同数出現している場合は双方をゆらぎとしてエラーとするように変更したため、
             // このテストケースはエラーが2つ出力されるようになった。
@@ -328,7 +328,7 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
             //errors.Count().Should().Be(3);
 
             // 7. エラーメッセージを生成する。
-            var manager = ErrorMessageManager.GetInstance();
+            var manager = new ErrorMessageManager();
 
             // 目視確認。
             errors.ForEach(e =>

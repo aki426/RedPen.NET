@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using NLog;
 using RedPen.Net.Core.Config;
@@ -27,6 +28,18 @@ using RedPen.Net.Core.Validators;
 
 namespace RedPen.Net.Core
 {
+    // NOTE: RedPenの使い方。
+    // 1. RedPenクラスをインスタンス化する。コンストラクタで追加のValidation定義を与える。
+    // 2. InitRedPenにJsonテキストを読み込ませ、内部にConfigurationとValidatorをセットする。
+    // ※通常、1, 2の手順は応用アプリケーション側で1回実施したら後は起動中同じ処理を繰り返すはずである。
+    // ※Configurationを切り替えて使いたい場合は、InitRedPenを再度呼び出すか、RedPenインスタンスを複数持つようにすれば切り替えて使える。
+    // 3. ParseAndValidateにParserとドキュメントテキストを渡すと、Validation結果が返ってくる。
+    // ※引数でIDocumentParserを渡す方法は、あまりスマートとは言えないが現状PlainTextParserくらいしか無く見通しが立たないわりに、
+    // あとから増える可能性があるので、このような設計になっている。
+    // なお、Parsesrに渡すSentenceExtractorとTokenizerはJAVA版でも種類が無くConfigurationに依存するため、変更も想定されないので
+    // この固定的な設計とした。
+
+    /// <summary>ライブラリとしてRedPenを使う場合のインターフェースとなるクラス</summary>
     public record RedPen
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
@@ -104,6 +117,15 @@ namespace RedPen.Net.Core
             return validators;
         }
 
+        private Configuration _configuration;
+        private List<Validator> _validators;
+
+        public void InitRedPen(string jsonString)
+        {
+            _configuration = this.LoadConfiguration(jsonString);
+            _validators = this.GetValidators(_configuration);
+        }
+
         /// <summary>
         /// ドキュメントのParse。Parserを選択することでファイルフォーマットに対応する。
         /// </summary>
@@ -131,6 +153,12 @@ namespace RedPen.Net.Core
             return document;
         }
 
+        /// <summary>
+        /// Documentに対するValidationを実行する。
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="validators">The validators.</param>
+        /// <returns>A list of ValidationErrors.</returns>
         public static List<ValidationError> Validate(Document document, List<Validator> validators)
         {
             List<ValidationError> errors = new List<ValidationError>();
@@ -151,6 +179,33 @@ namespace RedPen.Net.Core
             }
 
             return errors;
+        }
+
+        /// <summary>
+        /// Configで定義されたエラーメッセージの言語設定に即したエラーメッセージをValidationErrorから取得する。
+        /// </summary>
+        /// <param name="config">The config.</param>
+        /// <param name="errors">The errors.</param>
+        /// <returns>A list of (ValidationError error, string errorMessage).</returns>
+        public List<(ValidationError error, string errorMessage)> GetErrorMessage(
+            CultureInfo messageCultureInfo,
+            List<ValidationError> errors)
+        {
+            var messageManager = new ErrorMessageManager(ErrorMessageDefinitions);
+            return errors.Select(e => (e, messageManager.GetErrorMessage(e, messageCultureInfo))).ToList();
+        }
+
+        /// <summary>
+        /// PasrsingとValidationを一括して行う関数。
+        /// </summary>
+        /// <param name="parser">The parser.</param>
+        /// <param name="documentText">The document text.</param>
+        /// <returns>A list of (ValidationError error, string errorMessage).</returns>
+        public List<(ValidationError error, string errorMessage)> ParseAndValidate(IDocumentParser parser, string documentText)
+        {
+            var document = Parse(parser, this._configuration, documentText);
+            var validationErrors = Validate(document, this._validators);
+            return this.GetErrorMessage(this._configuration.MessageCultureInfo, validationErrors);
         }
     }
 }
