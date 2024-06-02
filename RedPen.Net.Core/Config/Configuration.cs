@@ -82,7 +82,7 @@ namespace RedPen.Net.Core.Config
 
         /// <summary>TODO: SymbolTableの定義やConfigurationとの関係については見直す必要があるが、暫定的にはこのようにしておく。</summary>
         [JsonIgnore]
-        public SymbolTable SymbolTable => new(DocumentCultureInfo.Name, Variant, Symbols);
+        public SymbolTable SymbolTable => new(this._documentLang, Variant, Symbols);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Configuration"/> class.

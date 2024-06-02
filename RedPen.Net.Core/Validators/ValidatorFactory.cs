@@ -13,6 +13,8 @@
 //   limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Reflection;
 using NLog;
@@ -51,6 +53,13 @@ namespace RedPen.Net.Core.Validators
             return instance;
         }
 
+        private Dictionary<string, Type> ValidationNameToValidatorTypeMap = new Dictionary<string, Type>();
+
+        public void SetValidatorDefinition(string validationName, Type validatorType)
+        {
+            ValidationNameToValidatorTypeMap[validationName] = validatorType;
+        }
+
         /// <summary>
         /// Activatorを使ってValidatorConfigurationを継承した具体的なValidatorConfigurationに対応する
         /// Validatorを継承した具体的なValidatorインスタンスを生成する関数。
@@ -68,13 +77,28 @@ namespace RedPen.Net.Core.Validators
             // NOTE: Validatorの引数付きコンストラクタの引数定義は実装時の要注意事項として全Validatorで共通とする。
             var args = new object[] { cultureInfo, symbolTable, validatorConfiguration };
 
-            // NOTE: ValidatorConfigurationから直接対応するValidatorのTypeを取得し、生成する。
-            object v = Activator.CreateInstance(
-                Type.GetType(GetValidatorFullName(validatorConfiguration)),
-                BindingFlags.CreateInstance,
-                null,
-                args,
-                null);
+            // 外部プロジェクトから与えられたValidationNameに対応するValidatorが存在する場合は、そのValidatorを生成する。
+            Type validatorType;
+            object v;
+            if (ValidationNameToValidatorTypeMap.ContainsKey(validatorConfiguration.ValidationName))
+            {
+                v = Activator.CreateInstance(
+                    ValidationNameToValidatorTypeMap[validatorConfiguration.ValidationName],
+                    BindingFlags.CreateInstance,
+                    null,
+                    args,
+                    null);
+            }
+            else
+            {
+                // NOTE: ValidatorConfigurationから直接対応するValidatorのTypeを取得し、生成する。
+                v = Activator.CreateInstance(
+                    Type.GetType(GetValidatorFullName(validatorConfiguration)),
+                    BindingFlags.CreateInstance,
+                    null,
+                    args,
+                    null);
+            }
 
             // 型チェックを行い、正しくValidatorを生成出来ていなかった場合はExceptionを投げる。
             if (v == null)

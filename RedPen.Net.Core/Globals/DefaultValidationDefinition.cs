@@ -54,5 +54,10 @@ namespace RedPen.Net.Core.Globals
         public static ImmutableList<Type> ValidatorTypes =>
             Assembly.GetExecutingAssembly().GetTypes()
                 .Where(i => typeof(Validator).IsAssignableFrom(i) && !i.IsAbstract).ToImmutableList();
+
+        /// <summary>ValidationNameとValidatorConfigurationのTypeを紐づけた定義リスト</summary>
+        public static ImmutableDictionary<string, Type> ValidationNameToValidatorTypeMap =>
+            ValidatorTypes.Select(i => new KeyValuePair<string, Type>(i.Name.Replace("Validator", ""), i))
+            .ToImmutableDictionary();
     }
 }

@@ -12,7 +12,8 @@ namespace System.Runtime.CompilerServices
 
 namespace RedPen.Net.Core.Validators.Tests
 {
-    // TODO: Configurationにはパラメータに応じたInterfaceがあるので、必要なパラメータはInterfaceを実装することで定義する。
+    // NOTE: 応用アプリケーション側で新規追加するValidationのテスト用。
+
     /// <summary>TestのConfiguration</summary>
     public record TestConfiguration : ValidatorConfiguration
     {
@@ -21,20 +22,14 @@ namespace RedPen.Net.Core.Validators.Tests
         }
     }
 
-    // TODO: Validation対象に応じて、IDocumentValidatable, ISectionValidatable, ISentenceValidatableを実装する。
     /// <summary>TestのValidator</summary>
     public class TestValidator : Validator, ISentenceValidatable
     {
         /// <summary>Nlog</summary>
         private static Logger log = LogManager.GetCurrentClassLogger();
 
-        // TODO: 専用のValidatorConfigurationを別途定義する。
         /// <summary>ValidatorConfiguration</summary>
         public TestConfiguration Config { get; init; }
-
-        // TODO: サポート対象言語がANYではない場合overrideで再定義する。
-        /// <summary></summary>
-        public override List<string> SupportedLanguages => new List<string>() { "ja-JP" };
 
         // TODO: コンストラクタの引数定義は共通にすること。
         /// <summary>
@@ -65,13 +60,30 @@ namespace RedPen.Net.Core.Validators.Tests
             List<ValidationError> result = new List<ValidationError>();
 
             // validation
+            // あくまでテストなので、「a」または「あ」を検出するValidationとする。
+            var indexOfAlpha = sentence.Content.IndexOf('a');
+            if (indexOfAlpha >= 0)
+            {
+                result.Add(new ValidationError(
+                    Config.ValidationName,
+                    this.Level,
+                    sentence,
+                    sentence.ConvertToLineOffset(indexOfAlpha),
+                    sentence.ConvertToLineOffset(indexOfAlpha),
+                    MessageArgs: new object[] { "a" }));
+            }
 
-            // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            //result.Add(new ValidationError(
-            //    Config.ValidationName,
-            //    this.Level,
-            //    sentence,
-            //    MessageArgs: new object[] { argsForMessageArg }));
+            var indexOfHiraganaA = sentence.Content.IndexOf('あ');
+            if (indexOfHiraganaA >= 0)
+            {
+                result.Add(new ValidationError(
+                    Config.ValidationName,
+                    this.Level,
+                    sentence,
+                    sentence.ConvertToLineOffset(indexOfHiraganaA),
+                    sentence.ConvertToLineOffset(indexOfHiraganaA),
+                    MessageArgs: new object[] { "あ" }));
+            }
 
             return result;
         }

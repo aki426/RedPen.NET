@@ -18,6 +18,7 @@ using FluentAssertions;
 using RedPen.Net.Core.Globals;
 using RedPen.Net.Core.Validators.DocumentValidator;
 using RedPen.Net.Core.Validators.SentenceValidator;
+using RedPen.Net.Core.Validators.Tests;
 using Xunit;
 
 namespace RedPen.Net.Core.Config.Tests
@@ -184,6 +185,39 @@ namespace RedPen.Net.Core.Config.Tests
             configuration.Symbols[1].InvalidCharsStr.Should().Be("．");
             configuration.Symbols[1].NeedBeforeSpace.Should().BeTrue();
             configuration.Symbols[1].NeedAfterSpace.Should().BeTrue();
+        }
+
+        /// <summary>
+        /// 応用アプリケーション側で独自のValidatorを追加する場合のテスト。
+        /// </summary>
+        [Fact]
+        public void LoadAddonValidatorTest()
+        {
+            string jsonString = @"{
+    // コメントも書けます。
+    ""DocumentLang"": ""ja-JP"",
+    ""Variant"": ""zenkaku"",
+    ""MessageLang"": ""ja-JP"",
+    ""ValidatorConfigurations"": [
+        {
+            ""Name"": ""Test"",
+            ""Level"" : ""ERROR""
+        }
+    ]
+}";
+
+            // CoreライブラリにはTestバリデーションは存在しないのでエラーになる。
+            var jsonLoader = new ConfigurationLoader(DefaultValidationDefinition.ValidationNameToValidatorConfigurationTypeMap);
+            Action action;
+            action = () => jsonLoader.Load(jsonString);
+            action.Should().Throw<System.Text.Json.JsonException>()
+                .WithMessage("No such a ValidationType as Test");
+
+            // Testバリデーションの情報を追加する。
+            jsonLoader = new ConfigurationLoader(
+                DefaultValidationDefinition.ValidationNameToValidatorConfigurationTypeMap.Add("Test", typeof(TestConfiguration)));
+            action = () => jsonLoader.Load(jsonString);
+            action.Should().NotThrow<System.Text.Json.JsonException>();
         }
     }
 }

@@ -12,17 +12,15 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+using System.Collections.Generic;
+using System.Globalization;
+using FluentAssertions;
+using RedPen.Net.Core.Config;
+using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Validators;
+using RedPen.Net.Core.Validators.SentenceValidator;
 using Xunit;
 using Xunit.Abstractions;
-using RedPen.Net.Core.Config;
-using RedPen.Net.Core.Validators;
-using FluentAssertions;
-using RedPen.Net.Core.Validators.SentenceValidator;
-using System.Globalization;
-using System.Collections.Generic;
-using System.Reflection;
-using System;
-using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Tests.Validators
 {
