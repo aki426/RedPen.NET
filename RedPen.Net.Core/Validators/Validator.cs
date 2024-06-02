@@ -182,7 +182,7 @@ namespace RedPen.Net.Core.Validators
 
 //        // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
 //        result.Add(new ValidationError(
-//            ValidationType.XXX,
+//            Config.ValidationName,
 //            this.Level,
 //            sentence,
 //            MessageArgs: new object[] { argsForMessageArg }));
