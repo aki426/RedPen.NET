@@ -61,7 +61,6 @@
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\ConfigurationLoaderTest.cs" />
     <Compile Include="Config\ConfigurationTests.cs" />
     <Compile Include="Config\SymbolTests.cs" />
     <Compile Include="Config\SymbolTypeTests.cs" />
