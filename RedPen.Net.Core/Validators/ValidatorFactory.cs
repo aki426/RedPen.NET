@@ -13,7 +13,7 @@
 //   limitations under the License.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Reflection;
 using NLog;
@@ -29,35 +29,49 @@ namespace RedPen.Net.Core.Validators
     {
         private static Logger LOG = LogManager.GetCurrentClassLogger();
 
-        private static ValidatorFactory instance;
+        //private static ValidatorFactory instance;
+
+        public ImmutableDictionary<string, Type> NameToValidatorMap { get; init; }
 
         /// <summary>
+        /// RedPen.Net.CoreのデフォルトValidatiorしか使用しない場合のコンストラクタ。
         /// Prevents a default instance of the <see cref="ValidatorFactory"/> class from being created.
         /// </summary>
-        private ValidatorFactory()
+        public ValidatorFactory()
         {
+            NameToValidatorMap = ImmutableDictionary<string, Type>.Empty;
         }
 
         /// <summary>
-        /// Singletonインスタンスを取得する。
+        /// ライブラリ外でValidatorを追加する場合のコンストラクタ。
+        /// Initializes a new instance of the <see cref="ValidatorFactory"/> class.
         /// </summary>
-        /// <returns>A ValidatorFactory.</returns>
-        public static ValidatorFactory GetInstance()
+        /// <param name="nameToValidatorMap">The name to validator map.</param>
+        public ValidatorFactory(ImmutableDictionary<string, Type> nameToValidatorMap)
         {
-            if (instance == null)
-            {
-                instance = new ValidatorFactory();
-            }
-
-            return instance;
+            NameToValidatorMap = nameToValidatorMap;
         }
 
-        private Dictionary<string, Type> ValidationNameToValidatorTypeMap = new Dictionary<string, Type>();
+        ///// <summary>
+        ///// Singletonインスタンスを取得する。
+        ///// </summary>
+        ///// <returns>A ValidatorFactory.</returns>
+        //public static ValidatorFactory GetInstance()
+        //{
+        //    if (instance == null)
+        //    {
+        //        instance = new ValidatorFactory();
+        //    }
 
-        public void SetValidatorDefinition(string validationName, Type validatorType)
-        {
-            ValidationNameToValidatorTypeMap[validationName] = validatorType;
-        }
+        //    return instance;
+        //}
+
+        //private Dictionary<string, Type> ValidationNameToValidatorTypeMap = new Dictionary<string, Type>();
+
+        //public void SetValidatorDefinition(string validationName, Type validatorType)
+        //{
+        //    ValidationNameToValidatorTypeMap[validationName] = validatorType;
+        //}
 
         /// <summary>
         /// Activatorを使ってValidatorConfigurationを継承した具体的なValidatorConfigurationに対応する
@@ -79,10 +93,10 @@ namespace RedPen.Net.Core.Validators
             // 外部プロジェクトから与えられたValidationNameに対応するValidatorが存在する場合は、そのValidatorを生成する。
             Type validatorType;
             object v;
-            if (ValidationNameToValidatorTypeMap.ContainsKey(validatorConfiguration.ValidationName))
+            if (NameToValidatorMap.ContainsKey(validatorConfiguration.ValidationName))
             {
                 v = Activator.CreateInstance(
-                    ValidationNameToValidatorTypeMap[validatorConfiguration.ValidationName],
+                    NameToValidatorMap[validatorConfiguration.ValidationName],
                     BindingFlags.CreateInstance,
                     null,
                     args,
@@ -90,7 +104,8 @@ namespace RedPen.Net.Core.Validators
             }
             else
             {
-                // NOTE: ValidatorConfigurationから直接対応するValidatorのTypeを取得し、生成する。
+                // NOTE: ValidatorConfigurationのValidationNameから対応するValidatorの名前を引いてTypeへ変換し、
+                // Validator生成する。
                 v = Activator.CreateInstance(
                     Type.GetType(GetValidatorFullName(validatorConfiguration)),
                     BindingFlags.CreateInstance,

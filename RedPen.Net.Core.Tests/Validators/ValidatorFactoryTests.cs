@@ -124,7 +124,7 @@ namespace RedPen.Net.Core.Tests.Validators
         [Fact]
         public void ValidatorFactoryGetValidatorTest()
         {
-            ValidatorFactory factory = ValidatorFactory.GetInstance();
+            ValidatorFactory factory = new ValidatorFactory();
 
             var cultureInfo = CultureInfo.GetCultureInfo("ja-JP");
             //ValidationType.SentenceLength.ToString().Should().Be("SentenceLength");

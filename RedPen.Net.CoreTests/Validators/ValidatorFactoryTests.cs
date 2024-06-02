@@ -12,6 +12,8 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+using System;
+using System.Collections.Immutable;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Globals;
@@ -53,8 +55,8 @@ namespace RedPen.Net.Core.Validators.Tests
             // Coreプロジェクトからは応用アプリケーション側への参照が無いので、ValidatorFactoryで生成することはできない。
             // よって、事前に型情報を与える必要がある。
             // NOTE: Typeはクラス定義すべてを包含するらしい。よって参照元プロジェクトから参照先プロジェクトのActivatorでクラス生成も可能。
-            ValidatorFactory factory = ValidatorFactory.GetInstance();
-            factory.SetValidatorDefinition("Test", typeof(TestValidator));
+            ValidatorFactory factory = new ValidatorFactory(
+                ImmutableDictionary<string, Type>.Empty.Add("Test", typeof(TestValidator)));
 
             Validator validator = factory.GetValidator(
                 configuration.DocumentCultureInfo,
