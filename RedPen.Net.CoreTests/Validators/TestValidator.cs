@@ -13,9 +13,11 @@
 //   limitations under the License.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using NLog;
 using RedPen.Net.Core.Config;
+using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Model;
 
 namespace System.Runtime.CompilerServices
@@ -101,5 +103,14 @@ namespace RedPen.Net.Core.Validators.Tests
 
             return result;
         }
+    }
+
+    public static class TestErrorMessages
+    {
+        public static ImmutableList<ErrorMessageDefinition> Definitions = new List<ErrorMessageDefinition>()
+        {
+            new("Test", "", new CultureInfo("ja-JP"), "「a」または「あ」を検出しました。今回は \"{0}\"が見つかりました。"),
+            new("Test", "", new CultureInfo("en-US"), " \"a\" or \"あ\" was found. This sentence contains \"{0}\".")
+        }.ToImmutableList();
     }
 }

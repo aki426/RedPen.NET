@@ -12,7 +12,9 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 using NLog;
 using RedPen.Net.Core.Validators;
 
@@ -39,6 +41,13 @@ namespace RedPen.Net.Core.Errors
             return instance;
         }
 
+        private ImmutableList<ErrorMessageDefinition> ErrorMessageDefinitions = null;
+
+        public void SetValidatorDefinition(ImmutableList<ErrorMessageDefinition> errorMessageDefinitions)
+        {
+            ErrorMessageDefinitions = errorMessageDefinitions;
+        }
+
         /// <summary>
         /// 引数を元情報としてエラーメッセージを生成する関数。
         /// </summary>
@@ -49,6 +58,17 @@ namespace RedPen.Net.Core.Errors
         /// <returns>A string.</returns>
         public string GetErrorMessage(string validationName, string messageKey, CultureInfo cultureInfo, object[] messageArgs)
         {
+            // 先に定義されたエラーメッセージを検索し、あればそれを優先する。
+            if (ErrorMessageDefinitions != null && ErrorMessageDefinitions.Any())
+            {
+                var definition = ErrorMessageDefinitions.Where(e => e.Match(validationName, messageKey, cultureInfo)).FirstOrDefault();
+                if (definition != null)
+                {
+                    return definition.GetFormatedMessage(messageArgs);
+                }
+            }
+
+            // Coreライブラリ内のリソースからエラーメッセージを取得する。
             string suffix = messageKey == string.Empty ? "" : $"_{messageKey}";
             string key = $"{validationName}{suffix}";
             string pattern = ValidationMessage.ResourceManager.GetString(key, cultureInfo);
