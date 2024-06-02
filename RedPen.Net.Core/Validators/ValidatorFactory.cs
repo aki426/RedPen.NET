@@ -29,8 +29,7 @@ namespace RedPen.Net.Core.Validators
     {
         private static Logger LOG = LogManager.GetCurrentClassLogger();
 
-        //private static ValidatorFactory instance;
-
+        /// <summary>外部から追加されたValidationNameとValidatorのクラス定義</summary>
         public ImmutableDictionary<string, Type> NameToValidatorMap { get; init; }
 
         /// <summary>
@@ -39,6 +38,7 @@ namespace RedPen.Net.Core.Validators
         /// </summary>
         public ValidatorFactory()
         {
+            // 追加Validatorは無し。
             NameToValidatorMap = ImmutableDictionary<string, Type>.Empty;
         }
 
@@ -49,29 +49,9 @@ namespace RedPen.Net.Core.Validators
         /// <param name="nameToValidatorMap">The name to validator map.</param>
         public ValidatorFactory(ImmutableDictionary<string, Type> nameToValidatorMap)
         {
+            // DI
             NameToValidatorMap = nameToValidatorMap;
         }
-
-        ///// <summary>
-        ///// Singletonインスタンスを取得する。
-        ///// </summary>
-        ///// <returns>A ValidatorFactory.</returns>
-        //public static ValidatorFactory GetInstance()
-        //{
-        //    if (instance == null)
-        //    {
-        //        instance = new ValidatorFactory();
-        //    }
-
-        //    return instance;
-        //}
-
-        //private Dictionary<string, Type> ValidationNameToValidatorTypeMap = new Dictionary<string, Type>();
-
-        //public void SetValidatorDefinition(string validationName, Type validatorType)
-        //{
-        //    ValidationNameToValidatorTypeMap[validationName] = validatorType;
-        //}
 
         /// <summary>
         /// Activatorを使ってValidatorConfigurationを継承した具体的なValidatorConfigurationに対応する
@@ -91,7 +71,6 @@ namespace RedPen.Net.Core.Validators
             var args = new object[] { cultureInfo, symbolTable, validatorConfiguration };
 
             // 外部プロジェクトから与えられたValidationNameに対応するValidatorが存在する場合は、そのValidatorを生成する。
-            Type validatorType;
             object v;
             if (NameToValidatorMap.ContainsKey(validatorConfiguration.ValidationName))
             {
@@ -114,21 +93,18 @@ namespace RedPen.Net.Core.Validators
                     null);
             }
 
-            // 型チェックを行い、正しくValidatorを生成出来ていなかった場合はExceptionを投げる。
-            if (v == null)
+            // 正しくValidatorを生成出来ていなかった場合はExceptionを投げる。
+            var validator = v as Validator;
+            if (validator != null)
             {
-                LOG.Warn($"Failed to create Validator instance for {validatorConfiguration.ValidationName}");
-                return null;
+                if (validatorConfiguration.ValidationName == validator.ValidationName)
+                {
+                    return validator;
+                }
             }
-            else if (v is Validator && validatorConfiguration.ValidationName == (v as Validator).ValidationName)
-            {
-                return v as Validator;
-            }
-            else
-            {
-                LOG.Warn($"Failed to set Validator type for {validatorConfiguration.ValidationName}");
-                return null;
-            }
+
+            LOG.Warn($"Failed to create Validator instance for {validatorConfiguration.ValidationName}");
+            return null;
         }
 
         /// <summary>
