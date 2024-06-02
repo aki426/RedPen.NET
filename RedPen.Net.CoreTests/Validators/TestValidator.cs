@@ -1,14 +1,14 @@
-﻿using Xunit;
-using RedPen.Net.Core.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RedPen.Net.Core.Config;
-using NLog;
-using RedPen.Net.Core.Model;
+﻿using System.Collections.Generic;
 using System.Globalization;
+using NLog;
+using RedPen.Net.Core.Config;
+using RedPen.Net.Core.Model;
+
+namespace System.Runtime.CompilerServices
+{
+    internal sealed class IsExternalInit
+    { }
+}
 
 namespace RedPen.Net.Core.Validators.Tests
 {
@@ -67,11 +67,11 @@ namespace RedPen.Net.Core.Validators.Tests
             // validation
 
             // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
-            result.Add(new ValidationError(
-                ValidationType.Test,
-                this.Level,
-                sentence,
-                MessageArgs: new object[] { argsForMessageArg }));
+            //result.Add(new ValidationError(
+            //    Config.ValidationName,
+            //    this.Level,
+            //    sentence,
+            //    MessageArgs: new object[] { argsForMessageArg }));
 
             return result;
         }
