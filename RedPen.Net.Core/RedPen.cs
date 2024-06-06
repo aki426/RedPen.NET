@@ -29,24 +29,35 @@ using RedPen.Net.Core.Validators;
 namespace RedPen.Net.Core
 {
     // NOTE: RedPenの使い方。
-    // 1. RedPenクラスをインスタンス化する。コンストラクタで追加のValidation定義を与える。
-    // 2. InitRedPenにJsonテキストを読み込ませ、内部にConfigurationとValidatorをセットする。
+    //
+    // Step 1. RedPenクラスをインスタンス化する。
+    // 追加のValidationを行う場合は、次のいずれかの方法でValidatorConfigurationとValidatorの定義を与える。
+    // 1-1. コンストラクタで追加のValidationDefinitionリストを与える。
+    // 1-2. RegisterValidation関数で追加のValidation定義を与える。
+    // ※つまりRedPenは内部にValidatorConfigurationとValidatorの定義に関して状態変更を許すスロットを持つことになるが、
+    // RedPenインスタンスがかなり上位のアプリケーションレイヤーに位置するものなので、設計上Immutableでなくてもよいと考える。
+    // エラーメッセージについても同様で、
+    // 1-3. コンストラクタで追加のErrorMessageDifinitionリストを与える。
+    // 1-4. RegisterErrorMessage関数でエラーメッセージを登録する。
+    //
+    // Step 2. InitRedPenにJsonテキストを読み込ませ、内部にConfigurationとValidatorをセットする。
     // ※通常、1, 2の手順は応用アプリケーション側で1回実施したら後は起動中同じ処理を繰り返すはずである。
     // ※Configurationを切り替えて使いたい場合は、InitRedPenを再度呼び出すか、RedPenインスタンスを複数持つようにすれば切り替えて使える。
-    // 3. ParseAndValidateにParserとドキュメントテキストを渡すと、Validation結果が返ってくる。
+    //
+    // Step 3. ParseAndValidateにParserとドキュメントテキストを渡すと、Validation結果が返ってくる。
     // ※引数でIDocumentParserを渡す方法は、あまりスマートとは言えないが現状PlainTextParserくらいしか無く見通しが立たないわりに、
     // あとから増える可能性があるので、このような設計になっている。
-    // なお、Parsesrに渡すSentenceExtractorとTokenizerはJAVA版でも種類が無くConfigurationに依存するため、変更も想定されないので
-    // この固定的な設計とした。
+    // なお、Parsesrに渡すSentenceExtractorとTokenizerはJAVA版でも種類が無くConfigurationにのLangとSymbolの定義で決まる。
+    // またConfigurationに対して途中で変更することも想定されないのでConfigurationに対して固定、つまり
+    // ステップ2移行固定な設計とした。
 
     /// <summary>ライブラリとしてRedPenを使う場合のインターフェースとなるクラス</summary>
     public record RedPen
     {
         private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
 
-        ImmutableList<ValidationDefinition> ValidationDefinitions { get; init; }
-        ImmutableList<ErrorMessageDefinition> ErrorMessageDefinitions { get; init; }
-
+        List<ValidationDefinition> ValidationDefinitions { get; init; }
+        List<ErrorMessageDefinition> ErrorMessageDefinitions { get; init; }
         public Configuration Configuration { get; init; }
 
         /// <summary>
@@ -56,8 +67,8 @@ namespace RedPen.Net.Core
         /// <param name="validationDefinitions">The validation definitions.</param>
         /// <param name="errorMessageDefinitions">The error message definitions.</param>
         public RedPen(
-            ImmutableList<ValidationDefinition> validationDefinitions,
-            ImmutableList<ErrorMessageDefinition> errorMessageDefinitions)
+            List<ValidationDefinition> validationDefinitions,
+            List<ErrorMessageDefinition> errorMessageDefinitions)
 
         {
             ValidationDefinitions = validationDefinitions;
@@ -68,7 +79,40 @@ namespace RedPen.Net.Core
         /// RedPen.Net.CoreのデフォルトValidatiorしか使用しない場合のコンストラクタ。
         /// Initializes a new instance of the <see cref="RedPen"/> class.
         /// </summary>
-        public RedPen() : this(ImmutableList<ValidationDefinition>.Empty, ImmutableList<ErrorMessageDefinition>.Empty) { }
+        public RedPen() : this(new List<ValidationDefinition>(), new List<ErrorMessageDefinition>()) { }
+
+        /// <summary>
+        /// DIコンテナ風にValidatorConfigurationとValidatorを登録する関数。
+        /// </summary>
+        /// <typeparam name="TValidatorConfiguration"></typeparam>
+        /// <typeparam name="TValidator"></typeparam>
+        public void RegisterValidation<TValidatorConfiguration, TValidator>()
+        {
+            this.ValidationDefinitions.Add(
+                ValidationDefinition.RegisterType<TValidatorConfiguration, TValidator>());
+        }
+
+        /// <summary>
+        /// ValidationError用のメッセージを登録する関数。
+        /// </summary>
+        /// <param name="validationName">The validation name.</param>
+        /// <param name="messageKey">The message key.</param>
+        /// <param name="cultureInfo">The culture info.</param>
+        /// <param name="message">The message.</param>
+        public void RegisterErrorMessage(string validationName, string messageKey, CultureInfo cultureInfo, string message)
+        {
+            this.ErrorMessageDefinitions.Add(
+                new ErrorMessageDefinition(validationName, messageKey, cultureInfo, message));
+        }
+
+        /// <summary>
+        /// ValidationError用のメッセージを登録する関数。
+        /// </summary>
+        /// <param name="errorMessageDefinitions">The error message definitions.</param>
+        public void RegisterErrorMessage(IList<ErrorMessageDefinition> errorMessageDefinitions)
+        {
+            this.ErrorMessageDefinitions.AddRange(errorMessageDefinitions);
+        }
 
         /// <summary>
         /// 現在のRedPenの設定を基に、JsonテキストからConfigurationをロードする。
@@ -191,7 +235,7 @@ namespace RedPen.Net.Core
             CultureInfo messageCultureInfo,
             List<ValidationError> errors)
         {
-            var messageManager = new ErrorMessageManager(ErrorMessageDefinitions);
+            var messageManager = new ErrorMessageManager(ErrorMessageDefinitions.ToImmutableList());
             return errors.Select(e => (e, messageManager.GetErrorMessage(e, messageCultureInfo))).ToList();
         }
 

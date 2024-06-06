@@ -21,5 +21,15 @@ namespace RedPen.Net.Core
         public string ValidationName { get; init; }
         public Type ValidatorConfigurationType { get; init; }
         public Type ValidatorType { get; init; }
+
+        public static ValidationDefinition RegisterType<TValidatorConfiguration, TValidator>()
+        {
+            return new ValidationDefinition
+            {
+                ValidationName = typeof(TValidator).Name.Substring(0, typeof(TValidator).Name.Length - "Validator".Length),
+                ValidatorConfigurationType = typeof(TValidatorConfiguration),
+                ValidatorType = typeof(TValidator)
+            };
+        }
     }
 }

@@ -1,0 +1,24 @@
+{
+    // サンプルConfファイルです。すべての実装済みのValidatorについて
+    "DocumentLang": "ja-JP",
+    "Variant": "zenkaku",
+    "ValidatorConfigurations": [
+        // ライブラリ利用側で定義された追加Validatorの検証のためのConfigurationなので
+        // 定義はCommaCountとTaigendome程度で良い。
+        {
+            "Name": "CommaCount",
+            "Level": "ERROR",
+            "MinCount": 3
+        },
+        {
+            "Name": "Taigendome",
+            "Level": "ERROR"
+        },
+        {
+            // Testsプロジェクトで定義したTestValidatorのConfiguration
+            "Name": "Test",
+            "Level": "ERROR"
+        }
+    ],
+    "Symbols": []
+}
