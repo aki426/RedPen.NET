@@ -14,13 +14,18 @@
 
 using System.Globalization;
 using FluentAssertions;
-using RedPen.Net.Core.Errors;
 using Xunit;
 
-namespace RedPen.Net.Core.Tests.Errors
+namespace RedPen.Net.Core.Errors.Tests
 {
+    /// <summary>
+    /// The error message manager tests.
+    /// </summary>
     public class ErrorMessageManagerTests
     {
+        /// <summary>
+        /// ErrorMassageManagerがメッセージを解決することの基本機能のテスト。
+        /// </summary>
         [Fact]
         public void BasicTest()
         {
