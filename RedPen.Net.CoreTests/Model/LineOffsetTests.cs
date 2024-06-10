@@ -15,19 +15,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
-using RedPen.Net.Core.Model;
 using Xunit;
 
-namespace RedPen.Net.Core.Tests.Model
+namespace RedPen.Net.Core.Model.Tests
 {
+    /// <summary>
+    /// The line offset tests.
+    /// </summary>
     public class LineOffsetTests
     {
+        /// <summary>
+        /// LineOffsetのMakeOffsetListによって改行が解決されることのテスト。
+        /// </summary>
         [Fact]
         public void MakeOffsetListTest()
         {
+            // 与えられた文字列を連続するLineOffsetとして返す。
             LineOffset.MakeOffsetList(1, 0, "おはよう。").SequenceEqual(new List<LineOffset>
             {
                 new LineOffset(1, 0), // お
@@ -37,6 +41,8 @@ namespace RedPen.Net.Core.Tests.Model
                 new LineOffset(1, 4), // 。
             }).Should().BeTrue();
 
+            // 改行コードを解釈する。
+            // TODO: 改行コードによるLineの解釈はParserで行うべきかもしれず、処理の責務が曖昧になる可能性がある点に注意する。
             LineOffset.MakeOffsetList(1, 0, "おは\nよう。").SequenceEqual(new List<LineOffset>
             {
                 new LineOffset(1, 0), // お

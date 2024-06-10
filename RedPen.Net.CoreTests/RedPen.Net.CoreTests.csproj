@@ -261,6 +261,9 @@
     <Compile Include="Config\SymbolTests.cs" />
     <Compile Include="Config\SymbolTypeTests.cs" />
     <Compile Include="Errors\ErrorMessageManagerTests.cs" />
+    <Compile Include="Model\DocumentTests.cs" />
+    <Compile Include="Model\LineOffsetTests.cs" />
+    <Compile Include="Model\SectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedPenTests.cs" />
     <Compile Include="Validators\TestValidator.cs" />

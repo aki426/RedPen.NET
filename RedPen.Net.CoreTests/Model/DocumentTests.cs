@@ -15,14 +15,19 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 using Xunit;
 
-namespace RedPen.Net.Core.Tests.Model
+namespace RedPen.Net.Core.Model.Tests
 {
+    /// <summary>
+    /// The document tests.
+    /// </summary>
     public class DocumentTests
     {
+        /// <summary>
+        /// Documentクラスインスタンスの最小構成の検証。
+        /// </summary>
         [Fact()]
         public void BuildDocumentTest()
         {
@@ -32,6 +37,9 @@ namespace RedPen.Net.Core.Tests.Model
             document.Sections.Count.Should().Be(0);
         }
 
+        /// <summary>
+        /// DocumentBuilderの基本機能のテスト。
+        /// </summary>
         [Fact()]
         public void BuildDocumentWithListTest()
         {
@@ -71,6 +79,9 @@ namespace RedPen.Net.Core.Tests.Model
             doc.Sections[0].ListBlocks[0].ListElements[2].Sentences[0].Content.Should().Be("list2");
         }
 
+        /// <summary>
+        /// 複数Documentを生成しコレクションで扱うテスト。
+        /// </summary>
         [Fact()]
         public void BuildMultiDocumentTest()
         {
@@ -129,9 +140,13 @@ namespace RedPen.Net.Core.Tests.Model
             second.Sections[0].Paragraphs[0].Sentences[1].LineNumber.Should().Be(2);
         }
 
+        /// <summary>
+        /// Tokenizes the test.
+        /// </summary>
         [Fact]
         public void TokenizeTest()
         {
+            // デフォルトでWhiteSpaceTokenizerが適用される。
             Document doc = Document.Builder()
                 .SetFileName("foobar")
                 .AddSection(0)
@@ -147,9 +162,13 @@ namespace RedPen.Net.Core.Tests.Model
             doc.Sections[0].Paragraphs[0].Sentences[0].Tokens[4].Surface.Should().Be(".");
         }
 
+        /// <summary>
+        /// 日本語のトークナイザーテスト。
+        /// </summary>
         [Fact]
         public void 日本語のトークナイザーテスト()
         {
+            // 日本語の場合WhiteSpaceTokenizerではだめなので、Kuromojiを指定する必要がある。
             Document doc = Document.Builder(new KuromojiTokenizer())
                     .SetFileName("今日")
                     .AddSection(0)
@@ -169,6 +188,9 @@ namespace RedPen.Net.Core.Tests.Model
             doc.Sections[0].Paragraphs[0].Sentences[0].Tokens[4].Surface.Should().Be("。");
         }
 
+        /// <summary>
+        /// Adds the paragraph before section test.
+        /// </summary>
         [Fact]
         public void AddParagraphBeforeSectionTest()
         {
@@ -184,6 +206,9 @@ namespace RedPen.Net.Core.Tests.Model
             document.Sections[1].Level.Should().Be(1);
         }
 
+        /// <summary>
+        /// Adds the list block before section test.
+        /// </summary>
         [Fact]
         public void AddListBlockBeforeSectionTest()
         {
@@ -196,6 +221,9 @@ namespace RedPen.Net.Core.Tests.Model
             act.Should().Throw<InvalidOperationException>();
         }
 
+        /// <summary>
+        /// Adds the list element before list block test.
+        /// </summary>
         [Fact]
         public void AddListElementBeforeListBlockTest()
         {

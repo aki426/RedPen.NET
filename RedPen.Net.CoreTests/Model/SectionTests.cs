@@ -16,13 +16,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using RedPen.Net.Core.Model;
 using Xunit;
 
-namespace RedPen.Net.Core.Tests.Model
+namespace RedPen.Net.Core.Model.Tests
 {
+    /// <summary>
+    /// The section tests.
+    /// </summary>
     public class SectionTests
     {
+        /// <summary>
+        /// ヘッダーが複数センテンスを持つ場合の検証。
+        /// </summary>
         [Fact()]
         public void GetJoinedHeaderContentsTest()
         {
@@ -53,10 +58,6 @@ namespace RedPen.Net.Core.Tests.Model
             Action act = () => section.GetJoinedHeaderContents();
             act.Should().Throw<InvalidOperationException>()
                 .WithMessage("No header sentence found in the section.");
-
-            //var joinedHeaderSentence = section.GetJoinedHeaderContents();
-            //joinedHeaderSentence.Content.Should().Be("");
-            //joinedHeaderSentence.LineNumber.Should().Be(0);
         }
     }
 }
