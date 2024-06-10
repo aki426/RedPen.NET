@@ -258,6 +258,8 @@
   <ItemGroup>
     <Compile Include="Config\ConfigurationLoaderTests.cs" />
     <Compile Include="Config\ConfigurationTests.cs" />
+    <Compile Include="Config\SymbolTests.cs" />
+    <Compile Include="Config\SymbolTypeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedPenTests.cs" />
     <Compile Include="Validators\TestValidator.cs" />

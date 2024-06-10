@@ -13,10 +13,9 @@
 //   limitations under the License.
 
 using FluentAssertions;
-using RedPen.Net.Core.Config;
 using Xunit;
 
-namespace RedPen.Net.Core.Tests.Config
+namespace RedPen.Net.Core.Config.Tests
 {
     /// <summary>
     /// Symbolのテスト

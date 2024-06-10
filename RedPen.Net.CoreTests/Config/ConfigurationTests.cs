@@ -17,6 +17,9 @@ using Xunit;
 
 namespace RedPen.Net.Core.Config.Tests
 {
+    /// <summary>
+    /// Configurationクラスの基本機能のテスト。
+    /// </summary>
     public class ConfigurationTests
     {
         [Fact()]

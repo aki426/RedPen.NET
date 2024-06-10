@@ -14,13 +14,18 @@
 
 using System;
 using FluentAssertions;
-using RedPen.Net.Core.Config;
 using Xunit;
 
-namespace RedPen.Net.Core.Tests.Config
+namespace RedPen.Net.Core.Config.Tests
 {
+    /// <summary>
+    /// The symbol type tests.
+    /// </summary>
     public class SymbolTypeTests
     {
+        /// <summary>
+        /// EnumであるSymbolTypeに対して基本関数のテスト。
+        /// </summary>
         [Fact]
         public void ConvertSymbolTypeToNameTest()
         {

@@ -60,9 +60,6 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\SymbolTests.cs" />
-    <Compile Include="Config\SymbolTypeTests.cs" />
-    <Compile Include="Config\ValidatorConfigurationTests.cs" />
     <Compile Include="Errors\ErrorMessageManagerTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Model\DocumentCollectionTests.cs" />

@@ -23,8 +23,14 @@ using Xunit;
 
 namespace RedPen.Net.Core.Config.Tests
 {
+    /// <summary>
+    /// The configuration loader tests.
+    /// </summary>
     public class ConfigurationLoaderTests
     {
+        /// <summary>
+        /// Json ConfigurationのLang設定周りのローディングテスト。デフォルト値を検証。
+        /// </summary>
         [Fact()]
         public void LoadLangSettingTest()
         {
