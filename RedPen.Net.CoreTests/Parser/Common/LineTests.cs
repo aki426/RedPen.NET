@@ -13,10 +13,9 @@
 //   limitations under the License.
 
 using FluentAssertions;
-using RedPen.Net.Core.Parser.Common;
 using Xunit;
 
-namespace RedPen.Net.Core.Tests.Parser.Common
+namespace RedPen.Net.Core.Parser.Common.Tests
 {
     public class LineTests
     {
