@@ -16,11 +16,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using FluentAssertions;
-using RedPen.Net.Core.Parser;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Tests.Parser
+namespace RedPen.Net.Core.Parser.Tests
 {
     public class BaseDocumentParserTests
     {
