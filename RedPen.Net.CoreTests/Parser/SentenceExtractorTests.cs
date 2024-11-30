@@ -17,15 +17,11 @@ using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Parser;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Tests.Parser
+namespace RedPen.Net.Core.Parser.Tests
 {
-    /// <summary>
-    /// The sentence extractor tests.
-    /// </summary>
     public class SentenceExtractorTests
     {
         private ITestOutputHelper output;
