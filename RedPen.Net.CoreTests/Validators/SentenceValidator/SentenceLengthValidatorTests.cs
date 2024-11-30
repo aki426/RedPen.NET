@@ -18,12 +18,10 @@ using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Validators;
-using RedPen.Net.Core.Validators.SentenceValidator;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
+namespace RedPen.Net.Core.Validators.SentenceValidator.Tests
 {
     /// <summary>
     /// The sentence length validator tests.

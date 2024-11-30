@@ -304,9 +304,35 @@
     <Compile Include="Utility\GrammarRuleExtractorTests.cs" />
     <Compile Include="Utility\LevenshteinDistanceUtilityTests.cs" />
     <Compile Include="Utility\UnicodeUtilityTests.cs" />
+    <Compile Include="Validators\DocumentValidator\InvalidParenthesisValidatorTests.cs" />
     <Compile Include="Validators\DocumentValidator\JapaneseWordVariationValidatorTests.cs" />
+    <Compile Include="Validators\DocumentValidator\KatakanaSpellCheckValidatorTests.cs" />
+    <Compile Include="Validators\DocumentValidator\SuccessiveSentenceValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\CommaCountValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\DoubledConjunctiveParticleGaValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\DoubledJoshiValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\DoubledWordValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\DoubleNegativeValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\HankakuKanaValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\InvalidExpressionValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\InvalidSymbolValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\JapaneseAmbiguousNounConjunctionValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\JapaneseJoyoKanjiValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\JapaneseNumberExpressionValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\JapaneseStyleValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\KatakanaEndHyphenTests.cs" />
+    <Compile Include="Validators\SentenceValidator\LongKanjiChainValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\OkuriganaValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SentenceLengthValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SpaceWithAlphabeticalExpressionTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SuccessiveWordValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SuggestExpressionValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SuggestGrammarRuleValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\SymbolWithSpaceValidatorTests.cs" />
+    <Compile Include="Validators\SentenceValidator\TaigendomeValidatorTests.cs" />
     <Compile Include="Validators\TestValidator.cs" />
     <Compile Include="Validators\ValidatorFactoryTests.cs" />
+    <Compile Include="Validators\ValidatorTestsUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

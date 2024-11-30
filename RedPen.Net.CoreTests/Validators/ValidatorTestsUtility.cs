@@ -13,20 +13,19 @@
 //   limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using FluentAssertions;
+using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Parser;
 using RedPen.Net.Core.Tokenizer;
-using RedPen.Net.Core.Validators;
 using Xunit;
 using Xunit.Abstractions;
-using System.Collections.Generic;
 
-namespace RedPen.Net.Core.Tests.Validators
+namespace RedPen.Net.Core.Validators.Tests
 {
     public static class ValidatorTestsUtility
     {

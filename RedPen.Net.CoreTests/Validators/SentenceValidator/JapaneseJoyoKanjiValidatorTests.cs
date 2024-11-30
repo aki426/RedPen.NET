@@ -20,11 +20,11 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Validators.SentenceValidator;
+using RedPen.Net.Core.Validators.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Tests.Validators.SentenceValidator
+namespace RedPen.Net.Core.Validators.SentenceValidator.Tests
 {
     public class JapaneseJoyoKanjiValidatorTests
     {

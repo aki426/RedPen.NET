@@ -19,11 +19,11 @@ using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Utility;
-using RedPen.Net.Core.Validators.DocumentValidator;
+using RedPen.Net.Core.Validators.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
+namespace RedPen.Net.Core.Validators.DocumentValidator.Tests
 {
     public class KatakanaSpellCheckValidatorTests
     {
