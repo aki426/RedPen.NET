@@ -14,17 +14,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Parser;
 using RedPen.Net.Core.Tokenizer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Tests.Parser
+namespace RedPen.Net.Core.Parser.Tests
 {
     public class PlainTextParserTests
     {
