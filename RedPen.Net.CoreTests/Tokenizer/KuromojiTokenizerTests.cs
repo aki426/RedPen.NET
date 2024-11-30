@@ -18,12 +18,11 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Tokenizer;
 using RedPen.Net.Core.Utility;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Tests.Tokenizer
+namespace RedPen.Net.Core.Tokenizer.Tests
 {
     public class KuromojiTokenizerTests
     {

@@ -289,12 +289,15 @@
     <Compile Include="Model\DocumentTests.cs" />
     <Compile Include="Model\LineOffsetTests.cs" />
     <Compile Include="Model\SectionTests.cs" />
+    <Compile Include="Model\TokenElementTests.cs" />
     <Compile Include="Parser\BaseDocumentParserTests.cs" />
     <Compile Include="Parser\Common\LineTests.cs" />
     <Compile Include="Parser\PlainTextParserTests.cs" />
     <Compile Include="Parser\SentenceExtractorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedPenTests.cs" />
+    <Compile Include="Tokenizer\KuromojiTokenizerTests.cs" />
+    <Compile Include="Tokenizer\WhiteSpaceTokenizerTests.cs" />
     <Compile Include="Utility\GrammarRuleExtractorTests.cs" />
     <Compile Include="Validators\DocumentValidator\JapaneseWordVariationValidatorTests.cs" />
     <Compile Include="Validators\TestValidator.cs" />
@@ -326,6 +329,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ILLink\ILLink.Descriptors.LibraryBuild.xml" />
+    <Content Include="Tokenizer\DATA\neko.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
