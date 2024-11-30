@@ -34,8 +34,44 @@ namespace RedPen.Net.Core.Utility.Tests
             this.output = output;
         }
 
+        [Theory]
+        [InlineData("001", "This:n + is:v", 2, "This:n|is:v")]
+        [InlineData("002", "This:n+is:v", 2, "This:n|is:v")]
+        [InlineData("003", "This:n +is:v", 2, "This:n|is:v")]
+        [InlineData("004", "This:n+ is:v", 2, "This:n|is:v")]
+        [InlineData("005", "This:n +  is:v", 2, "This:n|is:v")]
+        public void SplitTest(string nouse1, string text, int count, string expected)
+        {
+            string[] segments = GrammarRuleExtractor.SplitToRuleElements(text);
+            segments.Length.Should().Be(count);
+
+            string.Join("|", segments).Should().Be(expected);
+        }
+
+        /// <summary>ルール表現文字列からルールを抽出するテスト。</summary>
         [Fact]
-        public void RunTest()
+        public void RunTest01()
+        {
+            GrammarRule rule = GrammarRuleExtractor.Run("This: n,noun + is: v");
+            // MEMO: ルール文字列はマッチングのためすべて小文字に変換される。
+            rule.ToSurface().Should().Be("thisis");
+
+            foreach (TokenElement token in rule.Tokens)
+            {
+                output.WriteLine(token.ToString());
+            }
+
+            rule.Tokens[0].Surface.Should().Be("this");
+            rule.Tokens[0].Tags.Count.Should().Be(2);
+            rule.Tokens[0].Tags[0].Should().Be("n");
+            rule.Tokens[0].Tags[1].Should().Be("noun");
+            rule.Tokens[1].Surface.Should().Be("is");
+            rule.Tokens[1].Tags.Count.Should().Be(1);
+            rule.Tokens[1].Tags[0].Should().Be("v");
+        }
+
+        [Fact]
+        public void RunTest02()
         {
             var rule = GrammarRuleExtractor.Run("This:n + is:v");
             rule.Tokens.Count.Should().Be(2);

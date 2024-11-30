@@ -80,7 +80,6 @@
     <Compile Include="Utility\CollectionExtensionsTests.cs" />
     <Compile Include="Utility\DictionaryLoaderTests.cs" />
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
-    <Compile Include="Utility\GrammarRuleExtractorTests.cs" />
     <Compile Include="Utility\LevenshteinDistanceUtilityTests.cs" />
     <Compile Include="Utility\UnicodeUtilityTests.cs" />
     <Compile Include="Validators\DocumentValidator\SuccessiveSentenceValidatorTests.cs" />
