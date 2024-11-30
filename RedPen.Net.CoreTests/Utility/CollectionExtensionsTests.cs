@@ -12,13 +12,11 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using RedPen.Net.Core.Utility;
 using Xunit;
 
-namespace RedPen.Net.Core.Tests.Utility
+namespace RedPen.Net.Core.Utility.Tests
 {
     /// <summary>
     /// Test for CollectionExtensions

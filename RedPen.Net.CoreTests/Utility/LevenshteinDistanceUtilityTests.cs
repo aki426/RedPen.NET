@@ -13,10 +13,9 @@
 //   limitations under the License.
 
 using FluentAssertions;
-using RedPen.Net.Core.Utility;
 using Xunit;
 
-namespace RedPen.Net.Core.Tests.Utility
+namespace RedPen.Net.Core.Utility.Tests
 {
     public class LevenshteinDistanceUtilityTests
     {

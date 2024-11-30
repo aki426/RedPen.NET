@@ -15,11 +15,10 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-using RedPen.Net.Core.Utility;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Tests.Utility
+namespace RedPen.Net.Core.Utility.Tests
 {
     public class EndOfSentenceDetectorTests
     {

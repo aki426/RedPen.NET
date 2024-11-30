@@ -298,7 +298,12 @@
     <Compile Include="RedPenTests.cs" />
     <Compile Include="Tokenizer\KuromojiTokenizerTests.cs" />
     <Compile Include="Tokenizer\WhiteSpaceTokenizerTests.cs" />
+    <Compile Include="Utility\CollectionExtensionsTests.cs" />
+    <Compile Include="Utility\DictionaryLoaderTests.cs" />
+    <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
     <Compile Include="Utility\GrammarRuleExtractorTests.cs" />
+    <Compile Include="Utility\LevenshteinDistanceUtilityTests.cs" />
+    <Compile Include="Utility\UnicodeUtilityTests.cs" />
     <Compile Include="Validators\DocumentValidator\JapaneseWordVariationValidatorTests.cs" />
     <Compile Include="Validators\TestValidator.cs" />
     <Compile Include="Validators\ValidatorFactoryTests.cs" />
