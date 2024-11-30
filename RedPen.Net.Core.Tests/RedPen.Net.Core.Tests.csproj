@@ -76,7 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Parser\LineOffsetTests.cs" />
     <Compile Include="Parser\PlainTextParserTests.cs" />
     <Compile Include="Parser\SentenceExtractorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
