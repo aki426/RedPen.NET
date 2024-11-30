@@ -76,7 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Parser\PlainTextParserTests.cs" />
     <Compile Include="Parser\SentenceExtractorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tokenizer\KuromojiTokenizerTests.cs" />
@@ -88,9 +87,7 @@
     <Compile Include="Utility\GrammarRuleExtractorTests.cs" />
     <Compile Include="Utility\LevenshteinDistanceUtilityTests.cs" />
     <Compile Include="Utility\UnicodeUtilityTests.cs" />
-    <Compile Include="Validators\DocumentValidator\JapaneseWordVariationValidatorTest.cs" />
     <Compile Include="Validators\DocumentValidator\SuccessiveSentenceValidatorTests.cs" />
-    <Compile Include="Validators\GrammarRuleTests.cs" />
     <Compile Include="Validators\SentenceValidator\CommaCountValidatorTests.cs" />
     <Compile Include="Validators\SentenceValidator\DoubledConjunctiveParticleGaValidatorTests.cs" />
     <Compile Include="Validators\SentenceValidator\DoubledJoshiValidatorTests.cs" />

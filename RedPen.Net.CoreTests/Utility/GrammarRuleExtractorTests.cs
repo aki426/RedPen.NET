@@ -18,19 +18,18 @@ using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Tests.Parser;
-using RedPen.Net.Core.Utility;
+using RedPen.Net.Core.Parser.Tests;
 using RedPen.Net.Core.Validators;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Tests.Validators
+namespace RedPen.Net.Core.Utility.Tests
 {
-    public class GrammarRuleTests
+    public class GrammarRuleExtractorTests
     {
         private ITestOutputHelper output;
 
-        public GrammarRuleTests(ITestOutputHelper output)
+        public GrammarRuleExtractorTests(ITestOutputHelper output)
         {
             this.output = output;
         }

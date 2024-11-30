@@ -21,19 +21,14 @@ using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Errors;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Parser;
-using RedPen.Net.Core.Tests.Parser;
-using RedPen.Net.Core.Validators;
-using RedPen.Net.Core.Validators.DocumentValidator;
+using RedPen.Net.Core.Parser.Tests;
 using Xunit;
 using Xunit.Abstractions;
 using RedPenTokenizerFactory = RedPen.Net.Core.Tokenizer.RedPenTokenizerFactory;
 
-namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
+namespace RedPen.Net.Core.Validators.DocumentValidator.Tests
 {
-    /// <summary>
-    /// The japanese expression variation validator test.
-    /// </summary>
-    public class JapaneseWordVariationValidatorTest
+    public class JapaneseWordVariationValidatorTests
     {
         private readonly ITestOutputHelper output;
 
@@ -47,7 +42,7 @@ namespace RedPen.Net.Core.Tests.Validators.DocumentValidator
         /// Initializes a new instance of the <see cref="JapaneseWordVariationValidatorTest"/> class.
         /// </summary>
         /// <param name="output">The output.</param>
-        public JapaneseWordVariationValidatorTest(ITestOutputHelper output)
+        public JapaneseWordVariationValidatorTests(ITestOutputHelper output)
         {
             this.output = output;
 

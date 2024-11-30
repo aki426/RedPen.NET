@@ -294,6 +294,8 @@
     <Compile Include="Parser\PlainTextParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedPenTests.cs" />
+    <Compile Include="Utility\GrammarRuleExtractorTests.cs" />
+    <Compile Include="Validators\DocumentValidator\JapaneseWordVariationValidatorTests.cs" />
     <Compile Include="Validators\TestValidator.cs" />
     <Compile Include="Validators\ValidatorFactoryTests.cs" />
   </ItemGroup>
