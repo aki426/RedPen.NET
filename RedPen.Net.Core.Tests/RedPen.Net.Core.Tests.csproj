@@ -103,7 +103,6 @@
     <Compile Include="Validators\SentenceValidator\SymbolWithSpaceValidatorTests.cs" />
     <Compile Include="Validators\SentenceValidator\TaigendomeValidatorTests.cs" />
     <Compile Include="Validators\ValidatorTestsUtility.cs" />
-    <Compile Include="Validators\ValidatorFactoryTests.cs" />
     <Compile Include="Validators\ValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
