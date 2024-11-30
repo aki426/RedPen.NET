@@ -5,8 +5,6 @@ VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedPen.Net.Core", "RedPen.Net.Core\RedPen.Net.Core.csproj", "{DC647010-9174-4CE8-BA3D-05AA4510B241}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedPen.Net.Core.Tests", "RedPen.Net.Core.Tests\RedPen.Net.Core.Tests.csproj", "{C9A5AC37-C149-4A59-8F2A-6A32D57D4831}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VerifyBasicFunction", "VerifyBasicFunction\VerifyBasicFunction.csproj", "{325DA1B1-0177-4424-A47C-C3461140453C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VerifyBasicFunction.Tests", "VerifyBasicFunction.Tests\VerifyBasicFunction.Tests.csproj", "{08412741-B72A-43AB-8E37-5A2F753B0409}"
@@ -23,10 +21,6 @@ Global
 		{DC647010-9174-4CE8-BA3D-05AA4510B241}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC647010-9174-4CE8-BA3D-05AA4510B241}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC647010-9174-4CE8-BA3D-05AA4510B241}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9A5AC37-C149-4A59-8F2A-6A32D57D4831}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9A5AC37-C149-4A59-8F2A-6A32D57D4831}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9A5AC37-C149-4A59-8F2A-6A32D57D4831}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9A5AC37-C149-4A59-8F2A-6A32D57D4831}.Release|Any CPU.Build.0 = Release|Any CPU
 		{325DA1B1-0177-4424-A47C-C3461140453C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{325DA1B1-0177-4424-A47C-C3461140453C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{325DA1B1-0177-4424-A47C-C3461140453C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,7 +38,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B3B9B530-AEC3-4B3A-BAB8-F4BCADC73493}
 		RESX_NeutralResourcesLanguage = en-US
+		SolutionGuid = {B3B9B530-AEC3-4B3A-BAB8-F4BCADC73493}
 	EndGlobalSection
 EndGlobal
