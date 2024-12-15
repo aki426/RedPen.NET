@@ -397,3 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /RedPen.Net.Core.Tests/Tokenizer/DATA/neko.txt
+/RedPen.Net.CoreTests/Tokenizer/DATA/neko.txt
+/RedPen.Net.CoreTests/Tokenizer/DATA/wagahaiwa_nekodearu.txt
