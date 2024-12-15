@@ -751,7 +751,8 @@ namespace RedPen.Net.Core.Tokenizer.Tests
             }
         }
 
-        [Fact(Skip = "動作速度の確認のためのものなので回帰テストには含めない。")]
+        //[Fact(Skip = "動作速度の確認のためのものなので回帰テストには含めない。")]
+        [Fact]
         public void Tokenize吾輩は猫であるTest()
         {
             // MEMO: このテストケースはLucene.NETのKuromoji.NETの速度検証のためのテストケースである。
@@ -761,13 +762,21 @@ namespace RedPen.Net.Core.Tokenizer.Tests
             // https://www.cl.ecei.tohoku.ac.jp/nlp100/
             // からDLできる夏目漱石『吾輩は猫である』のテキストデータで、空行を除くと9210行、約31万8千字の分量である。
             // 著作権切れのデータではあるが、リポジトリにはPUSHしていないので動作確認前にDLすること。
-            // このテストをCPU : Ryzen 5 8600G, MEM : 32GB環境で実行したところ、処理時間は毎回約700ms程度であった。
+            // このテストをCPU : Ryzen 5 8600G, MEM : 32GB環境で実行したところ、処理時間は毎回約1050~1100ms程度であった。
             // これは動作環境に依存すると思われるが、参考値として記載しておく。
             // 元のQiita記事の実行環境がどのようなものであったかは不明であるが、
-            // MeCabには劣るがJUMANやSudachiより1オーダー高速でありエンドユーザの実行環境でもストレス無く利用できるお思われる。
+            // MeCabには劣るがJUMANやSudachiより1オーダー高速でありエンドユーザの実行環境でもストレス無く利用できると思われる。
 
+            // Arrange
             string currentDirectory = Directory.GetCurrentDirectory();
             var filePath = Path.Combine(currentDirectory, "Tokenizer", "DATA", "neko.txt");
+
+            // ファイルの中身が空でないことも確認する場合
+            FileInfo file = new FileInfo(filePath);
+            file.Exists.Should().BeTrue("テストデータ「neko.txt」が存在しません。Download-WagahaiHaNekoDearu.ps1を実行してください。");
+            file.Length.Should().NotBe(0, "ファイルが空です");
+
+            // Act
             var fileContents = File.ReadAllText(filePath);
 
             var sw = new Stopwatch();
@@ -778,13 +787,20 @@ namespace RedPen.Net.Core.Tokenizer.Tests
 
             sw.Stop();
 
-            // Token目視。
-            foreach (var token in tokens)
-            {
-                output.WriteLine(token.ToString());
-            }
+            // Assert
+            // 実行環境によるが30万字1500ms以下をスレショルドとした。
+            sw.ElapsedMilliseconds.Should().BeLessThan(1500);
 
-            output.WriteLine(sw.Elapsed.Milliseconds.ToString());
+            // Token目視。
+            output.WriteLine($"Elapsed time: {sw.ElapsedMilliseconds}ms");
+
+            // NOTE: 以下、全Tokenの表示。非常に長い時間がかかるので回帰テストには入れない方が良いがデバッグ出力としてコメントアウトして残す。。
+            //foreach (var token in tokens)
+            //{
+            //    output.WriteLine(token.ToString());
+            //}
+
+            //output.WriteLine(sw.Elapsed.Milliseconds.ToString());
         }
     }
 }
