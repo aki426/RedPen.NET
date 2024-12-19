@@ -40,9 +40,9 @@ namespace RedPen.Net.Core.Tokenizer
         {
             // MEMO: 本来なら何らかのTextReaderが必要？
             this.tokenizer = new JapaneseTokenizer(
-                new StringReader(string.Empty), // 空のTextReaderとして暫定的に与える。
-                null, // TODO: Neologd辞書を使うための辞書の与え方を調べる。
-                false,
+                new StringReader(string.Empty), // 空のTextReaderとして暫定的に与える。本当に処理したいものはSetReaderで与える。
+                null, // UserDictionaryクラスインスタンスを別途ビルドして与えることでユーザ辞書を追加可能。
+                false, // 句読点は捨てない。
                 JapaneseTokenizerMode.NORMAL);
         }
 
