@@ -38,7 +38,6 @@ namespace RedPen.Net.Core.Tokenizer
         /// </summary>
         public KuromojiTokenizer()
         {
-            // MEMO: 本来なら何らかのTextReaderが必要？
             this.tokenizer = new JapaneseTokenizer(
                 new StringReader(string.Empty), // 空のTextReaderとして暫定的に与える。本当に処理したいものはSetReaderで与える。
                 null, // UserDictionaryクラスインスタンスを別途ビルドして与えることでユーザ辞書を追加可能。
@@ -78,12 +77,15 @@ namespace RedPen.Net.Core.Tokenizer
         private List<TokenElement> GetKuromojiTokens(Sentence src)
         {
             tokenizer.SetReader(new StringReader(src.Content));
+
             List<TokenElement> tokens = new List<TokenElement>();
-            IBaseFormAttribute baseAttr = tokenizer.AddAttribute<IBaseFormAttribute>();
+
             ICharTermAttribute charAttr = tokenizer.AddAttribute<ICharTermAttribute>();
+            IOffsetAttribute offsetAttr = tokenizer.AddAttribute<IOffsetAttribute>();
+
+            IBaseFormAttribute baseAttr = tokenizer.AddAttribute<IBaseFormAttribute>();
             IPartOfSpeechAttribute posAttr = tokenizer.AddAttribute<IPartOfSpeechAttribute>();
             IReadingAttribute readAttr = tokenizer.AddAttribute<IReadingAttribute>();
-            IOffsetAttribute offsetAttr = tokenizer.AddAttribute<IOffsetAttribute>();
             IInflectionAttribute inflectionAttr = tokenizer.AddAttribute<IInflectionAttribute>();
 
             tokenizer.Reset();

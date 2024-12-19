@@ -795,12 +795,10 @@ namespace RedPen.Net.Core.Tokenizer.Tests
             output.WriteLine($"Elapsed time: {sw.ElapsedMilliseconds}ms");
 
             // NOTE: 以下、全Tokenの表示。非常に長い時間がかかるので回帰テストには入れない方が良いがデバッグ出力としてコメントアウトして残す。。
-            //foreach (var token in tokens)
-            //{
-            //    output.WriteLine(token.ToString());
-            //}
-
-            //output.WriteLine(sw.Elapsed.Milliseconds.ToString());
+            foreach (var token in tokens)
+            {
+                output.WriteLine(token.ToString());
+            }
         }
     }
 }
