@@ -9,27 +9,6 @@ Write-Host -ForegroundColor Yellow "便宜上PesterはWin11標準のVer 3.4.0を
 
 Describe "Verb分析" {
     It "Verb.csvの分析" {
-        if (-not (Test-Path .\Verb.csv)) {
-            # Excelアプリケーションを起動
-            $excel = New-Object -ComObject Excel.Application
-            $excel.Visible = $false
-            $excel.DisplayAlerts = $false
-
-            # ワークブックを開く
-            $workbook = $excel.Workbooks.Open("$PWD\Verb.xlsx")
-
-            # Verbシートを選択
-            $sheet = $workbook.Sheets.Item("Verb")
-
-            # CSVとして保存
-            $sheet.SaveAs("$PWD\Verb.csv", 6) # 6はCSVフォーマットを示す
-
-            # クリーンアップ
-            $workbook.Close()
-            $excel.Quit()
-            [System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel)
-        }
-
         # 読み込み
         $dat = Import-Csv .\Verb.csv -Encoding Default
 
