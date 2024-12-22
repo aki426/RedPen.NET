@@ -2,13 +2,10 @@
 # Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 . .\Remove-EndString.ps1
 
-# Verb活用ルール
-# "品詞細分類1","品詞細分類2","品詞細分類3","活用型","原形","読み"
-
-function Verb活用ルール検証 {
-    $dat = Import-Csv .\Verb分析.csv -Encoding Default
+function Adj活用ルール検証 {
+    $dat = Import-Csv .\Adj分析.csv -Encoding Default
     $rule = @{} # 高速化のためHashtable。
-    Import-Csv .\Verb活用ルール.csv -Encoding Default | foreach {
+    Import-Csv .\Adj活用ルール.csv -Encoding Default | foreach {
         $rule[$_.活用型] = $_
     }
 
@@ -43,4 +40,4 @@ function Verb活用ルール検証 {
     }
 }
 
-#Verb活用ルール検証
+#Adj活用ルール検証

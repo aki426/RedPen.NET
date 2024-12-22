@@ -1,15 +1,14 @@
 ﻿################################################################################
-### 動詞を集計する
+### 形容詞を集計する
 ################################################################################
-# 前提となるVerb.csvの作成は「00_最初に実行.ps1」、仕様確認は「Verb分析.Tests.ps1」を使うこと。
+# 「00_最初に実行.ps1」、仕様確認は「*分析.Tests.ps1」を使うこと。
 
 # Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 . .\Get-ResultObject.ps1
 
-# Verbに対して集計
-function Verb分析 {
+function Adj分析 {
     # 読み込み
-    $dat = Import-Csv .\Verb.csv -Encoding Default
+    $dat = Import-Csv .\Adj.csv -Encoding Default
     $katuyou_set = $dat | select 活用形 -Unique | foreach {$_.活用形}
 
     # 原形を軸にして品詞に関するアノテーションは一様であることを確認する。
@@ -17,9 +16,7 @@ function Verb分析 {
     $genkei_grouped = $dat | group 原形
     $genkei_grouped | foreach {
         $_.Group | group 品詞細分類1 | foreach {
-            # 「つける」は自立／非自立どちらもあるので品詞細分類1でもgroupingする
             $_.Group | group 活用型 | foreach {
-                # 「居（イ）る」は一段、「居（オ）る」は五段・ラ行で区別される
 
                 $o = Get-ResultObject -PropertySet $katuyou_set
                 $o."品詞細分類1" = $_.Group[0].品詞細分類1
@@ -39,24 +36,15 @@ function Verb分析 {
         }
     }
 
-    $results | Export-Csv -Encoding Default -NoTypeInformation .\Verb分析.csv
+    $results | Export-Csv -Encoding Default -NoTypeInformation .\Adj分析.csv
 }
 
-# 処理実行
-#Verb分析
 
-
-# 動詞の数を確認したくなったためデバッグ出力コード追加。
-#$genkei_grouped | foreach {
-#    $_.Group | group 品詞細分類1 | foreach {
-#        # 「つける」は自立／非自立どちらもあるので品詞細分類1でもgroupingする
-#        $_.Group | group 活用型 | foreach {
-#            $_.Name
-#        }
-#    }
-#} | out-file ./genkei.txt
+Adj分析
 
 # 活用型ごとにカウント
-#Import-Csv .\Verb.csv -Encoding Default | group 活用型 | foreach {
-#    "$($_.Name)`t$(@($_.Group | group 原形).Count)"
-#}
+Import-Csv .\Adj.csv -Encoding Default | group 活用型 | foreach {
+    "$($_.Name)`t$(@($_.Group | group 原形).Count)"
+}
+
+
