@@ -144,18 +144,28 @@ namespace RedPen.Net.Core.Tokenizer
                         string baseForm = tokenizer.GetAttribute<IBaseFormAttribute>()?.GetBaseForm()?.ToString() ?? "";
 
                         var read = tokenizer.GetAttribute<IReadingAttribute>();
-                        string reading = read.GetReading();
-
-                        string pronounce = read.GetPronunciation();
+                        string reading = read?.GetReading() ?? ""; // 英語表現はReadingがNullになる
+                        string pronunce = read?.GetPronunciation() ?? ""; // 英語表現はPronunciationがNullになる
 
                         var inf = tokenizer.GetAttribute<IInflectionAttribute>();
                         string inflectionForm = inf.GetInflectionForm();
                         string inflectionType = inf.GetInflectionType();
 
+                        //tokens.Add(new TokenElement(
+                        //    surface,
+                        //    tokenizer.GetAttribute<IPartOfSpeechAttribute>().GetPartOfSpeech().Split('-').ToImmutableList(),
+                        //    reading,
+                        //    Enumerable.Range(currentOffset, surface.Length).Select(i => src.ConvertToLineOffset(i)).ToImmutableList()
+                        //));
+
                         subList.Add(new TokenElement(
                             surface,
-                            tokenizer.GetAttribute<IPartOfSpeechAttribute>().GetPartOfSpeech().Split('-').ToImmutableList(),
                             reading,
+                            pronunce,
+                            tokenizer.GetAttribute<IPartOfSpeechAttribute>().GetPartOfSpeech().Split('-').ToImmutableList(),
+                            baseForm,
+                            inflectionType,
+                            inflectionForm,
                             Enumerable.Range(currentOffset, surface.Length).Select(i => src.ConvertToLineOffset(i)).ToImmutableList()
                         ));
 
