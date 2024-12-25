@@ -46,19 +46,19 @@ namespace RedPen.Net.Core.Tokenizer.Tests
             tokens.Count.Should().Be(5);
 
             tokens[0].Surface.Should().Be("今日");
-            tokens[0].Tags[0].Should().Be("名詞");
+            tokens[0].PartOfSpeech[0].Should().Be("名詞");
 
             tokens[1].Surface.Should().Be("も");
-            tokens[1].Tags[0].Should().Be("助詞");
+            tokens[1].PartOfSpeech[0].Should().Be("助詞");
 
             tokens[2].Surface.Should().Be("晴天");
-            tokens[2].Tags[0].Should().Be("名詞");
+            tokens[2].PartOfSpeech[0].Should().Be("名詞");
 
             tokens[3].Surface.Should().Be("だ");
-            tokens[3].Tags[0].Should().Be("助動詞");
+            tokens[3].PartOfSpeech[0].Should().Be("助動詞");
 
             tokens[4].Surface.Should().Be("。");
-            tokens[4].Tags[0].Should().Be("記号");
+            tokens[4].PartOfSpeech[0].Should().Be("記号");
         }
 
         [Fact]
@@ -139,7 +139,7 @@ namespace RedPen.Net.Core.Tokenizer.Tests
             string jodoshiBuffer = "";
             foreach (var token in tokens)
             {
-                if (token.Tags[0] == "助動詞")
+                if (token.PartOfSpeech[0] == "助動詞")
                 {
                     jodoshiBuffer += token.Surface;
                 }
@@ -191,11 +191,11 @@ namespace RedPen.Net.Core.Tokenizer.Tests
             var lasttwo = tokens[tokens.Count() - 2];
             bool isTaigendome = false;
 
-            if (lastone.Tags[0] == "名詞")
+            if (lastone.PartOfSpeech[0] == "名詞")
             {
                 isTaigendome = true;
             }
-            else if (lastone.Tags[0] == "記号" && lastone.Tags[1] == "句点" && lasttwo.Tags[0] == "名詞")
+            else if (lastone.PartOfSpeech[0] == "記号" && lastone.PartOfSpeech[1] == "句点" && lasttwo.PartOfSpeech[0] == "名詞")
             {
                 isTaigendome = true;
             }

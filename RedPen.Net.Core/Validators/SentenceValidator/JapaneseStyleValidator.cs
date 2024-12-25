@@ -115,8 +115,8 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             // 記号や助詞を除いた最後のTokenが助動詞では無く動詞だった場合は言い切り表現とみなす。
             // MEMO: 名詞だった場合は体言止めなので、また別のValidationで検出すべきケースになるため、
             // 助動詞があるべき動詞によるセンテンス終わりのみを検出する。
-            var noSymbols = sentence.Tokens.Where(t => t.Tags[0] is not ("記号" or "助詞")).ToList();
-            if (noSymbols.Any() && (noSymbols.Last().Tags[0] is ("動詞" or "形容詞")))
+            var noSymbols = sentence.Tokens.Where(t => t.PartOfSpeech[0] is not ("記号" or "助詞")).ToList();
+            if (noSymbols.Any() && (noSymbols.Last().PartOfSpeech[0] is ("動詞" or "形容詞")))
             {
                 return (true, noSymbols.Last());
             }
@@ -139,7 +139,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             List<TokenElement> buffer = new List<TokenElement>();
             foreach (var token in sentence.Tokens)
             {
-                if (token.Tags[0] == "助動詞")
+                if (token.PartOfSpeech[0] == "助動詞")
                 {
                     buffer.Add(token);
                 }
@@ -155,7 +155,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         if (buffer.Any()
                             && buffer.Last().Surface == "だ"
                             && token.Surface == "と"
-                            && token.Tags[0] == "助詞")
+                            && token.PartOfSpeech[0] == "助詞")
                         {
                             buffer.Add(token);
                         }
@@ -166,7 +166,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         if (buffer.Any()
                             && buffer.Last().Surface == "た"
                             && token.Surface == "の"
-                            && token.Tags[0] == "名詞" && token.Tags[1] == "非自立"
+                            && token.PartOfSpeech[0] == "名詞" && token.PartOfSpeech[1] == "非自立"
                             )
                         {
                             buffer.Add(token);
@@ -178,7 +178,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         if (buffer.Any()
                             && buffer.Last().Surface == "ない"
                             && token.Surface == "の"
-                            && token.Tags[0] == "名詞" && token.Tags[1] == "非自立"
+                            && token.PartOfSpeech[0] == "名詞" && token.PartOfSpeech[1] == "非自立"
                             )
                         {
                             buffer.Add(token);
@@ -187,7 +187,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                         // 連結した助動詞を1Tokenとして登録。
                         CompoundJodoshi.Add(new TokenElement(
                             string.Join("", buffer.Select(t => t.Surface)),
-                            buffer.First().Tags, // Tagsは使わないので先頭のTokenのものを暫定的にセット。
+                            buffer.First().PartOfSpeech, // Tagsは使わないので先頭のTokenのものを暫定的にセット。
                             string.Join("", buffer.Select(t => t.Reading)), // Readingも使わないが連結してセット。
                             buffer.SelectMany(t => t.OffsetMap).ToImmutableList()
                         ));
@@ -201,7 +201,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
                 // 連結した助動詞を1Tokenとして登録。
                 CompoundJodoshi.Add(new TokenElement(
                     string.Join("", buffer.Select(t => t.Surface)),
-                    buffer.First().Tags, // Tagsは使わないので先頭のTokenのものを暫定的にセット。
+                    buffer.First().PartOfSpeech, // Tagsは使わないので先頭のTokenのものを暫定的にセット。
                     string.Join("", buffer.Select(t => t.Reading)), // Readingも使わないが連結してセット。
                     buffer.SelectMany(t => t.OffsetMap).ToImmutableList()
                 ));

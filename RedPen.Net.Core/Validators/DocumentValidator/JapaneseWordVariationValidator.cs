@@ -114,7 +114,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                 this.readingMap[reading].Add(token);
 
                 // 名詞を収集。
-                if (token.Tags[0].Equals("名詞"))
+                if (token.PartOfSpeech[0].Equals("名詞"))
                 {
                     nouns.Add(token);
                 }
@@ -129,7 +129,7 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
 
                         var compoundNounToken = new TokenElement(
                             string.Join("", nouns.Select(i => i.Surface)),
-                            nouns[0].Tags.ToImmutableList(),
+                            nouns[0].PartOfSpeech.ToImmutableList(),
                             string.Join("", nouns.Select(i => GetNormalizedReading(i))),
                             nouns.SelectMany(n => n.OffsetMap).ToImmutableList()
                         );

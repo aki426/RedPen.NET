@@ -71,10 +71,10 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
 
             // validation
             var gaList = sentence.Tokens.Where(t =>
-                2 <= t.Tags.Count
+                2 <= t.PartOfSpeech.Count
                 && t.Surface == "が"
-                && t.Tags[0] == "助詞"
-                && t.Tags[1] == "接続助詞");
+                && t.PartOfSpeech[0] == "助詞"
+                && t.PartOfSpeech[1] == "接続助詞");
 
             if (gaList.Count() > 1)
             {

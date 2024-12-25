@@ -64,8 +64,8 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             if (sentence.Tokens.Any())
             {
                 // 記号を除いた最後のTokenが名詞だった場合のみ体言止め表現とみなす。
-                var noSymbols = sentence.Tokens.Where(t => t.Tags[0] is not "記号").ToList();
-                if (noSymbols.Any() && (noSymbols.Last().Tags[0] is "名詞"))
+                var noSymbols = sentence.Tokens.Where(t => t.PartOfSpeech[0] is not "記号").ToList();
+                if (noSymbols.Any() && (noSymbols.Last().PartOfSpeech[0] is "名詞"))
                 {
                     // TODO: MessageKey引数はErrorMessageにバリエーションがある場合にValidator内で条件判定して引数として与える。
                     result.Add(new ValidationError(

@@ -29,7 +29,7 @@ namespace RedPen.Net.Core.Model
         public string Surface { get; init; }
 
         /// <summary>品詞（Part of Speech）＆品詞細分類1~3情報</summary>
-        public ImmutableList<string> Tags { get; init; }
+        public ImmutableList<string> PartOfSpeech { get; init; }
 
         /// <summary>読み</summary>
         public string Reading { get; init; }
@@ -63,9 +63,9 @@ namespace RedPen.Net.Core.Model
         /// <returns>A string.</returns>
         public string GetSurfaceAndTagString()
         {
-            if (Tags.Any())
+            if (PartOfSpeech.Any())
             {
-                return $"{Surface}({Tags[0]})";
+                return $"{Surface}({PartOfSpeech[0]})";
             }
             else
             {
@@ -84,7 +84,7 @@ namespace RedPen.Net.Core.Model
         public TokenElement(string surface, ImmutableList<string> tags, string reading, ImmutableList<LineOffset> offsetMap)
         {
             Surface = surface;
-            Tags = tags;
+            PartOfSpeech = tags;
             // NOTE: KuromojiでTokenizeした場合、英語表現はReadingがNullになるため、その場合はSurfaceをToLowerしたものをReadingとして扱う。
             Reading = reading ?? surface.ToLower();
             OffsetMap = offsetMap;
@@ -119,7 +119,7 @@ namespace RedPen.Net.Core.Model
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            var tags = string.Join(", ", Tags.Select(i => $"\"{i}\""));
+            var tags = string.Join(", ", PartOfSpeech.Select(i => $"\"{i}\""));
             return $"TokenElement {{ Surface = \"{Surface}\", Reading = \"{Reading}\", Tags = [ {tags} ], OffsetMap = {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
         }
 
@@ -130,7 +130,7 @@ namespace RedPen.Net.Core.Model
         public string ConvertToGrammarRuleText()
         {
             // NOTE: 末尾の空タグは削除する。
-            ImmutableList<string> currentTags = Tags.Reverse();
+            ImmutableList<string> currentTags = PartOfSpeech.Reverse();
             while (currentTags.Any())
             {
                 if (currentTags[0] == "")
@@ -239,35 +239,35 @@ namespace RedPen.Net.Core.Model
         public bool MatchTags(TokenElement other)
         {
             // どちらかが空集合の場合はマッチしているとみなす。
-            if (Tags.Count == 0 || other.Tags.Count == 0)
+            if (PartOfSpeech.Count == 0 || other.PartOfSpeech.Count == 0)
             {
                 return true;
             }
 
             // 完全一致ならTrueを返す。
-            if (Tags.SequenceEqual(other.Tags))
+            if (PartOfSpeech.SequenceEqual(other.PartOfSpeech))
             {
                 return true;
             }
 
             // どちらかのタグ長が足りない場合、それは以降「*」と同じ扱いでマッチしているとみなす。
             // よってどちらか短いほうの長さまで走査して不一致が見つからなければ一致としてよい。
-            var minLen = Math.Min(Tags.Count, other.Tags.Count);
+            var minLen = Math.Min(PartOfSpeech.Count, other.PartOfSpeech.Count);
 
             for (var i = 0; i < minLen; i++)
             {
-                if (Tags[i] == "*" || other.Tags[i] == "*")
+                if (PartOfSpeech[i] == "*" || other.PartOfSpeech[i] == "*")
                 {
                     // どちらかのタグが*の場合、それはマッチしているとみなす。
                     continue;
                 }
-                else if (Tags[i] == string.Empty || other.Tags[i] == string.Empty)
+                else if (PartOfSpeech[i] == string.Empty || other.PartOfSpeech[i] == string.Empty)
                 {
                     // MEMO: タグがstring.Emptyの場合、それは「*」と同じ扱いとする。
                     // どちらかのタグが空文字列の場合、それはマッチしているとみなす。
                     continue;
                 }
-                else if (Tags[i] == other.Tags[i])
+                else if (PartOfSpeech[i] == other.PartOfSpeech[i])
                 {
                     // タグが一致する場合はもちろんマッチしているとみなす。
                     continue;
@@ -298,7 +298,7 @@ namespace RedPen.Net.Core.Model
 
             foreach (var token in tokens)
             {
-                if (token.Tags[0] == "名詞")
+                if (token.PartOfSpeech[0] == "名詞")
                 {
                     nounStack.Add(token);
                 }
@@ -375,7 +375,7 @@ namespace RedPen.Net.Core.Model
                                 // Readingを分割することは困難なので空文字列とする。
                                 result.Add(new TokenElement(
                                     string.Join("", cache.Select(i => i.c)),
-                                    token.Tags,
+                                    token.PartOfSpeech,
                                     "",
                                     cache.Select(i => i.lo).ToImmutableList()));
 
@@ -396,7 +396,7 @@ namespace RedPen.Net.Core.Model
                         // Readingを分割することは困難なので空文字列とする。
                         result.Add(new TokenElement(
                             string.Join("", cache.Select(i => i.c)),
-                            token.Tags,
+                            token.PartOfSpeech,
                             "",
                             cache.Select(i => i.lo).ToImmutableList()));
                     }

@@ -39,7 +39,7 @@ namespace RedPen.Net.Core.Model.Tests
         {
             TokenElement actual = new TokenElement("word", new List<string> { "tag" }, 1, 0, "reading");
             actual.Surface.Should().Be("word");
-            actual.Tags.Should().BeEquivalentTo(new List<string> { "tag" });
+            actual.PartOfSpeech.Should().BeEquivalentTo(new List<string> { "tag" });
             actual.Offset.Should().Be(0);
             actual.Reading.Should().Be("reading");
         }
@@ -62,14 +62,14 @@ namespace RedPen.Net.Core.Model.Tests
 
             // ReadOnlyCollectionなので、Add, Remove, Clearはできない。
             // Appendはできるが、元のListには影響しない。
-            IEnumerable<string> enumerable = actual.Tags.Append("new Tag");
+            IEnumerable<string> enumerable = actual.PartOfSpeech.Append("new Tag");
 
             enumerable.Count().Should().Be(2);
             enumerable.ElementAt(1).Should().Be("new Tag");
 
             // Tagsプロパティは都度tagsのコピーを返すので、元のtagsには影響しない。
-            actual.Tags.Count.Should().Be(1);
-            actual.Tags[0].Should().Be("tag");
+            actual.PartOfSpeech.Count.Should().Be(1);
+            actual.PartOfSpeech[0].Should().Be("tag");
 
             // actual.Tags[1].Should().Be("new Tag");
 

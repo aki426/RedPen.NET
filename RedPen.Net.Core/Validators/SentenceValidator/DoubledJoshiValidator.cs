@@ -71,7 +71,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             Dictionary<string, List<TokenElement>> joshiCache = new Dictionary<string, List<TokenElement>>();
             foreach (TokenElement token in sentence.Tokens)
             {
-                if (token.Tags[0] == "助詞" &&
+                if (token.PartOfSpeech[0] == "助詞" &&
                     !Config.WordSet.Contains(token.Surface))
                 {
                     if (!joshiCache.ContainsKey(token.Surface))
