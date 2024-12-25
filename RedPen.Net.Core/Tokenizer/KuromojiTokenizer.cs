@@ -38,11 +38,11 @@ namespace RedPen.Net.Core.Tokenizer
         /// </summary>
         public KuromojiTokenizer()
         {
-            this.tokenizer = new JapaneseTokenizer(
-                new StringReader(string.Empty), // 空のTextReaderとして暫定的に与える。本当に処理したいものはSetReaderで与える。
-                null, // UserDictionaryクラスインスタンスを別途ビルドして与えることでユーザ辞書を追加可能。
-                false, // 句読点は捨てない。
-                JapaneseTokenizerMode.NORMAL);
+            //this.tokenizer = new JapaneseTokenizer(
+            //    new StringReader(string.Empty), // 空のTextReaderとして暫定的に与える。本当に処理したいものはSetReaderで与える。
+            //    null, // UserDictionaryクラスインスタンスを別途ビルドして与えることでユーザ辞書を追加可能。
+            //    false, // 句読点は捨てない。
+            //    JapaneseTokenizerMode.NORMAL);
         }
 
         /// <summary>
@@ -52,21 +52,23 @@ namespace RedPen.Net.Core.Tokenizer
         /// <returns>A list of TokenElements.</returns>
         public List<TokenElement> Tokenize(Sentence sentence)
         {
-            List<TokenElement> tokens = new List<TokenElement>();
-            try
-            {
-                foreach (TokenElement token in GetKuromojiTokens(sentence))
-                {
-                    tokens.Add(token);
-                }
-            }
-            catch (IOException e)
-            {
-                // TODO: StackTraceを出力するように変更。
-                throw;
-            }
+            //List<TokenElement> tokens = new List<TokenElement>();
+            //try
+            //{
+            //    foreach (TokenElement token in GetKuromojiTokens(sentence))
+            //    {
+            //        tokens.Add(token);
+            //    }
+            //}
+            //catch (IOException e)
+            //{
+            //    // TODO: StackTraceを出力するように変更。
+            //    throw;
+            //}
 
-            return tokens;
+            //return tokens;
+
+            return KuromojiController.Tokenize(sentence);
         }
 
         /// <summary>
