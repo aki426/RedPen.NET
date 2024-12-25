@@ -30,9 +30,11 @@ function CSVファイル群へ変換 () {
     [System.GC]::WaitForPendingFinalizers()
 }
 
-#CSVファイル群へ変換
+CSVファイル群へ変換
 
 function テストケース取得 () {
+    $total_counter = 0
+
     ls .\TestCases | foreach {
         $dat = Import-Csv $_.FullName -Encoding Default
 
@@ -46,7 +48,8 @@ function テストケース取得 () {
 
             $counter = 0
             foreach ($surface in $genzai) {
-                $results_genzai += "(`"$($katuyo.活用型)`", `"$($surface)`", `"$($types[$counter])`"), `r`n"
+                $total_counter++
+                $results_genzai += "[InlineData(`"$($total_counter.ToString('000'))`", `"$($katuyo.活用型)`", `"$($surface)`", `"$($types[$counter])`")]`n"
 
                 if ($types.Count -gt 1 -and $counter -lt ($types.Count - 1)) {
                     $counter++
@@ -59,7 +62,8 @@ function テストケース取得 () {
 
             $counter = 0
             foreach ($surface in $kako) {
-                $results_kako += "(`"$($katuyo.活用型)`", `"$($surface)`", `"$($types[$counter])`"), `r`n"
+                $total_counter++
+                $results_kako += "[InlineData(`"$($total_counter.ToString('000'))`", `"$($katuyo.活用型)`", `"$($surface)`", `"$($types[$counter])`")]`n"
 
                 if ($types.Count -gt 1 -and $counter -lt ($types.Count - 1)) {
                     $counter++
