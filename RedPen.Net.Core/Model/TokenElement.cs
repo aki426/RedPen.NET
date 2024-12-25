@@ -16,10 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Lucene.Net.Analysis.Ja.TokenAttributes;
-using Lucene.Net.Analysis;
 using RedPen.Net.Core.Utility;
-using System.Runtime.CompilerServices;
 
 namespace RedPen.Net.Core.Model
 {
