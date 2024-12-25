@@ -23,6 +23,7 @@ using Lucene.Net.Analysis.Ja.Dict;
 using Lucene.Net.Analysis.Ja.TokenAttributes;
 using Lucene.Net.Analysis.TokenAttributes;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Tokenizer;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -199,151 +200,6 @@ namespace RedPen.Net.CoreTests.Kuromoji
                             // iteration.
                             currentOffset += surface.Length;
                         }
-                    }
-                }
-
-                return tokens;
-            }
-        }
-
-        public static class KuromojiController
-        {
-            /// <summary>
-            /// 形態素解析関数。
-            /// </summary>
-            /// <param name="src"></param>
-            /// <returns></returns>
-            public static List<TokenElement> Tokenize(Sentence src)
-            {
-                if (string.IsNullOrEmpty(src.Content))
-                {
-                    return new List<TokenElement>();
-                }
-
-                using var text = new StringReader(src.Content);
-                using var tokenizer = new JapaneseTokenizer(
-                    text,
-                    null,  // UserDictionaryクラスインスタンスを別途ビルドして与えることでユーザ辞書を追加可能
-                    false, // 句読点は捨てない
-                    JapaneseTokenizerMode.NORMAL);
-
-                List<TokenElement> tokens = new List<TokenElement>();
-
-                try
-                {
-                    tokenizer.Reset();
-                    int currentOffset = 0;
-                    while (tokenizer.IncrementToken())
-                    {
-                        string surface = tokenizer.GetAttribute<ICharTermAttribute>().ToString();
-
-                        string baseForm = tokenizer.GetAttribute<IBaseFormAttribute>()?.GetBaseForm()?.ToString() ?? "";
-
-                        var read = tokenizer.GetAttribute<IReadingAttribute>();
-                        string reading = read.GetReading();
-
-                        string pronunce = read.GetPronunciation();
-
-                        var inf = tokenizer.GetAttribute<IInflectionAttribute>();
-                        string inflectionForm = inf.GetInflectionForm();
-                        string inflectionType = inf.GetInflectionType();
-
-                        tokens.Add(new TokenElement(
-                            surface,
-                            tokenizer.GetAttribute<IPartOfSpeechAttribute>().GetPartOfSpeech().Split('-').ToImmutableList(),
-                            reading,
-                            Enumerable.Range(currentOffset, surface.Length).Select(i => src.ConvertToLineOffset(i)).ToImmutableList()
-                        ));
-
-                        // iteration.
-                        currentOffset += surface.Length;
-                    }
-
-                    tokenizer.End();
-                }
-                catch (IOException e)
-                {
-                    tokenizer.End();
-
-                    // TODO: StackTraceを出力するように変更。
-                    throw;
-                }
-
-                return tokens;
-            }
-
-            /// <summary>
-            /// Sentenceのリストを一括処理するための形態素解析関数。
-            /// </summary>
-            /// <param name="srcs"></param>
-            /// <returns></returns>
-            public static List<List<TokenElement>> Tokenize(IEnumerable<Sentence> srcs)
-            {
-                List<List<TokenElement>> tokens = new List<List<TokenElement>>();
-
-                // Tokenizerの生成とDisposeを一番外側のusingで管理
-                using var tokenizer = new JapaneseTokenizer(
-                    new StringReader(string.Empty),
-                    null,
-                    false,
-                    JapaneseTokenizerMode.NORMAL);
-
-                foreach (var src in srcs)
-                {
-                    if (string.IsNullOrEmpty(src.Content))
-                    {
-                        tokens.Add(new List<TokenElement>());
-                        continue;
-                    }
-
-                    // TextReaderのライフサイクルを明確に管理
-                    using var textReader = new StringReader(src.Content);
-                    var subList = new List<TokenElement>();
-
-                    try
-                    {
-                        tokenizer.SetReader(textReader);
-                        tokenizer.Reset();
-
-                        int currentOffset = 0;
-                        while (tokenizer.IncrementToken())
-                        {
-                            string surface = tokenizer.GetAttribute<ICharTermAttribute>().ToString();
-
-                            string baseForm = tokenizer.GetAttribute<IBaseFormAttribute>()?.GetBaseForm()?.ToString() ?? "";
-
-                            var read = tokenizer.GetAttribute<IReadingAttribute>();
-                            string reading = read.GetReading();
-
-                            string pronounce = read.GetPronunciation();
-
-                            var inf = tokenizer.GetAttribute<IInflectionAttribute>();
-                            string inflectionForm = inf.GetInflectionForm();
-                            string inflectionType = inf.GetInflectionType();
-
-                            subList.Add(new TokenElement(
-                                surface,
-                                tokenizer.GetAttribute<IPartOfSpeechAttribute>().GetPartOfSpeech().Split('-').ToImmutableList(),
-                                reading,
-                                Enumerable.Range(currentOffset, surface.Length).Select(i => src.ConvertToLineOffset(i)).ToImmutableList()
-                            ));
-
-                            currentOffset += surface.Length;
-                        }
-
-                        tokenizer.End();  // Endの呼び出しは維持
-
-                        tokenizer.Dispose(); // Using句があるにもかかわらずDisposeが必要。
-                                             // 無いと次のIterationのSetReaderにて例外スローが起きる。
-
-                        tokens.Add(subList);
-                    }
-                    catch (IOException e)
-                    {
-                        tokenizer.End();
-                        // TODO: エラーログ記録を追加することを推奨
-                        //logger?.LogError(e, "Tokenization failed");
-                        throw;
                     }
                 }
 
@@ -774,6 +630,64 @@ namespace RedPen.Net.CoreTests.Kuromoji
                 // iteration.
                 currentOffset += surface.Length;
             }
+        }
+
+        /// <summary>
+        /// 英語表現の発音がKuromojiでどのように取得されるかのテスト。
+        /// </summary>
+        [Fact]
+        public void EnglishPronunciationTest()
+        {
+            using var text = new StringReader("これはWordです");
+            using var tokenizer = new JapaneseTokenizer(
+                text,
+                null,  // UserDictionaryクラスインスタンスを別途ビルドして与えることでユーザ辞書を追加可能
+                false, // 句読点は捨てない
+                JapaneseTokenizerMode.NORMAL);
+
+            List<string> result = new List<string>();
+
+            try
+            {
+                tokenizer.Reset();
+                int currentOffset = 0;
+                while (tokenizer.IncrementToken())
+                {
+                    string surface = tokenizer.GetAttribute<ICharTermAttribute>().ToString();
+
+                    string baseForm = tokenizer.GetAttribute<IBaseFormAttribute>()?.GetBaseForm()?.ToString() ?? "";
+
+                    var read = tokenizer.GetAttribute<IReadingAttribute>();
+                    string reading = read.GetReading();
+                    string pronunce = read.GetPronunciation();
+
+                    var inf = tokenizer.GetAttribute<IInflectionAttribute>();
+                    string inflectionForm = inf.GetInflectionForm();
+                    string inflectionType = inf.GetInflectionType();
+
+                    string t = $"{surface},\t{baseForm},\t{reading}({pronunce}),\t{tokenizer.GetAttribute<IPartOfSpeechAttribute>().GetPartOfSpeech()},\t{inflectionType},\t{inflectionForm}";
+                    output.WriteLine(t);
+                    result.Add(t);
+
+                    // iteration.
+                    currentOffset += surface.Length;
+                }
+
+                tokenizer.End();
+            }
+            catch (IOException e)
+            {
+                tokenizer.End();
+
+                // TODO: StackTraceを出力するように変更。
+                throw;
+            }
+
+            result[2].Should().Be("Word,\t,\t(),\t名詞-一般,\t,\t");
+
+            var tokenElements = KuromojiController.Tokenize(new Sentence("これはWordです", 1));
+            tokenElements[2].Reading.Should().Be("");
+            tokenElements[2].Pronunciation.Should().Be("");
         }
 
         /// <summary>
