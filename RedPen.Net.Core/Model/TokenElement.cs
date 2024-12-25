@@ -16,7 +16,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Lucene.Net.Analysis.Ja.TokenAttributes;
+using Lucene.Net.Analysis;
 using RedPen.Net.Core.Utility;
+using System.Runtime.CompilerServices;
 
 namespace RedPen.Net.Core.Model
 {
@@ -61,7 +64,7 @@ namespace RedPen.Net.Core.Model
         /// SurfaceとTagsの1つ目の文字列を取って人が目視可能な文字列表現を取得する関数。
         /// </summary>
         /// <returns>A string.</returns>
-        public string GetSurfaceAndTagString()
+        public string GetSurfaceAndPosString()
         {
             if (PartOfSpeech.Any())
             {
@@ -74,6 +77,32 @@ namespace RedPen.Net.Core.Model
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TokenElement"/> class.
+        /// </summary>
+        public TokenElement(
+            string surface,
+            string reading,
+            string pronunce,
+            ImmutableList<string> partOfSpeech,
+            string baseForm,
+            string inflectionType,
+            string inflectionForm,
+            ImmutableList<LineOffset> offsetMap
+        )
+        {
+            Surface = surface;
+            Reading = reading;
+            Pronunciation = pronunce;
+            PartOfSpeech = partOfSpeech;
+
+            BaseForm = baseForm;
+            InflectionType = inflectionType;
+            InflectionForm = inflectionForm;
+
+            OffsetMap = offsetMap;
+        }
+
+        /// <summary>
         /// Surface, Tags, Reading, OffsetMapを完全に指定してTokenElementを生成する。
         /// Initializes a new instance of the <see cref="TokenElement"/> class.
         /// </summary>
@@ -81,13 +110,17 @@ namespace RedPen.Net.Core.Model
         /// <param name="tags">The tag list.</param>
         /// <param name="reading">The reading.</param>
         /// <param name="offsetMap">The offset map.</param>
-        public TokenElement(string surface, ImmutableList<string> tags, string reading, ImmutableList<LineOffset> offsetMap)
+        public TokenElement(string surface, ImmutableList<string> tags, string reading, ImmutableList<LineOffset> offsetMap) :
+            this(surface,
+                // NOTE: KuromojiでTokenizeした場合、英語表現はReadingがNullになるため、その場合はSurfaceをToLowerしたものをReadingとして扱う。
+                reading ?? surface.ToLower(),
+                reading ?? surface.ToLower(),
+                tags,
+                "",
+                "",
+                "",
+                offsetMap)
         {
-            Surface = surface;
-            PartOfSpeech = tags;
-            // NOTE: KuromojiでTokenizeした場合、英語表現はReadingがNullになるため、その場合はSurfaceをToLowerしたものをReadingとして扱う。
-            Reading = reading ?? surface.ToLower();
-            OffsetMap = offsetMap;
         }
 
         /// <summary>
@@ -119,8 +152,8 @@ namespace RedPen.Net.Core.Model
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            var tags = string.Join(", ", PartOfSpeech.Select(i => $"\"{i}\""));
-            return $"TokenElement {{ Surface = \"{Surface}\", Reading = \"{Reading}\", Tags = [ {tags} ], OffsetMap = {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
+            var tags = string.Join("-", PartOfSpeech.Select(i => i));
+            return $"TokenElement {{ Surface = \"{Surface}\", Reading = \"{Reading}\", PoS = [ {tags} ], OffsetMap = {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
         }
 
         /// <summary>

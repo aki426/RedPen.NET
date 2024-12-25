@@ -84,7 +84,7 @@ namespace RedPen.Net.Core.Model.Tests
             TokenElement actual = new TokenElement("surface of word", new List<string>() { "tag", "list" }, 1, 42, "reading");
 
             output.WriteLine(actual.ToString());
-            actual.ToString().Should().Be("TokenElement { Surface = \"surface of word\", Reading = \"reading\", Tags = [ \"tag\", \"list\" ], OffsetMap = (L1,42)-(L1,43)-(L1,44)-(L1,45)-(L1,46)-(L1,47)-(L1,48)-(L1,49)-(L1,50)-(L1,51)-(L1,52)-(L1,53)-(L1,54)-(L1,55)-(L1,56)}");
+            actual.ToString().Should().Be("TokenElement { Surface = \"surface of word\", Reading = \"reading\", PoS = [ tag-list ], OffsetMap = (L1,42)-(L1,43)-(L1,44)-(L1,45)-(L1,46)-(L1,47)-(L1,48)-(L1,49)-(L1,50)-(L1,51)-(L1,52)-(L1,53)-(L1,54)-(L1,55)-(L1,56)}");
         }
 
         [Theory]
