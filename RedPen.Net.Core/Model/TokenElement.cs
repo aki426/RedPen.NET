@@ -25,14 +25,26 @@ namespace RedPen.Net.Core.Model
     /// </summary>
     public record TokenElement
     {
-        /// <summary>the surface form of the token</summary>
+        /// <summary>表層形</summary>
         public string Surface { get; init; }
 
-        /// <summary>token metadata (POS, etc)</summary>
+        /// <summary>品詞（Part of Speech）＆品詞細分類1~3情報</summary>
         public ImmutableList<string> Tags { get; init; }
 
-        /// <summary>the reading of this token</summary>
+        /// <summary>読み</summary>
         public string Reading { get; init; }
+
+        /// <summary>発音</summary>
+        public string Pronunciation { get; init; }
+
+        /// <summary>基本形</summary>
+        public string BaseForm { get; init; }
+
+        /// <summary>活用型</summary>
+        public string InflectionType { get; init; }
+
+        /// <summary>活用形</summary>
+        public string InflectionForm { get; init; }
 
         /// <summary>TokenのSurfaceがLineOffset表現でどのような位置関係にあるかを1文字ずつ表現したもの</summary>
         public ImmutableList<LineOffset> OffsetMap { get; init; }
