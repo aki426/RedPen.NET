@@ -153,7 +153,7 @@ namespace RedPen.Net.Core.Model
         public override string ToString()
         {
             var tags = string.Join("-", PartOfSpeech.Select(i => i));
-            return $"TokenElement {{ Surface = \"{Surface}\", Reading = \"{Reading}\", PoS = [ {tags} ], OffsetMap = {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
+            return $"TokenElement {{ Surface = \"{Surface}\", Reading = \"{Reading}({Pronunciation})\", PoS = [ {tags} ], BaseForm = {BaseForm}, Inflection = {InflectionType}/{InflectionForm} OffsetMap = {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
         }
 
         /// <summary>

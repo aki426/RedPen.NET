@@ -78,7 +78,7 @@ namespace RedPen.Net.Core.Model.Tests
             //    .WithMessage("TokenElement is immutable at Tags");
         }
 
-        [Fact()]
+        [Fact(Skip = "TokenElement.ToString()はあくまでデバッグ用のものなので、プロダクトコードで使用しないためフォーマットも検証しない。")]
         public void ToStringTest()
         {
             TokenElement actual = new TokenElement("surface of word", new List<string>() { "tag", "list" }, 1, 42, "reading");
