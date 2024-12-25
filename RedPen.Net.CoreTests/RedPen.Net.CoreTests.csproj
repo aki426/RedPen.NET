@@ -286,6 +286,7 @@
     <Compile Include="Config\SymbolTests.cs" />
     <Compile Include="Config\SymbolTypeTests.cs" />
     <Compile Include="Errors\ErrorMessageManagerTests.cs" />
+    <Compile Include="Kuromoji\KuromojiTests.cs" />
     <Compile Include="Model\DocumentTests.cs" />
     <Compile Include="Model\LineOffsetTests.cs" />
     <Compile Include="Model\SectionTests.cs" />
@@ -364,6 +365,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
