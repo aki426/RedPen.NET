@@ -286,6 +286,7 @@
     <Compile Include="Config\SymbolTests.cs" />
     <Compile Include="Config\SymbolTypeTests.cs" />
     <Compile Include="Errors\ErrorMessageManagerTests.cs" />
+    <Compile Include="Inflection\InflectionResolverTests.cs" />
     <Compile Include="Kuromoji\KuromojiTests.cs" />
     <Compile Include="Model\DocumentTests.cs" />
     <Compile Include="Model\LineOffsetTests.cs" />
