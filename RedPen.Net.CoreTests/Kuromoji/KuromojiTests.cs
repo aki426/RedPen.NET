@@ -22,12 +22,9 @@ using Lucene.Net.Analysis.Ja;
 using Lucene.Net.Analysis.Ja.Dict;
 using Lucene.Net.Analysis.Ja.TokenAttributes;
 using Lucene.Net.Analysis.TokenAttributes;
-using NLog;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Tokenizer;
 using Xunit;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace RedPen.Net.CoreTests.Kuromoji
 {
@@ -245,7 +242,7 @@ namespace RedPen.Net.CoreTests.Kuromoji
                         var read = tokenizer.GetAttribute<IReadingAttribute>();
                         string reading = read.GetReading();
 
-                        string pronounce = read.GetPronunciation();
+                        string pronunce = read.GetPronunciation();
 
                         var inf = tokenizer.GetAttribute<IInflectionAttribute>();
                         string inflectionForm = inf.GetInflectionForm();
@@ -385,7 +382,7 @@ namespace RedPen.Net.CoreTests.Kuromoji
             output.WriteLine($"Elapsed time: {sw.ElapsedMilliseconds}ms");
 
             // NOTE: 以下、全Tokenの表示。非常に長い時間がかかるので回帰テストには入れない方が良いがデバッグ出力としてコメントアウトして残す。。
-            foreach (var token in tokens)
+            foreach (var token in tokens.Take(100))
             {
                 output.WriteLine(token.ToString());
             }
