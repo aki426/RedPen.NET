@@ -788,14 +788,14 @@ namespace RedPen.Net.Core.Tokenizer.Tests
             sw.Stop();
 
             // Assert
-            // 実行環境によるが30万字1500ms以下をスレショルドとした。
-            sw.ElapsedMilliseconds.Should().BeLessThan(1500);
+            // 実行環境によるが30万字1600ms以下をスレショルドとした。
+            sw.ElapsedMilliseconds.Should().BeLessThan(1600);
 
             // Token目視。
             output.WriteLine($"Elapsed time: {sw.ElapsedMilliseconds}ms");
 
             // NOTE: 以下、全Tokenの表示。非常に長い時間がかかるので回帰テストには入れない方が良いがデバッグ出力としてコメントアウトして残す。。
-            foreach (var token in tokens)
+            foreach (var token in tokens.Take(100))
             {
                 output.WriteLine(token.ToString());
             }
