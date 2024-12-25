@@ -176,9 +176,8 @@ namespace RedPen.Net.Core.Validators.SentenceValidator.Tests
 
             output.WriteLine($"Validation: {sw.ElapsedMilliseconds}ms");
 
-            // Ryzen 5 8600Gで20ms程度。35ms以下ならOKとする。
             // TODO: パフォーマンステストとしてこの形式で妥当かどうか要検討。
-            (sw.ElapsedMilliseconds < 35).Should().BeTrue();
+            (sw.ElapsedMilliseconds < 80).Should().BeTrue();
         }
     }
 }

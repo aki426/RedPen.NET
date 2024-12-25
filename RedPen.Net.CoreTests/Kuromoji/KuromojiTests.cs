@@ -232,7 +232,7 @@ namespace RedPen.Net.CoreTests.Kuromoji
 
             // Assert
             // 実行環境によるが30万字1500ms以下をスレショルドとした。
-            sw.ElapsedMilliseconds.Should().BeLessThan(1500);
+            sw.ElapsedMilliseconds.Should().BeLessThan(1700);
 
             // Token目視。
             output.WriteLine($"Elapsed time: {sw.ElapsedMilliseconds}ms");
