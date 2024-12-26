@@ -43,9 +43,12 @@ namespace RedPen.Net.Core.Utility
         }
 
         /// <summary>
-        /// Converts string to token.
+        /// 1つのTokenパターン文字列をTokenElementoへ変換する関数。
         /// </summary>
-        /// <param name="str">ルール表記におけるToken1つ分の文字列「Surface:タグ,タグ,タグ,...:Reading」</param>
+        /// <param name="str">
+        /// Sruface : Reading : Pos : InflectionForm : InflectionType : BaseForm
+        /// Posは品詞-品詞細分類1-品詞細分類2-品詞細分類3の4つが格納されるスロットで区切り文字は"-"
+        /// </param>
         /// <returns>A TokenElement.</returns>
         public static TokenElement ConvertToToken(string str)
         {
@@ -61,18 +64,38 @@ namespace RedPen.Net.Core.Utility
             // Surface:タグ,タグ,タグ,...:Readingを要素ごとに分割。
             string[] wordSegments = str.Split(':');
 
-            string surface = wordSegments[0].Trim().ToLower();
-            string tagStr = wordSegments.Length > 1 ? wordSegments[1] : "";
-            string readingStr = wordSegments.Length > 2 ? wordSegments[2].Trim() : "";
+            string surface =
+                wordSegments[0].Trim().ToLower();
+            string reading =
+                wordSegments.Length > 1 ? wordSegments[1].Trim() : "";
+            string pos =
+                wordSegments.Length > 2 ? wordSegments[2].Trim() : "";
+            string infForm =
+                wordSegments.Length > 3 ? wordSegments[3].Trim() : "";
+            string infType =
+                wordSegments.Length > 4 ? wordSegments[4].Trim() : "";
+            string baseForm =
+                wordSegments.Length > 5 ? wordSegments[5].Trim() : "";
 
-            return new TokenElement(surface, tagStr.Split(',').Select(t => t.Trim()).ToList(), 0, 0, readingStr);
+            return new TokenElement(
+                surface,
+                reading,
+                "",
+                pos.Split('-').Select(t => t.Trim()).ToImmutableList(),
+                baseForm,
+                infType,
+                infForm,
+                ImmutableList<LineOffset>.Empty
+            );
         }
 
         /// <summary>
-        /// Create a rule from input sentence.
+        /// ルール文字列からGrammerRuleを作成する関数。
+        /// 1つのTokenパターンは":"区切りで「Sruface : Reading : Pos : InflectionForm : InflectionType : BaseForm」と表現される。
+        /// Tokenパターンをつなぐ際、「+」は隣接、「=」は非隣接を表す。
         /// </summary>
-        /// <param name="line">ルール表記文字列は「Surface:タグ,タグ,タグ,...:Reading + Surface:タグ,...:Reading + ...」という形式。</param>
-        /// <returns>An GrammarRule.</returns>
+        /// <param name="line">Tokenパターンを1つ以上含むルール文字列</param>
+        /// <returns></returns>
         public static GrammarRule Run(string line)
         {
             if (line == null || line.Trim() == "")

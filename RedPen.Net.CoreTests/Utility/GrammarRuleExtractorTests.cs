@@ -53,7 +53,7 @@ namespace RedPen.Net.Core.Utility.Tests
         [Fact]
         public void RunTest01()
         {
-            GrammarRule rule = GrammarRuleExtractor.Run("This: n,noun + is: v");
+            GrammarRule rule = GrammarRuleExtractor.Run("This::n-noun + is::v");
             // MEMO: ルール文字列はマッチングのためすべて小文字に変換される。
             rule.ToSurface().Should().Be("thisis");
 
@@ -74,7 +74,7 @@ namespace RedPen.Net.Core.Utility.Tests
         [Fact]
         public void RunTest02()
         {
-            var rule = GrammarRuleExtractor.Run("This:n + is:v");
+            var rule = GrammarRuleExtractor.Run("This::n + is::v");
             rule.Tokens.Count.Should().Be(2);
 
             rule.Pattern[0].direct.Should().BeTrue();
@@ -87,7 +87,7 @@ namespace RedPen.Net.Core.Utility.Tests
             rule.Pattern[1].token.PartOfSpeech.Should().Contain("v");
             rule.Pattern[1].token.Reading.Should().Be("");
 
-            rule = GrammarRuleExtractor.Run("僕:名詞:ボク = は:助詞:ハ");
+            rule = GrammarRuleExtractor.Run("僕:ボク:名詞 = は:ハ:助詞");
             rule.Tokens.Count.Should().Be(2);
 
             rule.Pattern[0].direct.Should().BeTrue();
@@ -114,11 +114,11 @@ namespace RedPen.Net.Core.Utility.Tests
             action.Should().Throw<ArgumentException>();
 
             // aster '+' is missing
-            action = () => GrammarRuleExtractor.Run("This:n + is:v + ");
+            action = () => GrammarRuleExtractor.Run("This::n + is::v + ");
             action.Should().Throw<ArgumentException>();
 
             // aster '=' is missing
-            action = () => GrammarRuleExtractor.Run("This:n + is:v = ");
+            action = () => GrammarRuleExtractor.Run("This::n + is::v = ");
             action.Should().Throw<ArgumentException>();
         }
 
@@ -129,33 +129,33 @@ namespace RedPen.Net.Core.Utility.Tests
         public void ToStringTest()
         {
             // 元の入力文法ルール文字列にパターンマッチの結果は同じになるが不要な構成要素が有る場合、省略して出力する。
-            GrammarRuleExtractor.Run("  This : n :      + is : v : * ").ToString().Should().Be("this:n + is:v:*");
-            GrammarRuleExtractor.Run("  僕:   名詞, : ボク =            は :助詞:     ハ").ToString().Should().Be("僕:名詞:ボク = は:助詞:ハ");
-            GrammarRuleExtractor.Run("  : : ボク + : : ハ").ToString().Should().Be("::ボク + ::ハ");
+            GrammarRuleExtractor.Run("  This : :n :      + is: : v : * ").ToString().Should().Be("this::n + is::v");
+            GrammarRuleExtractor.Run("  僕:  ボク :  名詞- =            は:       ハ :助詞").ToString().Should().Be("僕:ボク:名詞 = は:ハ:助詞");
+            GrammarRuleExtractor.Run("  : ボク + : ハ").ToString().Should().Be(":ボク + :ハ");
         }
 
         /// <summary>ルール表現文字列から抽出したルールのマッチングテスト。</summary>
         [Theory]
-        [InlineData("001", "::ナイ + ::ト = ::ナイ", "そんなことが無いとは言えない。", 1, "無い|と|は|言え|ない")]
-        [InlineData("002", "::ナイ + ::ト = ::ナイ", "そんなことが無いとは言えません。", 0, "")]
-        [InlineData("003", "::ナイ + ::ト = ::ナイ", "そんなことが無いとは限らない。", 1, "無い|と|は|限ら|ない")]
-        [InlineData("004", "::ナイ + ::ト = ::ナイ", "そんなことが無いと断定することは出来ないだろう。", 1, "無い|と|断定|する|こと|は|出来|ない")]
+        [InlineData("001", ":ナイ + :ト = :ナイ", "そんなことが無いとは言えない。", 1, "無い|と|は|言え|ない")]
+        [InlineData("002", ":ナイ + :ト = :ナイ", "そんなことが無いとは言えません。", 0, "")]
+        [InlineData("003", ":ナイ + :ト = :ナイ", "そんなことが無いとは限らない。", 1, "無い|と|は|限ら|ない")]
+        [InlineData("004", ":ナイ + :ト = :ナイ", "そんなことが無いと断定することは出来ないだろう。", 1, "無い|と|断定|する|こと|は|出来|ない")]
         // NOTE: 品詞を指定しないと想定外のものにマッチしてしまう。
-        [InlineData("005", "::ナイ + ::ト = ::ナイ", "水が無いとは想定内だ。", 1, "無い|と|は|想定|内")]
+        [InlineData("005", ":ナイ + :ト = :ナイ", "水が無いとは想定内だ。", 1, "無い|と|は|想定|内")]
         // NOTE: 品詞を指定することで助動詞の「ない」にだけマッチする。
-        [InlineData("006", "::ナイ + ::ト = :助動詞,特殊・ナイ:ナイ", "水が無いとは想定内だ。", 0, "")]
+        [InlineData("006", "::ナイ + :ト = :ナイ:助動詞-特殊・ナイ", "水が無いとは想定内だ。", 0, "")]
         // ひらがな表現でも適切な品詞であればマッチする。
-        [InlineData("007", "::ナイ + ::ト = ::ナイ", "そんなことがないとは言えない。", 1, "ない|と|は|言え|ない")]
-        [InlineData("008", ":形容詞,自立:ナイ + ::ト = ::ナイ", "そんなことがないとは言えない。", 1, "ない|と|は|言え|ない")]
+        [InlineData("007", ":ナイ + :ト = :ナイ", "そんなことがないとは言えない。", 1, "ない|と|は|言え|ない")]
+        [InlineData("008", ":ナイ:形容詞-自立 + :ト = :ナイ", "そんなことがないとは言えない。", 1, "ない|と|は|言え|ない")]
         // 形容詞か助動詞かはケースバイケースなのでそれぞれ指定するしかない。
-        [InlineData("009", "::ナイ + ::ト = ::ナイ", "食べないとは口が裂けても言えない状況。", 1, "ない|と|は|口|が|裂け|て|も|言え|ない")]
-        [InlineData("010", ":助動詞,特殊・ナイ:ナイ + ::ト = :助動詞,特殊・ナイ:ナイ", "食べないとは口が裂けても言えない状況。", 1,
+        [InlineData("009", ":ナイ + :ト = :ナイ", "食べないとは口が裂けても言えない状況。", 1, "ない|と|は|口|が|裂け|て|も|言え|ない")]
+        [InlineData("010", ":ナイ:助動詞-特殊・ナイ + :ト = :ナイ:助動詞-特殊・ナイ", "食べないとは口が裂けても言えない状況。", 1,
             "ない|と|は|口|が|裂け|て|も|言え|ない")]
-        [InlineData("011", "::ナイ + ::ト = ::ナイ", "水が無いとは想定外だし、食料も無い。", 1,
+        [InlineData("011", ":ナイ + :ト = :ナイ", "水が無いとは想定外だし、食料も無い。", 1,
             "無い|と|は|想定|外|だ|し|、|食料|も|無い")]
-        [InlineData("012", ":形容詞,自立:ナイ + ::ト = :助動詞,特殊・ナイ:ナイ", "水が無いとは想定外だし、食料も無い。", 0, "")]
-        [InlineData("013", "::ナイ + ::ト = ::ナイ", "これは想定内とは言えない。", 1, "内|と|は|言え|ない")]
-        [InlineData("014", ":形容詞,自立:ナイ + ::ト = :助動詞,特殊・ナイ:ナイ", "これは想定内とは言えない。", 0, "")]
+        [InlineData("012", ":形容詞-自立:ナイ + :ト = :ナイ:助動詞-特殊・ナイ", "水が無いとは想定外だし、食料も無い。", 0, "")]
+        [InlineData("013", ":ナイ + :ト = :ナイ", "これは想定内とは言えない。", 1, "内|と|は|言え|ない")]
+        [InlineData("014", ":ナイ:形容詞-自立 + :ト = :ナイ:助動詞-特殊・ナイ", "これは想定内とは言えない。", 0, "")]
         public void JapaneseMatchesExtendTest(string nouse1, string rule, string text, int matchCount, string expected)
         {
             GrammarRule grammarRule = GrammarRuleExtractor.Run(rule);
@@ -334,7 +334,7 @@ namespace RedPen.Net.Core.Utility.Tests
             var tokenElements = KuromojiController.Tokenize(new Sentence(text, 1));
             foreach (var tokenElement in tokenElements)
             {
-                output.WriteLine(tokenElement.ToString(Shortened: true));
+                output.WriteLine(tokenElement.ToString());
             }
         }
 
@@ -344,7 +344,7 @@ namespace RedPen.Net.Core.Utility.Tests
             var tokenElements = KuromojiController.Tokenize(new Sentence("笑わない", 1));
             foreach (var tokenElement in tokenElements)
             {
-                output.WriteLine(tokenElement.ToString(Shortened: true));
+                output.WriteLine(tokenElement.ToString());
             }
 
             // 形態素解析の結果は以下のとおり。
@@ -356,7 +356,8 @@ namespace RedPen.Net.Core.Utility.Tests
             {
                 "笑わ+ない",
                 "笑わ:動詞+ない:助動詞",
-                // Sruface : Pos : Reading : InfForm : InfType : BaseForm
+                // ":"区切りで「Sruface : Reading : Pos : InflectionForm : InflectionType : BaseForm」
+                // Posは品詞-品詞細分類1-品詞細分類2-品詞細分類3の4つが格納されるスロットで区切り文字は"-"
                 "笑わ:動詞:ワラワ:未然形:五段・ワ行促音便:笑う + ない:助動詞:ナイ:基本形:特殊・ナイ:",
             };
         }
