@@ -150,24 +150,7 @@ namespace RedPen.Net.Core.Model
         public override string ToString()
         {
             var pos = string.Join("-", PartOfSpeech.Select(i => i));
-            return $"TokenElement {{ Surface = \"{Surface}\",\tReading = \"{Reading}({Pronunciation})\",\tPoS = [ {pos} ],\tInflection = {InflectionForm}/{InflectionType},\tBaseForm = {BaseForm},\tOffsetMap = {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
-        }
-
-        /// <summary>
-        /// ToString()
-        /// </summary>
-        /// <returns>A string.</returns>
-        public string ToString(bool Shortened = false)
-        {
-            if (!Shortened)
-            {
-                return ToString();
-            }
-            else
-            {
-                var pos = string.Join("-", PartOfSpeech.Select(i => i));
-                return $"TokenElement {{ S= \"{Surface}\",\tR= \"{Reading}({Pronunciation})\",\tP= [{pos}],\tI= {InflectionForm}/{InflectionType},\tB= {BaseForm},\tO= {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
-            }
+            return $"TokenElement {{ S= \"{Surface}\",\tR= \"{Reading}({Pronunciation})\",\tP= [{pos}],\tI= {InflectionForm}/{InflectionType},\tB= {BaseForm},\tO= {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
         }
 
         /// <summary>
@@ -189,16 +172,16 @@ namespace RedPen.Net.Core.Model
                     break;
                 }
             }
-            string tagStr = currentTags.Any() ? string.Join(",", currentTags.Reverse()) : "";
+            string tagStr = currentTags.Any() ? string.Join("-", currentTags.Reverse()) : "";
 
             // 後の構成要素が無ければ省略して良いのでなるべく省略する。見やすさのため。
-            if (Reading != "")
+            if (tagStr != "")
             {
-                return $"{Surface}:{tagStr}:{Reading}";
+                return $"{Surface}:{Reading}:{tagStr}";
             }
-            else if (tagStr != "")
+            else if (Reading != "")
             {
-                return $"{Surface}:{tagStr}";
+                return $"{Surface}:{Reading}";
             }
             else
             {
