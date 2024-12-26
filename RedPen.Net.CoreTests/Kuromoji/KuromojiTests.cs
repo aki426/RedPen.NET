@@ -365,7 +365,7 @@ namespace RedPen.Net.CoreTests.Kuromoji
             // Using句を使った実装2
             sw.Restart();
 
-            List<List<TokenElement>> listlist = KuromojiController.Tokenize(sentences);
+            List<List<TokenElement>> listlist = sentences.Select(i => KuromojiController.Tokenize(i)).ToList();
 
             sw.Stop();
             output.WriteLine($"[RESULT 5(Using句を使った実装2)]Elapsed time: {sw.ElapsedMilliseconds}ms");

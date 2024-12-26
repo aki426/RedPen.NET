@@ -65,15 +65,8 @@ namespace RedPen.Net.Core.Tokenizer
                     string pronunce = read?.GetPronunciation() ?? ""; // 英語表現はPronunciationがNullになる
 
                     var inf = tokenizer.GetAttribute<IInflectionAttribute>();
-                    string inflectionForm = inf.GetInflectionForm();
-                    string inflectionType = inf.GetInflectionType();
-
-                    //tokens.Add(new TokenElement(
-                    //    surface,
-                    //    tokenizer.GetAttribute<IPartOfSpeechAttribute>().GetPartOfSpeech().Split('-').ToImmutableList(),
-                    //    reading,
-                    //    Enumerable.Range(currentOffset, surface.Length).Select(i => src.ConvertToLineOffset(i)).ToImmutableList()
-                    //));
+                    string inflectionForm = inf.GetInflectionForm() ?? ""; // 名詞など活用型が無い場合Nullになる。
+                    string inflectionType = inf.GetInflectionType() ?? ""; // 名詞など活用型が無い場合Nullになる。
 
                     tokens.Add(new TokenElement(
                         surface,
@@ -103,92 +96,6 @@ namespace RedPen.Net.Core.Tokenizer
             return tokens;
         }
 
-        /// <summary>
-        /// Sentenceのリストを一括処理するための形態素解析関数。
-        /// </summary>
-        /// <param name="srcs"></param>
-        /// <returns></returns>
-        public static List<List<TokenElement>> Tokenize(IEnumerable<Sentence> srcs)
-        {
-            List<List<TokenElement>> tokens = new List<List<TokenElement>>();
-
-            // Tokenizerの生成とDisposeを一番外側のusingで管理
-            using var tokenizer = new JapaneseTokenizer(
-                new StringReader(string.Empty),
-                null,
-                false,
-                JapaneseTokenizerMode.NORMAL);
-
-            foreach (var src in srcs)
-            {
-                if (string.IsNullOrEmpty(src.Content))
-                {
-                    tokens.Add(new List<TokenElement>());
-                    continue;
-                }
-
-                // TextReaderのライフサイクルを明確に管理
-                using var textReader = new StringReader(src.Content);
-                var subList = new List<TokenElement>();
-
-                try
-                {
-                    tokenizer.SetReader(textReader);
-                    tokenizer.Reset();
-
-                    int currentOffset = 0;
-                    while (tokenizer.IncrementToken())
-                    {
-                        string surface = tokenizer.GetAttribute<ICharTermAttribute>().ToString();
-
-                        string baseForm = tokenizer.GetAttribute<IBaseFormAttribute>()?.GetBaseForm()?.ToString() ?? "";
-
-                        var read = tokenizer.GetAttribute<IReadingAttribute>();
-                        string reading = read?.GetReading() ?? ""; // 英語表現はReadingがNullになる
-                        string pronunce = read?.GetPronunciation() ?? ""; // 英語表現はPronunciationがNullになる
-
-                        var inf = tokenizer.GetAttribute<IInflectionAttribute>();
-                        string inflectionForm = inf.GetInflectionForm();
-                        string inflectionType = inf.GetInflectionType();
-
-                        //tokens.Add(new TokenElement(
-                        //    surface,
-                        //    tokenizer.GetAttribute<IPartOfSpeechAttribute>().GetPartOfSpeech().Split('-').ToImmutableList(),
-                        //    reading,
-                        //    Enumerable.Range(currentOffset, surface.Length).Select(i => src.ConvertToLineOffset(i)).ToImmutableList()
-                        //));
-
-                        subList.Add(new TokenElement(
-                            surface,
-                            reading,
-                            pronunce,
-                            tokenizer.GetAttribute<IPartOfSpeechAttribute>().GetPartOfSpeech().Split('-').ToImmutableList(),
-                            baseForm,
-                            inflectionType,
-                            inflectionForm,
-                            Enumerable.Range(currentOffset, surface.Length).Select(i => src.ConvertToLineOffset(i)).ToImmutableList()
-                        ));
-
-                        currentOffset += surface.Length;
-                    }
-
-                    tokenizer.End();  // Endの呼び出しは維持
-
-                    tokenizer.Dispose(); // Using句があるにもかかわらずDisposeが必要。
-                                         // 無いと次のIterationのSetReaderにて例外スローが起きる。
-
-                    tokens.Add(subList);
-                }
-                catch (IOException e)
-                {
-                    tokenizer.End();
-                    // TODO: エラーログ記録を追加することを推奨
-                    //logger?.LogError(e, "Tokenization failed");
-                    throw;
-                }
-            }
-
-            return tokens;
-        }
+        // NOTE: 複数の実装があることが混乱を招くのでIEnumerable<Sentence> srcsを取る関数は一旦廃止。
     }
 }

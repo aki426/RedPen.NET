@@ -13,12 +13,6 @@
 //   limitations under the License.
 
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
-using Lucene.Net.Analysis.Ja;
-using Lucene.Net.Analysis.Ja.TokenAttributes;
-using Lucene.Net.Analysis.TokenAttributes;
 using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Tokenizer
@@ -29,20 +23,11 @@ namespace RedPen.Net.Core.Tokenizer
     /// </summary>
     public class KuromojiTokenizer : IRedPenTokenizer
     {
-        private JapaneseTokenizer tokenizer;
-
-        // TODO: JapaneseTokenizerの生成コストが気になる。Singleton化して生成コストを削減することを検討する。
-
         /// <summary>
         /// Initializes a new instance of the <see cref="KuromojiTokenizer"/> class.
         /// </summary>
         public KuromojiTokenizer()
         {
-            //this.tokenizer = new JapaneseTokenizer(
-            //    new StringReader(string.Empty), // 空のTextReaderとして暫定的に与える。本当に処理したいものはSetReaderで与える。
-            //    null, // UserDictionaryクラスインスタンスを別途ビルドして与えることでユーザ辞書を追加可能。
-            //    false, // 句読点は捨てない。
-            //    JapaneseTokenizerMode.NORMAL);
         }
 
         /// <summary>
@@ -50,85 +35,6 @@ namespace RedPen.Net.Core.Tokenizer
         /// </summary>
         /// <param name="sentence">The sentence.</param>
         /// <returns>A list of TokenElements.</returns>
-        public List<TokenElement> Tokenize(Sentence sentence)
-        {
-            //List<TokenElement> tokens = new List<TokenElement>();
-            //try
-            //{
-            //    foreach (TokenElement token in GetKuromojiTokens(sentence))
-            //    {
-            //        tokens.Add(token);
-            //    }
-            //}
-            //catch (IOException e)
-            //{
-            //    // TODO: StackTraceを出力するように変更。
-            //    throw;
-            //}
-
-            //return tokens;
-
-            return KuromojiController.Tokenize(sentence);
-        }
-
-        /// <summary>
-        /// Kuromojis the neologd.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <returns>A list of TokenElements.</returns>
-        private List<TokenElement> GetKuromojiTokens(Sentence src)
-        {
-            tokenizer.SetReader(new StringReader(src.Content));
-
-            List<TokenElement> tokens = new List<TokenElement>();
-
-            ICharTermAttribute charAttr = tokenizer.AddAttribute<ICharTermAttribute>();
-            IOffsetAttribute offsetAttr = tokenizer.AddAttribute<IOffsetAttribute>();
-
-            IBaseFormAttribute baseAttr = tokenizer.AddAttribute<IBaseFormAttribute>();
-            IPartOfSpeechAttribute posAttr = tokenizer.AddAttribute<IPartOfSpeechAttribute>();
-            IReadingAttribute readAttr = tokenizer.AddAttribute<IReadingAttribute>();
-            IInflectionAttribute inflectionAttr = tokenizer.AddAttribute<IInflectionAttribute>();
-
-            tokenizer.Reset();
-            int currentOffset = 0;
-            while (tokenizer.IncrementToken())
-            {
-                string surface = charAttr.ToString();
-
-                tokens.Add(new TokenElement(
-                    surface,
-                    GetTagList(posAttr, inflectionAttr).ToImmutableList(),
-                    //src.LineNumber,
-                    //offsetAttr.StartOffset,
-                    readAttr.GetReading(),
-                    // surfaceに対応するOffsetMapをSentenceから取得する。TokenElementは正確に原文の出現位置を持つ。
-                    Enumerable.Range(currentOffset, surface.Length).Select(i => src.ConvertToLineOffset(i)).ToImmutableList()
-                ));
-
-                // iteration.
-                currentOffset += surface.Length;
-            }
-            tokenizer.Dispose();
-
-            return tokens;
-        }
-
-        /// <summary>
-        /// Gets the tag list.
-        /// </summary>
-        /// <param name="posAttr">The pos attr.</param>
-        /// <param name="inflectionAttr">The inflection attr.</param>
-        /// <returns>A list of string.</returns>
-        private static List<string> GetTagList(IPartOfSpeechAttribute posAttr, IInflectionAttribute inflectionAttr)
-        {
-            List<string> posList = new List<string>();
-            posList.AddRange(posAttr.GetPartOfSpeech().Split('-'));
-            string form = inflectionAttr.GetInflectionForm() == null ? "*" : inflectionAttr.GetInflectionForm();
-            string type = inflectionAttr.GetInflectionType() == null ? "*" : inflectionAttr.GetInflectionType();
-            posList.Add(type);
-            posList.Add(form);
-            return posList;
-        }
+        public List<TokenElement> Tokenize(Sentence sentence) => KuromojiController.Tokenize(sentence);
     }
 }
