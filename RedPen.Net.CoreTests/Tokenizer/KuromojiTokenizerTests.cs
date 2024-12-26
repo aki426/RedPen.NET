@@ -18,7 +18,6 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Utility;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -19,7 +19,6 @@ using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Parser.Tests;
-using RedPen.Net.Core.Tokenizer;
 using RedPen.Net.CoreTests.Grammar;
 using Xunit;
 using Xunit.Abstractions;
@@ -291,30 +290,6 @@ namespace RedPen.Net.Core.Grammar.Tests
             // "|"ですべてのSurfaceを連結して比較する。
             string.Join("|", matchedTokensList.Select(lis => string.Join("|", lis.Select(t => t.Surface))))
                 .Should().Contain(expected);
-        }
-
-        [Fact]
-        public void 活用型や活用形を持つRuleの実装ケース()
-        {
-            var tokenElements = KuromojiController.Tokenize(new Sentence("笑わない", 1));
-            foreach (var tokenElement in tokenElements)
-            {
-                output.WriteLine(tokenElement.ToString());
-            }
-
-            // 形態素解析の結果は以下のとおり。
-            // TokenElement { S= "笑わ",	R= "ワラワ(ワラワ)",	P= [動詞-自立],	I= 未然形/五段・ワ行促音便,	B= 笑う,	O= (L1,0)-(L1,1)}
-            // TokenElement { S= "ない",	R= "ナイ(ナイ)",	P= [助動詞],	I= 基本形/特殊・ナイ,	B= ,	O= (L1,2)-(L1,3)}
-
-            // 複数の情報量のルールをテスト
-            List<string> rules = new List<string>()
-            {
-                "笑わ+ない",
-                "笑わ:動詞+ない:助動詞",
-                // ":"区切りで「Sruface : Reading : Pos : InflectionForm : InflectionType : BaseForm」
-                // Posは品詞-品詞細分類1-品詞細分類2-品詞細分類3の4つが格納されるスロットで区切り文字は"-"
-                "笑わ:動詞:ワラワ:未然形:五段・ワ行促音便:笑う + ない:助動詞:ナイ:基本形:特殊・ナイ:",
-            };
         }
     }
 }

@@ -289,6 +289,7 @@
     <Compile Include="Grammar\GrammarRuleExtractorTests.cs" />
     <Compile Include="Grammar\GrammarRuleTestUtility.cs" />
     <Compile Include="Grammar\マニュアル用テストケース.cs" />
+    <Compile Include="Grammar\活用を考慮した文法ルールテストケース.cs" />
     <Compile Include="Inflection\InflectionResolverTests.cs" />
     <Compile Include="Kuromoji\KuromojiTests.cs" />
     <Compile Include="Model\DocumentTests.cs" />
