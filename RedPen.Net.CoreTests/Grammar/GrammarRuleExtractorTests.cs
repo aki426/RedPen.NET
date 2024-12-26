@@ -143,7 +143,7 @@ namespace RedPen.Net.Core.Grammar.Tests
         // NOTE: 品詞を指定しないと想定外のものにマッチしてしまう。
         [InlineData("005", ":ナイ + :ト = :ナイ", "水が無いとは想定内だ。", 1, "無い|と|は|想定|内")]
         // NOTE: 品詞を指定することで助動詞の「ない」にだけマッチする。
-        [InlineData("006", "::ナイ + :ト = :ナイ:助動詞-特殊・ナイ", "水が無いとは想定内だ。", 0, "")]
+        [InlineData("006", ":ナイ + :ト = :ナイ:助動詞-特殊・ナイ", "水が無いとは想定内だ。", 0, "")]
         // ひらがな表現でも適切な品詞であればマッチする。
         [InlineData("007", ":ナイ + :ト = :ナイ", "そんなことがないとは言えない。", 1, "ない|と|は|言え|ない")]
         [InlineData("008", ":ナイ:形容詞-自立 + :ト = :ナイ", "そんなことがないとは言えない。", 1, "ない|と|は|言え|ない")]
@@ -153,7 +153,7 @@ namespace RedPen.Net.Core.Grammar.Tests
             "ない|と|は|口|が|裂け|て|も|言え|ない")]
         [InlineData("011", ":ナイ + :ト = :ナイ", "水が無いとは想定外だし、食料も無い。", 1,
             "無い|と|は|想定|外|だ|し|、|食料|も|無い")]
-        [InlineData("012", ":形容詞-自立:ナイ + :ト = :ナイ:助動詞-特殊・ナイ", "水が無いとは想定外だし、食料も無い。", 0, "")]
+        [InlineData("012", ":ナイ:形容詞-自立 + :ト = :ナイ:助動詞-特殊・ナイ", "水が無いとは想定外だし、食料も無い。", 0, "")]
         [InlineData("013", ":ナイ + :ト = :ナイ", "これは想定内とは言えない。", 1, "内|と|は|言え|ない")]
         [InlineData("014", ":ナイ:形容詞-自立 + :ト = :ナイ:助動詞-特殊・ナイ", "これは想定内とは言えない。", 0, "")]
         public void JapaneseMatchesExtendTest(string nouse1, string rule, string text, int matchCount, string expected)
@@ -291,34 +291,6 @@ namespace RedPen.Net.Core.Grammar.Tests
             // "|"ですべてのSurfaceを連結して比較する。
             string.Join("|", matchedTokensList.Select(lis => string.Join("|", lis.Select(t => t.Surface))))
                 .Should().Contain(expected);
-        }
-
-        [Fact]
-        public void 文法ルールのパターンマッチ具体例()
-        {
-            string text = "吾輩は猫だが犬でもある。";
-            var tokenElements = KuromojiController.Tokenize(new Sentence(text, 1));
-            foreach (var tokenElement in tokenElements)
-            {
-                output.WriteLine(tokenElement.ToString());
-            }
-
-            // 複数の情報量のルールをテスト
-            List<string> rules = new List<string>()
-            {
-                "猫",
-                "猫:ネコ:*-一般",
-                ":ネコ",
-                "猫:イヌ",
-                "吾輩 + は",
-                "*:名詞 + :助詞",
-                ":ワガハイ + は = :アル"
-            };
-
-            foreach (var rule in rules)
-            {
-                GrammarRuleExtractor.Run(rule).MatchExtend(tokenElements);
-            }
         }
 
         [Fact]
