@@ -46,7 +46,8 @@ namespace RedPen.Net.CoreTests.Kuromoji
         }
 
         /// <summary>
-        /// KuromojiのJapaneseTokenizerを隠ぺいして効率良く使うためのWrapperクラス。
+        /// KuromojiのJapaneseTokenizerを隠ぺいして効率良く使う検証のためのWrapperクラス。
+        /// KuromojiControllerが正実装なのでこのクラスはあくまで検証用。
         /// </summary>
         public class KuromojiWrapper
         {
@@ -157,6 +158,10 @@ namespace RedPen.Net.CoreTests.Kuromoji
             }
         }
 
+        /// <summary>
+        /// KuromojiのTokenStreamComponentsを使う実装の検証のためのWrapperクラス。
+        /// KuromojiControllerが正実装なのでこのクラスはあくまで検証用。
+        /// </summary>
         public class TokenStreamWrapper
         {
             public static List<TokenElement> Tokenize(Sentence src)
