@@ -17,14 +17,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
-using RedPen.Net.Core.Grammar;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Parser.Tests;
 using RedPen.Net.Core.Tokenizer;
+using RedPen.Net.CoreTests.Grammar;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace RedPen.Net.Core.Utility.Tests
+namespace RedPen.Net.Core.Grammar.Tests
 {
     public class GrammarRuleExtractorTests
     {
@@ -158,41 +158,7 @@ namespace RedPen.Net.Core.Utility.Tests
         [InlineData("014", ":ナイ:形容詞-自立 + :ト = :ナイ:助動詞-特殊・ナイ", "これは想定内とは言えない。", 0, "")]
         public void JapaneseMatchesExtendTest(string nouse1, string rule, string text, int matchCount, string expected)
         {
-            GrammarRule grammarRule = GrammarRuleExtractor.Run(rule);
-
-            output.WriteLine("★Rule...");
-            foreach (TokenElement token in grammarRule.Tokens)
-            {
-                output.WriteLine(token.ToString());
-            }
-            output.WriteLine("");
-
-            List<ImmutableList<TokenElement>> matchedTokensList = new List<ImmutableList<TokenElement>>();
-
-            // Sentenceごとにマッチングを取る。
-            Document doc = new PlainTextParserTests(output).GenerateDocument(text, "ja-JP");
-            foreach (var sentence in doc.GetAllSentences())
-            {
-                output.WriteLine("★Sentence...");
-                foreach (TokenElement token in sentence.Tokens)
-                {
-                    output.WriteLine(token.ToString());
-                }
-                output.WriteLine("");
-
-                matchedTokensList.AddRange(grammarRule.MatchExtend(sentence.Tokens));
-            }
-
-            matchedTokensList.Count.Should().Be(matchCount);
-
-            if (matchedTokensList.Count == 0)
-            {
-                return;
-            }
-
-            // "|"ですべてのSurfaceを連結して比較する。
-            string.Join("|", matchedTokensList.Select(lis => string.Join("|", lis.Select(t => t.Surface))))
-                .Should().Contain(expected);
+            GrammarRuleTestUtility.TestMatchExtend(rule, text, matchCount, expected, output);
         }
 
         /// <summary>ルール表現文字列から抽出したルールのマッチングテスト。</summary>

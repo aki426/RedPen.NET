@@ -286,6 +286,8 @@
     <Compile Include="Config\SymbolTests.cs" />
     <Compile Include="Config\SymbolTypeTests.cs" />
     <Compile Include="Errors\ErrorMessageManagerTests.cs" />
+    <Compile Include="Grammar\GrammarRuleExtractorTests.cs" />
+    <Compile Include="Grammar\GrammarRuleTestUtility.cs" />
     <Compile Include="Inflection\InflectionResolverTests.cs" />
     <Compile Include="Kuromoji\KuromojiTests.cs" />
     <Compile Include="Model\DocumentTests.cs" />
@@ -304,7 +306,6 @@
     <Compile Include="Utility\CollectionExtensionsTests.cs" />
     <Compile Include="Utility\DictionaryLoaderTests.cs" />
     <Compile Include="Utility\EndOfSentenceDetectorTests.cs" />
-    <Compile Include="Utility\GrammarRuleExtractorTests.cs" />
     <Compile Include="Utility\LevenshteinDistanceUtilityTests.cs" />
     <Compile Include="Utility\UnicodeUtilityTests.cs" />
     <Compile Include="Validators\DocumentValidator\InvalidParenthesisValidatorTests.cs" />
