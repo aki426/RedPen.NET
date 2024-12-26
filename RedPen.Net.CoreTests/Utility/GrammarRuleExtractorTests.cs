@@ -336,6 +336,23 @@ namespace RedPen.Net.Core.Utility.Tests
             {
                 output.WriteLine(tokenElement.ToString());
             }
+
+            // 複数の情報量のルールをテスト
+            List<string> rules = new List<string>()
+            {
+                "猫",
+                "猫:ネコ:*-一般",
+                ":ネコ",
+                "猫:イヌ",
+                "吾輩 + は",
+                "*:名詞 + :助詞",
+                ":ワガハイ + は = :アル"
+            };
+
+            foreach (var rule in rules)
+            {
+                GrammarRuleExtractor.Run(rule).MatchExtend(tokenElements);
+            }
         }
 
         [Fact]
