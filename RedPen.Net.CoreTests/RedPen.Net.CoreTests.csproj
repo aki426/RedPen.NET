@@ -292,6 +292,7 @@
     <Compile Include="Model\LineOffsetTests.cs" />
     <Compile Include="Model\SectionTests.cs" />
     <Compile Include="Model\TokenElementTests.cs" />
+    <Compile Include="NewFeatureResearch\公用文における漢字使用等について.cs" />
     <Compile Include="Parser\BaseDocumentParserTests.cs" />
     <Compile Include="Parser\Common\LineTests.cs" />
     <Compile Include="Parser\PlainTextParserTests.cs" />
