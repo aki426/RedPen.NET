@@ -12,13 +12,10 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Data;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using NLog;
 using RedPen.Net.Core.Config;
 using RedPen.Net.Core.Model;
