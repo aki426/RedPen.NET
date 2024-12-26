@@ -149,8 +149,25 @@ namespace RedPen.Net.Core.Model
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            var tags = string.Join("-", PartOfSpeech.Select(i => i));
-            return $"TokenElement {{ Surface = \"{Surface}\", Reading = \"{Reading}({Pronunciation})\", PoS = [ {tags} ], BaseForm = {BaseForm}, Inflection = {InflectionType}/{InflectionForm} OffsetMap = {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
+            var pos = string.Join("-", PartOfSpeech.Select(i => i));
+            return $"TokenElement {{ Surface = \"{Surface}\",\tReading = \"{Reading}({Pronunciation})\",\tPoS = [ {pos} ],\tInflection = {InflectionForm}/{InflectionType},\tBaseForm = {BaseForm},\tOffsetMap = {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
+        }
+
+        /// <summary>
+        /// ToString()
+        /// </summary>
+        /// <returns>A string.</returns>
+        public string ToString(bool Shortened = false)
+        {
+            if (!Shortened)
+            {
+                return ToString();
+            }
+            else
+            {
+                var pos = string.Join("-", PartOfSpeech.Select(i => i));
+                return $"TokenElement {{ S= \"{Surface}\",\tR= \"{Reading}({Pronunciation})\",\tP= [{pos}],\tI= {InflectionForm}/{InflectionType},\tB= {BaseForm},\tO= {string.Join("-", OffsetMap.Select(o => o.ConvertToShortText()))}}}";
+            }
         }
 
         /// <summary>
