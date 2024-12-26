@@ -18,6 +18,7 @@ using System.Globalization;
 using System.Linq;
 using NLog;
 using RedPen.Net.Core.Config;
+using RedPen.Net.Core.Grammar;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Utility;
 

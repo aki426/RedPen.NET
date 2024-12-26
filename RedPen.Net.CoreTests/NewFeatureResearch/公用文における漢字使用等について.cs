@@ -15,9 +15,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using RedPen.Net.Core.Grammar;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
-using RedPen.Net.Core.Utility;
 using Xunit;
 using Xunit.Abstractions;
 

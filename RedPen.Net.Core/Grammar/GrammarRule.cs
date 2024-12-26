@@ -19,7 +19,7 @@ using System.Linq;
 using System.Text;
 using RedPen.Net.Core.Model;
 
-namespace RedPen.Net.Core.Validators
+namespace RedPen.Net.Core.Grammar
 {
     /// <summary>トークン列によって表現された文法ルール。Token列に対してパターンマッチする。</summary>
     public record GrammarRule
@@ -33,13 +33,13 @@ namespace RedPen.Net.Core.Validators
         /// GrammarRuleの持つフレーズのSurfaceを連結した文字列を返す。
         /// </summary>
         /// <returns>A string.</returns>
-        public string ToSurface() => string.Join("", this.Tokens.Select(e => e.Surface));
+        public string ToSurface() => string.Join("", Tokens.Select(e => e.Surface));
 
         /// <summary>
         /// GrammarRuleの持つフレーズのReadingを連結した文字列を返す。
         /// </summary>
         /// <returns>A string.</returns>
-        public string ToReading() => string.Join("", this.Tokens.Select(e => e.Reading));
+        public string ToReading() => string.Join("", Tokens.Select(e => e.Reading));
 
         /// <summary>
         /// GrammarRuleの表現パターンを文字列に変換する。
@@ -47,10 +47,10 @@ namespace RedPen.Net.Core.Validators
         /// <returns>Surface:Tags:Reading [+=] Surface:Tags:Reading...という表現形式の文字列 </returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(this.Pattern[0].token.ConvertToGrammarRuleText());
+            var sb = new StringBuilder();
+            sb.Append(Pattern[0].token.ConvertToGrammarRuleText());
 
-            foreach (var (direct, token) in this.Pattern.Skip(1))
+            foreach (var (direct, token) in Pattern.Skip(1))
             {
                 sb.Append(direct ? " + " : " = ");
                 sb.Append(token.ConvertToGrammarRuleText());
@@ -74,7 +74,7 @@ namespace RedPen.Net.Core.Validators
             Func<TokenElement, TokenElement, bool> condition,
             IList<TokenElement> tokens)
         {
-            if (this.Tokens.Count == 0)
+            if (Tokens.Count == 0)
             {
                 // MEMO: 集合論的に考えてthis.Tokensが空集合だった場合はTrueが返るべき。
                 return (true, new List<ImmutableList<TokenElement>>());
@@ -86,24 +86,24 @@ namespace RedPen.Net.Core.Validators
                 return (false, new List<ImmutableList<TokenElement>>());
             }
 
-            if (this.Pattern.Where(i => !i.direct).Any())
+            if (Pattern.Where(i => !i.direct).Any())
             {
                 // 隣接連続ではない、「=」による接続が含まれている場合は、このメソッドの想定ではないのでExceptionを投げる。
                 throw new ArgumentException($"This method is only for consecutive patterns. If you want to use non-consecutive patterns '{this}', please use MatchExtend method.");
             }
 
             // Tokensと同じ長さの部分Tokenリストを取り出し、conditionで比較しマッチングを取る。
-            List<ImmutableList<TokenElement>> matchedTokens = new List<ImmutableList<TokenElement>>();
-            for (int i = 0; i <= tokens.Count - this.Tokens.Count; i++)
+            var matchedTokens = new List<ImmutableList<TokenElement>>();
+            for (var i = 0; i <= tokens.Count - Tokens.Count; i++)
             {
                 // 入力Token列からRuleのToken長だけ取り出す。
-                List<TokenElement> currentTokenSequence = tokens.Skip(i).Take(this.Tokens.Count).ToList();
+                var currentTokenSequence = tokens.Skip(i).Take(Tokens.Count).ToList();
 
                 // RuleのTokenと入力テキストのTokenのマッチングを取る。
-                bool isMatch = true;
-                for (int j = 0; j < this.Tokens.Count; j++)
+                var isMatch = true;
+                for (var j = 0; j < Tokens.Count; j++)
                 {
-                    isMatch = condition(this.Tokens[j], currentTokenSequence[j]);
+                    isMatch = condition(Tokens[j], currentTokenSequence[j]);
                     if (!isMatch)
                     {
                         break;
@@ -170,19 +170,19 @@ namespace RedPen.Net.Core.Validators
             Func<TokenElement, TokenElement, bool> condition,
             List<TokenElement> tokens)
         {
-            if (this.Tokens.Count == 0)
+            if (Tokens.Count == 0)
             {
                 // MEMO: GrammarRuleのパターンが空ならFalseで良い。
                 return new List<ImmutableList<TokenElement>>();
             }
 
-            List<TokenElement> restTokens = tokens;
-            List<ImmutableList<TokenElement>> results = new List<ImmutableList<TokenElement>>();
+            var restTokens = tokens;
+            var results = new List<ImmutableList<TokenElement>>();
             while (restTokens.Any())
             {
                 var (list, rest) = MatchExtendByConditionRecursive(
                     condition,
-                    this.Pattern.ToList(),
+                    Pattern.ToList(),
                     restTokens,
                     ImmutableList.Create<TokenElement>());
 

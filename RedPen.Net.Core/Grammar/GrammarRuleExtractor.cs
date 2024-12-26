@@ -19,9 +19,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using RedPen.Net.Core.Model;
-using RedPen.Net.Core.Validators;
 
-namespace RedPen.Net.Core.Utility
+namespace RedPen.Net.Core.Grammar
 {
     /// <summary>
     /// RedPenのルール表記文字列から文法ルールを抽出するクラス。
@@ -62,19 +61,19 @@ namespace RedPen.Net.Core.Utility
             }
 
             // Surface:タグ,タグ,タグ,...:Readingを要素ごとに分割。
-            string[] wordSegments = str.Split(':');
+            var wordSegments = str.Split(':');
 
-            string surface =
+            var surface =
                 wordSegments[0].Trim().ToLower();
-            string reading =
+            var reading =
                 wordSegments.Length > 1 ? wordSegments[1].Trim() : "";
-            string pos =
+            var pos =
                 wordSegments.Length > 2 ? wordSegments[2].Trim() : "";
-            string infForm =
+            var infForm =
                 wordSegments.Length > 3 ? wordSegments[3].Trim() : "";
-            string infType =
+            var infType =
                 wordSegments.Length > 4 ? wordSegments[4].Trim() : "";
-            string baseForm =
+            var baseForm =
                 wordSegments.Length > 5 ? wordSegments[5].Trim() : "";
 
             return new TokenElement(
@@ -103,11 +102,11 @@ namespace RedPen.Net.Core.Utility
                 throw new ArgumentException("Invalid rule format. Rule expression is empty.", nameof(line));
             }
 
-            List<(bool direct, TokenElement token)> result = new List<(bool direct, TokenElement token)>();
-            StringBuilder sb = new StringBuilder();
-            bool tokenIsDirect = true; // 最初のトークンの直接接続フラグは処理の一貫性からTrueにしておく。
+            var result = new List<(bool direct, TokenElement token)>();
+            var sb = new StringBuilder();
+            var tokenIsDirect = true; // 最初のトークンの直接接続フラグは処理の一貫性からTrueにしておく。
 
-            foreach (char c in line)
+            foreach (var c in line)
             {
                 if (c == '=')
                 {
