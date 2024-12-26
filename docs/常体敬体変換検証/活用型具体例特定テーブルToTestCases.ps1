@@ -7,7 +7,7 @@ function CSVファイル群へ変換 () {
     $excel.DisplayAlerts = $false
 
     # Excelファイルを開く
-    $workbook = $excel.Workbooks.Open("$PWD\活用型具体例特定テーブル.xlsx")
+    $workbook = $excel.Workbooks.Open("$PWD\動詞活用型具体例特定テーブル.xlsx")
 
     # 出力フォルダの作成（存在しない場合）
     $outputPath = "$PWD\TestCases"
@@ -49,7 +49,7 @@ function テストケース取得 () {
             $counter = 0
             foreach ($surface in $genzai) {
                 $total_counter++
-                $results_genzai += "[InlineData(`"$($total_counter.ToString('000'))`", `"$($katuyo.活用型)`", `"$($surface)`", `"$($types[$counter])`")]`n"
+                $results_genzai += "[InlineData(`"$($total_counter.ToString('000'))`", `"$($surface)`", `"動詞`", `"$($katuyo.活用型)`", `"$($types[$counter])`")]`n"
 
                 if ($types.Count -gt 1 -and $counter -lt ($types.Count - 1)) {
                     $counter++
@@ -63,7 +63,7 @@ function テストケース取得 () {
             $counter = 0
             foreach ($surface in $kako) {
                 $total_counter++
-                $results_kako += "[InlineData(`"$($total_counter.ToString('000'))`", `"$($katuyo.活用型)`", `"$($surface)`", `"$($types[$counter])`")]`n"
+                $results_kako += "[InlineData(`"$($total_counter.ToString('000'))`", `"$($surface)`", `"動詞`", `"$($katuyo.活用型)`", `"$($types[$counter])`")]`n"
 
                 if ($types.Count -gt 1 -and $counter -lt ($types.Count - 1)) {
                     $counter++
