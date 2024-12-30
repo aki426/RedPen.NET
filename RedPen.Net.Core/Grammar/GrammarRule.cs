@@ -294,6 +294,46 @@ namespace RedPen.Net.Core.Grammar
                 && x.MatchBaseForm(y),
                 tokens);
 
+        /// <summary>ReverseしたToken列に適用し同じ結果を得ることができるGrammarRuleの逆パターン。</summary>
+        public ImmutableList<(bool direct, TokenElement token)> ReversedPattern
+        {
+            get
+            {
+                // NOTE: 「XAXXB」という文字列に対して、
+                // "A = B"でパターンマッチすると「AXXB」がマッチする。
+                // Reverseした「BXXAX」にReverseしたパターンつまり「B = A」でパターンマッチさせ「BXXA」を得たい。
+                // つまり"A = B"から"B = A"となるPatternを取得するのがこの関数の目的。
+
+                // NOTE: ルール文字列、パターン、リバースしたパターン、マッチングが可能な"正しい"リバースしたパターンの例を並べると
+                // "A = B"
+                // (true, A), (false, B)
+                // (false, B), (true, A)
+                // (true, B), (false, A)
+
+                // Patternが空リストの場合空リストを返す。
+                if (!this.Pattern.Any()) { return ImmutableList.Create<(bool direct, TokenElement token)>(); }
+
+                // Reverseしたリストをdirectプロパティを考慮し詰めなおしていく。
+                var list = this.Pattern.Reverse();
+                List<(bool direct, TokenElement token)> result = new List<(bool direct, TokenElement token)>();
+                // 先頭はDirectがTrueになる。
+                result.Add((true, list.First().token));
+
+                // 要素が1個しかない場合は先頭のものを詰めたらもう十分。
+                if (list.Count >= 2)
+                {
+                    var pairs = list.Zip(list.Skip(1), (pre, next) => new { Pre = pre, Next = next });
+                    foreach (var pair in pairs)
+                    {
+                        // 裏返したPattern列なので、Preが持っているDirectプロパティはNextに付け替える必要がある。
+                        result.Add((pair.Pre.direct, pair.Next.token));
+                    }
+                }
+
+                return result.ToImmutableList();
+            }
+        }
+
         #endregion '+'パターンと'='パターン両方に対応したMatchメソッド群。同じ範囲を重複検出しない。
     }
 }

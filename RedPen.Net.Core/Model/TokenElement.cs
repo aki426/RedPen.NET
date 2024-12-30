@@ -52,10 +52,10 @@ namespace RedPen.Net.Core.Model
         // MEMO: 位置指定子が空はおかしいのでExceptionを投げたいのでFirst関数を使う。
 
         /// <summary>the line of the token's first character.</summary>
-        public int LineNumber => OffsetMap.First().LineNum;
+        public int LineNumber => OffsetMap?.FirstOrDefault()?.LineNum ?? 0;
 
         /// <summary>the position of the first character in this token.</summary>
-        public int Offset => OffsetMap.First().Offset;
+        public int Offset => OffsetMap?.FirstOrDefault()?.Offset ?? 0;
 
         #region コンストラクタ
 
