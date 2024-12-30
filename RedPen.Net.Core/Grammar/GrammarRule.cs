@@ -285,7 +285,14 @@ namespace RedPen.Net.Core.Grammar
         /// <param name="tokens"></param>
         /// <returns></returns>
         public List<ImmutableList<TokenElement>> MatchExtend(List<TokenElement> tokens) =>
-            MatchExtendByCondition((x, y) => x.MatchSurface(y) && x.MatchPartOfSpeech(y) && x.MatchReading(y), tokens);
+            MatchExtendByCondition((x, y) =>
+                x.MatchSurface(y)
+                && x.MatchReading(y)
+                && x.MatchPartOfSpeech(y)
+                && x.MatchInflectionForm(y)
+                && x.MatchInflectionType(y)
+                && x.MatchBaseForm(y),
+                tokens);
 
         #endregion '+'パターンと'='パターン両方に対応したMatchメソッド群。同じ範囲を重複検出しない。
     }
