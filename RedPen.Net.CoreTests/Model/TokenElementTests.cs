@@ -104,7 +104,7 @@ namespace RedPen.Net.Core.Model.Tests
             TokenElement token1 = new TokenElement("word1", tags1 == "" ? new List<string>() : tags1.Split(',').ToList(), 1, 0, "reading");
             TokenElement token2 = new TokenElement("word2", tags2 == "" ? new List<string>() : tags2.Split(',').ToList(), 1, 0, "reading");
 
-            token1.MatchTags(token2).Should().Be(expected);
+            token1.MatchPartOfSpeech(token2).Should().Be(expected);
         }
 
         [Theory]

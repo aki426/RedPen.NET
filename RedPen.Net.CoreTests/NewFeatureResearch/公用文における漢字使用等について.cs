@@ -100,7 +100,7 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ToGrammarRuleString()));
 
             var (isMatch, tokens1) =
                 GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
@@ -225,7 +225,7 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ToGrammarRuleString()));
 
             var (isMatch, tokens1) =
                 GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
@@ -268,7 +268,7 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ToGrammarRuleString()));
 
             var (isMatch, tokens1) =
                 GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
@@ -317,7 +317,7 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ToGrammarRuleString()));
 
             var (isMatch, tokens1) =
                 GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
@@ -395,7 +395,7 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ToGrammarRuleString()));
 
             var (isMatch, tokens1) =
                 GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
@@ -435,7 +435,7 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ToGrammarRuleString()));
 
             var (isMatch, tokens1) =
                 GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();
@@ -521,7 +521,7 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             List<TokenElement> tokens = tokenizer.Tokenize(new Sentence(text, 1));
 
             // Token目視。
-            tokens.ForEach(t => output.WriteLine(t.ConvertToGrammarRuleText()));
+            tokens.ForEach(t => output.WriteLine(t.ToGrammarRuleString()));
 
             var (isMatch, tokens1) =
                 GrammarRuleExtractor.Run(rule).MatchesConsecutive(tokens); //.isMatch.Should().BeTrue();

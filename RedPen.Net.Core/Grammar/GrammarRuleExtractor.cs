@@ -42,7 +42,7 @@ namespace RedPen.Net.Core.Grammar
         }
 
         /// <summary>
-        /// 1つのTokenパターン文字列をTokenElementoへ変換する関数。
+        /// 1つのTokenパターン文字列をTokenElementへ変換する関数。
         /// </summary>
         /// <param name="str">
         /// Sruface : Reading : Pos : InflectionForm : InflectionType : BaseForm
@@ -157,17 +157,6 @@ namespace RedPen.Net.Core.Grammar
             {
                 Pattern = result.ToImmutableList()
             };
-        }
-
-        /// <summary>
-        /// RedPenのルール表記文字列を分割する。
-        /// </summary>
-        /// <param name="line">The line.</param>
-        /// <returns>An array of string.</returns>
-        public static string[] SplitToRuleElements(string line)
-        {
-            var segments = Regex.Split(line, @" *[+] *");
-            return segments;
         }
     }
 }

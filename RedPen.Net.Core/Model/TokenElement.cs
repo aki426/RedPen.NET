@@ -57,21 +57,7 @@ namespace RedPen.Net.Core.Model
         /// <summary>the position of the first character in this token.</summary>
         public int Offset => OffsetMap.First().Offset;
 
-        /// <summary>
-        /// SurfaceとTagsの1つ目の文字列を取って人が目視可能な文字列表現を取得する関数。
-        /// </summary>
-        /// <returns>A string.</returns>
-        public string GetSurfaceAndPosString()
-        {
-            if (PartOfSpeech.Any())
-            {
-                return $"{Surface}({PartOfSpeech[0]})";
-            }
-            else
-            {
-                return $"{Surface}(unknown)";
-            }
-        }
+        #region コンストラクタ
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenElement"/> class.
@@ -143,6 +129,10 @@ namespace RedPen.Net.Core.Model
             this(surface, tags, offset, lineNumber, surface)
         { }
 
+        #endregion コンストラクタ
+
+        #region ToString系関数
+
         /// <summary>
         /// ToString()
         /// </summary>
@@ -154,10 +144,26 @@ namespace RedPen.Net.Core.Model
         }
 
         /// <summary>
+        /// SurfaceとTagsの1つ目の文字列を取って人が目視可能な文字列表現を取得する関数。
+        /// </summary>
+        /// <returns>A string.</returns>
+        public string ToSurfaceAndPosString()
+        {
+            if (PartOfSpeech.Any())
+            {
+                return $"{Surface}({PartOfSpeech[0]})";
+            }
+            else
+            {
+                return $"{Surface}(unknown)";
+            }
+        }
+
+        /// <summary>
         /// GrammarRuleに変換可能なToken表現形式文字列を取得する。
         /// </summary>
         /// <returns>A string.</returns>
-        public string ConvertToGrammarRuleText()
+        public string ToGrammarRuleString()
         {
             // NOTE: 末尾の空タグは削除する。
             ImmutableList<string> currentTags = PartOfSpeech.Reverse();
@@ -189,6 +195,8 @@ namespace RedPen.Net.Core.Model
             }
         }
 
+        #endregion ToString系関数
+
         /// <summary>
         /// 相手のTokenと一部でも位置が重なっているかどうかを判定する関数。
         /// MEMO: 完全一致ではないことに注意せよ。
@@ -212,24 +220,30 @@ namespace RedPen.Net.Core.Model
         /// <returns>A bool.</returns>
         public bool HasKatakana() => Surface.Any(c => UnicodeUtility.IsKatakana(c));
 
+        #region GrammarRuleマッチ関数
+
         /// <summary>
-        /// Surfaceがマッチするかどうか＝GrammarRuleとしてマッチするかどうかを判定する関数。
-        /// MEMO: 完全一致ではないことに注意。
+        /// GrammarRuleの比較手段として、文字列を取り両者がマッチするかどうかを返す関数。
+        /// 文字列がNull、*、空文字列の場合は条件が指定されていない＝すべてにマッチする、とみなす。
         /// </summary>
-        /// <param name="other">The other.</param>
-        /// <returns>A bool.</returns>
-        public bool MatchSurface(TokenElement other)
+        /// <param name="me"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        private static bool MatchAsGrammarRule(string me, string other)
         {
-            if (this.Surface == "*" || other.Surface == "*")
+            if (me == null || other == null)
             {
                 return true;
             }
-            else if (this.Surface == string.Empty || other.Surface == string.Empty)
+            else if (me == "*" || other == "*")
             {
-                // Surfaceにおいても空文字列はワイルドカードとして扱う。
                 return true;
             }
-            else if (this.Surface.ToLower() == other.Surface.ToLower())
+            else if (me == string.Empty || other == string.Empty)
+            {
+                return true;
+            }
+            else if (me.ToLower() == other.ToLower())
             {
                 return true;
             }
@@ -239,34 +253,22 @@ namespace RedPen.Net.Core.Model
             }
         }
 
-        public bool MatchReading(TokenElement other)
-        {
-            if (this.Reading == "*" || other.Reading == "*")
-            {
-                return true;
-            }
-            else if (this.Reading == string.Empty || other.Reading == string.Empty)
-            {
-                // Readingにおいても空文字列はワイルドカードとして扱う。
-                return true;
-            }
-            else if (this.Reading.ToLower() == other.Reading.ToLower())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        // GrammarRuleにおける1Tokenの構成
+        // Surface : Reading : Pos : InflectionForm : InflectionType : BaseForm
 
-        /// <summary>
+        /// <summary>SurfaceがGrammarRuleとしてマッチするかどうかを判定する関数。</summary>
+        public bool MatchSurface(TokenElement other) => MatchAsGrammarRule(this.Surface, other.Surface);
+
+        /// <summary>ReadingがGrammarRuleとしてマッチするかどうかを判定する関数。</summary>
+        public bool MatchReading(TokenElement other) => MatchAsGrammarRule(this.Reading, other.Reading);
+
+        /// <summary>PartOfSpeechがGrammarRuleとしてマッチするかどうかを判定する関数。
         /// 2つのTokenElementのTagの内容がマッチするかを判定する。
         /// MEMO: タグ長が不一致の場合は、短い方の長さ分で一致したらTrue、片方が「*」だった場合はそのタグは一致したとみなす。
         /// </summary>
         /// <param name="other">The other.</param>
         /// <returns>2つのTokenElementが意味的にマッチするならTrue、不一致ならFalse</returns>
-        public bool MatchTags(TokenElement other)
+        public bool MatchPartOfSpeech(TokenElement other)
         {
             // どちらかが空集合の場合はマッチしているとみなす。
             if (PartOfSpeech.Count == 0 || other.PartOfSpeech.Count == 0)
@@ -286,31 +288,30 @@ namespace RedPen.Net.Core.Model
 
             for (var i = 0; i < minLen; i++)
             {
-                if (PartOfSpeech[i] == "*" || other.PartOfSpeech[i] == "*")
+                // PartOfSpeechの1要素ずつを辿って全てTrueならマッチしたとみなす。
+                if (MatchAsGrammarRule(this.PartOfSpeech[i], other.PartOfSpeech[i]))
                 {
-                    // どちらかのタグが*の場合、それはマッチしているとみなす。
-                    continue;
-                }
-                else if (PartOfSpeech[i] == string.Empty || other.PartOfSpeech[i] == string.Empty)
-                {
-                    // MEMO: タグがstring.Emptyの場合、それは「*」と同じ扱いとする。
-                    // どちらかのタグが空文字列の場合、それはマッチしているとみなす。
-                    continue;
-                }
-                else if (PartOfSpeech[i] == other.PartOfSpeech[i])
-                {
-                    // タグが一致する場合はもちろんマッチしているとみなす。
                     continue;
                 }
                 else
                 {
-                    // マッチしていない場合はfalseを返す。
                     return false;
                 }
             }
 
             return true;
         }
+
+        /// <summary>InflectionFormがGrammarRuleとしてマッチするかどうかを判定する関数。</summary>
+        public bool MatchInflectionForm(TokenElement other) => MatchAsGrammarRule(this.InflectionForm, other.InflectionForm);
+
+        /// <summary>InflectionTypeがGrammarRuleとしてマッチするかどうかを判定する関数。</summary>
+        public bool MatchInflectionType(TokenElement other) => MatchAsGrammarRule(this.InflectionType, other.InflectionType);
+
+        /// <summary>BaseFormがGrammarRuleとしてマッチするかどうかを判定する関数。</summary>
+        public bool MatchBaseForm(TokenElement other) => MatchAsGrammarRule(this.BaseForm, other.BaseForm);
+
+        #endregion GrammarRuleマッチ関数
 
         /// <summary>
         /// 一連のTokenリスト中の隣接する名詞を連結して1つのTokenにまとめたリストを返す。

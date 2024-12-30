@@ -48,12 +48,12 @@ namespace RedPen.Net.Core.Grammar
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append(Pattern[0].token.ConvertToGrammarRuleText());
+            sb.Append(Pattern[0].token.ToGrammarRuleString());
 
             foreach (var (direct, token) in Pattern.Skip(1))
             {
                 sb.Append(direct ? " + " : " = ");
-                sb.Append(token.ConvertToGrammarRuleText());
+                sb.Append(token.ToGrammarRuleString());
             }
 
             return sb.ToString();
@@ -129,16 +129,6 @@ namespace RedPen.Net.Core.Grammar
             MatchesConsecutiveByCondition((x, y) => x.MatchSurface(y), tokens);
 
         /// <summary>
-        /// 指定されたトークンリスト内に、GrammarRuleと同じ順序のSurfaceの並びで、
-        /// しかも各TokenのTagsがマッチするパターンが1つあるいは複数存在するかどうかを判定する。
-        /// </summary>
-        /// <param name="tokens">TokenElementのリスト</param>
-        /// <returns>引数tokensが空だった場合はTrue。
-        /// そのほかの場合は、ルールにマッチするものがあればisMatchがTrue、tokensにマッチした部分リストをマッチした個数分返す。</returns>
-        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchesConsecutiveSurfacesAndTags(IList<TokenElement> tokens) =>
-            MatchesConsecutiveByCondition((x, y) => x.MatchSurface(y) && x.MatchTags(y), tokens);
-
-        /// <summary>
         /// 指定されたトークンリスト内に、GrammarRuleと同じ順序のReadingのパターンが1つあるいは複数存在するかどうかを判定する。
         /// MEMO: 主に複数Surfaceに対して読みが一意である日本語のフレーズマッチに使用する。
         /// </summary>
@@ -149,16 +139,37 @@ namespace RedPen.Net.Core.Grammar
             MatchesConsecutiveByCondition((x, y) => x.MatchReading(y), tokens);
 
         /// <summary>
-        /// 引数のトークンリスト内に、GrammarRuleと同じ順序のSurface、Tags、Readingがマッチするパターンが1つあるいは複数存在するかどうかを判定する。
+        /// 指定されたトークンリスト内に、GrammarRuleと同じ順序のSurfaceの並びで、
+        /// しかも各TokenのPoSがマッチするパターンが1つあるいは複数存在するかどうかを判定する。
+        /// </summary>
+        /// <param name="tokens">TokenElementのリスト</param>
+        /// <returns>引数tokensが空だった場合はTrue。
+        /// そのほかの場合は、ルールにマッチするものがあればisMatchがTrue、tokensにマッチした部分リストをマッチした個数分返す。</returns>
+        public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchesConsecutiveSurfacesAndTags(IList<TokenElement> tokens) =>
+            MatchesConsecutiveByCondition((x, y) => x.MatchSurface(y) && x.MatchPartOfSpeech(y), tokens);
+
+        /// <summary>
+        /// 引数のトークンリスト内に、GrammarRuleと同じ順序のTokenパターンがマッチするシーケンスが1つあるいは複数存在するかどうかを判定する。
+        /// NOTE: マッチした結果のTokenシーケンスはラップしている可能性がある。
         /// </summary>
         /// <param name="tokens">The tokens.</param>
         /// <returns>A (bool isMatch, List&lt;ImmutableList&lt;TokenElement&gt;&gt; tokens) .</returns>
         public (bool isMatch, List<ImmutableList<TokenElement>> tokens) MatchesConsecutive(IList<TokenElement> tokens) =>
-            MatchesConsecutiveByCondition((x, y) => x.MatchSurface(y) && x.MatchTags(y) && x.MatchReading(y), tokens);
+            MatchesConsecutiveByCondition((x, y) =>
+                x.MatchSurface(y)
+                && x.MatchReading(y)
+                && x.MatchPartOfSpeech(y)
+                && x.MatchInflectionForm(y)
+                && x.MatchInflectionType(y)
+                && x.MatchBaseForm(y),
+                tokens);
 
         #endregion '='パターンを無視して連続したGrammerRuleを検出するMatchesConsecutive（隣接連続パターンのマッチ）メソッド群。
 
         #region '+'パターンと'='パターン両方に対応したMatchメソッド群。同じ範囲を重複検出しない。
+
+        // 「A = C + D」というパターンと「ABACDEF」というトークン列があった場合、マッチを取ると
+        // 「ABACD」というヒット列と「EF」というrest列が返る。
 
         /// <summary>
         /// Matches the by condition extend.
@@ -274,7 +285,7 @@ namespace RedPen.Net.Core.Grammar
         /// <param name="tokens"></param>
         /// <returns></returns>
         public List<ImmutableList<TokenElement>> MatchExtend(List<TokenElement> tokens) =>
-            MatchExtendByCondition((x, y) => x.MatchSurface(y) && x.MatchTags(y) && x.MatchReading(y), tokens);
+            MatchExtendByCondition((x, y) => x.MatchSurface(y) && x.MatchPartOfSpeech(y) && x.MatchReading(y), tokens);
 
         #endregion '+'パターンと'='パターン両方に対応したMatchメソッド群。同じ範囲を重複検出しない。
     }

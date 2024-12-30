@@ -34,20 +34,6 @@ namespace RedPen.Net.Core.Grammar.Tests
             this.output = output;
         }
 
-        [Theory]
-        [InlineData("001", "This:n + is:v", 2, "This:n|is:v")]
-        [InlineData("002", "This:n+is:v", 2, "This:n|is:v")]
-        [InlineData("003", "This:n +is:v", 2, "This:n|is:v")]
-        [InlineData("004", "This:n+ is:v", 2, "This:n|is:v")]
-        [InlineData("005", "This:n +  is:v", 2, "This:n|is:v")]
-        public void SplitTest(string nouse1, string text, int count, string expected)
-        {
-            string[] segments = GrammarRuleExtractor.SplitToRuleElements(text);
-            segments.Length.Should().Be(count);
-
-            string.Join("|", segments).Should().Be(expected);
-        }
-
         /// <summary>ルール表現文字列からルールを抽出するテスト。</summary>
         [Fact]
         public void RunTest01()

@@ -484,7 +484,7 @@ namespace RedPen.Net.Core.Inflection.Tests
 
             // Token目視
             output.WriteLine($"{tokenElements[0].ToString()}");
-            output.WriteLine($"{tokenElements[0].ConvertToGrammarRuleText()}"); // GrammerRuleも確認したい。
+            output.WriteLine($"{tokenElements[0].ToGrammarRuleString()}"); // GrammerRuleも確認したい。
 
             tokenElements[0].PartOfSpeech[0].Should().Be(pos);
             tokenElements[0].InflectionType.Should().Be(type);

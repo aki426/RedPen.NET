@@ -268,8 +268,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                             // エラー箇所のToken表現, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
                             MessageArgs: new object[]
                             {
-                                targetToken.GetSurfaceAndPosString(),
-                                tokenList[0].GetSurfaceAndPosString(),
+                                targetToken.ToSurfaceAndPosString(),
+                                tokenList[0].ToSurfaceAndPosString(),
                                 positionsText
                             },
                             MessageKey: "SameCount"
@@ -287,8 +287,8 @@ namespace RedPen.Net.Core.Validators.DocumentValidator
                             // エラー箇所のToken表現, ゆらぎ表現, ゆらぎ出現位置、の順で登録。
                             MessageArgs: new object[]
                             {
-                                targetToken.GetSurfaceAndPosString(),
-                                tokenList[0].GetSurfaceAndPosString(),
+                                targetToken.ToSurfaceAndPosString(),
+                                tokenList[0].ToSurfaceAndPosString(),
                                 positionsText
                             },
                             MessageKey: "Normal"
