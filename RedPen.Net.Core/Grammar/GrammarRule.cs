@@ -341,7 +341,7 @@ namespace RedPen.Net.Core.Grammar
         }
 
         /// <summary>
-        /// 語尾つまりSentenceの終端におけるパターンマッチ。
+        /// Token列の終端にパターンがマッチするかどうかを検証する関数。
         /// NOTE: Sentenceの末尾にマッチするかしないか、のみ判定する。
         /// </summary>
         /// <param name="condition">Token同士をマッチングする場合の条件式</param>
@@ -367,14 +367,19 @@ namespace RedPen.Net.Core.Grammar
 
             if (list.Any())
             {
-                return (true, list);
+                return (true, list.Reverse());
             }
             else
             {
-                return (false, list);
+                return (false, list.Reverse());
             }
         }
 
+        /// <summary>
+        /// Token列の終端にパターンがマッチするかどうかを検証する関数。
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
         public (bool success, ImmutableList<TokenElement> tokens) MatchExtendAtEnd(ImmutableList<TokenElement> tokens) =>
             MatchExtendAtEndByCondition((x, y) =>
                 x.MatchSurface(y)
