@@ -186,13 +186,10 @@ namespace RedPen.Net.Core.Grammar
         /// <returns></returns>
         public List<ImmutableList<TokenElement>> MatchExtendByCondition(
             Func<TokenElement, TokenElement, bool> condition,
-            List<TokenElement> tokens)
+            ImmutableList<TokenElement> tokens)
         {
-            if (Tokens.Count == 0)
-            {
-                // MEMO: GrammarRuleのパターンが空ならFalseで良い。
-                return new List<ImmutableList<TokenElement>>();
-            }
+            // NOTE: GrammarRuleのパターンが空なら空リストで返す。
+            if (!Tokens.Any()) { return new List<ImmutableList<TokenElement>>(); }
 
             var restTokens = tokens;
             var results = new List<ImmutableList<TokenElement>>();
@@ -200,8 +197,8 @@ namespace RedPen.Net.Core.Grammar
             {
                 var (list, rest) = MatchExtendByConditionRecursive(
                     condition,
-                    Pattern.ToList(),
-                    restTokens,
+                    Pattern,
+                    restTokens.ToImmutableList(),
                     ImmutableList.Create<TokenElement>());
 
                 if (list.Any())
@@ -211,7 +208,7 @@ namespace RedPen.Net.Core.Grammar
 
                 // iteration
                 // 1トークン目でマッチ失敗した場合は、入力したトークン列がまるごと返ってきてしまうので、1つ頭を落とす。
-                restTokens = restTokens.SequenceEqual(rest) ? rest.Skip(1).ToList() : rest;
+                restTokens = restTokens.SequenceEqual(rest) ? rest.Skip(1).ToImmutableList() : rest;
             }
 
             return results;
@@ -225,10 +222,10 @@ namespace RedPen.Net.Core.Grammar
         /// <param name="tokens">The tokens.</param>
         /// <param name="result">The result.</param>
         /// <returns>マッチした場合1つ目のリストは空ではない。2つ目のリストはマッチしなかった時点の残りのTokenリスト。</returns>
-        private (ImmutableList<TokenElement>, List<TokenElement> rest) MatchExtendByConditionRecursive(
+        private (ImmutableList<TokenElement>, ImmutableList<TokenElement> rest) MatchExtendByConditionRecursive(
             Func<TokenElement, TokenElement, bool> condition,
-            List<TokenRule> tokenPattern,
-            List<TokenElement> tokens,
+            ImmutableList<TokenRule> tokenPattern,
+            ImmutableList<TokenElement> tokens,
             ImmutableList<TokenElement> result
             )
         {
@@ -252,8 +249,8 @@ namespace RedPen.Net.Core.Grammar
                     // マッチした場合は次のトークンへ移る。
                     return MatchExtendByConditionRecursive(
                         condition,
-                        tokenPattern.Skip(1).ToList(),
-                        tokens.Skip(1).ToList(),
+                        tokenPattern.Skip(1).ToImmutableList(),
+                        tokens.Skip(1).ToImmutableList(),
                         result.Add(tokens.First()));
                 }
                 else
@@ -270,8 +267,8 @@ namespace RedPen.Net.Core.Grammar
                     // マッチした場合は次のトークンへ移る。
                     return MatchExtendByConditionRecursive(
                         condition,
-                        tokenPattern.Skip(1).ToList(),
-                        tokens.Skip(1).ToList(),
+                        tokenPattern.Skip(1).ToImmutableList(),
+                        tokens.Skip(1).ToImmutableList(),
                         result.Add(tokens.First()));
                 }
                 else
@@ -280,7 +277,7 @@ namespace RedPen.Net.Core.Grammar
                     return MatchExtendByConditionRecursive(
                         condition,
                         tokenPattern,
-                        tokens.Skip(1).ToList(),
+                        tokens.Skip(1).ToImmutableList(),
                         result.Add(tokens.First()));
                 }
             }
@@ -291,7 +288,7 @@ namespace RedPen.Net.Core.Grammar
         /// </summary>
         /// <param name="tokens"></param>
         /// <returns></returns>
-        public List<ImmutableList<TokenElement>> MatchExtend(List<TokenElement> tokens) =>
+        public List<ImmutableList<TokenElement>> MatchExtend(ImmutableList<TokenElement> tokens) =>
             MatchExtendByCondition((x, y) =>
                 x.MatchSurface(y)
                 && x.MatchReading(y)
@@ -342,6 +339,51 @@ namespace RedPen.Net.Core.Grammar
                 return result.ToImmutableList();
             }
         }
+
+        /// <summary>
+        /// 語尾つまりSentenceの終端におけるパターンマッチ。
+        /// NOTE: Sentenceの末尾にマッチするかしないか、のみ判定する。
+        /// </summary>
+        /// <param name="condition">Token同士をマッチングする場合の条件式</param>
+        /// <param name="tokens">GrammarRuleに対してマッチングを取る相手のTokenリスト。通常SentenceのTokenリスト。</param>
+        /// <returns></returns>
+        public (bool success, ImmutableList<TokenElement> tokens) MatchExtendAtEndByCondition(
+            Func<TokenElement, TokenElement, bool> condition,
+            ImmutableList<TokenElement> tokens)
+        {
+            // NOTE: 対象TokenリストまたはGrammarRuleのパターンが空なら空リストで返す。
+            if (!Tokens.Any() || !Pattern.Any()) { return (true, ImmutableList<TokenElement>.Empty); }
+
+            // 語尾に対してマッチさせるので、1回マッチしなかったらマッチング終わり。
+
+            var restTokens = tokens;
+            var results = new List<ImmutableList<TokenElement>>();
+
+            var (list, rest) = MatchExtendByConditionRecursive(
+                condition,
+                this.ReversedPattern,
+                tokens.Reverse(),
+                ImmutableList.Create<TokenElement>());
+
+            if (list.Any())
+            {
+                return (true, list);
+            }
+            else
+            {
+                return (false, list);
+            }
+        }
+
+        public (bool success, ImmutableList<TokenElement> tokens) MatchExtendAtEnd(ImmutableList<TokenElement> tokens) =>
+            MatchExtendAtEndByCondition((x, y) =>
+                x.MatchSurface(y)
+                && x.MatchReading(y)
+                && x.MatchPartOfSpeech(y)
+                && x.MatchInflectionForm(y)
+                && x.MatchInflectionType(y)
+                && x.MatchBaseForm(y),
+                tokens);
 
         #endregion '+'パターンと'='パターン両方に対応したMatchメソッド群。同じ範囲を重複検出しない。
     }

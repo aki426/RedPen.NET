@@ -86,7 +86,7 @@ namespace RedPen.Net.Core.Validators.SentenceValidator
             // validation
             foreach ((GrammarRule rule, string suggest) in this.GrammarRules)
             {
-                List<ImmutableList<TokenElement>> list = rule.MatchExtend(sentence.Tokens);
+                List<ImmutableList<TokenElement>> list = rule.MatchExtend(sentence.Tokens.ToImmutableList());
 
                 if (list.Any())
                 {

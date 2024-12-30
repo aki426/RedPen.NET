@@ -62,7 +62,7 @@ namespace RedPen.Net.CoreTests.Grammar
                 }
                 output.WriteLine("");
 
-                actual.AddRange(grammarRule.MatchExtend(sentence.Tokens));
+                actual.AddRange(grammarRule.MatchExtend(sentence.Tokens.ToImmutableList()));
             }
 
             // Assert
