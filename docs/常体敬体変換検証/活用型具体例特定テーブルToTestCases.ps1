@@ -49,7 +49,7 @@ function テストケース取得 () {
             $counter = 0
             foreach ($surface in $genzai) {
                 $total_counter++
-                $results_genzai += "[InlineData(`"$($total_counter.ToString('000'))`", `"$($surface)`", `"動詞`", `"$($katuyo.活用型)`", `"$($types[$counter])`")]`n"
+                $results_genzai += "[InlineData(`"$($total_counter.ToString('000'))`", `"::動詞:$($types[$counter]):$($katuyo.活用型)`", `"$($surface)`")]`n"
 
                 if ($types.Count -gt 1 -and $counter -lt ($types.Count - 1)) {
                     $counter++
@@ -63,7 +63,7 @@ function テストケース取得 () {
             $counter = 0
             foreach ($surface in $kako) {
                 $total_counter++
-                $results_kako += "[InlineData(`"$($total_counter.ToString('000'))`", `"$($surface)`", `"動詞`", `"$($katuyo.活用型)`", `"$($types[$counter])`")]`n"
+                $results_kako += "[InlineData(`"$($total_counter.ToString('000'))`", `"::動詞:$($types[$counter]):$($katuyo.活用型)`", `"$($surface)`")]`n"
 
                 if ($types.Count -gt 1 -and $counter -lt ($types.Count - 1)) {
                     $counter++
