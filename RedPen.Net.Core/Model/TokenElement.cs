@@ -181,7 +181,19 @@ namespace RedPen.Net.Core.Model
             string tagStr = currentTags.Any() ? string.Join("-", currentTags.Reverse()) : "";
 
             // 後の構成要素が無ければ省略して良いのでなるべく省略する。見やすさのため。
-            if (tagStr != "")
+            if (BaseForm != "")
+            {
+                return $"{Surface}:{Reading}:{tagStr}:{InflectionForm}:{InflectionType}:{BaseForm}";
+            }
+            else if (InflectionType != "")
+            {
+                return $"{Surface}:{Reading}:{tagStr}:{InflectionForm}:{InflectionType}";
+            }
+            else if (InflectionForm != "")
+            {
+                return $"{Surface}:{Reading}:{tagStr}:{InflectionForm}";
+            }
+            else if (tagStr != "")
             {
                 return $"{Surface}:{Reading}:{tagStr}";
             }
@@ -310,6 +322,15 @@ namespace RedPen.Net.Core.Model
 
         /// <summary>BaseFormがGrammarRuleとしてマッチするかどうかを判定する関数。</summary>
         public bool MatchBaseForm(TokenElement other) => MatchAsGrammarRule(this.BaseForm, other.BaseForm);
+
+        /// <summary>GrammarRuleで定義されている全Tokenパラメータでのマッチング結果を返す関数。</summary>
+        public bool MatchAll(TokenElement other) =>
+            this.MatchSurface(other)
+            && this.MatchReading(other)
+            && this.MatchPartOfSpeech(other)
+            && this.MatchInflectionForm(other)
+            && this.MatchInflectionType(other)
+            && this.MatchBaseForm(other);
 
         #endregion GrammarRuleマッチ関数
 
