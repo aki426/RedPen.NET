@@ -62,28 +62,28 @@ namespace RedPen.Net.Core.Grammar.Tests
             var rule = GrammarRuleExtractor.Run("This::n + is::v");
             rule.Tokens.Count.Should().Be(2);
 
-            rule.Pattern[0].direct.Should().BeTrue();
-            rule.Pattern[0].token.Surface.Should().Be("this");
-            rule.Pattern[0].token.PartOfSpeech.Should().Contain("n");
-            rule.Pattern[0].token.Reading.Should().Be("");
+            rule.Pattern[0].Adjacent.Should().BeTrue();
+            rule.Pattern[0].Token.Surface.Should().Be("this");
+            rule.Pattern[0].Token.PartOfSpeech.Should().Contain("n");
+            rule.Pattern[0].Token.Reading.Should().Be("");
 
-            rule.Pattern[1].direct.Should().BeTrue();
-            rule.Pattern[1].token.Surface.Should().Be("is");
-            rule.Pattern[1].token.PartOfSpeech.Should().Contain("v");
-            rule.Pattern[1].token.Reading.Should().Be("");
+            rule.Pattern[1].Adjacent.Should().BeTrue();
+            rule.Pattern[1].Token.Surface.Should().Be("is");
+            rule.Pattern[1].Token.PartOfSpeech.Should().Contain("v");
+            rule.Pattern[1].Token.Reading.Should().Be("");
 
             rule = GrammarRuleExtractor.Run("僕:ボク:名詞 = は:ハ:助詞");
             rule.Tokens.Count.Should().Be(2);
 
-            rule.Pattern[0].direct.Should().BeTrue();
-            rule.Pattern[0].token.Surface.Should().Be("僕");
-            rule.Pattern[0].token.PartOfSpeech.Should().Contain("名詞");
-            rule.Pattern[0].token.Reading.Should().Be("ボク");
+            rule.Pattern[0].Adjacent.Should().BeTrue();
+            rule.Pattern[0].Token.Surface.Should().Be("僕");
+            rule.Pattern[0].Token.PartOfSpeech.Should().Contain("名詞");
+            rule.Pattern[0].Token.Reading.Should().Be("ボク");
 
-            rule.Pattern[1].direct.Should().BeFalse();
-            rule.Pattern[1].token.Surface.Should().Be("は");
-            rule.Pattern[1].token.PartOfSpeech.Should().Contain("助詞");
-            rule.Pattern[1].token.Reading.Should().Be("ハ");
+            rule.Pattern[1].Adjacent.Should().BeFalse();
+            rule.Pattern[1].Token.Surface.Should().Be("は");
+            rule.Pattern[1].Token.PartOfSpeech.Should().Contain("助詞");
+            rule.Pattern[1].Token.Reading.Should().Be("ハ");
 
             // empty strings
             Action action = () => GrammarRuleExtractor.Run(null);

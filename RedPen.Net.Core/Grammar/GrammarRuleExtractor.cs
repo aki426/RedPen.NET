@@ -101,9 +101,9 @@ namespace RedPen.Net.Core.Grammar
                 throw new ArgumentException("Invalid rule format. Rule expression is empty.", nameof(line));
             }
 
-            var result = new List<(bool direct, TokenElement token)>();
+            var result = new List<TokenRule>();
             var sb = new StringBuilder();
-            var tokenIsDirect = true; // 最初のトークンの直接接続フラグは処理の一貫性からTrueにしておく。
+            var tokenIsAdjacent = true; // 最初のトークンの直接接続フラグは処理の一貫性からTrueにしておく。
 
             foreach (var c in line)
             {
@@ -114,11 +114,11 @@ namespace RedPen.Net.Core.Grammar
                         throw new ArgumentException("Invalid rule format. One token must exist before '='.", nameof(line));
                     }
 
-                    result.Add((tokenIsDirect, ConvertToToken(sb.ToString())));
+                    result.Add(new(tokenIsAdjacent, ConvertToToken(sb.ToString())));
 
                     // iteration
                     // NOTE: '='の次のトークンは、離れた場所に出現しても良いルール。
-                    tokenIsDirect = false;
+                    tokenIsAdjacent = false;
                     sb.Clear();
                 }
                 else if (c == '+')
@@ -128,11 +128,11 @@ namespace RedPen.Net.Core.Grammar
                         throw new ArgumentException("Invalid rule format. One token must exist before '+'.", nameof(line));
                     }
 
-                    result.Add((tokenIsDirect, ConvertToToken(sb.ToString())));
+                    result.Add(new(tokenIsAdjacent, ConvertToToken(sb.ToString())));
 
                     // iteration
                     // NOTE: '+'の次のトークンは、直前のトークンに続いて出現する必要があるルール。
-                    tokenIsDirect = true;
+                    tokenIsAdjacent = true;
                     sb.Clear();
                 }
                 else if (c == ' ')
@@ -150,7 +150,7 @@ namespace RedPen.Net.Core.Grammar
                 throw new ArgumentException("Invalid rule format. One token must exist after the last '+' or '='.", nameof(line));
             }
 
-            result.Add((tokenIsDirect, ConvertToToken(sb.ToString())));
+            result.Add(new(tokenIsAdjacent, ConvertToToken(sb.ToString())));
 
             return new GrammarRule()
             {

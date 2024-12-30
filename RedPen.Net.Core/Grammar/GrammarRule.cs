@@ -21,13 +21,20 @@ using RedPen.Net.Core.Model;
 
 namespace RedPen.Net.Core.Grammar
 {
+    /// <summary>
+    /// GrammarRuleにおける文法要素1つ分（※Token1つ分に対応する）
+    /// </summary>
+    /// <param name="Adjacent">直前の要素に対して隣接する場合True、間に任意個の何らかの要素を許容する場合False。</param>
+    /// <param name="Token">Ruleを表現するためのTokenElement</param>
+    public record TokenRule(bool Adjacent, TokenElement Token);
+
     /// <summary>トークン列によって表現された文法ルール。Token列に対してパターンマッチする。</summary>
     public record GrammarRule
     {
         /// <summary>Tokenのリスト。</summary>
-        public ImmutableList<(bool direct, TokenElement token)> Pattern { get; init; }
+        public ImmutableList<TokenRule> Pattern { get; init; }
 
-        public ImmutableList<TokenElement> Tokens => Pattern.Select(i => i.token).ToList().ToImmutableList();
+        public ImmutableList<TokenElement> Tokens => Pattern.Select(i => i.Token).ToList().ToImmutableList();
 
         /// <summary>
         /// GrammarRuleの持つフレーズのSurfaceを連結した文字列を返す。
@@ -48,7 +55,7 @@ namespace RedPen.Net.Core.Grammar
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append(Pattern[0].token.ToGrammarRuleString());
+            sb.Append(Pattern[0].Token.ToGrammarRuleString());
 
             foreach (var (direct, token) in Pattern.Skip(1))
             {
@@ -86,7 +93,7 @@ namespace RedPen.Net.Core.Grammar
                 return (false, new List<ImmutableList<TokenElement>>());
             }
 
-            if (Pattern.Where(i => !i.direct).Any())
+            if (Pattern.Where(i => !i.Adjacent).Any())
             {
                 // 隣接連続ではない、「=」による接続が含まれている場合は、このメソッドの想定ではないのでExceptionを投げる。
                 throw new ArgumentException($"This method is only for consecutive patterns. If you want to use non-consecutive patterns '{this}', please use MatchExtend method.");
@@ -220,7 +227,7 @@ namespace RedPen.Net.Core.Grammar
         /// <returns>マッチした場合1つ目のリストは空ではない。2つ目のリストはマッチしなかった時点の残りのTokenリスト。</returns>
         private (ImmutableList<TokenElement>, List<TokenElement> rest) MatchExtendByConditionRecursive(
             Func<TokenElement, TokenElement, bool> condition,
-            List<(bool direct, TokenElement token)> tokenPattern,
+            List<TokenRule> tokenPattern,
             List<TokenElement> tokens,
             ImmutableList<TokenElement> result
             )
@@ -237,8 +244,8 @@ namespace RedPen.Net.Core.Grammar
             }
 
             // current token.
-            var (direct, token) = tokenPattern.First();
-            if (direct)
+            var (adjacent, token) = tokenPattern.First();
+            if (adjacent)
             {
                 if (condition(token, tokens.First()))
                 {
@@ -295,7 +302,7 @@ namespace RedPen.Net.Core.Grammar
                 tokens);
 
         /// <summary>ReverseしたToken列に適用し同じ結果を得ることができるGrammarRuleの逆パターン。</summary>
-        public ImmutableList<(bool direct, TokenElement token)> ReversedPattern
+        public ImmutableList<TokenRule> ReversedPattern
         {
             get
             {
@@ -311,13 +318,15 @@ namespace RedPen.Net.Core.Grammar
                 // (true, B), (false, A)
 
                 // Patternが空リストの場合空リストを返す。
-                if (!this.Pattern.Any()) { return ImmutableList.Create<(bool direct, TokenElement token)>(); }
+                if (!this.Pattern.Any()) { return ImmutableList.Create<TokenRule>(); }
 
                 // Reverseしたリストをdirectプロパティを考慮し詰めなおしていく。
                 var list = this.Pattern.Reverse();
-                List<(bool direct, TokenElement token)> result = new List<(bool direct, TokenElement token)>();
-                // 先頭はDirectがTrueになる。
-                result.Add((true, list.First().token));
+                List<TokenRule> result = new List<TokenRule>
+                {
+                    // 先頭はAdjacentがTrueになる。
+                    new TokenRule(true, list.First().Token)
+                };
 
                 // 要素が1個しかない場合は先頭のものを詰めたらもう十分。
                 if (list.Count >= 2)
@@ -326,7 +335,7 @@ namespace RedPen.Net.Core.Grammar
                     foreach (var pair in pairs)
                     {
                         // 裏返したPattern列なので、Preが持っているDirectプロパティはNextに付け替える必要がある。
-                        result.Add((pair.Pre.direct, pair.Next.token));
+                        result.Add(new(pair.Pre.Adjacent, pair.Next.Token));
                     }
                 }
 
