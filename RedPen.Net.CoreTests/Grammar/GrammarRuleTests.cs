@@ -12,14 +12,30 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Data;
+using System.Linq;
 using FluentAssertions;
 using RedPen.Net.Core.Model;
+using RedPen.Net.Core.Parser.Tests;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace RedPen.Net.Core.Grammar.Tests
 {
     public class GrammarRuleTests
     {
+        private readonly ITestOutputHelper output;
+
+        public GrammarRuleTests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+
+        /// <summary>
+        /// GrammarRule.ReversedPattern()を検証するテスト
+        /// </summary>
         [Fact()]
         public void ReversedPatternTest()
         {
@@ -58,6 +74,64 @@ namespace RedPen.Net.Core.Grammar.Tests
                 .Should().NotBeEquivalentTo(
                     GrammarRuleExtractor.Run(":ナイ = ::動詞:未然形").Pattern,
                     options => options.WithStrictOrdering().ComparingByMembers<TokenElement>());
+        }
+
+        /// <summary>
+        /// センテンス末尾のマッチングのみ行うMatchExtendAtEndの動作確認テスト
+        /// </summary>
+        [Fact()]
+        public void MatchExtendAtEndTest()
+        {
+            string rule = "::動詞 + :ナイ";
+            string text = "見ない、言わない、聞かない。";
+            int expectedCount = 1;
+            string expectedStr = "聞か|ない";
+
+            // Rule
+            GrammarRule grammarRule = GrammarRuleExtractor.Run(rule);
+
+            output.WriteLine("★Rule...");
+            foreach (TokenElement token in grammarRule.Tokens)
+            {
+                output.WriteLine(token.ToString());
+            }
+            output.WriteLine("");
+
+            // textをDocumentに変換し、全SentenceごとにRuleとのマッチングを取る。
+            Document doc = new PlainTextParserTests(output).GenerateDocument(text, "ja-JP");
+            List<ImmutableList<TokenElement>> actual = new List<ImmutableList<TokenElement>>();
+            foreach (var sentence in doc.GetAllSentences())
+            {
+                output.WriteLine("★Sentence...");
+                foreach (TokenElement token in sentence.Tokens)
+                {
+                    output.WriteLine(token.ToString());
+                }
+                output.WriteLine("");
+
+                // 記号除去（末尾の「。」などを除去したいため）。
+                var (success, tokens) =
+                    grammarRule.MatchExtendAtEnd(sentence.Tokens.Where(x => x.PartOfSpeech[0] != "記号").ToImmutableList());
+                if (success)
+                {
+                    actual.Add(tokens);
+                }
+            }
+
+            // Assert
+            actual.Count.Should().Be(expectedCount);
+
+            if (actual.Count == 0)
+            {
+                return;
+            }
+
+            // "|"でマッチしたトークンのすべてのSurfaceを連結してexpectedと比較する。
+            var actualStr = string.Join("|", actual.Select(lis => string.Join("|", lis.Select(t => t.Surface))));
+            output.WriteLine("★Matched...");
+            output.WriteLine(actualStr);
+
+            actualStr.Should().Contain(expectedStr);
         }
     }
 }
