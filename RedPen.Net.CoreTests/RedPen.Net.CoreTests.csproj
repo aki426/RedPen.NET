@@ -298,6 +298,7 @@
     <Compile Include="Model\SectionTests.cs" />
     <Compile Include="Model\TokenElementTests.cs" />
     <Compile Include="NewFeatureResearch\公用文における漢字使用等について.cs" />
+    <Compile Include="NewFeatureResearch\動詞の活用変化の検証.cs" />
     <Compile Include="Parser\BaseDocumentParserTests.cs" />
     <Compile Include="Parser\Common\LineTests.cs" />
     <Compile Include="Parser\PlainTextParserTests.cs" />
