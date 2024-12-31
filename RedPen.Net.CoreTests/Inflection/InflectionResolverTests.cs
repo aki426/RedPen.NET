@@ -18,12 +18,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using FluentAssertions;
-using RedPen.Net.Core.Grammar;
 using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 using Xunit;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace RedPen.Net.Core.Inflection.Tests
 {
