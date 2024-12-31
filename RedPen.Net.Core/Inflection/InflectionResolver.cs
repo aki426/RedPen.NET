@@ -460,9 +460,9 @@ namespace RedPen.Net.Core.Inflection
         /// 同フォルダ内の「Verb活用ルールC#コード変換.ps1」を実行するとコード断片が生成されるので関数内に貼り付ける。
         /// </summary>
         /// <param name="token"></param>
-        /// <param name="type"></param>
+        /// <param name="inflectionFormName">解決したい活用形名（例：未然形）。</param>
         /// <returns></returns>
-        public static (bool success, string surface) ResolveAsVerb(TokenElement token, string type)
+        public static (bool success, string surface) ResolveAsVerb(TokenElement token, string inflectionFormName)
         {
             var (success, gokan) = ResolveGokanAsVerb(token);
 
@@ -471,7 +471,7 @@ namespace RedPen.Net.Core.Inflection
 
             return token.InflectionType switch
             {
-                "カ変・クル" => type switch
+                "カ変・クル" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}くれ"),
                     "仮定縮約１" => (true, $"{gokan}くりゃ"),
@@ -485,7 +485,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}き"),
                     _ => (false, string.Empty)
                 },
-                "カ変・来ル" => type switch
+                "カ変・来ル" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}れ"),
                     "仮定縮約１" => (true, $"{gokan}りゃ"),
@@ -499,7 +499,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, gokan),
                     _ => (false, string.Empty)
                 },
-                "サ変・スル" => type switch
+                "サ変・スル" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}すれ"),
                     "仮定縮約１" => (true, $"{gokan}すりゃ"),
@@ -517,7 +517,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}し"),
                     _ => (false, string.Empty)
                 },
-                "サ変・－スル" => type switch
+                "サ変・－スル" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}すれ"),
                     "仮定縮約１" => (true, $"{gokan}すりゃ"),
@@ -530,7 +530,7 @@ namespace RedPen.Net.Core.Inflection
                     "未然形" => (true, $"{gokan}し"),
                     _ => (false, string.Empty)
                 },
-                "サ変・－ズル" => type switch
+                "サ変・－ズル" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}ずれ"),
                     "仮定縮約１" => (true, $"{gokan}ずりゃ"),
@@ -541,7 +541,7 @@ namespace RedPen.Net.Core.Inflection
                     "未然形" => (true, $"{gokan}ぜ"),
                     _ => (false, string.Empty)
                 },
-                "ラ変" => type switch
+                "ラ変" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}れ"),
                     "体言接続" => (true, $"{gokan}る"),
@@ -551,7 +551,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}り"),
                     _ => (false, string.Empty)
                 },
-                "一段" => type switch
+                "一段" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}れ"),
                     "仮定縮約１" => (true, $"{gokan}りゃ"),
@@ -564,7 +564,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, gokan),
                     _ => (false, string.Empty)
                 },
-                "一段・クレル" => type switch
+                "一段・クレル" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}れれ"),
                     "仮定縮約１" => (true, $"{gokan}れりゃ"),
@@ -578,13 +578,13 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}れ"),
                     _ => (false, string.Empty)
                 },
-                "一段・得ル" => type switch
+                "一段・得ル" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}れ"),
                     "基本形" => (true, $"{gokan}る"),
                     _ => (false, string.Empty)
                 },
-                "下二・カ行" => type switch
+                "下二・カ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}くれ"),
                     "体言接続" => (true, $"{gokan}くる"),
@@ -594,7 +594,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}け"),
                     _ => (false, string.Empty)
                 },
-                "下二・ガ行" => type switch
+                "下二・ガ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}ぐれ"),
                     "体言接続" => (true, $"{gokan}ぐる"),
@@ -604,7 +604,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}げ"),
                     _ => (false, string.Empty)
                 },
-                "下二・ダ行" => type switch
+                "下二・ダ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}づれ"),
                     "体言接続" => (true, $"{gokan}づる"),
@@ -614,7 +614,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}で"),
                     _ => (false, string.Empty)
                 },
-                "下二・ハ行" => type switch
+                "下二・ハ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}ふれ"),
                     "体言接続" => (true, $"{gokan}ふる"),
@@ -624,7 +624,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}へ"),
                     _ => (false, string.Empty)
                 },
-                "下二・マ行" => type switch
+                "下二・マ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}むれ"),
                     "体言接続" => (true, $"{gokan}むる"),
@@ -634,7 +634,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}め"),
                     _ => (false, string.Empty)
                 },
-                "下二・得" => type switch
+                "下二・得" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}れ"),
                     "体言接続" => (true, $"{gokan}る"),
@@ -645,7 +645,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, gokan),
                     _ => (false, string.Empty)
                 },
-                "五段・ガ行" => type switch
+                "五段・ガ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}げ"),
                     "仮定縮約１" => (true, $"{gokan}ぎゃ"),
@@ -657,7 +657,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}ぎ"),
                     _ => (false, string.Empty)
                 },
-                "五段・カ行イ音便" => type switch
+                "五段・カ行イ音便" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}け"),
                     "仮定縮約１" => (true, $"{gokan}きゃ"),
@@ -669,7 +669,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}き"),
                     _ => (false, string.Empty)
                 },
-                "五段・カ行促音便" => type switch
+                "五段・カ行促音便" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}け"),
                     "仮定縮約１" => (true, $"{gokan}きゃ"),
@@ -681,7 +681,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}き"),
                     _ => (false, string.Empty)
                 },
-                "五段・カ行促音便ユク" => type switch
+                "五段・カ行促音便ユク" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}け"),
                     "仮定縮約１" => (true, $"{gokan}きゃ"),
@@ -692,7 +692,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}き"),
                     _ => (false, string.Empty)
                 },
-                "五段・サ行" => type switch
+                "五段・サ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}せ"),
                     "仮定縮約１" => (true, $"{gokan}しゃ"),
@@ -703,7 +703,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}し"),
                     _ => (false, string.Empty)
                 },
-                "五段・タ行" => type switch
+                "五段・タ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}て"),
                     "仮定縮約１" => (true, $"{gokan}ちゃ"),
@@ -715,7 +715,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}ち"),
                     _ => (false, string.Empty)
                 },
-                "五段・ナ行" => type switch
+                "五段・ナ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}ね"),
                     "仮定縮約１" => (true, $"{gokan}にゃ"),
@@ -727,7 +727,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}に"),
                     _ => (false, string.Empty)
                 },
-                "五段・バ行" => type switch
+                "五段・バ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}べ"),
                     "仮定縮約１" => (true, $"{gokan}びゃ"),
@@ -739,7 +739,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}び"),
                     _ => (false, string.Empty)
                 },
-                "五段・マ行" => type switch
+                "五段・マ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}め"),
                     "仮定縮約１" => (true, $"{gokan}みゃ"),
@@ -751,7 +751,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}み"),
                     _ => (false, string.Empty)
                 },
-                "五段・ラ行" => type switch
+                "五段・ラ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}れ"),
                     "仮定縮約１" => (true, $"{gokan}りゃ"),
@@ -766,7 +766,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}り"),
                     _ => (false, string.Empty)
                 },
-                "五段・ラ行特殊" => type switch
+                "五段・ラ行特殊" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}れ"),
                     "仮定縮約１" => (true, $"{gokan}りゃ"),
@@ -780,7 +780,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}い"),
                     _ => (false, string.Empty)
                 },
-                "五段・ワ行ウ音便" => type switch
+                "五段・ワ行ウ音便" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}え"),
                     "命令ｅ" => (true, $"{gokan}え"),
@@ -791,7 +791,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}い"),
                     _ => (false, string.Empty)
                 },
-                "五段・ワ行促音便" => type switch
+                "五段・ワ行促音便" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}え"),
                     "命令ｅ" => (true, $"{gokan}え"),
@@ -802,7 +802,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}い"),
                     _ => (false, string.Empty)
                 },
-                "四段・サ行" => type switch
+                "四段・サ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}せ"),
                     "命令ｅ" => (true, $"{gokan}せ"),
@@ -811,7 +811,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}し"),
                     _ => (false, string.Empty)
                 },
-                "四段・タ行" => type switch
+                "四段・タ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}て"),
                     "命令ｅ" => (true, $"{gokan}て"),
@@ -820,7 +820,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}ち"),
                     _ => (false, string.Empty)
                 },
-                "四段・ハ行" => type switch
+                "四段・ハ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}へ"),
                     "命令ｅ" => (true, $"{gokan}へ"),
@@ -829,7 +829,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}ひ"),
                     _ => (false, string.Empty)
                 },
-                "四段・バ行" => type switch
+                "四段・バ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}べ"),
                     "命令ｅ" => (true, $"{gokan}べ"),
@@ -838,7 +838,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}び"),
                     _ => (false, string.Empty)
                 },
-                "上二・ダ行" => type switch
+                "上二・ダ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}ずれ"),
                     "体言接続" => (true, $"{gokan}ずる"),
@@ -849,7 +849,7 @@ namespace RedPen.Net.Core.Inflection
                     "連用形" => (true, $"{gokan}ぢ"),
                     _ => (false, string.Empty)
                 },
-                "上二・ハ行" => type switch
+                "上二・ハ行" => inflectionFormName switch
                 {
                     "仮定形" => (true, $"{gokan}ふれ"),
                     "体言接続" => (true, $"{gokan}ふる"),
