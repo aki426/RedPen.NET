@@ -81,13 +81,13 @@ namespace RedPen.Net.Core.Inflection
                     "仮定形" => (true, $"{token.Surface.RemoveEnd("れ")}"),
                     "仮定縮約１" => (true, $"{token.Surface.RemoveEnd("りゃ")}"),
                     "体言接続特殊" => (true, $"{token.Surface.RemoveEnd("ん")}"),
-                    "体言接続特殊２" => (true, $"{token.Surface}"),
+                    "体言接続特殊２" => (true, token.Surface),
                     "命令ｉ" => (true, $"{token.Surface.RemoveEnd("い")}"),
                     "命令ｙｏ" => (true, $"{token.Surface.RemoveEnd("よ")}"),
                     "基本形" => (true, $"{token.Surface.RemoveEnd("る")}"),
                     "未然ウ接続" => (true, $"{token.Surface.RemoveEnd("よ")}"),
-                    "未然形" => (true, $"{token.Surface}"),
-                    "連用形" => (true, $"{token.Surface}"),
+                    "未然形" => (true, token.Surface),
+                    "連用形" => (true, token.Surface),
                     _ => (false, string.Empty)
                 },
                 "サ変・スル" => token.InflectionForm switch
@@ -151,8 +151,8 @@ namespace RedPen.Net.Core.Inflection
                     "命令ｙｏ" => (true, $"{token.Surface.RemoveEnd("よ")}"),
                     "基本形" => (true, $"{token.Surface.RemoveEnd("る")}"),
                     "未然ウ接続" => (true, $"{token.Surface.RemoveEnd("よ")}"),
-                    "未然形" => (true, $"{token.Surface}"),
-                    "連用形" => (true, $"{token.Surface}"),
+                    "未然形" => (true, token.Surface),
+                    "連用形" => (true, token.Surface),
                     _ => (false, string.Empty)
                 },
                 "一段・クレル" => token.InflectionForm switch
@@ -230,10 +230,10 @@ namespace RedPen.Net.Core.Inflection
                     "仮定形" => (true, $"{token.Surface.RemoveEnd("れ")}"),
                     "体言接続" => (true, $"{token.Surface.RemoveEnd("る")}"),
                     "命令ｙｏ" => (true, $"{token.Surface.RemoveEnd("よ")}"),
-                    "基本形" => (true, $"{token.Surface}"),
+                    "基本形" => (true, token.Surface),
                     "未然ウ接続" => (true, $"{token.Surface.RemoveEnd("よ")}"),
-                    "未然形" => (true, $"{token.Surface}"),
-                    "連用形" => (true, $"{token.Surface}"),
+                    "未然形" => (true, token.Surface),
+                    "連用形" => (true, token.Surface),
                     _ => (false, string.Empty)
                 },
                 "五段・ガ行" => token.InflectionForm switch
@@ -347,7 +347,7 @@ namespace RedPen.Net.Core.Inflection
                     "仮定形" => (true, $"{token.Surface.RemoveEnd("れ")}"),
                     "仮定縮約１" => (true, $"{token.Surface.RemoveEnd("りゃ")}"),
                     "体言接続特殊" => (true, $"{token.Surface.RemoveEnd("ん")}"),
-                    "体言接続特殊２" => (true, $"{token.Surface}"),
+                    "体言接続特殊２" => (true, token.Surface),
                     "命令ｅ" => (true, $"{token.Surface.RemoveEnd("れ")}"),
                     "基本形" => (true, $"{token.Surface.RemoveEnd("る")}"),
                     "未然ウ接続" => (true, $"{token.Surface.RemoveEnd("ろ")}"),
