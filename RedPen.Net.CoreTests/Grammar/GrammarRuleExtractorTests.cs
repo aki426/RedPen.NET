@@ -114,7 +114,7 @@ namespace RedPen.Net.Core.Grammar.Tests
         public void ToStringTest()
         {
             // 元の入力文法ルール文字列にパターンマッチの結果は同じになるが不要な構成要素が有る場合、省略して出力する。
-            GrammarRuleExtractor.Run("  This : :n :      + is: : v : * ").ToString().Should().Be("this::n + is::v");
+            GrammarRuleExtractor.Run("  This : :n :      + is: : v : * ").ToString().Should().Be("this::n + is::v:*");
             GrammarRuleExtractor.Run("  僕:  ボク :  名詞- =            は:       ハ :助詞").ToString().Should().Be("僕:ボク:名詞 = は:ハ:助詞");
             GrammarRuleExtractor.Run("  : ボク + : ハ").ToString().Should().Be(":ボク + :ハ");
         }
