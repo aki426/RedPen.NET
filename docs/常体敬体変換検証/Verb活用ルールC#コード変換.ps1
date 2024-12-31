@@ -85,7 +85,7 @@ function Šˆ—pƒ‹[ƒ‹•\•ÏŠ· () {
     $form_names = $dat | Get-Member -MemberType NoteProperty | foreach {$_.Name} | where {$_ -ne "Šˆ—pŒ^"}
 
     foreach ($type in $dat) {
-        "`"$($type.Šˆ—pŒ^)`" => type switch"
+        "`"$($type.Šˆ—pŒ^)`" => inflectionFormName switch"
         "{"
 
         foreach ($form in $form_names) {
