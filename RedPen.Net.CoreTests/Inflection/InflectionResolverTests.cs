@@ -23,6 +23,7 @@ using RedPen.Net.Core.Model;
 using RedPen.Net.Core.Tokenizer;
 using Xunit;
 using Xunit.Abstractions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace RedPen.Net.Core.Inflection.Tests
 {
@@ -62,6 +63,16 @@ namespace RedPen.Net.Core.Inflection.Tests
 
             (bool success, string surface) result = InflectionResolver.Resolve(token, "存在しない活用形");
             result.success.Should().BeFalse();
+
+            // TokenElement { S= "笑う",	R= "ワラウ(ワラウ)",	P= [動詞-自立],	I= 基本形/五段・ワ行促音便,	B= ,	O= (L1,0)-(L1,1)}
+            var token2 = KuromojiController.Tokenize(new Sentence("笑うらしい", 1)).FirstOrDefault();
+            InflectionResolver.Resolve(token2, "基本形").surface.Should().Be("笑う");
+            InflectionResolver.Resolve(token2, "未然形").surface.Should().Be("笑わ");
+            InflectionResolver.Resolve(token2, "未然ウ接続").surface.Should().Be("笑お");
+            InflectionResolver.Resolve(token2, "連用形").surface.Should().Be("笑い");
+            InflectionResolver.Resolve(token2, "連用タ接続").surface.Should().Be("笑っ");
+            InflectionResolver.Resolve(token2, "仮定形").surface.Should().Be("笑え");
+            InflectionResolver.Resolve(token2, "命令ｅ").surface.Should().Be("笑え");
         }
 
         [Theory]
@@ -408,7 +419,6 @@ namespace RedPen.Net.Core.Inflection.Tests
         [InlineData("174", "::動詞:連用形:五段・サ行", "察しましょう")]
         [InlineData("177", "::動詞:連用形:一段", "生じます")]
         [InlineData("178", "::動詞:連用形:一段", "生じましょう")]
-
         [InlineData("181", "::動詞:連用形:一段", "受けます")]
         [InlineData("182", "::動詞:連用形:一段", "受けましょう")]
         [InlineData("185", "::動詞:連用形:一段・クレル", "呉れます")]
@@ -444,7 +454,6 @@ namespace RedPen.Net.Core.Inflection.Tests
         //[InlineData("242", "::動詞:連用形:五段・ワ行ウ音便", "言いましょう")]
         [InlineData("241", "::動詞:連用形:五段・ワ行促音便", "言います")]
         [InlineData("242", "::動詞:連用形:五段・ワ行促音便", "言いましょう")]
-
         [InlineData("245", "::動詞:連用形:五段・ワ行促音便", "笑います")]
         [InlineData("246", "::動詞:連用形:五段・ワ行促音便", "笑いましょう")]
         [InlineData("249", "::動詞:連用形:四段・サ行", "天てらします")]
