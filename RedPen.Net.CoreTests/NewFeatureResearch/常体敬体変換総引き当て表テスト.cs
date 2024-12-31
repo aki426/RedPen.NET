@@ -78,14 +78,14 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             public string 敬体ルール { get; set; }
         }
 
-        public class TestDataSource : TheoryData<string, TestData>  // 必要なパラメータの型に応じて調整
+        public class 動詞DataSource : TheoryData<string, TestData>  // 必要なパラメータの型に応じて調整
         {
             /// <summary>
             /// テストデータのCSVファイル読み込み。
             /// </summary>
-            public TestDataSource()
+            public 動詞DataSource()
             {
-                using var reader = new StreamReader("NewFeatureResearch/DATA/常体敬体変換総引き当て表.csv", Encoding.UTF8);
+                using var reader = new StreamReader("NewFeatureResearch/DATA/動詞.csv", Encoding.UTF8);
                 using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
                     HasHeaderRecord = true,
@@ -102,8 +102,18 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
         }
 
         [Theory]
-        [ClassData(typeof(TestDataSource))]
-        public void 常体敬体変換テスト(string No, TestData data)
+        [ClassData(typeof(動詞DataSource))]
+        public void 動詞テスト(string No, TestData data)
+        {
+            常体敬体変換テスト(No, data);
+        }
+
+        /// <summary>
+        /// 常体敬体変換総引き当て表のデータを読み取り常体敬体変換テストを行うテスト実体関数。
+        /// </summary>
+        /// <param name="No"></param>
+        /// <param name="data"></param>
+        private void 常体敬体変換テスト(string No, TestData data)
         {
             output.WriteLine($"{No}, {data.用法}, {data.常体}, {data.敬体}");
             output.WriteLine("");

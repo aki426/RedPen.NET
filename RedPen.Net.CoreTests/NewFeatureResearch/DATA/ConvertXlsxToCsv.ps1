@@ -1,27 +1,36 @@
 ﻿### ヘッダー追加済みのxlsxファイルから、PSスクリプトで処理するためのCSVファイルを生成する。
 
 function Convert-XlsxToCsv ($name, [switch]$Force) {
-    if ($Force -or (-not (Test-Path ".\$($name).csv"))) {
-        # Excelアプリケーションを起動
-        $excel = New-Object -ComObject Excel.Application
-        $excel.Visible = $false
-        $excel.DisplayAlerts = $false
-
+    # Excelアプリケーションを起動
+    $excel = New-Object -ComObject Excel.Application
+    $excel.Visible = $false
+    $excel.DisplayAlerts = $false
+    
+    try {
         # ワークブックを開く
         $workbook = $excel.Workbooks.Open("$PWD\$($name).xlsx")
-
-        # シートを選択
-        $sheet = $workbook.Sheets.Item($name)
-
-        # CSVとして保存
-        # xlCSVUTF8	62	UTF8 CSV	*.csv
-        $sheet.SaveAs("$PWD\$($name).csv", 62)
-
+        
+        # すべてのシートを処理
+        foreach ($sheet in $workbook.Sheets) {
+            $sheetName = $sheet.Name
+            $csvPath = ".\$($sheetName).csv"
+            
+            # Forceフラグがない場合は既存ファイルをスキップ
+            if ($Force -or (-not (Test-Path $csvPath))) {
+                Write-Host "Converting sheet: $sheetName"
+                # xlCSVUTF8	62	UTF8 CSV	*.csv
+                $sheet.SaveAs("$PWD\$($sheetName).csv", 62)
+            }
+        }
+    }
+    finally {
         # クリーンアップ
-        $workbook.Close()
+        if ($workbook) {
+            $workbook.Close()
+        }
         $excel.Quit()
         [System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel)
-    }    
+    }
 }
 
 # 実行

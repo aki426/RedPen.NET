@@ -357,7 +357,13 @@
     <None Include="Config\DATA\SampleConf.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="NewFeatureResearch\DATA\常体敬体変換総引き当て表.csv">
+    <None Include="NewFeatureResearch\DATA\動詞.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="NewFeatureResearch\DATA\形容動詞.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="NewFeatureResearch\DATA\形容詞.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
