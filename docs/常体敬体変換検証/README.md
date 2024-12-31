@@ -1,5 +1,7 @@
 # 処理の仕方
 
+## 検討段階
+
 ※以下、Verbを例にする。
 
 1. mecab-ipadic-2.7.0-20070801などから辞書データCSV（Verb.csv）を取得し（※このフォルダに保存はしない）、「テキストまたはCSVから」機能でExcelファイルに取り込む。
@@ -13,3 +15,15 @@
 9. KuromojiのTokenize結果を作成した「Verb活用具体例検討.xlsx」等を作って印刷してもよい。
 
 以上をもってipadicのデータとKuromojiのTokenize結果から活用ルールを検証し、常体・敬体変換のロジックを設計する。
+
+## 実装
+
+### 語幹取得
+
+1. Verb活用ルールC#コード変換.ps1の「活用ルールから語幹取得コード生成」を実行する。
+2. 生成した活用テーブルエミュレートSwitch式をInflectionResolver.ResolveGokanAsVerb()内にコピペする。
+
+### 活用形解決
+
+1. Verb活用ルールC#コード変換.ps1の「活用ルール表変換」を実行する。
+2. 生成した活用テーブルエミュレートSwitch式をInflectionResolver.ResolveAsVerb()内にコピペする。
