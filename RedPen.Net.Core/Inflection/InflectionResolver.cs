@@ -29,15 +29,14 @@ namespace RedPen.Net.Core.Inflection
         /// 文字列として活用形を与えるだけでよい。
         /// </summary>
         /// <param name="token"></param>
-        /// <param name="type"></param>
+        /// <param name="inflectionFormName"></param>
         /// <returns></returns>
-        public static (bool success, string surface) Resolve(TokenElement token, string type)
+        public static (bool success, string surface) Resolve(TokenElement token, string inflectionFormName)
         {
             return token.PartOfSpeech[0] switch
             {
-                "動詞" => ResolveAsVerb(token, type),
-                "形容詞" => (false, string.Empty),
-                "助動詞" => (false, string.Empty),
+                "動詞" => ResolveAsVerb(token, inflectionFormName),
+                "形容詞" => ResolveAsAdj(token, inflectionFormName),
                 _ => (false, string.Empty)
             };
 
@@ -857,6 +856,139 @@ namespace RedPen.Net.Core.Inflection
                     "基本形" => (true, $"{gokan}ふ"),
                     "未然形" => (true, $"{gokan}ひ"),
                     "連用形" => (true, $"{gokan}ひ"),
+                    _ => (false, string.Empty)
+                },
+                _ => (false, string.Empty)
+            };
+        }
+
+        /// <summary>
+        /// 形容詞の語幹を取得する関数。
+        /// </summary>
+        /// <param name="token">TokenElementの品詞は形容詞であること。</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">PartOfSpeechを参照し品詞が形容詞以外の場合例外となる</exception>
+        public static (bool success, string gokan) ResolveGokanAsAdj(TokenElement token)
+        {
+            if (token.PartOfSpeech[0] != "形容詞")
+            {
+                throw new ArgumentException(
+                    $"Token must be a adj. Actual: {token.ToString()}",
+                    nameof(token)
+                );
+            }
+
+            return token.InflectionType switch
+            {
+                "形容詞・アウオ段" => token.InflectionForm switch
+                {
+                    "ガル接続" => (true, token.Surface),
+                    "仮定形" => (true, $"{token.Surface.RemoveEnd("けれ")}"),
+                    "仮定縮約１" => (true, $"{token.Surface.RemoveEnd("けりゃ")}"),
+                    "仮定縮約２" => (true, $"{token.Surface.RemoveEnd("きゃ")}"),
+                    "体言接続" => (true, $"{token.Surface.RemoveEnd("き")}"),
+                    "命令ｅ" => (true, $"{token.Surface.RemoveEnd("かれ")}"),
+                    "基本形" => (true, $"{token.Surface.RemoveEnd("い")}"),
+                    "文語基本形" => (true, $"{token.Surface.RemoveEnd("し")}"),
+                    "未然ウ接続" => (true, $"{token.Surface.RemoveEnd("かろ")}"),
+                    "未然ヌ接続" => (true, $"{token.Surface.RemoveEnd("から")}"),
+                    "連用ゴザイ接続" => (true, $"{token.Surface.RemoveEnd("ぅ")}"),
+                    "連用タ接続" => (true, $"{token.Surface.RemoveEnd("かっ")}"),
+                    "連用テ接続" => (true, $"{token.Surface.RemoveEnd("くっ")}"),
+                    _ => (false, string.Empty)
+                },
+                "形容詞・イイ" => token.InflectionForm switch
+                {
+                    "基本形" => (true, token.Surface),
+                    "基本形-促音便" => (true, $"{token.Surface.RemoveEnd("いっ")}"),
+                    _ => (false, string.Empty)
+                },
+                "形容詞・イ段" => token.InflectionForm switch
+                {
+                    "ガル接続" => (true, token.Surface),
+                    "仮定形" => (true, $"{token.Surface.RemoveEnd("けれ")}"),
+                    "仮定縮約１" => (true, $"{token.Surface.RemoveEnd("けりゃ")}"),
+                    "仮定縮約２" => (true, $"{token.Surface.RemoveEnd("きゃ")}"),
+                    "体言接続" => (true, $"{token.Surface.RemoveEnd("き")}"),
+                    "命令ｅ" => (true, $"{token.Surface.RemoveEnd("かれ")}"),
+                    "基本形" => (true, $"{token.Surface.RemoveEnd("い")}"),
+                    "文語基本形" => (true, token.Surface),
+                    "未然ウ接続" => (true, $"{token.Surface.RemoveEnd("かろ")}"),
+                    "未然ヌ接続" => (true, $"{token.Surface.RemoveEnd("から")}"),
+                    "連用ゴザイ接続" => (true, $"{token.Surface.RemoveEnd("ゅぅ")}"),
+                    "連用タ接続" => (true, $"{token.Surface.RemoveEnd("かっ")}"),
+                    "連用テ接続" => (true, $"{token.Surface.RemoveEnd("くっ")}"),
+                    _ => (false, string.Empty)
+                },
+                "不変化型" => token.InflectionForm switch
+                {
+                    "基本形" => (true, token.Surface),
+                    _ => (false, string.Empty)
+                },
+                _ => (false, string.Empty)
+            };
+        }
+
+        /// <summary>
+        /// 形容詞の活用変換テーブルをエミュレートした形容詞用活用変化関数。
+        /// NOTE: 活用変換テーブルは「RedPen.NET\docs\常体敬体変換検証\Adj活用ルール.csv」がベースとなる。
+        /// 同フォルダ内の「Adj活用ルールC#コード変換.ps1」を実行するとコード断片が生成されるので関数内に貼り付ける。
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="inflectionFormName">解決したい活用形名（例：連用タ接続）。</param>
+        /// <returns></returns>
+        public static (bool success, string surface) ResolveAsAdj(TokenElement token, string inflectionFormName)
+        {
+            var (success, gokan) = ResolveGokanAsAdj(token);
+
+            // 語幹が解決できなかった場合は失敗。
+            if (!success) { return (false, string.Empty); }
+
+            return token.InflectionType switch
+            {
+                "形容詞・アウオ段" => inflectionFormName switch
+                {
+                    "ガル接続" => (true, gokan),
+                    "仮定形" => (true, $"{gokan}けれ"),
+                    "仮定縮約１" => (true, $"{gokan}けりゃ"),
+                    "仮定縮約２" => (true, $"{gokan}きゃ"),
+                    "体言接続" => (true, $"{gokan}き"),
+                    "命令ｅ" => (true, $"{gokan}かれ"),
+                    "基本形" => (true, $"{gokan}い"),
+                    "文語基本形" => (true, $"{gokan}し"),
+                    "未然ウ接続" => (true, $"{gokan}かろ"),
+                    "未然ヌ接続" => (true, $"{gokan}から"),
+                    "連用ゴザイ接続" => (true, $"{gokan}ぅ"),
+                    "連用タ接続" => (true, $"{gokan}かっ"),
+                    "連用テ接続" => (true, $"{gokan}くっ"),
+                    _ => (false, string.Empty)
+                },
+                "形容詞・イイ" => inflectionFormName switch
+                {
+                    "基本形" => (true, gokan),
+                    "基本形-促音便" => (true, $"{gokan}いっ"),
+                    _ => (false, string.Empty)
+                },
+                "形容詞・イ段" => inflectionFormName switch
+                {
+                    "ガル接続" => (true, gokan),
+                    "仮定形" => (true, $"{gokan}けれ"),
+                    "仮定縮約１" => (true, $"{gokan}けりゃ"),
+                    "仮定縮約２" => (true, $"{gokan}きゃ"),
+                    "体言接続" => (true, $"{gokan}き"),
+                    "命令ｅ" => (true, $"{gokan}かれ"),
+                    "基本形" => (true, $"{gokan}い"),
+                    "文語基本形" => (true, gokan),
+                    "未然ウ接続" => (true, $"{gokan}かろ"),
+                    "未然ヌ接続" => (true, $"{gokan}から"),
+                    "連用ゴザイ接続" => (true, $"{gokan}ゅぅ"),
+                    "連用タ接続" => (true, $"{gokan}かっ"),
+                    "連用テ接続" => (true, $"{gokan}くっ"),
+                    _ => (false, string.Empty)
+                },
+                "不変化型" => inflectionFormName switch
+                {
+                    "基本形" => (true, gokan),
                     _ => (false, string.Empty)
                 },
                 _ => (false, string.Empty)
