@@ -1,4 +1,6 @@
+################################################################################
 ### 語幹を取得する関数のSwitch式を作成する。
+################################################################################
 
 # Kuromojiによる形態素解析の結果、必ずしもBaseFormが取得できるわけではないので、
 # 各活用形から語幹を逆算する必要がある。
@@ -34,7 +36,7 @@ function 活用ルールから語幹取得コード生成 () {
             if ($type.$form -ne "") {
                 if ($type.$form -eq "x") {
                     # 語幹と活用形の表層形が同じならRemoveEndしなくていい。
-                    "`"$($form)`" => (true, $`"{token.Surface}`"),"
+                    "`"$($form)`" => (true, token.Surface),"
                 } else {
                     "`"$($form)`" => (true, $`"{token.Surface.RemoveEnd(`"$($type.$form -replace 'x', '')`")}`"),"
                 }
@@ -52,36 +54,48 @@ cls
 活用ルールから語幹取得コード生成
 
 
-### 次のような活用変化テーブルを読み替えたスイッチ式を作りたい。
+################################################################################
+### TokenElementから活用形を取得する関数のSwitch式を作成する。
+################################################################################
 
-# "五段・ワ行促音便" => type switch
+# 次のような活用変化テーブルを読み替えたスイッチ式を作りたい。
+# gokanは語幹を表すStringで語幹取得関数からあらかじめ取得するものとする。
+# 
+# "カ変・クル" => type switch
 # {
-#     "基本形" => (true, token.BaseForm),
-#     "未然形" => (true, $"{token.BaseForm.RemoveEnd("う")}わ"),
-#     "未然ウ接続" => (true, $"{token.BaseForm.RemoveEnd("う")}お"),
-#     "連用形" => (true, $"{token.BaseForm.RemoveEnd("う")}い"),
-#     "連用タ接続" => (true, $"{token.BaseForm.RemoveEnd("う")}っ"),
-#     "仮定形" => (true, $"{token.BaseForm.RemoveEnd("う")}え"),
-#     "命令ｅ" => (true, $"{token.BaseForm.RemoveEnd("う")}え"),
+#     "基本形" => (true, $"{gokan}くる"),
+#     "仮定形" => (true, $"{gokan}くれ"),
+#     "仮定縮約１" => (true, $"{gokan}くりゃ"),
+#     "体言接続特殊" => (true, $"{gokan}くん"),
+#     "体言接続特殊２" => (true, $"{gokan}く"),
+#     "命令ｉ" => (true, $"{gokan}こい"),
+#     "命令ｙｏ" => (true, $"{gokan}こよ"),
+#     "未然ウ接続" => (true, $"{gokan}こよ"),
+#     "未然形" => (true, $"{gokan}こ"),
+#     "連用形" => (true, $"{gokan}き"),
 #     _ => (false, string.Empty)
 # },
+
 
 
 function 活用ルール表変換 () {
     $dat = Import-Csv .\Verb活用ルール.csv -Encoding Default
     
-    $form_names = $dat | Get-Member -MemberType NoteProperty | foreach {$_.Name} | where {$_ -ne "活用型" -and $_ -ne "基本形"}
+    # 活用形名一覧取得。
+    $form_names = $dat | Get-Member -MemberType NoteProperty | foreach {$_.Name} | where {$_ -ne "活用型"}
 
     foreach ($type in $dat) {
         "`"$($type.活用型)`" => type switch"
         "{"
 
-        "`"基本形`" => (true, token.BaseForm),"
-
-        $base_suffix = $type.基本形 -replace "x", ""
         foreach ($form in $form_names) {
             if ($type.$form -ne "") {
-                "`"$($form)`" => (true, $`"{token.BaseForm.RemoveEnd(`"$($base_suffix)`")}$($type.$form -replace 'x', '')`"),"
+                if ($type.$form -eq "x") {
+                    # 語幹と活用形の表層形が同じならRemoveEndしなくていい。
+                    "`"$($form)`" => (true, gokan),"
+                } else {
+                    "`"$($form)`" => (true, $`"{gokan}$($type.$form -replace 'x', '')`"),"
+                }
             }
         }
 
