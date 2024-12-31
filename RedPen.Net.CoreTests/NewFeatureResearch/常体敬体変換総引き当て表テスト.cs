@@ -78,7 +78,7 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             public string 敬体ルール { get; set; }
         }
 
-        public class 動詞DataSource : TheoryData<string, TestData>  // 必要なパラメータの型に応じて調整
+        public class 動詞DataSource : TheoryData<string, TestData>
         {
             /// <summary>
             /// テストデータのCSVファイル読み込み。
@@ -108,6 +108,36 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             常体敬体変換テスト(No, data);
         }
 
+        public class 形容詞DataSource : TheoryData<string, TestData>
+        {
+            /// <summary>
+            /// テストデータのCSVファイル読み込み。
+            /// </summary>
+            public 形容詞DataSource()
+            {
+                using var reader = new StreamReader("NewFeatureResearch/DATA/形容詞.csv", Encoding.UTF8);
+                using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    HasHeaderRecord = true,
+                    Encoding = Encoding.UTF8
+                });
+
+                var records = csv.GetRecords<TestData>();
+                foreach (var record in records)
+                {
+                    // テストメソッドに渡すパラメータを設定
+                    Add(record.No, record);
+                }
+            }
+        }
+
+        [Theory]
+        [ClassData(typeof(形容詞DataSource))]
+        public void 形容詞テスト(string No, TestData data)
+        {
+            常体敬体変換テスト(No, data);
+        }
+
         /// <summary>
         /// 常体敬体変換総引き当て表のデータを読み取り常体敬体変換テストを行うテスト実体関数。
         /// </summary>
@@ -124,19 +154,22 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
 
             // Token結果目視
             output.WriteLine("★Token...");
-            output.WriteLine("常体");
+            output.WriteLine("＜常体＞");
             foreach (var t in jotaiOrigin) { output.WriteLine(t.ToString()); }
-            output.WriteLine("敬体");
+            foreach (var t in jotaiOrigin) { output.WriteLine(t.ToGrammarRuleString()); }
+            output.WriteLine("");
+            output.WriteLine("＜敬体＞");
             foreach (var t in keitaiOrigin) { output.WriteLine(t.ToString()); }
+            foreach (var t in keitaiOrigin) { output.WriteLine(t.ToGrammarRuleString()); }
             output.WriteLine("");
 
             // GrammarRuleを取得する
             output.WriteLine("★Rule...");
-            output.WriteLine("常体");
+            output.WriteLine("＜常体＞");
             output.WriteLine(data.常体ルール);
             GrammarRule jotaiRule = GrammarRuleExtractor.Run(data.常体ルール);
-            //jotaiRule.Pattern[0].Token.PartOfSpeech[0]
-            output.WriteLine("敬体");
+            output.WriteLine("");
+            output.WriteLine("＜敬体＞");
             output.WriteLine(data.敬体ルール);
             GrammarRule keitaiRule = GrammarRuleExtractor.Run(data.敬体ルール);
 
@@ -185,7 +218,8 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             }
 
             // 【常体→敬体】
-            output.WriteLine("順【常体→敬体】");
+            output.WriteLine("");
+            output.WriteLine("＜順【常体→敬体】＞");
 
             if (data.変換 != "<")
             {
@@ -216,7 +250,8 @@ namespace RedPen.Net.CoreTests.NewFeatureResearch
             }
 
             // 【敬体→常体】
-            output.WriteLine("逆【敬体→常体】");
+            output.WriteLine("");
+            output.WriteLine("＜逆【敬体→常体】＞");
 
             if (data.変換 != "<")
             {
